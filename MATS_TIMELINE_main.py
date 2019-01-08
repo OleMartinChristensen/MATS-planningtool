@@ -13,7 +13,7 @@ import json
 
 SCIMOD_TIMELINE = []
 
-with open("MATS_AUTOMATIC_SCIMOD_generator\MATS_SCIMOD_TIMELINE.json", "r") as read_file:
+with open("MATS_SCIMOD_TIMELINE.json", "r") as read_file:
     SCIMOD_TIMELINE = json.load(read_file)
     
 
