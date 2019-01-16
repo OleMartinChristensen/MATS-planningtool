@@ -28,8 +28,8 @@ from MATS_AUTOMATIC_SCIMOD_Mode_1_2 import Mode_1_2
 from MATS_AUTOMATIC_SCIMOD_Mode120 import Mode120
 from MATS_AUTOMATIC_SCIMOD_Mode130 import Mode130
 from MATS_AUTOMATIC_SCIMOD_Mode200 import Mode200
-from MATS_TIMELINE_SCIMOD_DEFAULT_PARAMS import Timeline_params, Modes_priority
-
+from MATS_TIMELINE_SCIMOD_DEFAULT_PARAMS import Timeline_params, Modes_priority, Version
+import MATS_TIMELINE_SCIMOD_DEFAULT_PARAMS
 
 #def MATS_Automatic_SCIMOD():
 if __name__ == "__main__":
@@ -88,14 +88,14 @@ if __name__ == "__main__":
     ################ To either fill out available time in the timeline with Mode1/2 or with Mode3/4 or neither ################
     
     while(True):
-        Mode1_2_3_4_select = input('Do you want to use Mode1/2 (input 1 or 2) or Mode3/4 (input 3 or 4)? Type 0 for none: ')
-        if( Mode1_2_3_4_select != '1' and Mode1_2_3_4_select != '2' and Mode1_2_3_4_select != '3' and Mode1_2_3_4_select != '4' and Mode1_2_3_4_select != '0' ):
+        Mode1_2_3_4_select = input('Do you want to use Mode1/2 (input 1) or Mode3/4 (input 3)? Type 0 for none: ')
+        if( Mode1_2_3_4_select != '1' and Mode1_2_3_4_select != '3' and Mode1_2_3_4_select != '0' ):
             print('Wrong input, please try again')
         else:
             break
     
     
-    if( Mode1_2_3_4_select == '1' or Mode1_2_3_4_select == '2'):
+    if( Mode1_2_3_4_select == '1'):
         
         ### Check if it is NLC season ###
         if( Timeline_params()['start_time'].tuple()[1] in [11,12,1,2,5,6,7,8] or 
@@ -114,7 +114,7 @@ if __name__ == "__main__":
             for x in range(len(Occupied_Timeline['Mode2'])):
                 SCIMOD_Timeline_unchronological.append((Occupied_Timeline['Mode2'][x][0], Occupied_Timeline['Mode2'][x][1],'Mode2', Mode2_comment))
         
-    elif(Mode1_2_3_4_select == '3' or Mode1_2_3_4_select == '4'):
+    elif(Mode1_2_3_4_select == '3'):
         
         ### Check if it is NLC season ###
         if( Timeline_params()['start_time'].tuple()[1] in [11,12,1,2,5,6,7,8] or 
@@ -140,7 +140,9 @@ if __name__ == "__main__":
     SCIMOD_Timeline = []
     "Create a science mode list in chronological order. The list contains Mode name, start date, enddate, empty optional params and comment"
     for x in SCIMOD_Timeline_unchronological:
-        SCIMOD_Timeline.append([ x[2],str(x[0]), str(x[1]),{},x[3] ])
+        default_params = getattr(MATS_TIMELINE_SCIMOD_DEFAULT_PARAMS,x[2]+'_default')
+        #SCIMOD_Timeline.append([ x[2],str(x[0]), str(x[1]),{},x[3] ])
+        SCIMOD_Timeline.append([ x[2],str(x[0]), str(x[1]),default_params(),x[3] ])
     
     '''
     date1 = '2018/8/23 22:00:00'
@@ -162,7 +164,11 @@ if __name__ == "__main__":
     SCIMOD_Timeline.append(['Mode120',date4,date5,{'pointing_altitude': 93000, 'freeze_duration': 500}])
     SCIMOD_Timeline.append(['Mode120',date5,date6,{'freeze_start': 35}])
     '''
-            
+    
+    SCIMOD_NAME = 'MATS_SCIMOD_TIMELINE_Version-'+Version()+'.json'
+    with open(SCIMOD_NAME, "w") as write_file:
+        json.dump(SCIMOD_Timeline, write_file, indent = 2)
+    '''
     with open("MATS_SCIMOD_TIMELINE.json", "w") as write_file:
         json.dump(SCIMOD_Timeline, write_file, indent = 2)
-        
+    '''

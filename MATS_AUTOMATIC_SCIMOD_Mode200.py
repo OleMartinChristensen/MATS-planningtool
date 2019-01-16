@@ -268,7 +268,7 @@ def Mode200_date_select(Occupied_Timeline, Moon_list):
         
     Occupied_Timeline['Mode200'] = (Moon200_date, Mode200_endDate)
     
-    Mode200_comment = 'VFOV: '+str(Moon_V_offset[x])+' HFOV: '+str(Moon_H_offset[x])+', Number of times date changed: '+str(iterations)
+    Mode200_comment = 'V-offset: '+str(Moon_V_offset[x])+' H-offset: '+str(Moon_H_offset[x])+', Number of times date changed: '+str(iterations)
     
     
     return Occupied_Timeline, Mode200_comment

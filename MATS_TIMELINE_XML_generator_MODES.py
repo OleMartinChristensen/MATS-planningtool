@@ -330,7 +330,7 @@ def XML_generator_Mode200(root, date, duration, relativeTime,
     "Check if optional params were given"
     if( params != params_default):
         params_new = params_default
-        "Loop through parameters given and exchange them for the default ones"
+        "Loop through parameters given and exchange the default ones"
         for key in params.keys():
             params_new[key] = params[key]
         params = params_new

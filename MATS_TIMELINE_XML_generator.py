@@ -25,11 +25,15 @@ def MATS_TIMELINE_XML_generator(SCIMOD):
     
     timeline_start = Timeline_params()['start_time']
     
-    earliestStartingDate = str(ephem.Date(timeline_start-ephem.second)).replace(' ','T')
-    earliestStartingDate = earliestStartingDate.replace('/','-')
+    #earliestStartingDate = str(ephem.Date(timeline_start-ephem.second)).replace(' ','T')
+    #latestStartingDate = str(timeline_start).replace(' ','T')
     
-    latestStartingDate = str(timeline_start).replace(' ','T')
-    latestStartingDate = latestStartingDate.replace('/','-')
+    earliestStartingDate = ephem.Date(timeline_start-ephem.second).datetime().strftime("%Y-%m-%dT%H:%M:%S")
+    latestStartingDate = ephem.Date(timeline_start).datetime().strftime("%Y-%m-%dT%H:%M:%S")
+    
+    #earliestStartingDate = earliestStartingDate.replace('/','-')
+    #latestStartingDate = latestStartingDate.replace('/','-')
+    
     
     ########    Calls function to create XML-tree basis ##########################
     root = XML_Initial_Basis_Creator(earliestStartingDate,latestStartingDate,timeline_duration)
