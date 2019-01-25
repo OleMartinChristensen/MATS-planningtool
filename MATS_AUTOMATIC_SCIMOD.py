@@ -59,8 +59,11 @@ if __name__ == "__main__":
         if( 'Mode200' in scimod):
             
             Occupied_Timeline, Mode200_comment = Mode200(Occupied_Timeline)
+            
+            ################# Testing #############
             #Occupied_Timeline['Mode200'] = (ephem.Date(43364.03914351852), ephem.Date(43364.05303240741))
             #Occupied_Timeline['Mode1'] = (Timeline_params()['start_time'], ephem.Date(Timeline_params()['start_time']+ephem.second*3600))
+            ################# Testing #############
             
             if( Mode200_comment == 'Moon not visible' or Mode200_comment == 'No time available for Mode200'):
                 print(Mode200_comment)

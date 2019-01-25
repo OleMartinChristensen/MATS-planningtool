@@ -65,7 +65,7 @@ def Mode200_date_calculator():
     normal_orbit = zeros((duration,3))
     normal_azi = zeros((duration,3))
     normal_azi_norm = zeros((duration,3))
-    ele = zeros((duration,1))
+    pitch_array = zeros((duration,1))
     MATS_p = zeros((duration,1))
     MATS_P = zeros((duration,1))
     
@@ -129,9 +129,9 @@ def Mode200_date_calculator():
         #Orbital Period of MATS
         MATS_P[t] = 2*pi*sqrt(MATS_p[t]**3/U)
         
-        #Estimated pitch or elevation angle for MATS pointing
-        ele[t]= array(arccos((R_mean+FOV_altitude)/(R+altitude_MATS[t]))/pi*180)
-        el = ele[t][0]
+        #Estimated pitch angle for MATS pointing
+        pitch_array[t]= array(arccos((R_mean+FOV_altitude)/(R+altitude_MATS[t]))/pi*180)
+        pitch = pitch_array[t][0]
         
         (g_ra_Moon[t],g_dec_Moon[t],distance_Moon[t])= (Moon.g_ra,Moon.g_dec,Moon.earth_distance*AU)
         
@@ -153,11 +153,11 @@ def Mode200_date_calculator():
             normal_orbit[t,0:3] = normal_orbit[t,0:3] / norm(normal_orbit[t,0:3])
             
             "Rotate 'vector to MATS', to represent pointing direction, includes vertical offset change"
-            rot_mat = rot_arbit(-pi/2+(-el+V_offset)/180*pi, normal_orbit[t,0:3])
+            rot_mat = rot_arbit(-pi/2+(-pitch+V_offset)/180*pi, normal_orbit[t,0:3])
             r_FOV[t,0:3] = (r_MATS[t] @ rot_mat)
             
             "Rotate 'vector to MATS', to represent a vector normal to the azimuth pointing plane, includes vertical offset change (Parallax is negligable)"
-            rot_mat = rot_arbit((-el+V_offset)/180*pi, normal_orbit[t,0:3])
+            rot_mat = rot_arbit((-pitch+V_offset)/180*pi, normal_orbit[t,0:3])
             normal_azi[t,0:3] = (r_MATS[t] @ rot_mat) /2
             normal_azi_norm[t,0:3] = normal_azi[t,0:3] / norm(normal_azi[t,0:3])
             
@@ -188,7 +188,8 @@ def Mode200_date_calculator():
             #if(abs(Moon_vert_offset[t]) <= timestep/MATS_P[t]*360 and abs(Moon_hori_offset[t]) < H_FOV/2):
             if(abs(Moon_vert_offset[t]) <= V_FOV/2 and abs(Moon_hori_offset[t]) < H_FOV/2):
                 
-                Moon_list.append({ 'Date': str(current_time), 'V-offset': Moon_vert_offset[t], 'H-offset': Moon_hori_offset[t]})
+                Moon_list.append({ 'Date': str(current_time), 'V-offset': Moon_vert_offset[t], 'H-offset': Moon_hori_offset[t], 
+                                  'long_MATS': float(long_MATS[t]/pi*180), 'lat_MATS': float(lat_MATS[t]/pi*180)})
                 current_time = ephem.Date(current_time+ephem.second*MATS_P[t]/2)
                 
             
@@ -223,10 +224,14 @@ def Mode200_date_select(Occupied_Timeline, Moon_list):
     Moon_H_offset = [Moon_list[x]['H-offset'] for x in range(len(Moon_list))]
     Moon_V_offset = [Moon_list[x]['V-offset'] for x in range(len(Moon_list))]
     Moon_date = [Moon_list[x]['Date'] for x in range(len(Moon_list))]
+    Moon_long = [Moon_list[x]['long_MATS'] for x in range(len(Moon_list))]
+    Moon_lat = [Moon_list[x]['lat_MATS'] for x in range(len(Moon_list))]
     
-    Moon_H_offset_sorted = [abs(x) for x in Moon_H_offset]
+    Moon_H_offset_abs = [abs(x) for x in Moon_H_offset]
+    Moon_H_offset_sorted = Moon_H_offset_abs
     Moon_H_offset_sorted.sort()
     
+    print('Moon_list')
     print(Moon_list)
     
     restart = True
@@ -245,13 +250,13 @@ def Mode200_date_select(Occupied_Timeline, Moon_list):
         
         #Extract index of  minimum H-offset for first iteration, 
         #then next smallest if 2nd iterations needed and so on
-        x = Moon_H_offset.index(Moon_H_offset_sorted[iterations])
+        x = Moon_H_offset_abs.index(Moon_H_offset_sorted[iterations])
         
-        Moon200_date = Moon_date[x]
+        Mode200_date = Moon_date[x]
         
-        Moon200_date = ephem.Date(ephem.Date(Moon200_date)-ephem.second*(Mode200_default()['freeze_start']+50))
+        Mode200_date = ephem.Date(ephem.Date(Mode200_date)-ephem.second*(Mode200_default()['freeze_start']+50))
         
-        Mode200_endDate = ephem.Date(Moon200_date+ephem.second* 
+        Mode200_endDate = ephem.Date(Mode200_date+ephem.second* 
                                      (Timeline_params()['mode_separation']+Mode200_default()['mode_duration']))
         
         ## Extract Occupied dates and if they clash, restart loop and select new date
@@ -259,16 +264,17 @@ def Mode200_date_select(Occupied_Timeline, Moon_list):
             if( busy_dates == []):
                 continue
             else:
-                if( busy_dates[0] <= Moon200_date <= busy_dates[1] or 
+                if( busy_dates[0] <= Mode200_date <= busy_dates[1] or 
                        busy_dates[0] <= Mode200_endDate <= busy_dates[1]):
                     
                     iterations = iterations + 1
                     restart = True
                     break
         
-    Occupied_Timeline['Mode200'] = (Moon200_date, Mode200_endDate)
+    Occupied_Timeline['Mode200'] = (Mode200_date, Mode200_endDate)
     
-    Mode200_comment = 'V-offset: '+str(Moon_V_offset[x])+' H-offset: '+str(Moon_H_offset[x])+', Number of times date changed: '+str(iterations)
+    Mode200_comment = ('V-offset: '+str(Moon_V_offset[x])+' H-offset: '+str(Moon_H_offset[x])+', Number of times date changed: '+str(iterations)+
+                                      ', MATS (long,lat) in degrees = ('+str(Moon_long[x])+', '+str(Moon_lat[x])+')')
     
     
     return Occupied_Timeline, Mode200_comment

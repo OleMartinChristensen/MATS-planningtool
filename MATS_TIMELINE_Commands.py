@@ -134,7 +134,7 @@ def TC_pafHTR(root, time, HtrSelect, SetPoint, P, I, D, comment = ''):
     
 def TC_pafCCDMain(root, time, CCDselect, CCDMode, ExpInterval, ExpTime, NumRowsSkip, NumRowsBin,
                   NumRows, NumColumnsBin, NumColumns, WindowMode = "1", JPEGquality = "90", Expsync = "1", 
-                  RowBinningMode = "2", ColumnBinningMode = "2", DigitalGain = "?", 
+                  RowBinningMode = "2", ColumnBinningMode = "2", DigitalGain = "0", 
                   NumFlush = "10", NumColumnsSkip = "50", comment = ''):
     
     etree.SubElement(root[1], 'command', mnemonic = "TC_pafCCDMain")

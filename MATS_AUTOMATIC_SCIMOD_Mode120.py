@@ -66,24 +66,27 @@ def Mode120_date_calculator():
     stars_r = array([stars_x,stars_y,stars_z])
     stars_r = stars_r.transpose()
     
+    "Prepare the excel file output"
+    star_list_excel = []
+    star_list_excel.append(['Name;'])
+    star_list_excel.append(['t1;'])
+    star_list_excel.append(['t2;'])
+    star_list_excel.append(['long1;'])
+    star_list_excel.append(['lat1;'])
+    star_list_excel.append(['long2;'])
+    star_list_excel.append(['lat2;'])
+    star_list_excel.append(['mag;'])
+    star_list_excel.append(['H_offset;'])
+    star_list_excel.append(['V_offset;'])
+    star_list_excel.append(['H_offset2;'])
+    star_list_excel.append(['V_offset2;'])
+    star_list_excel.append(['e_Hpmag;'])
+    star_list_excel.append(['Hpscat;'])
+    star_list_excel.append(['o_Hpmag;'])
+    star_list_excel.append(['Classification;'])
+    
     "Prepare the output"
     star_list = []
-    star_list.append(['Name;'])
-    star_list.append(['t1;'])
-    star_list.append(['t2;'])
-    star_list.append(['long1;'])
-    star_list.append(['lat1;'])
-    star_list.append(['long2;'])
-    star_list.append(['lat2;'])
-    star_list.append(['mag;'])
-    star_list.append(['H_offset;'])
-    star_list.append(['V_offset;'])
-    star_list.append(['H_offset2;'])
-    star_list.append(['V_offset2;'])
-    star_list.append(['e_Hpmag;'])
-    star_list.append(['Hpscat;'])
-    star_list.append(['o_Hpmag;'])
-    star_list.append(['Classification;'])
     
     "Pre-allocate space"
     lat_MATS = zeros((timesteps,1))
@@ -268,11 +271,11 @@ def Mode120_date_calculator():
                             if( dot(cross(r_FOV[t],stars_r_H_offset_plane[x]),r_H_offset_normal[t]) > 0 ):
                                 stars_hori_offset[t][x] = -stars_hori_offset[t][x]
                             
-                            star_list[2].append(str(current_time)+';')
-                            star_list[5].append(str(float(long_MATS[t]/pi*180))+';')
-                            star_list[6].append(str(float(lat_MATS[t]/pi*180))+';')
-                            star_list[10].append(str(stars_hori_offset[t][x])+';')
-                            star_list[11].append(str(stars_vert_offset[t][x])+';')
+                            star_list_excel[2].append(str(current_time)+';')
+                            star_list_excel[5].append(str(float(long_MATS[t]/pi*180))+';')
+                            star_list_excel[6].append(str(float(lat_MATS[t]/pi*180))+';')
+                            star_list_excel[10].append(str(stars_hori_offset[t][x])+';')
+                            star_list_excel[11].append(str(stars_vert_offset[t][x])+';')
                             
                         continue
                         
@@ -324,18 +327,21 @@ def Mode120_date_calculator():
                     
                     
                     "Log all relevent data for the star"
-                    star_list[0].append(stars[x].name+';')
-                    star_list[1].append(str(current_time)+';')
-                    star_list[3].append(str(float(long_MATS[t]/pi*180))+';')
-                    star_list[4].append(str(float(lat_MATS[t]/pi*180))+';')
-                    star_list[7].append(str(stars[x].mag)+';')
-                    star_list[8].append(str(stars_hori_offset[t][x])+';')
-                    star_list[9].append(str(stars_vert_offset[t][x])+';')
-                    star_list[12].append(str(star_cat[x]['e_Hpmag'])+';')
-                    star_list[13].append(str(star_cat[x]['Hpscat'])+';')
-                    star_list[14].append(str(star_cat[x]['o_Hpmag'])+';')
-                    star_list[15].append(str(star_cat[x]['SpType'])+';')
+                    star_list_excel[0].append(stars[x].name+';')
+                    star_list_excel[1].append(str(current_time)+';')
+                    star_list_excel[3].append(str(float(long_MATS[t]/pi*180))+';')
+                    star_list_excel[4].append(str(float(lat_MATS[t]/pi*180))+';')
+                    star_list_excel[7].append(str(stars[x].mag)+';')
+                    star_list_excel[8].append(str(stars_hori_offset[t][x])+';')
+                    star_list_excel[9].append(str(stars_vert_offset[t][x])+';')
+                    star_list_excel[12].append(str(star_cat[x]['e_Hpmag'])+';')
+                    star_list_excel[13].append(str(star_cat[x]['Hpscat'])+';')
+                    star_list_excel[14].append(str(star_cat[x]['o_Hpmag'])+';')
+                    star_list_excel[15].append(str(star_cat[x]['SpType'])+';')
                     
+                    "Log data of star relevant to filtering process"
+                    star_list.append({ 'Date': str(current_time), 'V-offset': stars_vert_offset[t][x], 'H-offset': stars_hori_offset[t][x], 
+                                      'long_MATS': float(long_MATS[t]/pi*180), 'lat_MATS': float(lat_MATS[t]/pi*180), 'Vmag': stars[x].mag, 'Name': stars[x].name })
                     
                     star_counter = star_counter + 1
                     
@@ -375,7 +381,7 @@ def Mode120_date_calculator():
     "Write spotted stars to file"
     with open('MATS_Visible_Stars.csv', 'w', newline='') as write_file:
         writer = csv.writer(write_file, dialect='excel-tab')
-        writer.writerows(star_list)
+        writer.writerows(star_list_excel)
     
     return(star_list)
 
@@ -393,6 +399,77 @@ def Mode120_date_select(Occupied_Timeline, star_list):
     
         return Occupied_Timeline, Mode120_comment
     
+    star_min_mag_H_offset = []
+    
+    star_H_offset = [star_list[x]['H-offset'] for x in range(len(star_list))]
+    #print('star_H_offset')
+    #print(star_H_offset)
+    star_V_offset = [star_list[x]['V-offset'] for x in range(len(star_list))]
+    star_date = [star_list[x]['Date'] for x in range(len(star_list))]
+    star_mag = [star_list[x]['Vmag'] for x in range(len(star_list))]
+    star_name = [star_list[x]['Name'] for x in range(len(star_list))]
+    star_long = [star_list[x]['long_MATS'] for x in range(len(star_list))]
+    star_lat = [star_list[x]['lat_MATS'] for x in range(len(star_list))]
+    
+    star_mag_sorted = [abs(x) for x in star_mag]
+    star_mag_sorted.sort()
+    
+    "Extract all the H-offsets for the brightest star"
+    for x in range(len(star_list)):
+        if( min(star_mag) == star_mag[x]):
+            star_min_mag_H_offset.append( star_H_offset[x])
+            
+        #Just add an arbitrary large H-offset value for stars other than the brightest to keep the list the same length
+        else:
+            star_min_mag_H_offset.append(100)
+    
+    star_H_offset_abs = [abs(x) for x in star_H_offset]
+    star_H_offset_sorted = star_H_offset_abs
+    star_H_offset_sorted.sort()
+    
+    #print('Star_list')
+    #print(star_list)
+    
+    restart = True
+    iterations = 0
+    ## Selects date based on min H-offset, if occupied, select date for next min H-offset
+    while( restart == True):
+        
+        if( len(star_min_mag_H_offset) == iterations):
+            Mode120_comment = 'No time available for Mode120'
+            return Occupied_Timeline, Mode120_comment
+        
+        restart = False
+        
+        
+        
+        
+        #Extract index of  minimum H-offset for first iteration, 
+        #then next smallest if 2nd iterations needed and so on
+        x = star_H_offset_abs.index(star_H_offset_sorted[iterations])
+        
+        Mode120_date = star_date[x]
+        
+        Mode120_date = ephem.Date(ephem.Date(Mode120_date)-ephem.second*(Mode120_default()['freeze_start']+50))
+        
+        Mode120_endDate = ephem.Date(Mode120_date+ephem.second* 
+                                     (Timeline_params()['mode_separation']+Mode120_default()['mode_duration']))
+        
+        ## Extract Occupied dates and if they clash, restart loop and select new date
+        for busy_dates in Occupied_Timeline.values():
+            if( busy_dates == []):
+                continue
+            else:
+                if( busy_dates[0] <= Mode120_date <= busy_dates[1] or 
+                       busy_dates[0] <= Mode120_endDate <= busy_dates[1]):
+                    
+                    iterations = iterations + 1
+                    restart = True
+                    break
+    
+    
+    
+    '''
     star_mag = []
     star_min_mag_H_offset = []
     
@@ -454,6 +531,13 @@ def Mode120_date_select(Occupied_Timeline, star_list):
     
     Mode120_comment = ('Star name:'+star_calibration_name+', Number of times date changed: '+str(iterations)
         +', MATS (long,lat) in degrees = ('+star_calibration_MATS_long+', '+star_calibration_MATS_lat+')')
+    '''
+    
+    
+    Occupied_Timeline['Mode120'] = (Mode120_date, Mode120_endDate)
+    
+    Mode120_comment = ('Star name:'+star_name[x]+', V-offset: '+str(star_V_offset[x])+' H-offset: '+str(star_H_offset[x])+', Number of times date changed: '+str(iterations)
+        +', MATS (long,lat) in degrees = ('+str(star_long[x])+', '+str(star_lat[x])+')')
     
     
     return Occupied_Timeline, Mode120_comment

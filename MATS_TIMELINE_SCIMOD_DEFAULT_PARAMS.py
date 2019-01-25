@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 """
 Created on Thu Nov  8 15:05:39 2018
-Contains default values for parameters
+Contains default values for parameters. 
 @author: David
 """'2018/8/22 22:00:00'
 
 import ephem
 
 def Version():
-    "Names this version of the Default_Params used"
-    version_name = 'Original'
+    "Names this version of the Default_Params used. The name will appear in the file name of the generated mode 'timeline'"
+    version_name = '1.0'
     return version_name
 
 def Mode120_calculator_defaults():
@@ -81,7 +81,9 @@ def Timeline_params():
     leap_seconds: Sets the amount of leap seconds for GPS time to be used
     GPS_epoch: Sets the epoch of the GPS time in ephem.Date format (example: ephem.Date('1980/1/6'))
     mode_separation: Sets in seconds the amount of time set at the end of a Mode (still counts to mode run time) where nothing new is ran. 
-                    Meaning the minimum amount of time from a command of the current Mode to the start of a new Mode
+                    Meaning the minimum amount of time from a command of the current Mode to the start of a new Mode. Meaning that
+                    the total schedueled duration of a mode is equal to "mode_duration"+"mode_separation" but no new commands will be given
+                    for a duration equal to "mode_separation" at the end of each schedueled mode.
     '''
     timeline_params = {'start_time': ephem.Date('2018/9/3 08:00:40'), 'duration': 1*4*3600, 
                        'leap_seconds': 18, 'GPS_epoch': ephem.Date('1980/1/6'), 'mode_separation': 300}
