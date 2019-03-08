@@ -35,10 +35,10 @@ def MATS_TIMELINE_XML_generator(SCIMOD):
     #latestStartingDate = latestStartingDate.replace('/','-')
     
     
-    ########    Calls function to create XML-tree basis ##########################
+    ########    Call function to create XML-tree basis ##########################
     root = XML_Initial_Basis_Creator(earliestStartingDate,latestStartingDate,timeline_duration)
     
-    ######## Loop through SCIMOD TIMELINE lIST, selecting 1 mode at a time #####
+    ######## Loop through SCIMOD TIMELINE lIST, selecting one mode at a time #####
     for x in range(len(SCIMOD)):
         
         mode_duration = int((ephem.Date(SCIMOD[x][2]) - ephem.Date(SCIMOD[x][1]) ) *24*3600)

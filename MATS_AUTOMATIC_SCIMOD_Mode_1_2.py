@@ -10,7 +10,7 @@ science modes and their start/end dates expressed as a list in chronological ord
 """
 
 import ephem
-from MATS_TIMELINE_SCIMOD_DEFAULT_PARAMS import Timeline_params
+from MATS_TIMELINE_SCIMOD_DEFAULT_PARAMS import Timeline_params, Logger_name
 
 def Mode_1_2(Occupied_Timeline):
     

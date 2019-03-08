@@ -242,7 +242,7 @@ def Mode200_macro(root, relativeTime, StartTime, FreezeDuration, pointing_altitu
     
     TC_affArgFreezeStart(root, relativeTime, StartTime = StartTime, comment = "Mode200, "+pointing_altitude)
     
-    TC_affArgFreezeDuration(root, relativeTime, FreezeDuration = FreezeDuration, comment = "star_calibration,"+pointing_altitude)
+    TC_affArgFreezeDuration(root, relativeTime, FreezeDuration = FreezeDuration, comment = "Mode200, "+pointing_altitude)
     
     TC_pafCCDMain(root, relativeTime, CCDselect = '3', CCDMode = '1', ExpInterval = '3000', ExpTime = '3000', comment = "Mode200, "+pointing_altitude, 
                   NumRowsSkip = '100', NumRowsBin= '2', NumRows = '400', NumColumnsBin = '40', NumColumns = '2000')

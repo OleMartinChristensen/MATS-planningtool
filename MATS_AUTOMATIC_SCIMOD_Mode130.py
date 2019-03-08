@@ -11,7 +11,7 @@ science modes and their start dates expressed as a list in chronological order
 
 
 import ephem
-from MATS_TIMELINE_SCIMOD_DEFAULT_PARAMS import Mode130_default, Timeline_params
+from MATS_TIMELINE_SCIMOD_DEFAULT_PARAMS import Mode130_default, Timeline_params, Logger_name
 
 
 
@@ -78,6 +78,8 @@ def Mode130_date_select(Occupied_Timeline, Mode130_initial_date):
     ############### End of availability schedueler ##########################
     
     Mode130_comment = 'Number of times date postponed: ' + str(iterations)
+    
+    
     
     Occupied_Timeline['Mode130'] = (Mode130_date,Mode130_endDate)
     

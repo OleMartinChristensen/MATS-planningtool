@@ -4,9 +4,14 @@ Created on Fri Jan 11 14:33:11 2019
 
 Contains default values for parameters. This is the original default_params file and not supposed to be ran.
 @author: David
-"""'
+"""
 
 import ephem
+
+def Logger_name():
+    "Names the shared logger"
+    Logger_name = "Timeline-gen_logger"
+    return Logger_name
 
 def Version():
     "Names this version of the Default_Params used"
@@ -18,8 +23,9 @@ def Mode120_calculator_defaults():
         H_FOV: Sets Horizontal FOV of optical axis in degrees that will determine if stars are visible
         V_FOV: Sets Vertical FOV of optical axis in degrees that will determine if stars are visible
         Vmag: Sets the Johnson V magnitude of stars to be considered (as a string expression, example '<2')
+        timestep: sets timestep used in simulation [s]
     '''
-    params_default = {'default_pointing_altitude': 92000, 'H_FOV': 5, 'V_FOV': 0.8+3*2-0.8, 'Vmag': '<2'}
+    params_default = {'default_pointing_altitude': 92000, 'H_FOV': 5, 'V_FOV': 0.8+3*2-0.8, 'Vmag': '<2', 'timestep': 2}
     return params_default
 
 def Mode120_default():
@@ -51,8 +57,8 @@ def Mode1_default():
 def Mode200_calculator_defaults():
     '''
     default_pointing_altitude: Sets altitude in meters of LP that will set the pitch angle of the optical axis, 
-    H_FOV: Sets Horizontal FOV of optical axis in degrees that will determine if stars are visible
-    V_FOV: Sets Vertical FOV of optical axis in degrees that will determine if stars are visible
+    H_FOV: Sets Horizontal FOV of optical axis in degrees that will determine the Moon is visible
+    V_FOV: Sets Vertical FOV of optical axis in degrees that will determine the Moon is visible
     timestep: Sets in seconds the timestep of the simulation when larger timeskips (Moon determined far out of sight) are not made 
     '''
     params_default = {'default_pointing_altitude': 92000, 'H_FOV': 5+3*2, 'V_FOV': 0.8+3*2-0.8, 'timestep': 2}
@@ -98,7 +104,7 @@ def initialConditions():
     return InitialConditions
 
 def Modes_priority():
-    "Creates List of Modes (except 1-4) to be ran, the order of which they appear is their priority order"
+    "Creates List of Modes (except 1-4) to be schedueled, the order of which they appear is their priority order"
     Modes_priority = [
             'Mode130', 
           'Mode200',

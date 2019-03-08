@@ -9,16 +9,20 @@ science modes and their start dates expressed as a list in chronological order
 @author: David
 """
 
+import logging
 import ephem
-from pylab import array, cos, sin, cross, dot, zeros, sqrt, norm, pi, arccos, around, sort
+from pylab import array, cos, sin, cross, dot, zeros, sqrt, norm, pi, arccos, around, floor
 from astroquery.vizier import Vizier
 from MATS_AUTOMATIC_SCIMOD_date_calculator_library import rot_arbit, deg2HMS, lat_2_R
-from MATS_TIMELINE_SCIMOD_DEFAULT_PARAMS import Timeline_params, getTLE, Mode120_default, Mode120_calculator_defaults
+from MATS_TIMELINE_SCIMOD_DEFAULT_PARAMS import Timeline_params, getTLE, Mode120_default, Mode120_calculator_defaults, Logger_name
 import csv
 
 
 
 def Mode120(Occupied_Timeline):
+    
+    
+    
     
     star_list = Mode120_date_calculator()
     Occupied_Timeline, Mode120_comment = Mode120_date_select(Occupied_Timeline, star_list)
@@ -35,12 +39,24 @@ def Mode120(Occupied_Timeline):
 def Mode120_date_calculator():
 #if(True):
     
+    Logger = logging.getLogger(Logger_name())
+    log_timestep = 3600
+    
     
     "Simulation length and timestep"
-    timesteps = Timeline_params()['duration']
-    timestep = 1 #In seconds
+    
+    duration = Timeline_params()['duration']
+    Logger.info('Duration set to: '+str(duration)+' s')
+    
+    
+    timestep = Mode120_calculator_defaults()['timestep'] #In seconds
+    Logger.info('timestep set to: '+str(timestep)+' s')
+    timesteps = int(floor(duration / timestep))
+    
     
     date = Timeline_params()['start_time']
+    Logger.info('date set to: '+str(date))
+    
     
     "Get relevant stars"
     result = Vizier(columns=['all'], row_limit=200).query_constraints(catalog='I/239/hip_main',Vmag=Mode120_calculator_defaults()['Vmag'])
@@ -58,6 +74,8 @@ def Mode120_date_calculator():
         stars[t].compute(epoch='2018')
         stars_dec[t] = stars[t].dec
         stars_ra[t] = stars[t].ra
+    
+    Logger.debug('List of stars used: '+str(star_cat))
     
     "Calculate unit-vectors of stars"
     stars_x = cos(stars_dec)* cos(stars_ra)
@@ -123,18 +141,29 @@ def Mode120_date_calculator():
     
     "Constants"
     R_mean = 6371 #Earth radius
+    Logger.info('Earth radius used [km]: '+str(R_mean))
+    
     U = 398600.4418 #Earth gravitational parameter
+    
     FOV_altitude = Mode120_calculator_defaults()['default_pointing_altitude']/1000  #Altitude at which MATS center of FOV is looking
+    Logger.info('FOV_altitude set to [km]: '+str(FOV_altitude))
+    
     pointing_adjustment = 3 #Angle in degrees that the pointing can be adjusted
     V_FOV = Mode120_calculator_defaults()['V_FOV'] #0.91 is actual V_FOV
     H_FOV = Mode120_calculator_defaults()['H_FOV']  #5.67 is actual H_FOV
+    Logger.info('V_FOV set to [degrees]: '+str(V_FOV))
+    Logger.info('H_FOV set to [degrees]: '+str(H_FOV))
+    
     pitch_offset_angle = 0
     yaw_offset_angle = 0
     
+    
+    
+    Logger.info('TLE used: '+getTLE()[0]+getTLE()[1])
     MATS = ephem.readtle('MATS',getTLE()[0],getTLE()[1])
     
-    
-    
+    Logger.info('')
+    Logger.info('Start of simulation of MATS for Mode120')
     ################## Start of Simulation ########################################
     "Loop and calculate the relevant angle of each star to each direction of MATS's FOV"
     for t in range(timesteps):
@@ -165,7 +194,19 @@ def Mode120_date_calculator():
         pitch_sensor_array[t]= array(arccos((R_mean+FOV_altitude)/(R+altitude_MATS[t]))/pi*180)
         pitch_sensor = pitch_sensor_array[t][0]
         
-        
+        if( t*timestep % log_timestep == 0 ):
+            Logger.debug('')
+            Logger.debug('log_timestep: '+str(log_timestep))
+            Logger.debug('timestep: '+str(timestep))
+            Logger.debug('t (loop iteration number): '+str(t))
+            Logger.debug('Current time: '+str(current_time))
+            Logger.debug('Semimajor axis in km: '+str(MATS_p[t]))
+            Logger.debug('Orbital Period in s: '+str(MATS_P[t]))
+            Logger.debug('Vector to MATS [km]: '+str(r_MATS[t,0:3]))
+            Logger.debug('Latitude in radians: '+str(lat_MATS[t]))
+            Logger.debug('Longitude in radians: '+str(long_MATS[t]))
+            Logger.debug('Altitude in km: '+str(altitude_MATS[t]))
+            Logger.debug('FOV pitch in degrees: '+str(pitch_sensor))
                 
         if(t != 0):
             
@@ -188,7 +229,7 @@ def Mode120_date_calculator():
             "Rotate yaw of pointing direction, meaning to rotate around the vector to MATS"
             rot_mat = rot_arbit(yaw_offset_angle/180*pi, r_MATS[t,0:3])
             r_FOV[t,0:3] = (r_FOV[t,0:3] @ rot_mat)
-            r_FOV_unit_vector[t,0:3] = r_FOV[t,0:3]/norm(r_FOV[t,0:3])/2
+            r_FOV_unit_vector[t,0:3] = r_FOV[t,0:3]/norm(r_FOV[t,0:3])
             
             
             '''Rotate 'vector to MATS', to represent vector normal to satellite H-offset plane,
@@ -206,10 +247,12 @@ def Mode120_date_calculator():
             r_V_offset_normal[t,0:3] = (normal_orbital[t,0:3] @ rot_mat)
             r_V_offset_normal[t,0:3] = r_V_offset_normal[t,0:3]/norm(r_V_offset_normal[t,0:3])
             
-            
-            
-            
-            
+            if( t*timestep % log_timestep == 0 or t == 1 ):
+                Logger.debug('Pointing direction of FOV: '+str(r_FOV_unit_vector[t,0:3]))
+                Logger.debug('Orthogonal direction to H-offset plane: '+str(r_H_offset_normal[t,0:3]))
+                Logger.debug('Orthogonal direction to V-offset plane: '+str(r_V_offset_normal[t,0:3]))
+                Logger.debug('Orthogonal direction to the orbital plane: '+str(normal_orbital[t,0:3]))
+                Logger.debug('')
             
 #            '''Rotate 'vector to MATS', to represent vector normal to satellite yaw plane,
 #            which will be used to rotate the yaw of the pointing'''
@@ -308,17 +351,23 @@ def Mode120_date_calculator():
                 "To be able to skip stars far outside the orbital plane of MATS"
                 angle_between_orbital_plane_and_star[t][x] = arccos( dot(stars_r[0][x], stars_r_V_offset_plane[x]) / norm(stars_r_V_offset_plane[x])) /pi*180
                 
+                
+                
                 "For first loop of stars, make exception list for stars not visible during this epoch"
-                if( t == 1 and abs(angle_between_orbital_plane_and_star[t][x]) > H_FOV/2+360/50):
+                if( t == 1 and abs(angle_between_orbital_plane_and_star[t][x]) > H_FOV/2+(duration*2)/(365*24*3600)*360):
+                    
+                    Logger.debug('Skip star: '+stars[x].name+', with H-offset of: '+str(angle_between_orbital_plane_and_star[t][x])+' degrees')
                     skip_star_list.append(stars[x].name)
                     continue
-                    
                 
                 
                 "Check if star is in FOV"
                 if( abs(stars_vert_offset[t][x]) < V_FOV/2 and abs(stars_hori_offset[t][x]) < H_FOV/2):
                     #print('Star number:',stars[x].name,'is visible at',stars_vert_offset[t][x],'degrees VFOV and', \
                          #stars_hori_offset[t][x],'degrees HFOV','during',ephem.Date(current_time))
+                    
+                    if( t % log_timestep == 0):
+                        Logger.debug('Star: '+stars[x].name+', with H-offset: '+str(stars_hori_offset[t][x])+' V-offset: '+str(stars_vert_offset[t][x])+' in degrees is visible')
                     
                     "Add the spotted star to the exception list and timestamp it"
                     spotted_star_name.append(stars[x].name)
@@ -383,6 +432,13 @@ def Mode120_date_calculator():
         writer = csv.writer(write_file, dialect='excel-tab')
         writer.writerows(star_list_excel)
     
+    Logger.debug('Visible star list to be filtered:')
+    Logger.debug(str(star_list))
+    Logger.debug('')
+    
+    Logger.debug('Exit '+str(__name__))
+    Logger.debug('')
+    
     return(star_list)
 
 
@@ -394,8 +450,11 @@ def Mode120_date_calculator():
 
 def Mode120_date_select(Occupied_Timeline, star_list):
     
-    if( len(star_list[0]) == 1):
+    Logger = logging.getLogger(Logger_name())
+    
+    if( len(star_list) == 0):
         Mode120_comment = 'Stars not visible'
+        Logger.info(Mode120_comment)
     
         return Occupied_Timeline, Mode120_comment
     
@@ -414,6 +473,8 @@ def Mode120_date_select(Occupied_Timeline, star_list):
     star_mag_sorted = [abs(x) for x in star_mag]
     star_mag_sorted.sort()
     
+    Logger.info('Brightest star magnitude: '+str(min(star_mag)))
+    
     "Extract all the H-offsets for the brightest star"
     for x in range(len(star_list)):
         if( min(star_mag) == star_mag[x]):
@@ -422,6 +483,8 @@ def Mode120_date_select(Occupied_Timeline, star_list):
         #Just add an arbitrary large H-offset value for stars other than the brightest to keep the list the same length
         else:
             star_min_mag_H_offset.append(100)
+    
+    
     
     star_H_offset_abs = [abs(x) for x in star_H_offset]
     star_H_offset_sorted = star_H_offset_abs
@@ -435,14 +498,13 @@ def Mode120_date_select(Occupied_Timeline, star_list):
     ## Selects date based on min H-offset, if occupied, select date for next min H-offset
     while( restart == True):
         
+        ## If all available dates for the brightest star is occupied, no Mode120 will be schedueled
         if( len(star_min_mag_H_offset) == iterations):
-            Mode120_comment = 'No time available for Mode120'
+            Mode120_comment = 'No available time for Mode120 using the brightest available star'
+            Logger.info(Mode120_comment)
             return Occupied_Timeline, Mode120_comment
         
         restart = False
-        
-        
-        
         
         #Extract index of  minimum H-offset for first iteration, 
         #then next smallest if 2nd iterations needed and so on
@@ -466,72 +528,6 @@ def Mode120_date_select(Occupied_Timeline, star_list):
                     iterations = iterations + 1
                     restart = True
                     break
-    
-    
-    
-    '''
-    star_mag = []
-    star_min_mag_H_offset = []
-    
-    "Extract magnitudes into floats from the list"
-    for x in range(len(star_list[7])-1):
-        star_mag.append(float(star_list[7][x+1][:-1]))
-        
-    "Extract all the H-offsets for the brightest star"
-    for x in range(len(star_list[7])-1):
-        if( min(star_mag) == star_mag[x]):
-            star_min_mag_H_offset.append( abs(float(star_list[8][x+1][:-1])))
-        #Just add an arbitrary large H-offset value for stars other than the brightest
-        else:
-            star_min_mag_H_offset.append(10)
-    
-    star_min_mag_H_offset_sorted = sort(star_min_mag_H_offset)
-        
-    restart = True
-    iterations = 0
-    ## Selects date based on min H-offset and mag, if occupied, select date for next min H-offset
-    while( restart == True):
-        
-        if( len(star_min_mag_H_offset) == iterations):
-            Mode120_comment = 'No time available for Mode120'
-            return Occupied_Timeline, Mode120_comment
-        
-        restart = False
-        
-        
-        
-        #Extract index of brightest star with minimum H-offset for first iteration, 
-        #then next smallest if 2nd iterations needed and so on
-        x = star_min_mag_H_offset.index(star_min_mag_H_offset_sorted[iterations])
-        
-        star_calibration_date = star_list[1][x+1]
-        star_calibration_name = star_list[0][x+1]
-        star_calibration_MATS_long = star_list[3][x+1]
-        star_calibration_MATS_lat = star_list[4][x+1]
-        
-        
-        Mode120_date = ephem.Date(ephem.Date(star_calibration_date[:-1])-ephem.second*(Mode120_default()['freeze_start']+50))
-        
-        Mode120_endDate = ephem.Date(Mode120_date+ephem.second* 
-                                     (Timeline_params()['mode_separation']+Mode120_default()['mode_duration']))
-        
-        ## Extract Occupied dates and if they clash, restart loop and select new date
-        for busy_dates in Occupied_Timeline.values():
-            if( busy_dates == []):
-                continue
-            else:
-                if( busy_dates[0] <= Mode120_date <= busy_dates[1] or 
-                       busy_dates[0] <= Mode120_endDate <= busy_dates[1]):
-                    
-                    iterations = iterations + 1
-                    restart = True
-                    break
-        
-    Occupied_Timeline['Mode120'] = (Mode120_date, Mode120_endDate)
-    
-    Mode120_comment = ('Star name:'+star_calibration_name+', Number of times date changed: '+str(iterations)
-        +', MATS (long,lat) in degrees = ('+star_calibration_MATS_long+', '+star_calibration_MATS_lat+')')
-    '''
     
     
     Occupied_Timeline['Mode120'] = (Mode120_date, Mode120_endDate)
