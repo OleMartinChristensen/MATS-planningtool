@@ -35,9 +35,10 @@ def date_calculator():
     Logger = logging.getLogger(Logger_name())
     
     try:
+        initial_date = Mode110_settings()['start_time']
         Logger.info('Mode start_time used as initial date')
-        initial_date = Mode110_settings['start_time']
     except:
+        Logger.warning('!!Error raised in try statement!!')
         Logger.info('Timeline start_time used as initial date')
         initial_date = Timeline_settings()['start_time']
     

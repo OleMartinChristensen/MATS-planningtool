@@ -197,6 +197,49 @@ def Mode120_macro(root, relativeTime, freezeTime, FreezeDuration, pointing_altit
     relativeTime = TC_pafMode(root, relativeTime, mode = "1", comment = comment)
     
     return relativeTime
+
+
+def Mode121_macro(root, relativeTime, freezeTime, FreezeDuration, pointing_altitude, comment):
+    ''' Macro that corresponds to Mode121.
+        Input:
+            freezeTime = Start time of attitude freeze command in on-board time [s] as a str class.
+            FreezeDuration = Duration of freeze [s] as a str class.
+            pointing_altitude = The altitude of the tangential LP [m] as a str class.
+    '''
+    
+    
+    
+    relativeTime = TC_pafMode(root, relativeTime, mode = "2", comment = comment)
+    
+    
+    relativeTime = TC_acfLimbPointingAltitudeOffset(root, relativeTime, Initial = pointing_altitude, Final = pointing_altitude, Rate = "0", comment = comment)
+    
+    
+    relativeTime = TC_affArgFreezeStart(root, relativeTime, StartTime = freezeTime, comment = comment)
+    
+    
+    relativeTime = TC_affArgFreezeDuration(root, relativeTime, FreezeDuration = FreezeDuration, comment = comment)
+    
+    
+    relativeTime = TC_pafCCDMain(root, relativeTime, CCDselect = '3', CCDMode = '1', ExpInterval = '3000', ExpTime = '3000', comment = comment, 
+                  NumRowsSkip = '100', NumRowsBin= '2', NumRows = '400', NumColumnsBin = '40', NumColumns = '2000')
+    
+    
+    relativeTime = TC_pafCCDMain(root, relativeTime, CCDselect = '12', CCDMode = '1', ExpInterval = '5000', ExpTime = '5000', comment = comment, 
+                  NumRowsSkip = '100', NumRowsBin= '3', NumRows = '400', NumColumnsBin = '81', NumColumns = '2000')
+    
+    
+    relativeTime = TC_pafCCDMain(root, relativeTime, CCDselect = '48', CCDMode = '1', ExpInterval = '5000', ExpTime = '5000', comment = comment, 
+                  NumRowsSkip = '100', NumRowsBin= '7', NumRows = '400', NumColumnsBin = '409', NumColumns = '2000')
+    
+    
+    relativeTime = TC_pafCCDMain(root, relativeTime, CCDselect = '64', CCDMode = '0', ExpInterval = '5000', ExpTime = '5000', comment = comment, 
+                  NumRowsSkip = '0', NumRowsBin= '110', NumRows = '500', NumColumnsBin = '196', NumColumns = '1980', JPEGquality = '100')
+    
+    
+    relativeTime = TC_pafMode(root, relativeTime, mode = "1", comment = comment)
+    
+    return relativeTime
     
     
 

@@ -104,8 +104,8 @@ def Mode120_settings():
     ### Simulation related settings ###
     '''
     default_pointing_altitude: Sets altitude in meters of LP that will set the pitch angle of the optical axis, 
-    H_FOV: Sets Horizontal FOV of optical axis in degrees that will determine if stars are visible
-    V_FOV: Sets Vertical FOV of optical axis in degrees that will determine if stars are visible
+    H_FOV: Sets full Horizontal FOV of optical axis in degrees that will determine if stars are visible
+    V_FOV: Sets full Vertical FOV of optical axis in degrees that will determine if stars are visible
     Vmag: Sets the Johnson V magnitude of stars to be considered (as a string expression, example '<2')
     timestep: sets timestep used in simulation [s]
     log_timestep: Sets the frequency of data being logged [s]
@@ -124,12 +124,36 @@ def Mode120_settings():
                       'freeze_duration': 300}
     return settings
 
+def Mode121_settings():
+    ### Simulation related settings ###
+    '''
+    default_pointing_altitude: Sets altitude in meters of LP that will set the pitch angle of the optical axis, 
+    H_FOV: Sets full Horizontal FOV of optical axis in degrees that will determine if stars are visible
+    V_FOV: Sets full Vertical FOV of optical axis in degrees that will determine if stars are visible
+    Vmag: Sets the Johnson V magnitude of stars to be considered (as a string expression, example '<2')
+    timestep: sets timestep used in simulation [s]
+    log_timestep: Sets the frequency of data being logged [s]
+    automatic: Sets if the mode date is to be calculated or user provided. 1 for calculated or anything else for user provided.
+    date: Sets the scheduled date for the mode as a ephem.Date (example: ephem.Date('2018/9/3 08:00:40'). Note! only applies if automatic is not set to 1.
+    mode_duration: Sets the scheduled duration of the Mode in seconds
+    '''
+    ### Commands related settings ###
+    '''
+    pointing_altitude: Sets in meters the altitude of the pointing command
+    freeze_start: Sets in seconds the time from start of the Mode to when the attitude freezes
+    freeze_duration: Sets in seconds the duration of the attitude freeze
+    '''
+    settings = {'default_pointing_altitude': 227000, 'H_FOV': 5.67, 'V_FOV': 0.91, 'Vmag': '<4', 'timestep': 5,'log_timestep': 3600, 
+                      'automatic': 1, 'date': ephem.Date('2019'), 'mode_duration': 900, 'pointing_altitude': 227000, 'freeze_start': 300, 
+                      'freeze_duration': 300}
+    return settings
+
 def Mode130_settings():
     '''
     pointing_altitude: Sets in meters the altitude of the pointing command
     mode_duration: Sets the scheduled duration of the Mode in seconds
     '''
-    settings = {'pointing_altitude': 200000, 'mode_duration': 900}
+    settings = {'pointing_altitude': 200000, 'mode_duration': 900, 'start_time': ephem.Date('2018/9/3 12:00:40')}
     return settings
 
 '''
@@ -149,8 +173,8 @@ def Mode200_settings():
     ### Simulation related settings ###
     '''
     default_pointing_altitude: Sets altitude in meters of LP that will set the pitch angle of the optical axis, 
-    H_FOV: Sets Horizontal FOV of optical axis in degrees that will determine the Moon is visible
-    V_FOV: Sets Vertical FOV of optical axis in degrees that will determine the Moon is visible
+    H_FOV: Sets full Horizontal FOV of optical axis in degrees that will determine the Moon is visible
+    V_FOV: Sets full Vertical FOV of optical axis in degrees that will determine the Moon is visible
     timestep: Sets in seconds the timestep of the simulation when larger timeskips (Moon determined far out of sight) are not made 
     log_timestep: Sets the frequency of data being logged [s]
     automatic: Sets if the mode date is to be calculated or user provided. 1 for calculated or anything else for user provided.

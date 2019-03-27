@@ -90,6 +90,8 @@ def Timeline_gen():
     Logger.info('')
     Logger.info('Start of Loop through modes priority list')
     
+    ################################################################################################################
+    
     "Loop through the Modes to be ran and schedule each one in the priority order of which they appear in the list"
     for x in range(len(Modes_prio)):
         
@@ -114,9 +116,19 @@ def Timeline_gen():
         Logger.debug('Post-'+scimod+' Occupied_Timeline: \n'+"{" + "\n".join("        {}: {}".format(k, v) for k, v in Occupied_Timeline.items()) + "}")
         Logger.debug('')
         
+        
+        "Check if a date was scheduled"
         if( Occupied_Timeline[scimod] != [] ):
+            
+            "Check if the scheduled date is within the time defined for the timeline"
+            if( Occupied_Timeline[scimod][0] < Timeline_settings()['start_time'] or 
+                   Occupied_Timeline[scimod][1] - Occupied_Timeline[scimod][0] > Timeline_settings()['duration']):
+                Logger.warning(scimod+' scheduled outside of timeline as defined in OPT_Config_File')
+                input('Enter anything to acknowledge and continue\n')
+            
+            "Append mode and dates and comment to an unchronological Science Mode Timeline"
             SCIMOD_Timeline_unchronological.append((Occupied_Timeline[scimod][0], Occupied_Timeline[scimod][1],scimod, Mode_comment))
-            Logger.info('Entry number '+str(x+1)+' in unchronological Science Mode list: '+str(SCIMOD_Timeline_unchronological[x]))
+            Logger.info('Entry number '+str(len(SCIMOD_Timeline_unchronological))+' in unchronological Science Mode list: '+str(SCIMOD_Timeline_unchronological[-1]))
             Logger.info('')
         
         '''
@@ -195,6 +207,7 @@ def Timeline_gen():
                 Logger.info('')
         '''
         
+    ################################################################################################################
     
     ################ To either fill out available time in the timeline with Mode1/2 or with Mode3/4 or neither ################
     Logger.info('Looping sequence of modes priority list complete')

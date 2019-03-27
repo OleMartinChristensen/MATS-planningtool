@@ -47,7 +47,7 @@ def Mode_1_2_date_select(Occupied_Timeline, Mode_1_2_initial_date):
     
     Occupied_values = []
     
-    ## Extract all occupied dates and sort them in chronological order ##
+    ## Extract all scheduled modes with actual occupied dates and sort them in chronological order. Skip the ones which are empty ##
     for Occupied_value in Occupied_Timeline.values():
         if( Occupied_value == []):
             continue
@@ -58,37 +58,42 @@ def Mode_1_2_date_select(Occupied_Timeline, Mode_1_2_initial_date):
     
     Mode_1_2_dates = []
     
+    "The least amount of time that needs to be available for mode1/2 to be scheduled"
     Mode_1_2_minDuration = ephem.second*Timeline_settings()['mode_separation']*2
     iterations = 0
     
-    ## To fill in mode1 inbetween already schedueled modes
-    for x in range(len(Occupied_values)):
+    ## To fill in mode1/2 inbetween already schedueled modes. The amount of iterations is equal to 
+    ## the number of modes scheduled plus 1 as there is a possibility for mode1/2 to be scheduled 
+    ## before and after the already scheduled modes
+    for x in range(len(Occupied_values)+1):
         
-        ## Check first if there is spacing between Mode_1_2_initial_date and the the first mode running
+        ## For first iteration; Check if there is spacing between Mode_1_2_initial_date and the the first mode running
         if( x == 0 and Occupied_values[0][0] != Mode_1_2_initial_date):
             time_between_modes = Occupied_values[0][0] - Mode_1_2_initial_date 
             if(time_between_modes > Mode_1_2_minDuration ):
-                Mode_1_2_date = Occupied_value[x][1]
-                Mode_1_2_endDate = ephem.Date(Occupied_values[x+1][0] - ephem.second*Timeline_settings()['mode_separation'])
+                Mode_1_2_date = Mode_1_2_initial_date
+                
+                #Mode_1_2_date = Occupied_values[x][1]
+                Mode_1_2_endDate = ephem.Date(Occupied_values[x][0] - ephem.second*Timeline_settings()['mode_separation'])
                 Mode_1_2_dates.append( (Mode_1_2_date, Mode_1_2_endDate) )
                 iterations = iterations + 1
                 
-        ## For last, check if there is spacing in between end of the last mode and the end of the timeline
-        elif( x == len(Occupied_values)-1 ):
+        ## For last iteration; Check if there is spacing in between end of the last mode and the end of the timeline
+        elif( x == len(Occupied_values) ):
             timeline_end = ephem.Date(Timeline_settings()['start_time']+ephem.second*Timeline_settings()['duration'])
-            time_between_modes = timeline_end - Occupied_values[x][1] 
+            time_between_modes = timeline_end - Occupied_values[-1][1] 
             if(time_between_modes > Mode_1_2_minDuration ):
-                Mode_1_2_date = Occupied_values[x][1]
+                Mode_1_2_date = Occupied_values[-1][1]
                 Mode_1_2_endDate = ephem.Date(timeline_end - ephem.second*Timeline_settings()['mode_separation'])
                 Mode_1_2_dates.append( (Mode_1_2_date, Mode_1_2_endDate) )
                 iterations = iterations + 1
                 
-        ## If there is no spacing, start filling in Mode_1_2_dates inbetween currently schedueled modes
-        else:
-            time_between_modes = Occupied_values[x+1][0] - Occupied_values[x][1] 
+        ## For all other iterations; Start filling in Mode_1_2_dates inbetween currently schedueled modes
+        elif( x != 0 and x != len(Occupied_values) ):
+            time_between_modes = Occupied_values[x][0] - Occupied_values[x-1][1] 
             if(time_between_modes > Mode_1_2_minDuration ):
-                Mode_1_2_date = Occupied_values[x][1]
-                Mode_1_2_endDate = ephem.Date(Occupied_values[x+1][0] - ephem.second*Timeline_settings()['mode_separation'])
+                Mode_1_2_date = Occupied_values[x-1][1]
+                Mode_1_2_endDate = ephem.Date(Occupied_values[x][0] - ephem.second*Timeline_settings()['mode_separation'])
                 Mode_1_2_dates.append( (Mode_1_2_date, Mode_1_2_endDate) )
                 iterations = iterations + 1
                 

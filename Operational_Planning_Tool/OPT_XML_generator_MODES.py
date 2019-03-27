@@ -429,6 +429,49 @@ def XML_generator_Mode120(root, date, duration, relativeTime,
 
 
 
+############################################################################################
+
+
+
+
+def XML_generator_Mode121(root, date, duration, relativeTime, 
+                       params = {}):
+    "Generates and calculates parameters and calls for macros, which will generate commands in the XML-file"
+    
+    
+    from OPT_Config_File import Mode121_settings
+    from Operational_Planning_Tool.OPT_XML_generator_macros import Mode121_macro
+    
+    Logger.debug('params from Science Mode List: '+str(params))
+    params = params_checker(params,Mode121_settings)
+    Logger.info('params after params_checker function: '+str(params))
+    
+    comment = 'Mode 121 starting date: '+str(date)+', '+str(params)
+    
+    GPS_epoch = Timeline_settings()['GPS_epoch']
+    leapSeconds = ephem.second*Timeline_settings()['leap_seconds']
+    freeze_start_utc = ephem.Date(date+ephem.second*params['freeze_start'])
+    freezeTime = str(int((freeze_start_utc+leapSeconds-GPS_epoch)*24*3600))
+    
+    FreezeDuration = str(params['freeze_duration'])
+    
+    pointing_altitude = str(params['pointing_altitude'])
+    
+    Logger.info('GPS_epoch: '+str(GPS_epoch))
+    Logger.info('freeze_start_utc: '+str(freeze_start_utc))
+    Logger.info('freezeTime [GPS]: '+freezeTime)
+    Logger.info('FreezeDuration: '+FreezeDuration)
+    
+    Mode121_macro(root = root, relativeTime = str(relativeTime), freezeTime=freezeTime, 
+                     FreezeDuration = FreezeDuration, pointing_altitude = pointing_altitude, comment = comment)
+
+
+
+
+################################################################################################
+
+
+
 def XML_generator_Mode130(root, date, duration, relativeTime, 
                        params = {}):
     "Generates parameters and calls for macros, which will generate commands in the XML-file"

@@ -10,15 +10,22 @@ science modes and their start dates expressed as a list in chronological order
 """
 
 
-import ephem
+import ephem, sys
 from pylab import floor, array, cos, sin, cross, dot, zeros, sqrt, norm, pi, arccos
-from Operational_Planning_Tool.OPT_library import rot_arbit, lat_2_R
+from Operational_Planning_Tool.OPT_library import rot_arbit, lat_2_R, scheduler
 from OPT_Config_File import Timeline_settings, getTLE, Mode200_settings, Logger_name
 import logging
 
 
 
 def Mode200(Occupied_Timeline):
+    
+    Logger = logging.getLogger(Logger_name())
+    
+    automatic = Mode200_settings()['automatic']
+    
+    Logger.info('automatic = '+str(automatic))
+    
     "Either runs the simulator and schedules an estimated appropriate date or schedules a user given date if available"
     if( Mode200_settings()['automatic'] == 1 ):
         Moon_list = Mode200_date_calculator()
@@ -26,26 +33,36 @@ def Mode200(Occupied_Timeline):
     else:
         try:
             date = Mode200_settings()['date']
-            
-            endDate = ephem.Date(date+ephem.second* 
-                                 (Timeline_settings()['mode_separation']+Mode200_settings()['mode_duration']))
-            
-            for busy_dates in Occupied_Timeline.values():
-                if( busy_dates == []):
-                    continue
-                else:
-                    if( busy_dates[0] <= date <= busy_dates[1] or 
-                           busy_dates[0] <= endDate <= busy_dates[1]):
-                        
-                        raise NameError
-                        
-            Occupied_Timeline['Mode200'] = (date, endDate)
-            Mode200_comment = 'Mode200 scheduled using a user set date'
-            
         except:
-            Logger = logging.getLogger(Logger_name())
             Logger.error('OPT_Config_File.Mode200_settings()["date"] is wrongly formatted or the date is occupied')
-    
+            sys.exit()
+            
+        endDate = ephem.Date(date+ephem.second* 
+                             (Timeline_settings()['mode_separation']+Mode200_settings()['mode_duration']))
+        
+        ############### Start of availability schedueler ##########################
+        
+        date, endDate, iterations = scheduler(Occupied_Timeline, date, endDate)
+        
+        ############### End of availability schedueler ##########################
+        '''
+        for busy_dates in Occupied_Timeline.values():
+            if( busy_dates == []):
+                continue
+            else:
+                if( busy_dates[0] <= date <= busy_dates[1] or 
+                       busy_dates[0] <= endDate <= busy_dates[1]):
+                    
+                    raise NameError
+        '''
+        if(iterations != 0):
+            Logger.warning('User Specified date was occupied and got postponed!! Enter anything to ackknowledge and continue')
+            input()
+            
+        Occupied_Timeline['Mode200'] = (date, endDate)
+        Mode200_comment = 'Mode200 scheduled using a user set date, the date got postponed '+str(iterations)+' times'
+        
+        
     return Occupied_Timeline, Mode200_comment
 
 
