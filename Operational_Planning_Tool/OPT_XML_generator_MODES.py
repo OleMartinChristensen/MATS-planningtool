@@ -25,7 +25,7 @@ XML_generator_"Mode_name", where Mode_name is the same as the string used in the
 
 import ephem, logging
 from OPT_Config_File import Logger_name, Timeline_settings
-from Operational_Planning_Tool.OPT_library import rot_arbit
+from Operational_Planning_Tool.OPT_library import rot_arbit, FreezeDuration_calculator
 Logger = logging.getLogger(Logger_name())
 
 
@@ -394,7 +394,6 @@ def XML_generator_Mode120(root, date, duration, relativeTime,
                        params = {}):
     "Generates and calculates parameters and calls for macros, which will generate commands in the XML-file"
     
-    
     from OPT_Config_File import Mode120_settings
     from Operational_Planning_Tool.OPT_XML_generator_macros import Mode120_macro
     
@@ -409,17 +408,21 @@ def XML_generator_Mode120(root, date, duration, relativeTime,
     freeze_start_utc = ephem.Date(date+ephem.second*params['freeze_start'])
     freezeTime = str(int((freeze_start_utc+leapSeconds-GPS_epoch)*24*3600))
     
-    FreezeDuration = str(params['freeze_duration'])
+    "Check for user provided 'freeze_duration' or calculate a relevant one"
+    if( params['freeze_duration'] != 0):
+        FreezeDuration = params['freeze_duration']
+    else:
+        FreezeDuration = FreezeDuration_calculator(params['LP_pointing_altitude']/1000,params['pointing_altitude']/1000)
     
     pointing_altitude = str(params['pointing_altitude'])
     
     Logger.info('GPS_epoch: '+str(GPS_epoch))
     Logger.info('freeze_start_utc: '+str(freeze_start_utc))
     Logger.info('freezeTime [GPS]: '+freezeTime)
-    Logger.info('FreezeDuration: '+FreezeDuration)
+    Logger.info('FreezeDuration: '+str(FreezeDuration))
     
     Mode120_macro(root = root, relativeTime = str(relativeTime), freezeTime=freezeTime, 
-                     FreezeDuration = FreezeDuration, pointing_altitude = pointing_altitude, comment = comment)
+                     FreezeDuration = str(FreezeDuration), pointing_altitude = pointing_altitude, comment = comment)
 
 
 
@@ -453,7 +456,12 @@ def XML_generator_Mode121(root, date, duration, relativeTime,
     freeze_start_utc = ephem.Date(date+ephem.second*params['freeze_start'])
     freezeTime = str(int((freeze_start_utc+leapSeconds-GPS_epoch)*24*3600))
     
-    FreezeDuration = str(params['freeze_duration'])
+    "Check for user provided 'freeze_duration' or calculate a relevant one"
+    if( params['freeze_duration'] != 0):
+        FreezeDuration = params['freeze_duration']
+    else:
+        FreezeDuration = FreezeDuration_calculator(params['LP_pointing_altitude']/1000,params['pointing_altitude']/1000)
+    
     
     pointing_altitude = str(params['pointing_altitude'])
     
@@ -485,6 +493,7 @@ def XML_generator_Mode130(root, date, duration, relativeTime,
     Logger.info('params after params_checker function: '+str(params))
     
     comment = 'Mode 130 starting date: '+str(date)+', '+str(params)
+    
     
     pointing_altitude = str(params['pointing_altitude'])
     
@@ -519,17 +528,24 @@ def XML_generator_Mode200(root, date, duration, relativeTime,
     leapSeconds = ephem.second*Timeline_settings()['leap_seconds']
     freeze_start_utc = ephem.Date(date+ephem.second*params['freeze_start'])
     
+    "Check for user provided 'freeze_duration' or calculate a relevant one"
+    if( params['freeze_duration'] != 0):
+        FreezeDuration = params['freeze_duration']
+    else:
+        FreezeDuration = FreezeDuration_calculator(params['LP_pointing_altitude']/1000,params['pointing_altitude']/1000)
+    
+    
     pointing_altitude = str(params['pointing_altitude'])
     freezeTime = str(int((freeze_start_utc+leapSeconds-GPS_epoch)*24*3600))
-    FreezeDuration = str(params['freeze_duration'])
+    
     
     Logger.info('GPS_epoch: '+str(GPS_epoch))
     Logger.info('freeze_start_utc: '+str(freeze_start_utc))
     Logger.info('freezeTime [GPS]: '+freezeTime)
-    Logger.info('FreezeDuration: '+FreezeDuration)
+    Logger.info('FreezeDuration: '+str(FreezeDuration))
     
     Mode200_macro(root = root, relativeTime = str(relativeTime), freezeTime=freezeTime, 
-                     FreezeDuration = FreezeDuration, pointing_altitude = pointing_altitude, comment = comment)
+                     FreezeDuration = str(FreezeDuration), pointing_altitude = pointing_altitude, comment = comment)
 
 
 

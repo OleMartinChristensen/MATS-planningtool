@@ -8,11 +8,11 @@ Created on Mon Nov 12 16:22:16 2018
 
 import logging, sys
 import ephem
-from pylab import array, cos, sin, cross, dot, zeros, sqrt, norm, pi, arccos, around, floor
+from pylab import array, cos, sin, cross, dot, zeros, sqrt, norm, pi, arccos, floor
 from astroquery.vizier import Vizier
 from Operational_Planning_Tool.OPT_library import rot_arbit, deg2HMS, lat_2_R
-from OPT_Config_File import Timeline_settings, getTLE, Mode121_settings, Logger_name, Version
-import csv, os
+from OPT_Config_File import Timeline_settings, getTLE, Mode121_settings, Logger_name
+
 
 
 
@@ -107,7 +107,10 @@ def date_calculator():
     star_list_excel.append(['Classification;'])
     
     "Prepare the output"
-    star_list = []
+    "Array containing date in first column and brightest magnitude spotted in the second"
+    date_magnitude_array = zeros((timesteps,2))+100
+    "Set magntidues arbitrary large"
+    date_magnitude_array[:,1] = 100
     
     "Pre-allocate space"
     lat_MATS = zeros((timesteps,1))
@@ -121,33 +124,19 @@ def date_calculator():
     r_MATS = zeros((timesteps,3))
     r_FOV = zeros((timesteps,3))
     r_FOV_unit_vector = zeros((timesteps,3))
-    r_FOV2 = zeros((timesteps,3))
-    r_FOV_unit_vector2 = zeros((timesteps,3))
-    r_FOV_norm = zeros((timesteps,3))
-    r_azi_norm = zeros((timesteps,3))
     stars_r_V_offset_plane = zeros((ROWS,3))
     stars_r_H_offset_plane = zeros((ROWS,3))
     stars_vert_offset = zeros((timesteps,ROWS))
     stars_hori_offset = zeros((timesteps,ROWS))
-    stars_offset = zeros((timesteps,ROWS))
     normal_orbital = zeros((timesteps,3))
     r_V_offset_normal = zeros((timesteps,3))
     r_H_offset_normal = zeros((timesteps,3))
     pitch_sensor_array = zeros((timesteps,1))
     star_counter = 0
-    spotted_star_name = []
-    spotted_star_timestamp = []
-    spotted_star_timecounter = []
     skip_star_list = []
     MATS_p = zeros((timesteps,1))
     MATS_P = zeros((timesteps,1))
-    spotted_stars = zeros((timesteps,1))
     brightest_star_per_timestep = []
-    
-    "Array containing date in first column and brightest magnitude spotted in the second"
-    date_magnitude_array = zeros((timesteps,2))+100
-    "Set magntidues arbitrary large"
-    date_magnitude_array[:,1] = 100
     
     angle_between_orbital_plane_and_star = zeros((timesteps,ROWS))
     
@@ -159,13 +148,13 @@ def date_calculator():
     
     U = 398600.4418 #Earth gravitational parameter
     
-    LP_altitude = Mode121_settings()['default_pointing_altitude']/1000  #Altitude at which MATS center of FOV is looking [km]
-    Logger.info('LP_altitude set to [km]: '+str(LP_altitude))
+    #LP_altitude = Mode121_settings()['limb_pointing_altitude']/1000  #Altitude at which MATS center of FOV is looking [km]
+    pointing_altitude = Mode121_settings()['pointing_altitude']/1000  #Altitude at which MATS center of FOV is looking [km]
+    Logger.info('pointing_altitude set to [km]: '+str(pointing_altitude))
     
     #extended_Re = wgs84_Re + LP_altitude #Equatorial radius of extended wgs84 spheroid
     #f_e = (wgs84_Re - wgs84_Rp) / Re_extended #Flattening of extended wgs84 spheroid
     
-    pointing_adjustment = 3 #Angle in degrees that the pointing can be adjusted
     V_FOV = Mode121_settings()['V_FOV'] #0.91 is actual V_FOV
     H_FOV = Mode121_settings()['H_FOV']  #5.67 is actual H_FOV
     Logger.info('V_FOV set to [degrees]: '+str(V_FOV))
@@ -210,7 +199,7 @@ def date_calculator():
         
         #Initial Estimated pitch or elevation angle for MATS pointing
         if(t == 0):
-            pitch_sensor_array[t]= array(arccos((R_mean+LP_altitude)/(R+altitude_MATS[t]))/pi*180)
+            pitch_sensor_array[t]= array(arccos((R_mean+pointing_altitude)/(R+altitude_MATS[t]))/pi*180)
             pitch_sensor = pitch_sensor_array[t][0]
         
         if( t*timestep % log_timestep == 0 or t == 1 and t != 0 ):
@@ -237,7 +226,7 @@ def date_calculator():
                 R_LP = lat_2_R(abs_lat_LP) #Estimated WGS84 radius of LP from latitude of MATS
                 
             
-            pitch_sensor_array[t]= array(arccos((R_LP+LP_altitude)/(R+altitude_MATS[t]))/pi*180)
+            pitch_sensor_array[t]= array(arccos((R_LP+pointing_altitude)/(R+altitude_MATS[t]))/pi*180)
             pitch_sensor = pitch_sensor_array[t][0]
             
             
@@ -289,26 +278,6 @@ def date_calculator():
                 Logger.debug('Orthogonal direction to V-offset plane: '+str(r_V_offset_normal[t,0:3]))
                 Logger.debug('Orthogonal direction to the orbital plane: '+str(normal_orbital[t,0:3]))
                 Logger.debug('')
-            
-#            '''Rotate 'vector to MATS', to represent vector normal to satellite yaw plane,
-#            which will be used to rotate the yaw of the pointing'''
-#            rot_mat = rot_arbit((-pitch_sensor)/180*pi, normal_orbital[t,0:3])
-#            r_azi_norm[t,0:3] = (r_MATS[t] @ rot_mat)
-#            r_azi_norm[t,0:3] = r_azi_norm[t,0:3] / norm(r_azi_norm[t,0:3])
-#            
-#            "Rotate horizontal offset of pointing direction, around satellite yaw plane"
-#            rot_mat = rot_arbit(yaw_offset_angle/180*pi, r_azi_norm[t,0:3])
-#            r_FOV[t,0:3] = (r_FOV[t,0:3] @ rot_mat)
-#            r_FOV_unit_vector[t,0:3] = r_FOV[t,0:3]/norm(r_FOV[t,0:3])/2
-#            
-#            "Rotate orbital plane normal to match pointing V-offset plane normal"
-#            r_V_offset_normal[t,0:3] = (normal_orbital[t,0:3] @ rot_mat)
-#            
-#            '''Rotate pointing vector 90 degrees in the pointing elevation plane to get a vector,
-#            which is normal to pointing azimuth plane'''
-#            rot_mat = rot_arbit(pi/2, r_V_offset_normal[t,0:3])
-#            r_FOV_norm[t,0:3] = (r_FOV[t,0:3] @ rot_mat)
-#            r_FOV_norm[t,0:3] = r_FOV_norm[t,0:3] / norm(r_FOV_norm[t,0:3])
             
             
             ############# End of Calculations of orbital and pointing vectors #####

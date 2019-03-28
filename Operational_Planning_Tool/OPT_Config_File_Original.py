@@ -103,11 +103,10 @@ def Mode120_calculator_defaults():
 def Mode120_settings():
     ### Simulation related settings ###
     '''
-    default_pointing_altitude: Sets altitude in meters of LP that will set the pitch angle of the optical axis, 
-    H_FOV: Sets full Horizontal FOV of optical axis in degrees that will determine if stars are visible
-    V_FOV: Sets full Vertical FOV of optical axis in degrees that will determine if stars are visible
+    LP_pointing_altitude: Sets altitude in meters of LP that will set the pitch angle between the optical axis and the velocity direction of MATS
+    H_offset: Sets the maximum H-offset angle from the optical axis (angle away from orbital plane) in degrees that determines if stars are available
     Vmag: Sets the Johnson V magnitude of stars to be considered (as a string expression, example '<2')
-    timestep: sets timestep used in simulation [s]
+    timestep: sets timestep used in simulation [s].
     log_timestep: Sets the frequency of data being logged [s]
     automatic: Sets if the mode date is to be calculated or user provided. 1 for calculated or anything else for user provided.
     date: Sets the scheduled date for the mode as a ephem.Date (example: ephem.Date('2018/9/3 08:00:40'). Note! only applies if automatic is not set to 1.
@@ -117,19 +116,19 @@ def Mode120_settings():
     '''
     pointing_altitude: Sets in meters the altitude of the pointing command
     freeze_start: Sets in seconds the time from start of the Mode to when the attitude freezes
-    freeze_duration: Sets in seconds the duration of the attitude freeze
+    freeze_duration: Sets in seconds the duration of the attitude freeze. If set to 0, attitude will be frozen until aligned with LP_pointing_altitude again.
     '''
-    settings = {'default_pointing_altitude': 92000, 'H_FOV': 5, 'V_FOV': 0.8+3*2-0.8, 'Vmag': '<2', 'timestep': 2,'log_timestep': 3600, 
+    settings = {'LP_pointing_altitude': 92000, 'H_offset': 2.5, 'Vmag': '<2', 'timestep': 2,'log_timestep': 3600, 
                       'automatic': 1, 'date': ephem.Date('2019'), 'mode_duration': 900, 'pointing_altitude': 227000, 'freeze_start': 300, 
-                      'freeze_duration': 300}
+                      'freeze_duration': 0}
     return settings
 
 def Mode121_settings():
     ### Simulation related settings ###
     '''
-    default_pointing_altitude: Sets altitude in meters of LP that will set the pitch angle of the optical axis, 
-    H_FOV: Sets full Horizontal FOV of optical axis in degrees that will determine if stars are visible
-    V_FOV: Sets full Vertical FOV of optical axis in degrees that will determine if stars are visible
+    LP_pointing_altitude: Sets altitude in meters of LP
+    H_FOV: Sets full Horizontal FOV of the Limb instrument in degrees
+    V_FOV: Sets full Vertical FOV of the Limb instrument in degrees
     Vmag: Sets the Johnson V magnitude of stars to be considered (as a string expression, example '<2')
     timestep: sets timestep used in simulation [s]
     log_timestep: Sets the frequency of data being logged [s]
@@ -141,11 +140,11 @@ def Mode121_settings():
     '''
     pointing_altitude: Sets in meters the altitude of the pointing command
     freeze_start: Sets in seconds the time from start of the Mode to when the attitude freezes
-    freeze_duration: Sets in seconds the duration of the attitude freeze
+    freeze_duration: Sets in seconds the duration of the attitude freeze. If set to 0, attitude will be frozen until aligned with LP_pointing_altitude again.
     '''
-    settings = {'default_pointing_altitude': 227000, 'H_FOV': 5.67, 'V_FOV': 0.91, 'Vmag': '<4', 'timestep': 5,'log_timestep': 3600, 
+    settings = {'LP_pointing_altitude': 92000, 'H_FOV': 5.67, 'V_FOV': 0.91, 'Vmag': '<4', 'timestep': 5,'log_timestep': 3600, 
                       'automatic': 1, 'date': ephem.Date('2019'), 'mode_duration': 900, 'pointing_altitude': 227000, 'freeze_start': 300, 
-                      'freeze_duration': 300}
+                      'freeze_duration': 0}
     return settings
 
 def Mode130_settings():
@@ -172,9 +171,8 @@ def Mode200_calculator_defaults():
 def Mode200_settings():
     ### Simulation related settings ###
     '''
-    default_pointing_altitude: Sets altitude in meters of LP that will set the pitch angle of the optical axis, 
-    H_FOV: Sets full Horizontal FOV of optical axis in degrees that will determine the Moon is visible
-    V_FOV: Sets full Vertical FOV of optical axis in degrees that will determine the Moon is visible
+    LP_pointing_altitude: Sets altitude in meters of LP that will set the pitch angle of the optical axis, 
+    H_offset: Sets the maximum H-offset angle from the optical axis in degrees that determines if the Moon is available
     timestep: Sets in seconds the timestep of the simulation when larger timeskips (Moon determined far out of sight) are not made 
     log_timestep: Sets the frequency of data being logged [s]
     automatic: Sets if the mode date is to be calculated or user provided. 1 for calculated or anything else for user provided.
@@ -185,8 +183,8 @@ def Mode200_settings():
     '''
     pointing_altitude: Sets in meters the altitude of the pointing command
     freeze_start: Sets in seconds the time from start of the Mode to when the attitude freeze command is scheduled
-    freeze_duration: Sets in seconds the duration of the attitude freeze
+    freeze_duration: Sets in seconds the duration of the attitude freeze. If set to 0, attitude will be frozen until aligned with LP_pointing_altitude again.
     '''
-    settings = {'default_pointing_altitude': 92000, 'H_FOV': 5+3*2, 'V_FOV': 0.8+3*2-0.8, 'timestep': 2, 'log_timestep': 1200, 
-                      'automatic': 1, 'date': ephem.Date('2019'), 'mode_duration': 900, 'pointing_altitude': 227000, 'freeze_start': 300, 'freeze_duration': 300}
+    settings = {'LP_pointing_altitude': 92000, 'H_offset': 3+2.5, 'timestep': 2, 'log_timestep': 1200, 
+                      'automatic': 1, 'date': ephem.Date('2019'), 'mode_duration': 900, 'pointing_altitude': 227000, 'freeze_start': 300, 'freeze_duration': 0}
     return settings

@@ -20,14 +20,21 @@ import ephem, logging, sys, time, os, json
 def XML_generator(SCIMOD_Path):
     
     
-    logging.basicConfig(stream=sys.stdout, level=logging.INFO)
     
+    ######## Try to Create a directory for storage of Logs #######
     try:
         os.mkdir('Logs_'+__name__)
     except:
         pass
     
+    ######## Try to Create a directory for storage of output files #######
+    try:
+        os.mkdir('Output')
+    except:
+        pass
     
+    ############# Set up Logger #################################
+    logging.basicConfig(stream=sys.stdout, level=logging.INFO)
     Logger = logging.getLogger(Logger_name())
     timestr = time.strftime("%Y%m%d-%H%M%S")
     Handler = logging.FileHandler('Logs_'+__name__+'\\'+__name__+'_'+Version()+'_'+timestr+'.log', mode='a')
@@ -35,39 +42,33 @@ def XML_generator(SCIMOD_Path):
     Handler.setFormatter(formatter)
     Logger.addHandler(Handler)
     Logger.setLevel(logging.DEBUG)
+    ############# Set up Logger ##########################
+    
     
     Logger.info('Start of Program')
     Logger.info('')
     Logger.info('OPT_Config_File version used: '+Version())
     Logger.info('')
     
+    
+    ################# Read Science Mode Timeline json file ############
     with open(SCIMOD_Path, "r") as read_file:
         SCIMOD= json.load(read_file)
+    ################# Read Science Mode Timeline json file ############
     
+    
+    ################ Get settings for Timeline from Config module ############
     timeline_duration = Timeline_settings()['duration']
     Logger.info('timeline_duration: '+str(timeline_duration))
     
     timeline_start = Timeline_settings()['start_time']
     Logger.info('timeline_start: '+str(timeline_start))
     
-    #earliestStartingDate = str(ephem.Date(timeline_start-ephem.second)).replace(' ','T')
-    #latestStartingDate = str(timeline_start).replace(' ','T')
-    
-    earliestStartingDate = ephem.Date(timeline_start-ephem.second).datetime().strftime("%Y-%m-%dT%H:%M:%S")
-    latestStartingDate = ephem.Date(timeline_start).datetime().strftime("%Y-%m-%dT%H:%M:%S")
-    
-    Logger.debug('earliestStartingDate: '+str(earliestStartingDate))
-    Logger.debug('latestStartingDate: '+str(latestStartingDate))
-    Logger.info('')
-    
-    #earliestStartingDate = earliestStartingDate.replace('/','-')
-    #latestStartingDate = latestStartingDate.replace('/','-')
-    
     
     ########    Call function to create XML-tree basis ##########################
     Logger.info('Call function XML_Initial_Basis_Creator')
     Logger.info('')
-    root = XML_Initial_Basis_Creator(earliestStartingDate,latestStartingDate,timeline_duration, SCIMOD_Path)
+    root = XML_Initial_Basis_Creator(timeline_start,timeline_duration, SCIMOD_Path)
     
     ######## Loop through SCIMOD TIMELINE lIST, selecting one mode at a time #####
     Logger.info('Loop through Science Mode Timeline List')
@@ -100,18 +101,15 @@ def XML_generator(SCIMOD_Path):
         Logger.info('Call XML_generator_select')
         XML_generator_select(root=root, duration=mode_duration, relativeTime=relativeTime, mode=SCIMOD[x][0], date=ephem.Date(SCIMOD[x][1]), params=SCIMOD[x][3])
         
-    #print(etree.tostring(root, pretty_print=True, encoding = 'unicode'))
     
-    ### Write finished XML-tree to a file ###
-    try:
-        os.mkdir('Output')
-    except:
-        pass
     
-    "Rewrite path string to allow it to be in the name of the generated XML command file"
+    
+    
+    ### Rewrite path string to allow it to be in the name of the generated XML command file ###
     SCIMOD_Path = SCIMOD_Path.replace('/','_in_')
     SCIMOD_Path = SCIMOD_Path.replace('.json','')
     
+    ### Write finished XML-tree with all commands to a file #######
     MATS_COMMANDS = 'Output\\MATS_COMMANDS_'+Version()+'__'+SCIMOD_Path+'.xml'
     Logger.info('Write XML-tree to: '+MATS_COMMANDS)
     f = open(MATS_COMMANDS, 'w')
@@ -122,7 +120,7 @@ def XML_generator(SCIMOD_Path):
 
 ################### XML-tree basis creator ####################################
 
-def XML_Initial_Basis_Creator(earliestStartingDate,latestStartingDate,timeline_duration, SCIMOD_Path):
+def XML_Initial_Basis_Creator(timeline_start,timeline_duration, SCIMOD_Path):
     '''Construct Basis of XML document and adds the description container.
     Input: 
         earliestStartingDate: Earliest Starting date of the Timeline. On the form of the ephem.Date class.
@@ -131,6 +129,8 @@ def XML_Initial_Basis_Creator(earliestStartingDate,latestStartingDate,timeline_d
         SCIMOD_Path: The path as a string to the Science Mode Timeline .json file used in this run.
     '''
     
+    earliestStartingDate = ephem.Date(timeline_start-ephem.second).datetime().strftime("%Y-%m-%dT%H:%M:%S")
+    latestStartingDate = ephem.Date(timeline_start).datetime().strftime("%Y-%m-%dT%H:%M:%S")
     
     
     root = etree.Element('InnoSatTimeline', originator='OHB', sdbVersion='9.5.99.2')
@@ -195,7 +195,7 @@ def XML_generator_select(root,duration,relativeTime,mode,date,params):
 '''
 
 def XML_generator_select(mode, root, date, duration, relativeTime, params):
-    '''Selects corresponding function from received science mode.
+    '''Selects corresponding mode function from the variable "mode".
     Input: 
         mode: The name of the of the mode as a string. The name in the XML_generator_name function in OPT_XML_generator_MODES
         root: XML tree structure. Main container object for the ElementTree API. lxml.etree.Element class

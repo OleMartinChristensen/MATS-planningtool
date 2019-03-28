@@ -3,7 +3,7 @@
 Created on Mon Nov  5 16:19:57 2018
 
 Part of a program to automatically generate a mission timeline from parameters
-defined in SCIMOD_DEFAULT_PARAMS. The timeline consists of
+defined in OPT_Config_File. The timeline consists of
 science modes and their start dates expressed as a list in chronological order
 
 @author: David
@@ -50,6 +50,7 @@ def Mode120(Occupied_Timeline):
         if(iterations != 0):
             Logger.warning('User Specified date was occupied and got postponed!! Enter anything to ackknowledge and continue')
             input()
+            
             
         Occupied_Timeline['Mode120'] = (date, endDate)
         Mode120_comment = 'Mode120 scheduled using a user set date, the date got postponed '+str(iterations)+' times'
@@ -152,10 +153,6 @@ def Mode120_date_calculator():
     r_MATS = zeros((timesteps,3))
     r_FOV = zeros((timesteps,3))
     r_FOV_unit_vector = zeros((timesteps,3))
-    r_FOV2 = zeros((timesteps,3))
-    r_FOV_unit_vector2 = zeros((timesteps,3))
-    r_FOV_norm = zeros((timesteps,3))
-    r_azi_norm = zeros((timesteps,3))
     stars_r_V_offset_plane = zeros((ROWS,3))
     stars_r_H_offset_plane = zeros((ROWS,3))
     stars_vert_offset = zeros((timesteps,ROWS))
@@ -164,7 +161,8 @@ def Mode120_date_calculator():
     normal_orbital = zeros((timesteps,3))
     r_V_offset_normal = zeros((timesteps,3))
     r_H_offset_normal = zeros((timesteps,3))
-    pitch_sensor_array = zeros((timesteps,1))
+    pitch_LP_array = zeros((timesteps,1))
+    pitch_pointing_command_array = zeros((timesteps,1))
     star_counter = 0
     spotted_star_name = []
     spotted_star_timestamp = []
@@ -183,17 +181,19 @@ def Mode120_date_calculator():
     
     U = 398600.4418 #Earth gravitational parameter
     
-    LP_altitude = Mode120_settings()['default_pointing_altitude']/1000  #Altitude at which MATS center of FOV is looking [km]
+    LP_altitude = Mode120_settings()['LP_pointing_altitude']/1000  #Altitude at which MATS center of FOV is looking [km]
     Logger.info('LP_altitude set to [km]: '+str(LP_altitude))
+    
+    pointing_altitude = Mode120_settings()['pointing_altitude']/1000 
+    
+    
     
     #extended_Re = wgs84_Re + LP_altitude #Equatorial radius of extended wgs84 spheroid
     #f_e = (wgs84_Re - wgs84_Rp) / Re_extended #Flattening of extended wgs84 spheroid
     
-    pointing_adjustment = 3 #Angle in degrees that the pointing can be adjusted
-    V_FOV = Mode120_settings()['V_FOV'] #0.91 is actual V_FOV
-    H_FOV = Mode120_settings()['H_FOV']  #5.67 is actual H_FOV
-    Logger.info('V_FOV set to [degrees]: '+str(V_FOV))
-    Logger.info('H_FOV set to [degrees]: '+str(H_FOV))
+    
+    H_offset = Mode120_settings()['H_offset']  #5.67 is actual H_FOV
+    Logger.info('H_offset set to [degrees]: '+str(H_offset))
     
     pitch_offset_angle = 0
     yaw_offset_angle = 0
@@ -234,8 +234,8 @@ def Mode120_date_calculator():
         
         #Initial Estimated pitch or elevation angle for MATS pointing
         if(t == 0):
-            pitch_sensor_array[t]= array(arccos((R_mean+LP_altitude)/(R+altitude_MATS[t]))/pi*180)
-            pitch_sensor = pitch_sensor_array[t][0]
+            pitch_LP_array[t]= array(arccos((R_mean+LP_altitude)/(R+altitude_MATS[t]))/pi*180)
+            pitch_LP = pitch_LP_array[t][0]
         
         if( t*timestep % log_timestep == 0 ):
             Logger.debug('')
@@ -254,15 +254,21 @@ def Mode120_date_calculator():
             
             # More accurate estimation of pitch angle of MATS
             if( abs(lat_MATS[t])-abs(lat_MATS[t-1]) > 0 ): #Moving towards poles meaning LP is equatorwards compared to MATS
-                abs_lat_LP = abs(lat_MATS[t])-pitch_sensor/180*pi #absolute value of estimated latitude of LP in radians
+                abs_lat_LP = abs(lat_MATS[t])-pitch_LP/180*pi #absolute value of estimated latitude of LP in radians
                 R_LP = lat_2_R(abs_lat_LP) #Estimated WGS84 radius of LP from latitude of MATS
             else:
-                abs_lat_LP = abs(lat_MATS[t])+pitch_sensor/180*pi #absolute value of estimated latitude of LP in radians
+                abs_lat_LP = abs(lat_MATS[t])+pitch_LP/180*pi #absolute value of estimated latitude of LP in radians
                 R_LP = lat_2_R(abs_lat_LP) #Estimated WGS84 radius of LP from latitude of MATS
                 
             
-            pitch_sensor_array[t]= array(arccos((R_LP+LP_altitude)/(R+altitude_MATS[t]))/pi*180)
-            pitch_sensor = pitch_sensor_array[t][0]
+            pitch_LP_array[t]= array(arccos((R_LP+LP_altitude)/(R+altitude_MATS[t]))/pi*180)
+            pitch_LP = pitch_LP_array[t][0]
+            
+            pitch_pointing_command_array[t] = array(arccos((R_LP+pointing_altitude )/(R+altitude_MATS[t]))/pi*180)
+            pitch_pointing_command = pitch_pointing_command_array[t][0]
+            
+            pitch_angle_command = pitch_LP - pitch_pointing_command
+            
             
             
             ############# Calculations of orbital and pointing vectors ############
@@ -272,11 +278,11 @@ def Mode120_date_calculator():
             
             
             "Rotate 'vector to MATS', to represent pointing direction, includes vertical offset change (Parallax is negligable)"
-            rot_mat = rot_arbit(-pi/2+(-pitch_sensor+pitch_offset_angle)/180*pi, normal_orbital[t,0:3])
+            rot_mat = rot_arbit(-pi/2+(-pitch_LP+pitch_offset_angle)/180*pi, normal_orbital[t,0:3])
             r_FOV[t,0:3] = (r_MATS[t] @ rot_mat) /2
             
             
-            #rot_mat2 = rot_arbit(pi/2+(pitch_sensor+pitch_offset_angle)/180*pi, normal_orbital[t,0:3])
+            #rot_mat2 = rot_arbit(pi/2+(pitch_LP+pitch_offset_angle)/180*pi, normal_orbital[t,0:3])
             #r_FOV2[t,0:3] = (rot_mat2 @ r_MATS[t]) /2
             #r_FOV_unit_vector2[t,0:3] = r_FOV2[t,0:3]/norm(r_FOV2[t,0:3])
             
@@ -288,7 +294,7 @@ def Mode120_date_calculator():
             
             '''Rotate 'vector to MATS', to represent vector normal to satellite H-offset plane,
             which will be used to project stars onto it which allows the H-offset of stars to be found'''
-            rot_mat = rot_arbit((-pitch_sensor)/180*pi, normal_orbital[t,0:3])
+            rot_mat = rot_arbit((-pitch_LP)/180*pi, normal_orbital[t,0:3])
             r_H_offset_normal[t,0:3] = (r_MATS[t] @ rot_mat)
             r_H_offset_normal[t,0:3] = r_H_offset_normal[t,0:3] / norm(r_H_offset_normal[t,0:3])
             
@@ -303,7 +309,8 @@ def Mode120_date_calculator():
             
             if( t*timestep % log_timestep == 0 or t == 1 ):
                 Logger.debug('R_LP [km]: '+str(R_LP))
-                Logger.debug('FOV pitch in degrees: '+str(pitch_sensor))
+                Logger.debug('FOV pitch in degrees: '+str(pitch_LP))
+                Logger.debug('pitch_angle_command [degrees]: '+str(pitch_angle_command))
                 Logger.debug('Absolute value of latitude of LP: '+str(abs_lat_LP/pi*180))
                 Logger.debug('Pointing direction of FOV: '+str(r_FOV_unit_vector[t,0:3]))
                 #Logger.debug('Pointing direction of FOV2: '+str(r_FOV_unit_vector2[t,0:3]))
@@ -311,30 +318,6 @@ def Mode120_date_calculator():
                 Logger.debug('Orthogonal direction to V-offset plane: '+str(r_V_offset_normal[t,0:3]))
                 Logger.debug('Orthogonal direction to the orbital plane: '+str(normal_orbital[t,0:3]))
                 Logger.debug('')
-            
-#            '''Rotate 'vector to MATS', to represent vector normal to satellite yaw plane,
-#            which will be used to rotate the yaw of the pointing'''
-#            rot_mat = rot_arbit((-pitch_sensor)/180*pi, normal_orbital[t,0:3])
-#            r_azi_norm[t,0:3] = (r_MATS[t] @ rot_mat)
-#            r_azi_norm[t,0:3] = r_azi_norm[t,0:3] / norm(r_azi_norm[t,0:3])
-#            
-#            "Rotate horizontal offset of pointing direction, around satellite yaw plane"
-#            rot_mat = rot_arbit(yaw_offset_angle/180*pi, r_azi_norm[t,0:3])
-#            r_FOV[t,0:3] = (r_FOV[t,0:3] @ rot_mat)
-#            r_FOV_unit_vector[t,0:3] = r_FOV[t,0:3]/norm(r_FOV[t,0:3])/2
-#            
-#            "Rotate orbital plane normal to match pointing V-offset plane normal"
-#            r_V_offset_normal[t,0:3] = (normal_orbital[t,0:3] @ rot_mat)
-#            
-#            '''Rotate pointing vector 90 degrees in the pointing elevation plane to get a vector,
-#            which is normal to pointing azimuth plane'''
-#            rot_mat = rot_arbit(pi/2, r_V_offset_normal[t,0:3])
-#            r_FOV_norm[t,0:3] = (r_FOV[t,0:3] @ rot_mat)
-#            r_FOV_norm[t,0:3] = r_FOV_norm[t,0:3] / norm(r_FOV_norm[t,0:3])
-            
-            
-            ############# End of Calculations of orbital and pointing vectors #####
-            
             
             
             ###################### Star-mapper ####################################
@@ -344,18 +327,26 @@ def Mode120_date_calculator():
                 
                 "Skip star if it is not visible during this epoch"
                 if(stars[x].name in skip_star_list):
-                    pass
                     continue
                 
                 "Check if a star has already been spotted during this orbit."
                 if( stars[x].name in spotted_star_name ):
                     
                     '''Check if not enough time has passed so that the star has not left FOV''' 
-                    if((current_time - spotted_star_timestamp[spotted_star_name.index(stars[x].name)]) < ephem.second*(V_FOV*2*MATS_P[t]/360)):
+                    if((current_time - spotted_star_timestamp[spotted_star_name.index(stars[x].name)]) < ephem.second*(pitch_angle_command*2*MATS_P[t]/360)):
+                        
+                        time_passed_since_spotted = (t-spotted_star_timecounter[spotted_star_name.index(stars[x].name)])*timestep
+                        time_until_in_direction_of_original_optical_axis = around(MATS_P[t]*(pitch_offset_angle+pitch_angle_command)/360)
+                        
+                        #
+                        #Logger.debug('Already spotted star name: '+str(stars[x].name))
+                        #Logger.debug('time_passed_since_spotted: '+str(time_passed_since_spotted))
+                        #Logger.debug('time_until_in_direction_of_original_optical_axis: '+str(time_until_in_direction_of_original_optical_axis))
+                        #Logger.debug('')
                         
                         '''Check if enough time has passed so that the star is roughly in the same
                         direction as original FOV and save lat,long, Hoffset, Voffset and time. Otherwise skip star.'''
-                        if( (t-spotted_star_timecounter[spotted_star_name.index(stars[x].name)])*timestep >= around(MATS_P[t]*(pitch_offset_angle+V_FOV/2)/360)):
+                        if( abs(time_passed_since_spotted - time_until_in_direction_of_original_optical_axis) < timestep/2):
                             
                             "Project 'star vectors' ontop pointing H-offset and V-offset plane"
                             stars_r_V_offset_plane[x] = stars_r[0][x] - dot(stars_r[0][x],r_V_offset_normal[t,0:3]) * r_V_offset_normal[t,0:3]
@@ -411,27 +402,25 @@ def Mode120_date_calculator():
                 #angle_between_orbital_plane_and_star[t][x] = arccos( dot(stars_r[0][x], stars_r_V_offset_plane[x]) / norm(stars_r_V_offset_plane[x])) /pi*180
                 
                 
-                
-                "For first loop of stars, calculate angle between stars and orbital plane"
+                "To be able to skip stars far outside the orbital plane of MATS"
                 if( t == 1 ):
-                    
-                    "To be able to skip stars far outside the orbital plane of MATS"
+                    "For first loop of stars, calculate angle between stars and orbital plane"
                     angle_between_orbital_plane_and_star[t][x] = arccos( dot(stars_r[0][x], stars_r_V_offset_plane[x]) / norm(stars_r_V_offset_plane[x])) /pi*180
                     
                     "Make exception list for stars not visible during this epoch (relativiely far outside of orbital plane)"
-                    if( abs(angle_between_orbital_plane_and_star[t][x]) > H_FOV/2+(duration)/(365*24*3600)*360 ):
+                    if( abs(angle_between_orbital_plane_and_star[t][x]) > H_offset+(duration)/(365*24*3600)*360 ):
                         Logger.debug('Skip star: '+stars[x].name+', with angle_between_orbital_plane_and_star of: '+str(angle_between_orbital_plane_and_star[t][x])+' degrees')
                         skip_star_list.append(stars[x].name)
                         continue
                 
                 
-                "Check if star is in FOV"
-                if( abs(stars_vert_offset[t][x]) < V_FOV/2 and abs(stars_hori_offset[t][x]) < H_FOV/2):
+                "Check that the star is at an V-offset angle equal to pitch_angle_command"
+                if( stars_vert_offset[t][x] < pitch_angle_command and stars_vert_offset[t-1][x] > pitch_angle_command and abs(stars_hori_offset[t][x]) < H_offset):
                     #print('Star number:',stars[x].name,'is visible at',stars_vert_offset[t][x],'degrees VFOV and', \
                          #stars_hori_offset[t][x],'degrees HFOV','during',ephem.Date(current_time))
                     
                     if( t % log_timestep == 0):
-                        Logger.debug('Star: '+stars[x].name+', with H-offset: '+str(stars_hori_offset[t][x])+' V-offset: '+str(stars_vert_offset[t][x])+' in degrees is visible')
+                        Logger.debug('Star: '+stars[x].name+', with H-offset: '+str(stars_hori_offset[t][x])+' V-offset: '+str(stars_vert_offset[t][x])+' in degrees is available')
                     
                     "Add the spotted star to the exception list and timestamp it"
                     spotted_star_name.append(stars[x].name)
@@ -497,18 +486,27 @@ def Mode120_date_calculator():
     except:
         pass
     
-    with open('Output\\'+sys._getframe(1).f_code.co_name+'_Visible_Stars_'+Version()+'.csv', 'w', newline='') as write_file:
-        writer = csv.writer(write_file, dialect='excel-tab')
-        writer.writerows(star_list_excel)
+    while(True):
+        try:
+            with open('Output\\'+sys._getframe(1).f_code.co_name+'_Visible_Stars_'+Version()+'.csv', 'w', newline='') as write_file:
+                writer = csv.writer(write_file, dialect='excel-tab')
+                writer.writerows(star_list_excel)
+            Logger.info('Available Stars data saved to: '+'Output\\'+sys._getframe(1).f_code.co_name+'_Visible_Stars_'+Version()+'.csv')
+            break
+        except PermissionError:
+            Logger.error('Output\\'+sys._getframe(1).f_code.co_name+'_Visible_Stars_'+Version()+'.csv cannot be overwritten. Please close it')
+            data = input('Enter anything to try again or 1 to exit')
+            if( data == '1'):
+                sys.exit()
     
     Logger.debug('Visible star list to be filtered:')
     for x in range(len(star_list)):
-        
         Logger.debug(str(star_list[x]))
     Logger.debug('')
     
     Logger.debug('Exit '+str(__name__))
     Logger.debug('')
+    
     
     return(star_list)
 

@@ -36,5 +36,9 @@ def XML_gen(science_mode_timeline_path):
     """
     from Operational_Planning_Tool.OPT_XML_generator import XML_generator
     
+    "Initialize current_pointing to None"
+    import Operational_Planning_Tool.OPT_XML_generator_Commands as commands
+    commands.current_pointing = None
+    
     XML_generator(science_mode_timeline_path)
 
