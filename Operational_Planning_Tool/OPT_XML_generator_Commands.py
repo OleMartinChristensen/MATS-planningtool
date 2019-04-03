@@ -77,7 +77,7 @@ def TC_acfLimbPointingAltitudeOffset(root, time, Initial = "92500", Final = "925
             current_pointing= None
         elif( Final == Initial and Rate == '0'):
             current_pointing= Final
-            incremented_time = str(round(float(time)+60,2))
+            incremented_time = str(round(float(time)+Timeline_settings()['pointing_stabilization'],2))
         
     else:
         Logger.info('Skipping pointing command as satellite is already oriented the desired way')

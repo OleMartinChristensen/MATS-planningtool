@@ -55,9 +55,13 @@ def date_select(Occupied_Timeline, initial_date):
     
     from Operational_Planning_Tool.OPT_library import scheduler
     
+    settings = Mode110_settings()
+    
     date = initial_date
-    endDate = ephem.Date(initial_date + ephem.second*Timeline_settings()['mode_separation'] +
-                                 ephem.second*Mode110_settings()['mode_duration'])
+    
+    duration = round(Timeline_settings()['pointing_stabilization'] + settings['sweep_start'] + round((settings['pointing_altitude_to'] - settings['pointing_altitude_from']) / settings['sweep_rate']) )
+    
+    endDate = ephem.Date(initial_date + ephem.second * (duration + Timeline_settings()['mode_separation']))
     
     
     ############### Start of availability schedueler ##########################

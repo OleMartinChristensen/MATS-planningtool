@@ -86,12 +86,15 @@ def scheduler(Occupied_Timeline, date, endDate):
     while( restart == True):
         restart = False
         
+        "Extract the start and end date of each scheduled mode"
         for busy_dates in Occupied_Timeline.values():
             if( busy_dates == []):
                 continue
             else:
+                "If the planned date collides with any already scheduled ones -> post-pone and restart loop"
                 if( busy_dates[0] <= date < busy_dates[1] or 
-                       busy_dates[0] < endDate <= busy_dates[1]):
+                       busy_dates[0] < endDate <= busy_dates[1] or
+                       (date < busy_dates[0] and endDate > busy_dates[1])):
                     
                     date = ephem.Date(date + ephem.second*Timeline_settings()['mode_separation']*2)
                     endDate = ephem.Date(endDate + ephem.second*Timeline_settings()['mode_separation']*2)
@@ -108,8 +111,8 @@ def FreezeDuration_calculator(pointing_altitude1, pointing_altitude2):
     the time it takes for orbital position angle of a satellite in a circular orbit to change by the same amount.
     
     Args:
-        pointing_altitude1 (int): First tangential pointing altitude in km
-        pointing_altitude2 (int): Second tangential pointing altitude in km
+        pointing_altitude1 (int): First tangential pointing altitude in m
+        pointing_altitude2 (int): Second tangential pointing altitude in m
         
     Returns:
         FreezeDuration (int): Time [s] it takes for the satellites orbital position angle to change 
@@ -124,9 +127,9 @@ def FreezeDuration_calculator(pointing_altitude1, pointing_altitude2):
     MATS_P = 24*3600/float(TLE2[52:63]) #Orbital Period of MATS [s]
     MATS_p = ((MATS_P/2/pi)**2*U)**(1/3) #Semi-major axis of MATS assuming circular orbit [km]
     R_mean = 6371 #Mean Earth radius [km]
-    pitch1 = arccos((R_mean+pointing_altitude1)/(MATS_p))/pi*180
-    pitch2 = arccos((R_mean+pointing_altitude2 )/(MATS_p))/pi*180
-    pitch_angle_difference = pitch1 - pitch2
+    pitch1 = arccos((R_mean+pointing_altitude1/1000)/(MATS_p))/pi*180
+    pitch2 = arccos((R_mean+pointing_altitude2/1000 )/(MATS_p))/pi*180
+    pitch_angle_difference = abs(pitch1 - pitch2)
     
     #The time it takes for the orbital position angle to change by the same amount as
     #the angle between the pointing axes

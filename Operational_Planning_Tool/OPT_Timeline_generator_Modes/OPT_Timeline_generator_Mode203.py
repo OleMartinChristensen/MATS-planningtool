@@ -2,19 +2,20 @@
 """
 Created on Thu Mar 14 10:35:32 2019
 
-Template for a new Mode where '=X=' is exchanged for the number or name of the mode. 
-The Mode is scheduled at the start of the timeline as defined in OPT_Config_File.Timeline_settings
+Part of a program to automatically generate a mission timeline.
+The timeline consists of science modes and their start dates expressed 
+as a list in chronological order
 
 @author: David
 """
 
 
 import ephem, sys, logging
-from OPT_Config_File import Timeline_settings, Logger_name, Mode=X=_settings
+from OPT_Config_File import Timeline_settings, Logger_name
 Logger = logging.getLogger(Logger_name())
 
 
-def Mode=X=(Occupied_Timeline):
+def Mode203(Occupied_Timeline):
     
     initial_date = date_calculator()
     
@@ -59,8 +60,8 @@ def date_select(Occupied_Timeline, initial_date):
     
     try:
         Logger.info('Mode specific mode_duration used as initial date')
-        endDate = ephem.Date(initial_date + ephem.second*Timeline_settings()['mode_separation'] +
-                             ephem.second*Mode=X=_settings()['mode_duration'])
+        endDate = ephem.Date(initial_date + ephem.second*Timeline_settings()['mode_separation'] + 
+                             ephem.second*Mode203_settings()['mode_duration'])
     except:
         Logger.info('Timeline mode_duration used as initial date')
         endDate = ephem.Date(initial_date + ephem.second*Timeline_settings()['mode_separation'] +

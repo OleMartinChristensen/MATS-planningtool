@@ -10,11 +10,11 @@ as a list in chronological order
 """
 
 import ephem, sys, logging
-from OPT_Config_File import Mode130_settings, Timeline_settings, Logger_name
+from OPT_Config_File import Mode131_settings, Timeline_settings, Logger_name
 
 
 
-def Mode130(Occupied_Timeline):
+def Mode131(Occupied_Timeline):
     
     initial_date = date_calculator()
     
@@ -35,7 +35,7 @@ def date_calculator():
     Logger = logging.getLogger(Logger_name())
     
     try:
-        initial_date = Mode130_settings()['start_time']
+        initial_date = Mode131_settings()['start_time']
         Logger.info('Mode start_time used as initial date')
     except:
         Logger.warning('!!Error raised in try statement!!')
@@ -56,7 +56,7 @@ def date_select(Occupied_Timeline, initial_date):
     from Operational_Planning_Tool.OPT_library import scheduler
     
     date = initial_date
-    endDate = ephem.Date(initial_date + ephem.second*Mode130_settings()['mode_duration'])
+    endDate = ephem.Date(initial_date + ephem.second*Mode131_settings()['mode_duration'])
     
     
     ############### Start of availability schedueler ##########################

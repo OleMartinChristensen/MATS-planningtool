@@ -20,7 +20,6 @@ import ephem, logging, sys, time, os, json
 def XML_generator(SCIMOD_Path):
     
     
-    
     ######## Try to Create a directory for storage of Logs #######
     try:
         os.mkdir('Logs_'+__name__)
@@ -81,8 +80,8 @@ def XML_generator(SCIMOD_Path):
         Logger.info('Start Date: '+str(SCIMOD[x][1]))
         Logger.info('End Date: '+str(SCIMOD[x][2]))
         
-        mode_duration = int((ephem.Date(SCIMOD[x][2]) - ephem.Date(SCIMOD[x][1]) ) *24*3600)
-        relativeTime = int((ephem.Date(SCIMOD[x][1])-ephem.Date(timeline_start))*24*3600)
+        mode_duration = round((ephem.Date(SCIMOD[x][2]) - ephem.Date(SCIMOD[x][1]) ) *24*3600)
+        relativeTime = round((ephem.Date(SCIMOD[x][1])-ephem.Date(timeline_start))*24*3600)
         Logger.info('mode_duration: '+str(mode_duration))
         Logger.info('relativeTime: '+str(relativeTime))
         
@@ -101,9 +100,6 @@ def XML_generator(SCIMOD_Path):
         Logger.info('Call XML_generator_select')
         XML_generator_select(root=root, duration=mode_duration, relativeTime=relativeTime, mode=SCIMOD[x][0], date=ephem.Date(SCIMOD[x][1]), params=SCIMOD[x][3])
         
-    
-    
-    
     
     ### Rewrite path string to allow it to be in the name of the generated XML command file ###
     SCIMOD_Path = SCIMOD_Path.replace('/','_in_')
@@ -169,35 +165,14 @@ def XML_Initial_Basis_Creator(timeline_start,timeline_duration, SCIMOD_Path):
     
 ####################### End of XML-tree basis creator #############################
 
-'''
-####################### Mode selecter #############################
 
-def XML_generator_select(root,duration,relativeTime,mode,date,params):
-    "Selects corresponding function from received science mode"
-    
-    from Operational_Planning_Tool.OPT_XML_generator_MODES import XML_generator_Mode1, XML_generator_Mode2, XML_generator_Mode120, XML_generator_Mode130, XML_generator_Mode200, XML_generator_Mode_User_Specified
-    
-    Mode_dict = {'Mode1': XML_generator_Mode1, 'Mode2': XML_generator_Mode2, 'Mode120': XML_generator_Mode120, 
-             'Mode130': XML_generator_Mode130, 'Mode200': XML_generator_Mode200, 'Mode_User_Specified': XML_generator_Mode_User_Specified}
 
-    
-    #If no optional paramters are given
-    if(len(params.keys()) == 0):
-        
-        Mode_dict[mode](root, date, duration, relativeTime)
-        
-    else:
-        
-        Mode_dict[mode](root, date, duration, relativeTime, params = params)
-    
-    
-####################### End of Mode selecter #############################
-'''
+####################### Mode selecter ###################################
 
 def XML_generator_select(mode, root, date, duration, relativeTime, params):
-    '''Selects corresponding mode function from the variable "mode".
+    '''Selects corresponding mode or test function from the variable "mode".
     Input: 
-        mode: The name of the of the mode as a string. The name in the XML_generator_name function in OPT_XML_generator_MODES
+        mode: The name of the of the mode or test as a string. The name in the XML_generator_name function in OPT_XML_generator_MODES
         root: XML tree structure. Main container object for the ElementTree API. lxml.etree.Element class
         date = Starting date of the Mode. On the form of the ephem.Date class.
         duration = The duration of the mode [s] as an integer class.
@@ -208,32 +183,25 @@ def XML_generator_select(mode, root, date, duration, relativeTime, params):
     '''
     
     import Operational_Planning_Tool.OPT_XML_generator_MODES as OPT_XML_generator_MODES
+    import Operational_Planning_Tool.OPT_XML_generator_Tests as OPT_XML_generator_Tests
     
     Logger = logging.getLogger(Logger_name())
     
-    #Mode_dict = {'Mode1': XML_generator_Mode1, 'Mode2': XML_generator_Mode2, 'Mode120': XML_generator_Mode120, 
-    #         'Mode130': XML_generator_Mode130, 'Mode200': XML_generator_Mode200, 'Mode_User_Specified': XML_generator_Mode_User_Specified}
+    try:
+        Mode_Test_func = getattr(OPT_XML_generator_MODES,'XML_generator_'+mode)
+    except:
+        try:
+            Mode_Test_func = getattr(OPT_XML_generator_Tests,'XML_generator_'+mode)
+        except:
+            Logger.error('No XML-generator is defined for the scheduled Mode or Test')
+            sys.exit()
     
-    
-    
-    #Check if no parameters are given
+    "Check if no parameters are given"
     if(len(params.keys()) == 0):
-        
-        try:
-            Mode_func = getattr(OPT_XML_generator_MODES,'XML_generator_'+mode)
-        except:
-            Logger.error('No XML-generator Mode is defined for the scheduled Mode')
-            sys.exit()
-            
-        Mode_func(root, date, duration, relativeTime)
-        #Mode_dict[mode](root, date, duration, relativeTime)
-        
+        Mode_Test_func(root, date, duration, relativeTime)
     else:
-        try:
-            Mode_func = getattr(OPT_XML_generator_MODES,'XML_generator_'+mode)
-        except:
-            Logger.error('No XML-generator Mode is defined for the scheduled Mode')
-            sys.exit()
-        
-        Mode_func(root, date, duration, relativeTime, params = params)
-        #Mode_dict[mode](root, date, duration, relativeTime, params = params)
+        Mode_Test_func(root, date, duration, relativeTime, params = params)
+    
+    
+####################### End of Mode selecter #############################
+

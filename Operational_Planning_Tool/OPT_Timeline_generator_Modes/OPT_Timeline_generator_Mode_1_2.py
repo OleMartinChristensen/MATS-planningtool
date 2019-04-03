@@ -47,9 +47,11 @@ def Mode_1_2_date_select(Occupied_Timeline, Mode_1_2_initial_date):
     
     Occupied_values = []
     
-    ## Extract all scheduled modes with actual occupied dates and sort them in chronological order. Skip the ones which are empty ##
+    ## Extract all scheduled modes with actual occupied dates and sort them in chronological order. Skip the ones which are empty or entirely scheduled before Mode_1_2_initial_date ##
     for Occupied_value in Occupied_Timeline.values():
-        if( Occupied_value == []):
+        if( Occupied_value == [] ):
+            continue
+        elif( Occupied_value[0] < Mode_1_2_initial_date and Occupied_value[1] < Mode_1_2_initial_date):
             continue
         else:
             Occupied_values.append(Occupied_value)

@@ -37,8 +37,7 @@ def Mode200(Occupied_Timeline):
             Logger.error('OPT_Config_File.Mode200_settings()["date"] is wrongly formatted or the date is occupied')
             sys.exit()
             
-        endDate = ephem.Date(date+ephem.second* 
-                             (Timeline_settings()['mode_separation']+Mode200_settings()['mode_duration']))
+        endDate = ephem.Date(date+ephem.second*Mode200_settings()['mode_duration'])
         
         ############### Start of availability schedueler ##########################
         
@@ -135,7 +134,7 @@ def Mode200_date_calculator():
     pointing_altitude = Mode200_settings()['pointing_altitude']/1000 
     H_offset = Mode200_settings()['H_offset']  #5.67 is actual H_offset
     Logger.info('H_offset set to [degrees]: '+str(H_offset))
-    V_offset = 0
+    V_offset = Mode200_settings()['V_offset'] 
     Moon_orbital_period = 3600*24*27.32
     
     
@@ -203,7 +202,7 @@ def Mode200_date_calculator():
         
         if(t != 0):
             
-            # More accurate estimation of pitch angle of MATS
+            # More accurate estimation of the Earths radius below LP
             if( abs(lat_MATS[t])-abs(lat_MATS[t-1]) > 0 ): #Moving towards poles meaning LP is equatorwards compared to MATS
                 abs_lat_LP = abs(lat_MATS[t])-pitch_LP/180*pi #absolute value of estimated latitude of LP in radians
                 R_LP = lat_2_R(abs_lat_LP) #Estimated WGS84 radius of LP from latitude of MATS
@@ -211,14 +210,14 @@ def Mode200_date_calculator():
                 abs_lat_LP = abs(lat_MATS[t])+pitch_LP/180*pi #absolute value of estimated latitude of LP in radians
                 R_LP = lat_2_R(abs_lat_LP) #Estimated WGS84 radius of LP from latitude of MATS
                 
-            
+            # More accurate estimation of pitch angle of MATS using R_LP instead of R_mean
             pitch_LP_array[t]= array(arccos((R_LP+LP_altitude)/(R+altitude_MATS[t]))/pi*180)
             pitch_LP = pitch_LP_array[t][0]
             
             pitch_pointing_command_array[t] = array(arccos((R_LP+pointing_altitude )/(R+altitude_MATS[t]))/pi*180)
             pitch_pointing_command = pitch_pointing_command_array[t][0]
             
-            pitch_angle_command = pitch_LP - pitch_pointing_command
+            pitch_angle_between_command_and_LP_altitudes = pitch_LP - pitch_pointing_command
             
             
             ############# Calculations of orbital and pointing vectors ############
@@ -227,11 +226,11 @@ def Mode200_date_calculator():
             normal_orbit[t,0:3] = normal_orbit[t,0:3] / norm(normal_orbit[t,0:3])
             
             "Rotate 'vector to MATS', to represent pointing direction, includes vertical offset change"
-            rot_mat = rot_arbit(-pi/2+(-pitch_LP+V_offset)/180*pi, normal_orbit[t,0:3])
+            rot_mat = rot_arbit(-pi/2+(-pitch_pointing_command+V_offset)/180*pi, normal_orbit[t,0:3])
             r_FOV[t,0:3] = (r_MATS[t] @ rot_mat)
             
             "Rotate 'vector to MATS', to represent a vector normal to the H-offset pointing plane, includes vertical offset change (Parallax is negligable)"
-            rot_mat = rot_arbit((-pitch_LP+V_offset)/180*pi, normal_orbit[t,0:3])
+            rot_mat = rot_arbit((-pitch_pointing_command+V_offset)/180*pi, normal_orbit[t,0:3])
             normal_H_offset[t,0:3] = (r_MATS[t] @ rot_mat) /2
             normal_H_offset_unit_vector[t,0:3] = normal_H_offset[t,0:3] / norm(normal_H_offset[t,0:3])
             
@@ -258,8 +257,9 @@ def Mode200_date_calculator():
             
             
             if( t*timestep % log_timestep == 0 or t == 1 ):
-                Logger.debug('FOV pitch_LP in degrees: '+str(pitch_LP))
-                Logger.debug('pitch_angle_command [degrees]: '+str(pitch_angle_command))
+                Logger.debug('pitch_LP in degrees: '+str(pitch_LP))
+                Logger.debug('pitch_pointing_command in degrees: '+str(pitch_pointing_command))
+                Logger.debug('pitch_angle_between_command_and_LP_altitudes [degrees]: '+str(pitch_angle_between_command_and_LP_altitudes))
                 Logger.debug('Absolute value of latitude of LP: '+str(abs_lat_LP/pi*180))
                 Logger.debug('angle_between_orbital_plane_and_moon [degrees]: '+str(angle_between_orbital_plane_and_moon[t]))
                 Logger.debug('Moon_vert_offset [degrees]: '+str(Moon_vert_offset[t]))
@@ -271,8 +271,8 @@ def Mode200_date_calculator():
             
             #print('angle_between_orbital_plane_and_moon = ' + str(angle_between_orbital_plane_and_moon[t]))
             
-            "Check that the Moon is at an V-offset angle equal to pitch_angle_command"
-            if( Moon_vert_offset[t] <= pitch_angle_command and Moon_vert_offset[t-1] > pitch_angle_command and abs(Moon_hori_offset[t]) < H_offset):
+            "Check that the Moon is at an V-offset angle equal to pitch_angle_between_command_and_LP_altitudes"
+            if( Moon_vert_offset[t] <= V_offset and Moon_vert_offset[t-1] > V_offset and abs(Moon_hori_offset[t]) < H_offset):
                 
                 Logger.debug('')
                 Logger.debug('!!!!!!!!Moon available!!!!!!!!!!')
@@ -284,8 +284,9 @@ def Mode200_date_calculator():
                 Logger.debug('Latitude in radians: '+str(lat_MATS[t]))
                 Logger.debug('Longitude in radians: '+str(long_MATS[t]))
                 Logger.debug('Altitude in km: '+str(altitude_MATS[t]))
-                Logger.debug('FOV pitch_LP in degrees: '+str(pitch_LP))
-                Logger.debug('pitch_angle_command [degrees]: '+str(pitch_angle_command))
+                Logger.debug('pitch_LP in degrees: '+str(pitch_LP))
+                Logger.debug('pitch_pointing_command in degrees: '+str(pitch_pointing_command))
+                Logger.debug('pitch_angle_between_command_and_LP_altitudes [degrees]: '+str(pitch_angle_between_command_and_LP_altitudes))
                 Logger.debug('angle_between_orbital_plane_and_moon [degrees]: '+str(angle_between_orbital_plane_and_moon[t]))
                 Logger.debug('Moon_vert_offset [degrees]: '+str(Moon_vert_offset[t]))
                 Logger.debug('Moon_hori_offset [degrees]: '+str(Moon_hori_offset[t]))
@@ -381,8 +382,9 @@ def Mode200_date_select(Occupied_Timeline, Moon_list):
         
         if( len(Moon_H_offset) == iterations):
             Mode200_comment = 'No time available for Mode200'
-            Logger.info('')
-            Logger.info(Mode200_comment)
+            Logger.error('')
+            Logger.error(Mode200_comment)
+            input('Enter anything to ackknowledge and continue')
             return Occupied_Timeline, Mode200_comment
         
         restart = False
@@ -396,8 +398,13 @@ def Mode200_date_select(Occupied_Timeline, Moon_list):
         
         Mode200_date = ephem.Date(ephem.Date(Mode200_date)-ephem.second*(Mode200_settings()['freeze_start']))
         
-        Mode200_endDate = ephem.Date(Mode200_date+ephem.second* 
-                                     (Timeline_settings()['mode_separation']+Mode200_settings()['mode_duration']))
+        Mode200_endDate = ephem.Date(Mode200_date+ephem.second*Mode200_settings()['mode_duration'])
+        
+        #Check that the scheduled date is not before the start of the timeline
+        if( Mode200_date < Timeline_settings()['start_time']):
+            iterations = iterations + 1
+            restart = True
+            continue
         
         ## Extract Occupied dates and if they clash, restart loop and select new date
         for busy_dates in Occupied_Timeline.values():

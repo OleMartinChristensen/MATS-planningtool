@@ -27,6 +27,7 @@ def Timeline_gen():
     
     Timeline_gen()
     
+    
 def XML_gen(science_mode_timeline_path):
     """XML generator part of Operational Planning Tool for MATS.
     Converts a .json file containing a list of scheduled Science Modes into commands and saves them to a .xml file.
@@ -42,3 +43,25 @@ def XML_gen(science_mode_timeline_path):
     
     XML_generator(science_mode_timeline_path)
 
+
+def Timeline_analyzer(science_mode_timeline_path, date):
+    '''Searches an Science Mode Timeline json file for a given date and return the scheduled mode and its parameters"
+    
+    Arg:
+        science_mode_timeline_path (str): path to the .json file containing the Science Mode Timeline
+        date (str): A given date and time ('2019/09/05 12:09:25')
+        
+    Output:
+        Mode (str): The currently scheduled Mode
+        Parameters (dict): The parameters of the Mode
+    '''
+    
+    from Operational_Planning_Tool.OPT_Timeline_analyzer import Timeline_analyzer
+    
+    Mode, Parameters = Timeline_analyzer(science_mode_timeline_path, date)
+    
+    return Mode, Parameters
+        
+    
+    
+    

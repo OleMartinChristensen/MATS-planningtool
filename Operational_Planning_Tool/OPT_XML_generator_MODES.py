@@ -23,9 +23,10 @@ XML_generator_"Mode_name", where Mode_name is the same as the string used in the
 """
 
 
-import ephem, logging
+import ephem, logging, sys
 from OPT_Config_File import Logger_name, Timeline_settings
-from Operational_Planning_Tool.OPT_library import rot_arbit, FreezeDuration_calculator
+from Operational_Planning_Tool.OPT_library import rot_arbit
+import Operational_Planning_Tool.OPT_XML_generator_macros as OPT_XML_generator_macros
 Logger = logging.getLogger(Logger_name())
 
 
@@ -387,6 +388,83 @@ def XML_generator_Mode2(root, date, duration, relativeTime, params = {}):
 
 ############################################################################################
 
+################################################################################################
+
+
+
+def XML_generator_Mode100(root, date, duration, relativeTime, params = {}):
+    "Generates parameters and calls for macros, which will generate commands in the XML-file"
+    
+    
+    from OPT_Config_File import Mode100_settings
+    
+    Logger.debug('params from Science Mode List: '+str(params))
+    params = params_checker(params,Mode100_settings)
+    Logger.info('params after params_checker function: '+str(params))
+    
+    Mode_name = sys._getframe(0).f_code.co_name.replace('XML_generator_','')
+    comment = Mode_name+' starting date: '+str(date)+', '+str(params)
+    
+    
+    pointing_altitude_from = params['pointing_altitude_from']
+    pointing_altitude_to = params['pointing_altitude_to']
+    pointing_altitude_interval = params['pointing_altitude_interval']
+    
+    number_of_altitudes = round( (pointing_altitude_to - pointing_altitude_from) / pointing_altitude_interval +1 )
+    
+    pointing_altitudes = [pointing_altitude_from + x*pointing_altitude_interval for x in range(number_of_altitudes)]
+    
+    duration_flag = 0
+    initial_relativeTime = relativeTime
+    
+    Mode_macro = getattr(OPT_XML_generator_macros,Mode_name+'_macro')
+    
+    for pointing_altitude in pointing_altitudes:
+        mode_relativeTime = relativeTime - initial_relativeTime
+        
+        if(mode_relativeTime > duration and duration_flag == 0):
+            Logger.warning('Warning!! The scheduled time for the mode has ran out.')
+            input('Enter anything to ackknowledge and continue:\n')
+            duration_flag = 1
+        
+        relativeTime = Mode_macro(root = root, relativeTime = str(relativeTime), pointing_altitude = str(pointing_altitude), comment = comment)
+        relativeTime = round(float(relativeTime) + params['pointing_duration'], 1)
+
+
+
+##############################################################################################
+
+##############################################################################################
+
+
+
+def XML_generator_Mode110(root, date, duration, relativeTime, params = {}):
+    "Mode110"
+    
+    from OPT_Config_File import Mode110_settings
+    
+    Logger.debug('params from Science Mode List: '+str(params))
+    params = params_checker(params,Mode110_settings)
+    Logger.info('params after params_checker function: '+str(params))
+    
+    Mode_name = sys._getframe(0).f_code.co_name.replace('XML_generator_','')
+    comment = Mode_name+' starting date: '+str(date)+', '+str(params)
+    
+    pointing_altitude_from = params['pointing_altitude_from']
+    pointing_altitude_to = params['pointing_altitude_to']
+    sweep_rate = params['sweep_rate']
+    sweep_start = params['sweep_start']
+    
+    relativeTime_sweep_start = sweep_start + relativeTime
+    
+    Mode_macro = getattr(OPT_XML_generator_macros,Mode_name+'_macro')
+    
+    Mode_macro(root = root, relativeTime = str(relativeTime), pointing_altitude_from = str(pointing_altitude_from), 
+                  pointing_altitude_to = str(pointing_altitude_to), sweep_rate = str(sweep_rate), 
+                  relativeTime_sweep_start = str(relativeTime_sweep_start), comment = comment)
+
+
+#######################################################################################################
 
 
 
@@ -395,34 +473,32 @@ def XML_generator_Mode120(root, date, duration, relativeTime,
     "Generates and calculates parameters and calls for macros, which will generate commands in the XML-file"
     
     from OPT_Config_File import Mode120_settings
-    from Operational_Planning_Tool.OPT_XML_generator_macros import Mode120_macro
     
     Logger.debug('params from Science Mode List: '+str(params))
     params = params_checker(params,Mode120_settings)
     Logger.info('params after params_checker function: '+str(params))
     
-    comment = 'Mode 120 starting date: '+str(date)+', '+str(params)
+    Mode_name = sys._getframe(0).f_code.co_name.replace('XML_generator_','')
+    comment = Mode_name+' starting date: '+str(date)+', '+str(params)
     
     GPS_epoch = Timeline_settings()['GPS_epoch']
     leapSeconds = ephem.second*Timeline_settings()['leap_seconds']
     freeze_start_utc = ephem.Date(date+ephem.second*params['freeze_start'])
     freezeTime = str(int((freeze_start_utc+leapSeconds-GPS_epoch)*24*3600))
     
-    "Check for user provided 'freeze_duration' or calculate a relevant one"
-    if( params['freeze_duration'] != 0):
-        FreezeDuration = params['freeze_duration']
-    else:
-        FreezeDuration = FreezeDuration_calculator(params['LP_pointing_altitude']/1000,params['pointing_altitude']/1000)
+    FreezeDuration = params['freeze_duration']
     
-    pointing_altitude = str(params['pointing_altitude'])
+    pointing_altitude = params['pointing_altitude']
     
     Logger.info('GPS_epoch: '+str(GPS_epoch))
     Logger.info('freeze_start_utc: '+str(freeze_start_utc))
     Logger.info('freezeTime [GPS]: '+freezeTime)
     Logger.info('FreezeDuration: '+str(FreezeDuration))
     
-    Mode120_macro(root = root, relativeTime = str(relativeTime), freezeTime=freezeTime, 
-                     FreezeDuration = str(FreezeDuration), pointing_altitude = pointing_altitude, comment = comment)
+    Mode_macro = getattr(OPT_XML_generator_macros,Mode_name+'_macro')
+    
+    Mode_macro(root = root, relativeTime = str(relativeTime), freezeTime=freezeTime, 
+                     FreezeDuration = str(FreezeDuration), pointing_altitude = str(pointing_altitude), comment = comment)
 
 
 
@@ -443,41 +519,87 @@ def XML_generator_Mode121(root, date, duration, relativeTime,
     
     
     from OPT_Config_File import Mode121_settings
-    from Operational_Planning_Tool.OPT_XML_generator_macros import Mode121_macro
+    
     
     Logger.debug('params from Science Mode List: '+str(params))
     params = params_checker(params,Mode121_settings)
     Logger.info('params after params_checker function: '+str(params))
     
-    comment = 'Mode 121 starting date: '+str(date)+', '+str(params)
+    Mode_name = sys._getframe(0).f_code.co_name.replace('XML_generator_','')
+    comment = Mode_name+' starting date: '+str(date)+', '+str(params)
     
     GPS_epoch = Timeline_settings()['GPS_epoch']
     leapSeconds = ephem.second*Timeline_settings()['leap_seconds']
     freeze_start_utc = ephem.Date(date+ephem.second*params['freeze_start'])
     freezeTime = str(int((freeze_start_utc+leapSeconds-GPS_epoch)*24*3600))
     
-    "Check for user provided 'freeze_duration' or calculate a relevant one"
-    if( params['freeze_duration'] != 0):
-        FreezeDuration = params['freeze_duration']
-    else:
-        FreezeDuration = FreezeDuration_calculator(params['LP_pointing_altitude']/1000,params['pointing_altitude']/1000)
+    FreezeDuration = params['freeze_duration']
     
-    
-    pointing_altitude = str(params['pointing_altitude'])
+    pointing_altitude = params['pointing_altitude']
     
     Logger.info('GPS_epoch: '+str(GPS_epoch))
     Logger.info('freeze_start_utc: '+str(freeze_start_utc))
     Logger.info('freezeTime [GPS]: '+freezeTime)
-    Logger.info('FreezeDuration: '+FreezeDuration)
+    Logger.info('FreezeDuration: '+str(FreezeDuration))
     
-    Mode121_macro(root = root, relativeTime = str(relativeTime), freezeTime=freezeTime, 
-                     FreezeDuration = FreezeDuration, pointing_altitude = pointing_altitude, comment = comment)
+    Mode_macro = getattr(OPT_XML_generator_macros,Mode_name+'_macro')
+    
+    Mode_macro(root = root, relativeTime = str(relativeTime), freezeTime=freezeTime, 
+                     FreezeDuration = str(FreezeDuration), pointing_altitude = str(pointing_altitude), comment = comment)
 
 
 
 
 ################################################################################################
 
+############################################################################################
+
+
+
+
+def XML_generator_Mode122(root, date, duration, relativeTime, 
+                       params = {}):
+    "Generates and calculates parameters and calls for macros, which will generate commands in the XML-file"
+    
+    
+    from OPT_Config_File import Mode122_settings
+    
+    
+    Logger.debug('params from Science Mode List: '+str(params))
+    params = params_checker(params,Mode122_settings)
+    Logger.info('params after params_checker function: '+str(params))
+    
+    Mode_name = sys._getframe(0).f_code.co_name.replace('XML_generator_','')
+    comment = Mode_name+' starting date: '+str(date)+', '+str(params)
+    
+    GPS_epoch = Timeline_settings()['GPS_epoch']
+    leapSeconds = ephem.second*Timeline_settings()['leap_seconds']
+    freeze_start_utc = ephem.Date(date+ephem.second*params['freeze_start'])
+    freezeTime = str(int((freeze_start_utc+leapSeconds-GPS_epoch)*24*3600))
+    
+    FreezeDuration = params['freeze_duration']
+    
+    pointing_altitude = params['pointing_altitude']
+    
+    Logger.info('GPS_epoch: '+str(GPS_epoch))
+    Logger.info('freeze_start_utc: '+str(freeze_start_utc))
+    Logger.info('freezeTime [GPS]: '+freezeTime)
+    Logger.info('FreezeDuration: '+str(FreezeDuration))
+    
+    
+    Mode_macro = getattr(OPT_XML_generator_macros,Mode_name+'_macro')
+    
+    for ExpTime in params['ExpTimes']:
+        ExpInt = ExpTime + 1
+        relativeTime = Mode_macro(root = root, relativeTime = str(relativeTime), freezeTime=freezeTime, 
+                     FreezeDuration = str(FreezeDuration), pointing_altitude = str(pointing_altitude), 
+                     ExpInt = str(ExpInt), ExpTime = str(ExpTime), comment = comment)
+        relativeTime = round(float(relativeTime) + params['session_duration'], 1)
+    
+
+
+
+################################################################################################
 
 
 def XML_generator_Mode130(root, date, duration, relativeTime, 
@@ -486,20 +608,19 @@ def XML_generator_Mode130(root, date, duration, relativeTime,
     
     
     from OPT_Config_File import Mode130_settings
-    from Operational_Planning_Tool.OPT_XML_generator_macros import Mode130_macro
     
     Logger.debug('params from Science Mode List: '+str(params))
     params = params_checker(params,Mode130_settings)
     Logger.info('params after params_checker function: '+str(params))
     
-    comment = 'Mode 130 starting date: '+str(date)+', '+str(params)
+    Mode_name = sys._getframe(0).f_code.co_name.replace('XML_generator_','')
+    comment = Mode_name+' starting date: '+str(date)+', '+str(params)
     
+    pointing_altitude = params['pointing_altitude']
     
-    pointing_altitude = str(params['pointing_altitude'])
+    Mode_macro = getattr(OPT_XML_generator_macros,Mode_name+'_macro')
     
-    
-    
-    Mode130_macro(root = root, relativeTime = str(relativeTime), pointing_altitude = pointing_altitude, comment = comment)
+    Mode_macro(root = root, relativeTime = str(relativeTime), pointing_altitude = str(pointing_altitude), comment = comment)
 
 
 
@@ -507,6 +628,69 @@ def XML_generator_Mode130(root, date, duration, relativeTime,
 ##############################################################################################
 
 
+################################################################################################
+
+
+
+def XML_generator_Mode131(root, date, duration, relativeTime, 
+                       params = {}):
+    "Generates parameters and calls for macros, which will generate commands in the XML-file"
+    
+    
+    from OPT_Config_File import Mode131_settings
+    
+    Logger.debug('params from Science Mode List: '+str(params))
+    params = params_checker(params,Mode131_settings)
+    Logger.info('params after params_checker function: '+str(params))
+    
+    Mode_name = sys._getframe(0).f_code.co_name.replace('XML_generator_','')
+    comment = Mode_name+' starting date: '+str(date)+', '+str(params)
+    
+    pointing_altitude = params['pointing_altitude']
+    
+    Mode_macro = getattr(OPT_XML_generator_macros,Mode_name+'_macro')
+    
+    
+    Mode_macro(root = root, relativeTime = str(relativeTime), pointing_altitude = str(pointing_altitude), comment = comment)
+
+
+
+
+##############################################################################################
+
+################################################################################################
+
+
+
+def XML_generator_Mode132(root, date, duration, relativeTime, 
+                       params = {}):
+    "Generates parameters and calls for macros, which will generate commands in the XML-file"
+    
+    
+    from OPT_Config_File import Mode132_settings
+    
+    Logger.debug('params from Science Mode List: '+str(params))
+    params = params_checker(params,Mode132_settings)
+    Logger.info('params after params_checker function: '+str(params))
+    
+    Mode_name = sys._getframe(0).f_code.co_name.replace('XML_generator_','')
+    comment = Mode_name+' starting date: '+str(date)+', '+str(params)
+    
+        
+    pointing_altitude = params['pointing_altitude']
+    
+    Mode_macro = getattr(OPT_XML_generator_macros,Mode_name+'_macro')
+    
+    for ExpTime in params['ExpTimes']:
+        ExpInt = ExpTime + 1
+        relativeTime = Mode_macro(root = root, relativeTime = str(relativeTime), pointing_altitude = str(pointing_altitude), 
+                   ExpInt = str(ExpInt), ExpTime = str(ExpTime), comment = comment)
+        relativeTime = round(float(relativeTime) + params['session_duration'], 1)
+        
+
+
+
+##############################################################################################
 
 
 def XML_generator_Mode200(root, date, duration, relativeTime, 
@@ -515,25 +699,20 @@ def XML_generator_Mode200(root, date, duration, relativeTime,
     
     
     from OPT_Config_File import Mode200_settings
-    from Operational_Planning_Tool.OPT_XML_generator_macros import Mode200_macro
     
     Logger.debug('params from Science Mode List: '+str(params))
     params = params_checker(params,Mode200_settings)
     Logger.info('params after params_checker function: '+str(params))
     
-    comment = 'Mode 200 starting date: '+str(date)+', '+str(params)
+    Mode_name = sys._getframe(0).f_code.co_name.replace('XML_generator_','')
+    comment = Mode_name+' starting date: '+str(date)+', '+str(params)
     
     
     GPS_epoch = Timeline_settings()['GPS_epoch']
     leapSeconds = ephem.second*Timeline_settings()['leap_seconds']
     freeze_start_utc = ephem.Date(date+ephem.second*params['freeze_start'])
     
-    "Check for user provided 'freeze_duration' or calculate a relevant one"
-    if( params['freeze_duration'] != 0):
-        FreezeDuration = params['freeze_duration']
-    else:
-        FreezeDuration = FreezeDuration_calculator(params['LP_pointing_altitude']/1000,params['pointing_altitude']/1000)
-    
+    FreezeDuration = params['freeze_duration']
     
     pointing_altitude = str(params['pointing_altitude'])
     freezeTime = str(int((freeze_start_utc+leapSeconds-GPS_epoch)*24*3600))
@@ -544,7 +723,9 @@ def XML_generator_Mode200(root, date, duration, relativeTime,
     Logger.info('freezeTime [GPS]: '+freezeTime)
     Logger.info('FreezeDuration: '+str(FreezeDuration))
     
-    Mode200_macro(root = root, relativeTime = str(relativeTime), freezeTime=freezeTime, 
+    Mode_macro = getattr(OPT_XML_generator_macros,Mode_name+'_macro')
+    
+    Mode_macro(root = root, relativeTime = str(relativeTime), freezeTime=freezeTime, 
                      FreezeDuration = str(FreezeDuration), pointing_altitude = pointing_altitude, comment = comment)
 
 
@@ -553,427 +734,24 @@ def XML_generator_Mode200(root, date, duration, relativeTime,
 
 
 
-def XML_generator_Limb_functional_test(root, date, duration, relativeTime, params = {'ExpTimes': [1,2,4,8,16]}):
-    """Limb_functional_test. Schedules Limb_functional_test with defined parameters and simulates MATS propagation from TLE.
-    Scheduling of all daylight and nighttime commands are separated and all commands for one is scheduled first.
-    """
-    
-    from Operational_Planning_Tool.OPT_XML_generator_macros import Limb_functional_test_macro
-    from OPT_Config_File import getTLE
-    from pylab import dot, arccos, zeros, pi, sin, cos, arctan, cross, norm, sqrt
-    #from OPT_Config_File import Mode=X=_settings
-    
-    Logger.debug('params from Science Mode List: '+str(params))
-    #params = params_checker(params,Mode=X=_settings)
-    
-    log_timestep = 500
-    Logger.info('log_timestep [s]: '+str(log_timestep))
-    
-    duration_flag = 0
-    
-    JPEGQs = ['101','95']
-    
-    ExpTimes = params['ExpTimes']
-    
-    initial_relativeTime = relativeTime
-    
-    for mode in ['Day', 'Night']:
-        
-        "Altitudes that defines the LP"
-        for altitude in [50000,70000,90000,110000,130000,160000,200000]:
-            
-            #"Variable to alert the program when a new altitude is set"
-            #flag_pointing = 'Not Pointed'
-            
-            for JPEGQ in JPEGQs:
-                
-                
-                
-                for ExpTime in ExpTimes:
-                    
-                    ############################################################################
-                    ########################## Orbit simulator #################################
-                    ############################################################################
-                    
-                    Sun = ephem.Sun(date)
-                    MATS = ephem.readtle('MATS', getTLE()[0], getTLE()[1])
-                    
-                    "Pre-allocate space"
-                    lat_MATS = zeros((duration,1))
-                    lat_LP = zeros((duration,1))
-                    sun_angle = zeros((duration,1))
-                    altitude_MATS = zeros((duration,1))
-                    g_ra_MATS = zeros((duration,1))
-                    g_dec_MATS = zeros((duration,1))
-                    x_MATS = zeros((duration,1))
-                    y_MATS = zeros((duration,1))
-                    z_MATS = zeros((duration,1))
-                    r_MATS = zeros((duration,3))
-                    r_LP_direction = zeros((duration,3))
-                    normal_orbital = zeros((duration,3))
-                    orbangle_between_LP_MATS_array = zeros((duration,1))
-                    
-                    g_ra_Sun = zeros((duration,1))
-                    g_dec_Sun = zeros((duration,1))
-                    x_Sun = zeros((duration,1))
-                    y_Sun = zeros((duration,1))
-                    z_Sun = zeros((duration,1))
-                    r_Sun_direction = zeros((duration,3))
-                    
-                    R_mean = 6371
-                    altitude_km = altitude/1000
-                    
-                    #lat = params['lat']/180*pi
-                    lat = 30/180*pi
-                    
-                    #Estimation of the angle [degrees] between the sun and the FOV position when it enters eclipse
-                    LP_eclipse_angle = arccos(R_mean/(R_mean+altitude_km))/pi*180 + 90
-                    
-                    
-                    
-                    Logger.info('')
-                    Logger.info('LP_eclipse_angle : '+str(LP_eclipse_angle))
-                    
-                    t=0
-                    
-                    "Calculate the current angle between MATS and the Sun and the latitude of the LP"
-                    "and Loop until it is either day or night and the right latitude"
-                    while(True):
-                        
-                        
-                        mode_relativeTime = relativeTime - initial_relativeTime
-                        current_time = ephem.Date(date+ephem.second*mode_relativeTime)
-                        
-                        if(mode_relativeTime > duration and duration_flag == 0):
-                            Logger.warning('Warning!! The scheduled time for the mode has ran out.')
-                            input('Enter anything to continue:\n')
-                            duration_flag = 1
-                        
-                        MATS.compute(current_time)
-                        
-                        
-                        (lat_MATS[t],altitude_MATS[t],g_ra_MATS[t],g_dec_MATS[t])= (
-                        MATS.sublat,MATS.elevation/1000,MATS.g_ra,MATS.g_dec)
-                        
-                        z_MATS[t] = sin(g_dec_MATS[t])*(altitude_MATS[t]+R_mean)
-                        x_MATS[t] = cos(g_dec_MATS[t])*(altitude_MATS[t]+R_mean)* cos(g_ra_MATS[t])
-                        y_MATS[t] = cos(g_dec_MATS[t])*(altitude_MATS[t]+R_mean)* sin(g_ra_MATS[t])
-                       
-                        r_MATS[t,0:3] = [x_MATS[t], y_MATS[t], z_MATS[t]]
-                        
-                        orbangle_between_LP_MATS_array[t]= arccos((R_mean+altitude/1000)/(R_mean+altitude_MATS[t]))/pi*180
-                        orbangle_between_LP_MATS = orbangle_between_LP_MATS_array[t][0]
-                        
-                        Sun.compute(current_time)
-                        
-                        (g_ra_Sun[t],g_dec_Sun[t])= (Sun.g_ra,Sun.g_dec)
-                        
-                        z_Sun[t] = sin(g_dec_Sun[t])
-                        x_Sun[t] = cos(g_dec_Sun[t])* cos(g_ra_Sun[t])
-                        y_Sun[t] = cos(g_dec_Sun[t])* sin(g_ra_Sun[t])
-                       
-                        r_Sun_direction[t,0:3] = [x_Sun[t], y_Sun[t], z_Sun[t]]
-                        
-                        
-                        
-                        #sun_angle[t]= ephem.separation(Sun,MATS)/pi*180
-                        
-                        if( t != 0):
-                            "Vector normal to the orbital plane of MATS"
-                            normal_orbital[t,0:3] = cross(r_MATS[t],r_MATS[t-1])
-                            normal_orbital[t,0:3] = normal_orbital[t,0:3] / norm(normal_orbital[t,0:3])
-                            
-                            "Rotate 'vector to MATS', to represent pointing direction, includes vertical offset change (Parallax is negligable)"
-                            rot_mat = rot_arbit(orbangle_between_LP_MATS/180*pi, normal_orbital[t,0:3])
-                            r_LP_direction[t,0:3] = rot_mat @ r_MATS[t]
-                            
-                            "Estimate latitude by calculating angle between xy-plane vector and z-vector"
-                            r_LP__direction_xy = sqrt(r_LP_direction[t,0]**2+r_LP_direction[t,1]**2)
-                            lat_LP[t] = arctan(r_LP_direction[t,2]/r_LP__direction_xy)
-                            
-                            "Calculate angle between LP and the Sun"
-                            sun_angle[t] = arccos(dot(r_Sun_direction[t,0:3],r_LP_direction[t,0:3])/norm(r_LP_direction[t,0:3]))/pi*180
-                            
-                            if( t % log_timestep == 0 or t == 1):
-                                Logger.info('')
-                                Logger.info('current_time: '+str(current_time))
-                                Logger.info('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
-                                Logger.info('lat_LP [degrees]: '+str(lat_LP[t]/pi*180))
-                                Logger.info('sun_angle [degrees]: '+str(sun_angle[t]))
-                                Logger.info('mode: '+str(mode))
-                                Logger.info('')
-                            
-                            if( (sun_angle[t] < LP_eclipse_angle and abs(lat_LP[t]) <= lat and mode == 'Day' ) or 
-                               (sun_angle[t] > LP_eclipse_angle and abs(lat_LP[t]) <= lat and mode == 'Night' )):
-                                
-                                Logger.info('!!Break of Loop!!')
-                                Logger.info('Loop Counter (t): '+str(t))
-                                Logger.info('current_time: '+str(current_time))
-                                Logger.info('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
-                                Logger.info('lat_LP [degrees]: '+str(lat_LP[t]/pi*180))
-                                Logger.info('sun_angle [degrees]: '+str(sun_angle[t]))
-                                Logger.info('mode: '+str(mode))
-                                
-                                Logger.info('')
-                                break
-                            
-                            
-                            
-                        "Increase Loop counter"
-                        t= t+1
-                        
-                        "Timestep for propagation of MATS"
-                        relativeTime = round(relativeTime + 4,2)
-                        
-                            
-                    ############################################################################
-                    ########################## End of Orbit simulator ##########################
-                    ############################################################################
-                    
-                    Logger.info('Limb_functional_test_macro: relativeTime = '+str(relativeTime)+', pointing_altitude = '+str(altitude)+
-                                ', ExpTime = '+str(ExpTime)+', JPEGQ = '+str(JPEGQ))
-                    
-                    
-                    
-                    relativeTime = Limb_functional_test_macro(root = root, relativeTime = str(relativeTime), 
-                                               pointing_altitude = str(altitude), ExpTime = str(ExpTime), 
-                                               JPEGQ = JPEGQ)
-                    
-                    
-                    
-                    #"To only Schedule pointing command once per altitude"
-                    #if( ExpTime == ExpTimes[0] and JPEGQ == JPEGQs[0]):
-                    #    flag_pointing = 'Pointed'
-                    
-                    "Postpone next command until at least the end of ExpTime"
-                    relativeTime = round(float(relativeTime) + ExpTime/1000,2)
-                
-    
-
-#############################################################################################
-
-
-
-def XML_generator_Photometer_test_1(root, date, duration, relativeTime, params = {'ExpTimes': [1,2,4,8,16]}):
-    "Photometer_test_1"
-    
-    from Operational_Planning_Tool.OPT_XML_generator_macros import Photometer_test_1_macro
-    #from OPT_Config_File import getTLE
-    #from pylab import pi, sqrt
-    #from OPT_Config_File import Mode=X=_settings
-    
-    #params = params_checker(params,Mode=X=_settings)
-    
-    '''
-    MATS = ephem.readtle('MATS', getTLE()[0], getTLE()[1])
-    MATS.compute(date)
-    MATS_altitude = MATS.elevation/1000
-    U = 398600.4418 #Earth gravitational parameter
-    
-    #Semi-Major axis of MATS, assuming circular orbit
-    #MATS_p = norm(r_MATS[t,0:3])
-    MATS_p = 2*(MATS_altitude+6371)
-    
-    #Orbital Period of MATS
-    MATS_P = 2*pi*sqrt(MATS_p**3/U)
-    '''
-    
-    Logger.info('')
-    
-    ExpTimes = params['ExpTimes']
-    
-    initial_relativeTime = relativeTime
-    
-    
-    
-    Photometer_test_1_duration = duration
-    
-    while( True ):
-        mode_relativeTime = round(relativeTime - initial_relativeTime,2)
-        
-        if( mode_relativeTime >= Photometer_test_1_duration):
-            Logger.info('End of Photometer_test_1')
-            break
-            
-        for ExpTime in ExpTimes:
-            ExpInt = ExpTime +1
-            Logger.info('Photometer_test_1_macro: relativeTime = '+str(relativeTime)+
-                                ', ExpTime = '+str(ExpTime)+', ExpInt = '+str(ExpInt))
-            relativeTime = Photometer_test_1_macro(root, relativeTime = str(relativeTime), ExpTime = str(ExpTime), ExpInt = str(ExpInt))
-            relativeTime = float(relativeTime)
-
-
-
-
-##############################################################################################
-
-
-##############################################################################################
-
-
-
-def XML_generator_Nadir_functional_test(root, date, duration, relativeTime, params = {'ExpTimes': [1,2,4,8,16]}):
-    "Nadir_functional_test"
-    
-    from Operational_Planning_Tool.OPT_XML_generator_macros import Nadir_functional_test_macro
-    from OPT_Config_File import getTLE
-    from pylab import zeros, pi, sin, cos, arccos
-    
-    Logger.debug('params from Science Mode List: '+str(params))
-    #params = params_checker(params,Mode=X=_settings)
-    
-    log_timestep = 100
-    Logger.info('log_timestep [s]: '+str(log_timestep))
-    
-    duration_flag = 0
-    
-    JPEGQs = ['101','95']
-    
-    altitude = 92500
-    
-    ExpTimes = params['ExpTimes']
-    
-    initial_relativeTime = relativeTime
-    
-    for mode in ['Day', 'Night']:
-        
-        for JPEGQ in JPEGQs:
-            
-            for ExpTime in ExpTimes:
-                
-                ############################################################################
-                ########################## Orbit simulator #################################
-                ############################################################################
-                
-                Sun = ephem.Sun(date)
-                MATS = ephem.readtle('MATS', getTLE()[0], getTLE()[1])
-                
-                "Pre-allocate space"
-                lat_MATS = zeros((duration,1))
-                sun_angle = zeros((duration,1))
-                altitude_MATS = zeros((duration,1))
-                g_ra_MATS = zeros((duration,1))
-                g_dec_MATS = zeros((duration,1))
-                x_MATS = zeros((duration,1))
-                y_MATS = zeros((duration,1))
-                z_MATS = zeros((duration,1))
-                r_MATS = zeros((duration,3))
-                
-                R_mean = 6371
-                altitude_km = altitude/1000
-                
-                #Estimation of the angle [degrees] between the sun and the FOV position when it enters eclipse
-                nadir_eclipse_angle = arccos(R_mean/(R_mean+altitude_km))/pi*180 + 90
-                
-                #lat = params['lat']/180*pi
-                lat = 30/180*pi
-                
-                Logger.info('')
-                Logger.info('nadir_eclipse_angle : '+str(nadir_eclipse_angle))
-                
-                t=0
-                
-                "Calculate the current angle between MATS and the Sun"
-                "and Loop until it is either day or night and the right latitude"
-                while(True):
-                    
-                    
-                    mode_relativeTime = relativeTime - initial_relativeTime
-                    current_time = ephem.Date(date+ephem.second*mode_relativeTime)
-                    
-                    if(mode_relativeTime > duration and duration_flag == 0):
-                        Logger.warning('Warning!! The scheduled time for the mode has ran out.')
-                        input('Enter anything to continue:\n')
-                        duration_flag = 1
-                    
-                    MATS.compute(current_time)
-                    
-                    
-                    (lat_MATS[t],altitude_MATS[t],g_ra_MATS[t],g_dec_MATS[t])= (
-                    MATS.sublat,MATS.elevation/1000,MATS.g_ra,MATS.g_dec)
-                    
-                    z_MATS[t] = sin(g_dec_MATS[t])*(altitude_MATS[t]+R_mean)
-                    x_MATS[t] = cos(g_dec_MATS[t])*(altitude_MATS[t]+R_mean)* cos(g_ra_MATS[t])
-                    y_MATS[t] = cos(g_dec_MATS[t])*(altitude_MATS[t]+R_mean)* sin(g_ra_MATS[t])
-                   
-                    r_MATS[t,0:3] = [x_MATS[t], y_MATS[t], z_MATS[t]]
-                    
-                    sun_angle[t]= ephem.separation(Sun,MATS)/pi*180
-                    
-                    
-                    if( t % log_timestep == 0 or t == 1):
-                        Logger.info('')
-                        Logger.info('current_time: '+str(current_time))
-                        Logger.info('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
-                        Logger.info('sun_angle [degrees]: '+str(sun_angle[t]))
-                        Logger.info('mode: '+str(mode))
-                        Logger.info('')
-                    
-                    if( (sun_angle[t] < nadir_eclipse_angle and abs(lat_MATS[t]) <= lat and mode == 'Day' ) or 
-                       (sun_angle[t] > nadir_eclipse_angle and abs(lat_MATS[t]) <= lat and mode == 'Night' )):
-                        
-                        Logger.info('!!Break of Loop!!')
-                        Logger.info('Loop Counter (t): '+str(t))
-                        Logger.info('current_time: '+str(current_time))
-                        Logger.info('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
-                        Logger.info('sun_angle [degrees]: '+str(sun_angle[t]))
-                        Logger.info('mode: '+str(mode))
-                        
-                        Logger.info('')
-                        break
-                        
-                        
-                        
-                    "Increase Loop counter"
-                    t= t+1
-                    
-                    "Timestep for propagation of MATS"
-                    relativeTime = round(relativeTime + 4,1)
-                    
-                        
-                ############################################################################
-                ########################## End of Orbit simulator ##########################
-                ############################################################################
-                
-                Logger.info('Limb_functional_test_macro: relativeTime = '+str(relativeTime)+', pointing_altitude = '+str(altitude)+
-                            ', ExpTime = '+str(ExpTime)+', JPEGQ = '+str(JPEGQ))
-                
-                
-                
-                relativeTime = Nadir_functional_test_macro(root = root, relativeTime = str(relativeTime), 
-                                           pointing_altitude = str(altitude), ExpTime = str(ExpTime), 
-                                           JPEGQ = JPEGQ)
-                
-                
-                
-                #"To only Schedule pointing command once per altitude"
-                #if( ExpTime == ExpTimes[0] and JPEGQ == JPEGQs[0]):
-                #    flag_pointing = 'Pointed'
-                
-                "Postpone next command until at least the end of ExpTime"
-                relativeTime = round(float(relativeTime) + ExpTime/1000,2)
-
-
-
-#######################################################################################################
-
-
-
 
 ##############################################################################################
 
 
 '''
-def XML_generator_Mode=X=(root, date, duration, relativeTime, params = {}):
-    "This is a template for a new mode. Exchange 'Mode=X=' for the name of the new mode"
+def XML_generator_=X=(root, date, duration, relativeTime, params = {}):
+    "This is a template for a new mode or test. Exchange '=X=' for the name of the new mode/test"
     
-    from Operational_Planning_Tool.OPT_XML_generator_macros import Mode=X=_macro
-    from OPT_Config_File import Mode=X=_settings
+    from OPT_Config_File import =X=_settings
     
-    #params = params_checker(params,Mode=X=_settings)
+    Logger.debug('params from Science Mode List: '+str(params))
+    #params = params_checker(params,=X=_settings)
+    #Logger.info('params after params_checker function: '+str(params))
     
+    Mode_name = sys._getframe(0).f_code.co_name.replace('XML_generator_','')
+    comment = Mode_name+' starting date: '+str(date)+', '+str(params)
     
-    Mode=X=_macro()
+    Mode_name_macro(root = root, relativeTime = str(relativeTime), comment = comment)
 '''
 
 #######################################################################################################

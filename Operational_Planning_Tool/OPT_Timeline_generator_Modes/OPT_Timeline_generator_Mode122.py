@@ -11,14 +11,14 @@ import ephem
 from pylab import array, cos, sin, cross, dot, zeros, sqrt, norm, pi, arccos, floor
 from astroquery.vizier import Vizier
 from Operational_Planning_Tool.OPT_library import rot_arbit, deg2HMS, lat_2_R
-from OPT_Config_File import Timeline_settings, getTLE, Mode121_settings, Logger_name
+from OPT_Config_File import Timeline_settings, getTLE, Mode122_settings, Logger_name
 
 
 
 
 
 
-def Mode121(Occupied_Timeline):
+def Mode122(Occupied_Timeline):
     
     date_magnitude_array = date_calculator()
     
@@ -39,24 +39,24 @@ def date_calculator():
     Logger = logging.getLogger(Logger_name())
     
     "Simulation length and timestep"
-    log_timestep = Mode121_settings()['log_timestep']
+    log_timestep = Mode122_settings()['log_timestep']
     Logger.debug('log_timestep: '+str(log_timestep))
-
-    timestep = Mode121_settings()['timestep'] #In seconds
+    
+    timestep = Mode122_settings()['timestep'] #In seconds
     Logger.info('timestep set to: '+str(timestep)+' s')
     
     duration = Timeline_settings()['duration']
     Logger.info('Duration set to: '+str(duration)+' s')
     
     timesteps = int(floor(duration / timestep))
-    Logger.info('Total number of timesteps set to: '+str(timesteps)+' s')
+    Logger.info('Total number of timesteps set to: '+str(timesteps))
     
     initial_time = Timeline_settings()['start_time']
     Logger.info('initial_time set to: '+str(initial_time))
     
     
     "Get relevant stars"
-    result = Vizier(columns=['all'], row_limit=2500).query_constraints(catalog='I/239/hip_main',Vmag=Mode121_settings()['Vmag'])
+    result = Vizier(columns=['all'], row_limit=2500).query_constraints(catalog='I/239/hip_main',Vmag=Mode122_settings()['Vmag'])
     star_cat = result[0]
     ROWS = star_cat[0][:].count()
     stars = []
@@ -83,24 +83,6 @@ def date_calculator():
     stars_r = array([stars_x,stars_y,stars_z])
     stars_r = stars_r.transpose()
     
-    "Prepare the excel file output"
-    star_list_excel = []
-    star_list_excel.append(['Name;'])
-    star_list_excel.append(['t1;'])
-    star_list_excel.append(['t2;'])
-    star_list_excel.append(['long1;'])
-    star_list_excel.append(['lat1;'])
-    star_list_excel.append(['long2;'])
-    star_list_excel.append(['lat2;'])
-    star_list_excel.append(['mag;'])
-    star_list_excel.append(['H_offset;'])
-    star_list_excel.append(['V_offset;'])
-    star_list_excel.append(['H_offset2;'])
-    star_list_excel.append(['V_offset2;'])
-    star_list_excel.append(['e_Hpmag;'])
-    star_list_excel.append(['Hpscat;'])
-    star_list_excel.append(['o_Hpmag;'])
-    star_list_excel.append(['Classification;'])
     
     "Prepare the output"
     "Array containing date in first column and brightest magnitude spotted in the second"
@@ -144,21 +126,19 @@ def date_calculator():
     
     U = 398600.4418 #Earth gravitational parameter
     
-    #LP_altitude = Mode121_settings()['limb_pointing_altitude']/1000  #Altitude at which MATS center of FOV is looking [km]
-    pointing_altitude = Mode121_settings()['pointing_altitude']/1000  #Altitude at which MATS center of FOV is looking [km]
+    pointing_altitude = Mode122_settings()['pointing_altitude']/1000  #Altitude at which MATS center of FOV is looking [km]
     Logger.info('pointing_altitude set to [km]: '+str(pointing_altitude))
     
     #extended_Re = wgs84_Re + LP_altitude #Equatorial radius of extended wgs84 spheroid
     #f_e = (wgs84_Re - wgs84_Rp) / Re_extended #Flattening of extended wgs84 spheroid
     
-    V_FOV = Mode121_settings()['V_FOV'] #0.91 is actual V_FOV
-    H_FOV = Mode121_settings()['H_FOV']  #5.67 is actual H_FOV
+    V_FOV = Mode122_settings()['V_FOV'] #0.91 is actual V_FOV
+    H_FOV = Mode122_settings()['H_FOV']  #5.67 is actual H_FOV
     Logger.info('V_FOV set to [degrees]: '+str(V_FOV))
     Logger.info('H_FOV set to [degrees]: '+str(H_FOV))
     
     pitch_offset_angle = 0
     yaw_offset_angle = 0
-    
     
     
     Logger.info('TLE used: '+getTLE()[0]+getTLE()[1])
@@ -197,9 +177,6 @@ def date_calculator():
         
         #Orbital Period of MATS
         MATS_P[t] = 2*pi*sqrt(MATS_p[t]**3/U)
-        
-        
-            
         
         
         #Initial Estimated pitch or elevation angle for MATS pointing
@@ -422,14 +399,13 @@ def date_select(Occupied_Timeline, date_magnitude_array):
     Logger = logging.getLogger(Logger_name())
     Logger.info('Start of filtering function')
     
-    settings = Mode121_settings()
-    
     "Get the name of the parent function, which is always defined as the name of the mode"
     Mode_name = sys._getframe(1).f_code.co_name
     
-    arbitraryLowNumber = -100
+    settings = Mode122_settings()
     
     loop_counter = 0
+    arbitraryLowNumber = -100
     
     "Loop for maximum magnitude until the date chosen is not occupied"
     while(True):
@@ -442,10 +418,9 @@ def date_select(Occupied_Timeline, date_magnitude_array):
             Logger.warning(comment)
             input('Enter anything to ackknowledge and continue')
             return Occupied_Timeline, comment
+            
         
         date_max_mag = date_magnitude_array[index_max_mag,0]
-        
-        
         
         date = ephem.Date(ephem.Date(date_max_mag)-ephem.second*(settings['freeze_start']))
         endDate = ephem.Date(date+ephem.second*settings['mode_duration'])

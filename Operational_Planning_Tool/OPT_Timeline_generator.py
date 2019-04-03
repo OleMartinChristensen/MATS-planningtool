@@ -25,12 +25,7 @@ depending on a filtering process (mode 120, 200), or postponed until time is ava
 
 import json, logging, sys, time, os
 from Operational_Planning_Tool.OPT_Timeline_generator_Modes.OPT_Timeline_generator_Mode_1_2 import Mode_1_2
-'''
-from OPT_Timeline_generator_Mode120 import Mode120
-from OPT_Timeline_generator_Mode130 import Mode130
-from OPT_Timeline_generator_Mode200 import Mode200
-from OPT_Timeline_generator_Mode_User_Specified import Mode_User_Specified
-'''
+
 import Operational_Planning_Tool.OPT_Timeline_generator_Modes.OPT_Timeline_generator_Modes_Header as OPT_Timeline_generator_Modes_Header
 
 from OPT_Config_File import Timeline_settings, Modes_priority, Version, Logger_name
@@ -315,8 +310,8 @@ def Timeline_gen():
         try:
             Config_File = getattr(OPT_Config_File,x[2]+'_settings')
         except:
-            Logger.error('Config function for '+x[2]+' for XML-gen in OPT_Config_File is misnamed')
-            exit()
+            Logger.error('Config function for '+x[2]+' for XML-gen in OPT_Config_File is misnamed or missing')
+            sys.exit()
                 
         #SCIMOD_Timeline.append([ x[2],str(x[0]), str(x[1]),{},x[3] ])
         
