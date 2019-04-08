@@ -136,3 +136,27 @@ def FreezeDuration_calculator(pointing_altitude1, pointing_altitude2):
     FreezeDuration = round(MATS_P*(pitch_angle_difference)/360,1)
     
     return FreezeDuration
+
+
+
+
+def params_checker(params, Mode_settings):
+    '''Function which compares the keys of two dictionaries. Any keys that are missing in the first dictionary will be added and then a new dictionary will be returned.
+    Arguments:
+        params [dict]: Dictionary containing the parameters given in the Science Mode Timeline List.
+        Mode_settings [dict]: Dictionary containing equal to the settings given in OPT_Config_File of the current Mode"
+    Returns:
+        params [dict]: Dictionary containing parameters given in the Science Mode List together with any parameters missing, '
+        which are give in OPT_Config_File
+    '''
+    
+    
+    "Check if optional params were given"
+    if( params != Mode_settings):
+        params_new = Mode_settings
+        "Loop through parameters given and exchange the settings ones"
+        for key in params.keys():
+            params_new[key] = params[key]
+        params = params_new
+    return params
+

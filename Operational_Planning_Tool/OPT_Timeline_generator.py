@@ -24,16 +24,17 @@ depending on a filtering process (mode 120, 200), or postponed until time is ava
 """
 
 import json, logging, sys, time, os
-from Operational_Planning_Tool.OPT_Timeline_generator_Modes.OPT_Timeline_generator_Mode_1_2 import Mode_1_2
-
 import Operational_Planning_Tool.OPT_Timeline_generator_Modes.OPT_Timeline_generator_Modes_Header as OPT_Timeline_generator_Modes_Header
-
 from OPT_Config_File import Timeline_settings, Modes_priority, Version, Logger_name
 import OPT_Config_File
 
-
 def Timeline_gen():
-#if __name__ == "__main__":
+    """ HEEEEEY
+    
+        Arguments:
+            dad:
+    """
+    
     
     logging.basicConfig(stream=sys.stdout, level=logging.INFO)
     
@@ -55,7 +56,7 @@ def Timeline_gen():
     
     Logger.info('Start of program')
     
-    Logger.info('Default_Params version used: '+Version())
+    Logger.info('OPT_Config_File version used: '+Version())
     
     "Get a List of Modes in a prioritized order which are to be scheduled"
     Modes_prio = Modes_priority()
@@ -64,9 +65,9 @@ def Timeline_gen():
     
     "Check if yaw_correction setting is set correct"
     if( Timeline_settings()['yaw_correction'] == 1):
-        Logger.info('Mode3/4 is to be scheduled')
+        Logger.info('Yaw correction is on: Mode3/4 will be scheduled')
     elif( Timeline_settings()['yaw_correction'] == 0):
-        Logger.info('Mode1/2 is to be scheduled')
+        Logger.info('Yaw correction is off: Mode1/2 will be scheduled')
     else:
         Logger.error('OPT_Config_File.Timeline_settings()["yaw_correction"] is set wrong')
         sys.exit()
@@ -126,81 +127,7 @@ def Timeline_gen():
             Logger.info('Entry number '+str(len(SCIMOD_Timeline_unchronological))+' in unchronological Science Mode list: '+str(SCIMOD_Timeline_unchronological[-1]))
             Logger.info('')
         
-        '''
-        if( 'Mode200' in scimod):
-            
-            Logger.info('')
-            Logger.info('Start of '+scimod)
-            Logger.info('')
-            
-            Occupied_Timeline, Mode_comment = Mode200(Occupied_Timeline)
-            #Logger.debug('Post-Mode200 "Occupied_Timeline": '+str(Occupied_Timeline))
-            
-            Logger.debug('')
-            Logger.debug('Post-'+scimod+' Occupied_Timeline: \n'+"{" + "\n".join("        {}: {}".format(k, v) for k, v in Occupied_Timeline.items()) + "}")
-            Logger.debug('')
-            
-            ################# Testing #############
-            #Occupied_Timeline['Mode200'] = (ephem.Date(43364.03914351852), ephem.Date(43364.05303240741))
-            #Occupied_Timeline['Mode1'] = (Timeline_settings()['start_time'], ephem.Date(Timeline_settings()['start_time']+ephem.second*3600))
-            ################# Testing #############
-            
-            #if( Mode200_comment == 'Moon not visible' or Mode200_comment == 'No time available for Mode200'):
-            if( Occupied_Timeline[scimod] != [] ):
-                SCIMOD_Timeline_unchronological.append((Occupied_Timeline[scimod][0], Occupied_Timeline[scimod][1],scimod, Mode_comment))
-                Logger.info('Entry number '+str(x+1)+' in unchronological Science Mode list: '+str(SCIMOD_Timeline_unchronological[x]))
-                Logger.info('')
         
-        if( 'Mode120' in scimod ):
-            
-            Logger.info('')
-            Logger.info('Start of '+scimod)
-            Logger.info('')
-            
-            Occupied_Timeline, Mode_comment = Mode120(Occupied_Timeline)
-            
-            Logger.debug('')
-            Logger.debug('Post-'+scimod+' Occupied_Timeline: \n'+"{" + "\n".join("        {}: {}".format(k, v) for k, v in Occupied_Timeline.items()) + "}")
-            Logger.debug('')
-            
-            if( Occupied_Timeline[scimod] != [] ):
-                SCIMOD_Timeline_unchronological.append((Occupied_Timeline[scimod][0], Occupied_Timeline[scimod][1],scimod, Mode_comment))
-                Logger.info('Entry number '+str(x+1)+' in unchronological Science Mode list: '+str(SCIMOD_Timeline_unchronological[x]))
-                Logger.info('')
-            
-            
-        if( 'Mode130' in scimod):
-            Logger.info('')
-            Logger.info('Start of '+scimod)
-            Logger.info('')
-            
-            Occupied_Timeline, Mode_comment = Mode130(Occupied_Timeline)
-            
-            Logger.debug('')
-            Logger.debug('Post-'+scimod+' Occupied_Timeline: \n'+"{" + "\n".join("        {}: {}".format(k, v) for k, v in Occupied_Timeline.items()) + "}")
-            Logger.debug('')
-            
-            if( Occupied_Timeline[scimod] != [] ):
-                SCIMOD_Timeline_unchronological.append((Occupied_Timeline[scimod][0], Occupied_Timeline[scimod][1],scimod, Mode_comment))
-                Logger.info('Entry number '+str(x+1)+' in unchronological Science Mode list: '+str(SCIMOD_Timeline_unchronological[x]))
-                Logger.info('')
-            
-        if( 'Mode_User_Specified' in scimod):
-            Logger.info('')
-            Logger.info('Start of '+scimod)
-            Logger.info('')
-            
-            Occupied_Timeline, Mode_comment = Mode_User_Specified(Occupied_Timeline)
-            
-            Logger.debug('')
-            Logger.debug('Post-'+scimod+' Occupied_Timeline: \n'+"{" + "\n".join("        {}: {}".format(k, v) for k, v in Occupied_Timeline.items()) + "}")
-            Logger.debug('')
-            
-            if( Occupied_Timeline[scimod] != [] ):
-                SCIMOD_Timeline_unchronological.append((Occupied_Timeline[scimod][0], Occupied_Timeline[scimod][1],scimod, Mode_comment))
-                Logger.info('Entry number '+str(x+1)+' in unchronological Science Mode list: '+str(SCIMOD_Timeline_unchronological[x]))
-                Logger.info('')
-        '''
         
     ################################################################################################################
     
@@ -208,49 +135,61 @@ def Timeline_gen():
     Logger.info('Looping sequence of modes priority list complete')
     Logger.info('')
     
-    Mode1_2_3_4_select = Timeline_settings()['yaw_correction']
+    yaw_correction = Timeline_settings()['yaw_correction']
     
-    if( Mode1_2_3_4_select == 0):
+    
+    Logger.info('Mode 1/2/3/4 started')
+    Logger.info('yaw_correction: '+str(yaw_correction))
+    Logger.info('')
+    
+    Mode_1_2_3_4 = getattr(OPT_Timeline_generator_Modes_Header,'Mode_1_2_3_4')
+    
+    ### Check if it is NLC season ###
+    if( Timeline_settings()['start_time'].tuple()[1] in [11,12,1,2,5,6,7,8] or 
+            ( Timeline_settings()['start_time'].tuple()[1] in [3,9] and Timeline_settings()['start_time'].tuple()[2] in range(11) )):
         
-        Logger.info('Mode 1/2 started')
-        Logger.info('')
+        Logger.info('NLC season')
         
-        ### Check if it is NLC season ###
-        if( Timeline_settings()['start_time'].tuple()[1] in [11,12,1,2,5,6,7,8] or 
-                ( Timeline_settings()['start_time'].tuple()[1] in [3,9] and Timeline_settings()['start_time'].tuple()[2] in range(11) )):
-            
-            Logger.info('NLC season')
-            
-            
-            
-            Occupied_Timeline.update({'Mode1': []})
-            
-            Occupied_Timeline, Mode1_comment = Mode_1_2(Occupied_Timeline)
-            Logger.debug('')
-            Logger.debug('Post-Mode1 Occupied_Timeline: \n'+"{" + "\n".join("        {}: {}".format(k, v) for k, v in Occupied_Timeline.items()) + "}")
-            Logger.debug('')
-            
-            Logger.debug('Add Mode1 to unchronological timeline')
-            for x in range(len(Occupied_Timeline['Mode1'])):
-                Logger.debug('Appended to timeline: '+str((Occupied_Timeline['Mode1'][x][0], Occupied_Timeline['Mode1'][x][1],'Mode1', Mode1_comment)))
-                SCIMOD_Timeline_unchronological.append((Occupied_Timeline['Mode1'][x][0], Occupied_Timeline['Mode1'][x][1],'Mode1', Mode1_comment))
-        else:
-            
-            Logger.info('Not NLC season')
-            
-            Occupied_Timeline.update({'Mode2': []})
-            Occupied_Timeline, Mode2_comment = Mode_1_2(Occupied_Timeline)
-            Logger.debug('')
-            Logger.debug('Post-Mode2 Occupied_Timeline: \n'+"{" + "\n".join("        {}: {}".format(k, v) for k, v in Occupied_Timeline.items()) + "}")
-            Logger.debug('')
-            
-            Logger.info('Add Mode2 to unchronological timeline')
-            for x in range(len(Occupied_Timeline['Mode2'])):
-                Logger.debug('Appended to timeline: '+str((Occupied_Timeline['Mode2'][x][0], Occupied_Timeline['Mode2'][x][1],'Mode2', Mode2_comment)))
-                SCIMOD_Timeline_unchronological.append((Occupied_Timeline['Mode2'][x][0], Occupied_Timeline['Mode2'][x][1],'Mode2', Mode2_comment))
+        if( yaw_correction == True ):
+            mode = 'Mode3'
+        elif( yaw_correction == False):
+            mode = 'Mode1' 
         
+        Occupied_Timeline.update({mode: []})
+        
+        Occupied_Timeline, Mode_comment = Mode_1_2_3_4(Occupied_Timeline)
+        Logger.debug('')
+        Logger.debug('Post-'+mode+' Occupied_Timeline: \n'+"{" + "\n".join("        {}: {}".format(k, v) for k, v in Occupied_Timeline.items()) + "}")
+        Logger.debug('')
+        
+        Logger.debug(mode+' getting added to unchronological timeline')
+        for x in range(len(Occupied_Timeline[mode])):
+            Logger.debug('Appended to timeline: '+str((Occupied_Timeline[mode][x][0], Occupied_Timeline[mode][x][1],mode, Mode_comment)))
+            SCIMOD_Timeline_unchronological.append((Occupied_Timeline[mode][x][0], Occupied_Timeline[mode][x][1],mode, Mode_comment))
+    else:
+        
+        Logger.info('Not NLC season')
+        
+        if( yaw_correction == True ):
+            mode = 'Mode4'
+        elif( yaw_correction == False):
+            mode = 'Mode2' 
         
         
+        Occupied_Timeline.update({mode: []})
+        
+        Occupied_Timeline, Mode_comment = Mode_1_2_3_4(Occupied_Timeline)
+        Logger.debug('')
+        Logger.debug('Post-'+mode+' Occupied_Timeline: \n'+"{" + "\n".join("        {}: {}".format(k, v) for k, v in Occupied_Timeline.items()) + "}")
+        Logger.debug('')
+        
+        Logger.info(mode+' getting added to unchronological timeline')
+        for x in range(len(Occupied_Timeline[mode])):
+            Logger.debug('Appended to timeline: '+str((Occupied_Timeline[mode][x][0], Occupied_Timeline[mode][x][1],mode, Mode_comment)))
+            SCIMOD_Timeline_unchronological.append((Occupied_Timeline[mode][x][0], Occupied_Timeline[mode][x][1],mode, Mode_comment))
+    
+        
+    '''
     elif(Mode1_2_3_4_select == 1):
         
         Logger.info('Mode 3/4 clause entered')
@@ -284,6 +223,7 @@ def Timeline_gen():
             for x in range(len(Occupied_Timeline['Mode4'])):
                 SCIMOD_Timeline_unchronological.append((Occupied_Timeline['Mode4'][x][0], Occupied_Timeline['Mode4'][x][1],'Mode4', Mode4_comment))
         
+    '''
     ################ END of To either fill out available time in the timeline with Mode1/2 or with Mode3/4 or neither ################
     
     

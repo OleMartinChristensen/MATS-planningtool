@@ -1,17 +1,18 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Mon Oct 22 15:18:38 2018
+"""Contains command functions as listed in "InnoSat Payload Timeline XML Definition" document.
 
-Contains command functions as listed in "InnoSat Payload Timeline XML Definition" document.
 Add commands to the XML-tree as specified in "InnoSat Payload Timeline XML Definition" document.
 
-Input:
+Arguments:
     root =  XML tree structure. Main container object for the ElementTree API. lxml.etree.Element class
     The rest are str class and defined as in "InnoSat Payload Timeline XML Definition" document for each corresponding command.
-Output: 
+
+Returns: 
     incremented_time = The scheduled time of the command increased by a number equal to OPT_Config_File.Timeline.settings()['command_separation'].
         This to prevent the command buffer on the satellite from overloading. When scheduling TC_acfLimbPointingAltitudeOffset with Rate = '0', another time period is added to let the attitude stabilize.
+
 @author: David
+
 """
 
 import logging

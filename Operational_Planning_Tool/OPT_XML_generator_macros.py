@@ -16,11 +16,9 @@ Returns:
 @author: David
 """
 
-
-from Operational_Planning_Tool.OPT_XML_generator_Commands import *
-from Operational_Planning_Tool.OPT_XML_generator_procedures import Standard_binning_procedure, Full_CCD_stopNadir_procedure, Single_pixel_stopNadir_procedure, High_res_IR_procedure
+from .OPT_XML_generator_Commands import *
+from .OPT_XML_generator_procedures import Standard_binning_procedure, Full_CCD_stopNadir_procedure, Single_pixel_stopNadir_procedure, High_res_IR_procedure
 from OPT_Config_File import Timeline_settings
-
 
 def NLC_night(root, relativeTime, pointing_altitude, comment):
     ''' Macro that corresponds to Mode1 when nadir is on during NLC season at latitudes polewards of +-45 degrees"
@@ -99,6 +97,23 @@ def IR_day(root, relativeTime, pointing_altitude, comment):
     relativeTime = TC_acfLimbPointingAltitudeOffset(root, relativeTime, Initial = pointing_altitude, Final = pointing_altitude, comment = comment)
     
     relativeTime = High_res_IR_procedure(root, relativeTime, nadir = '0', comment = comment)
+    
+    relativeTime = TC_pafMode(root, relativeTime, mode = "1", comment = comment)
+    
+    return relativeTime
+
+
+def nadir_on_off(root, relativeTime, nadir, comment):
+    ''' Macro that corresponds to turning the nadir imager on/off
+        
+        Arguments:
+            nadir: nadir [str]: Sets the nadir CCD on or off. Either "1" for on or "0" for off.
+    '''
+    
+    relativeTime = TC_pafMode(root, relativeTime, mode = "2", comment = comment)
+    
+    relativeTime = TC_pafCCDMain(root, relativeTime, CCDselect = '64', CCDMode = nadir, ExpInterval = '5000', ExpTime = '5000', comment = comment, 
+                  NumRowsSkip = '0', NumRowsBin= '110', NumRows = '500', NumColumnsBin = '196', NumColumns = '1980', JPEGquality = '100')
     
     relativeTime = TC_pafMode(root, relativeTime, mode = "1", comment = comment)
     

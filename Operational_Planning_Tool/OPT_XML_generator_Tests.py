@@ -6,17 +6,18 @@ Generates and calculates parameters for each Test, and converts them to strings,
 then calls for macros, which will generate commands in the XML-file.
 
 Functions on the form "XML_generator_X", where the last X is any Test:
-    Input:
+    Arguments:
         root =  XML tree structure. Main container object for the ElementTree API. lxml.etree.Element class
         date = Starting date of the Test. On the form of the ephem.Date class.
         duration = The duration of the Test [s] as an integer class.
         relativeTime = The starting time of the Test with regard to the start of the timeline [s] as an integer class
         params = Dictionary containing the parameters of the Test.
-    Output:
+    
+    Returns:
         None
 
 When creating new Test functions it is crucial that the function name is
-XML_generator_"Test_name", where Test_name is the same as the string used in the Science Mode Timeline
+XML_generator_Test_name, where Test_name is the same as the string used in the Science Mode Timeline
 
 @author: David
 """

@@ -2,7 +2,7 @@
 """
 Created on Thu Mar 14 10:35:32 2019
 
-Template for a new Mode where '=X=' is exchanged for the number or name of the mode. 
+Template for a new Mode where 'X' is exchanged for the number or name of the mode. 
 The Mode is scheduled at the start of the timeline as defined in OPT_Config_File.Timeline_settings
 
 @author: David
@@ -10,11 +10,11 @@ The Mode is scheduled at the start of the timeline as defined in OPT_Config_File
 
 
 import ephem, sys, logging
-from OPT_Config_File import Timeline_settings, Logger_name, Mode=X=_settings
+from OPT_Config_File import Timeline_settings, Logger_name
 Logger = logging.getLogger(Logger_name())
 
 
-def Mode=X=(Occupied_Timeline):
+def ModeX(Occupied_Timeline):
     
     initial_date = date_calculator()
     
@@ -35,7 +35,7 @@ def date_calculator():
     
     
     try:
-        initial_date = Mode=X=_settings()['start_time']
+        initial_date = ModeX_settings()['start_time']
         Logger.info('Mode specific start_time used as initial date')
     except:
         Logger.warning('!!Error raised in try statement!!')
@@ -60,7 +60,7 @@ def date_select(Occupied_Timeline, initial_date):
     try:
         Logger.info('Mode specific mode_duration used as initial date')
         endDate = ephem.Date(initial_date + ephem.second*Timeline_settings()['mode_separation'] +
-                             ephem.second*Mode=X=_settings()['mode_duration'])
+                             ephem.second*ModeX_settings()['mode_duration'])
     except:
         Logger.info('Timeline mode_duration used as initial date')
         endDate = ephem.Date(initial_date + ephem.second*Timeline_settings()['mode_separation'] +

@@ -118,7 +118,8 @@ def XML_generator(SCIMOD_Path):
 
 def XML_Initial_Basis_Creator(timeline_start,timeline_duration, SCIMOD_Path):
     '''Construct Basis of XML document and adds the description container.
-    Input: 
+    
+    Arguments: 
         earliestStartingDate: Earliest Starting date of the Timeline. On the form of the ephem.Date class.
         latestStartingDate: Latest Starting date of the Timeline. On the form of the ephem.Date class.
         timeline_duration: Duration of the timeline [s] as a integer class.
@@ -171,14 +172,15 @@ def XML_Initial_Basis_Creator(timeline_start,timeline_duration, SCIMOD_Path):
 
 def XML_generator_select(mode, root, date, duration, relativeTime, params):
     '''Selects corresponding mode or test function from the variable "mode".
-    Input: 
+    
+    Arguments: 
         mode: The name of the of the mode or test as a string. The name in the XML_generator_name function in OPT_XML_generator_MODES
         root: XML tree structure. Main container object for the ElementTree API. lxml.etree.Element class
         date = Starting date of the Mode. On the form of the ephem.Date class.
         duration = The duration of the mode [s] as an integer class.
         relativeTime = The starting time of the mode with regard to the start of the timeline [s] as an integer class
         params = Dictionary containing the parameters of the mode.
-    Output:
+    Returns:
         None
     '''
     
@@ -201,7 +203,6 @@ def XML_generator_select(mode, root, date, duration, relativeTime, params):
         Mode_Test_func(root, date, duration, relativeTime)
     else:
         Mode_Test_func(root, date, duration, relativeTime, params = params)
-    
-    
+
 ####################### End of Mode selecter #############################
 

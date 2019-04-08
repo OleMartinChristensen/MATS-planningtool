@@ -106,10 +106,11 @@ def date_calculator():
     stars_r_H_offset_plane = zeros((ROWS,3))
     stars_vert_offset = zeros((timesteps,ROWS))
     stars_hori_offset = zeros((timesteps,ROWS))
-    normal_orbital = zeros((timesteps,3))
+    normal_orbit = zeros((timesteps,3))
     r_V_offset_normal = zeros((timesteps,3))
     r_H_offset_normal = zeros((timesteps,3))
     pitch_sensor_array = zeros((timesteps,1))
+    pitch_LP_array = zeros((timesteps,1))
     star_counter = 0
     skip_star_list = []
     MATS_p = zeros((timesteps,1))
@@ -119,26 +120,28 @@ def date_calculator():
     angle_between_orbital_plane_and_star = zeros((timesteps,ROWS))
     
     "Constants"
+    celestial_eq_normal = array([[0,0,1]])
     R_mean = 6371 #Earth radius [km]
     #wgs84_Re = 6378.137 #Equatorial radius of wgs84 spheroid [km]
-   # wgs84_Rp = 6356752.3142 #Polar radius of wgs84 spheroid [km]
-    Logger.info('Earth radius used [km]: '+str(R_mean))
-    
+    # wgs84_Rp = 6356752.3142 #Polar radius of wgs84 spheroid [km]
     U = 398600.4418 #Earth gravitational parameter
-    
-    pointing_altitude = Mode122_settings()['pointing_altitude']/1000  #Altitude at which MATS center of FOV is looking [km]
-    Logger.info('pointing_altitude set to [km]: '+str(pointing_altitude))
-    
+    LP_altitude = Mode122_settings()['LP_pointing_altitude']/1000  #Altitude at which MATS center of FOV is looking [km]
+    pointing_altitude = Mode122_settings()['pointing_altitude']/1000 
     #extended_Re = wgs84_Re + LP_altitude #Equatorial radius of extended wgs84 spheroid
     #f_e = (wgs84_Re - wgs84_Rp) / Re_extended #Flattening of extended wgs84 spheroid
-    
-    V_FOV = Mode122_settings()['V_FOV'] #0.91 is actual V_FOV
+    V_FOV = Mode122_settings()['V_FOV']
     H_FOV = Mode122_settings()['H_FOV']  #5.67 is actual H_FOV
-    Logger.info('V_FOV set to [degrees]: '+str(V_FOV))
-    Logger.info('H_FOV set to [degrees]: '+str(H_FOV))
     
     pitch_offset_angle = 0
-    yaw_offset_angle = 0
+    yaw_correction = Timeline_settings()['yaw_correction']
+    
+    Logger.info('Earth radius used [km]: '+str(R_mean))
+    Logger.info('LP_altitude set to [km]: '+str(LP_altitude))
+    Logger.info('H_FOV set to [degrees]: '+str(H_FOV))
+    Logger.info('V_FOV set to [degrees]: '+str(V_FOV))
+    Logger.info('yaw_correction set to: '+str(yaw_correction))
+    
+    
     
     
     Logger.info('TLE used: '+getTLE()[0]+getTLE()[1])
@@ -148,11 +151,11 @@ def date_calculator():
     t=0
     
     time_skip_counter = 0
-    timeskip = 0.25 #Days to skip after each orbit
+    timeskip = 1 #Days to skip after each orbit
     current_time = initial_time
     
     Logger.info('')
-    Logger.info('Start of simulation of MATS for Mode121')
+    Logger.info('Start of simulation of MATS for Mode122')
     
     
     ################## Start of Simulation ########################################
@@ -207,6 +210,9 @@ def date_calculator():
                 abs_lat_LP = abs(lat_MATS[t])+pitch_sensor/180*pi #absolute value of estimated latitude of LP in radians
                 R_LP = lat_2_R(abs_lat_LP) #Estimated WGS84 radius of LP from latitude of MATS
                 
+            # More accurate estimation of pitch angle of MATS using R_LP instead of R_mean
+            pitch_LP_array[t]= array(arccos((R_LP+LP_altitude)/(R+altitude_MATS[t]))/pi*180)
+            pitch_LP = pitch_LP_array[t][0]
             
             pitch_sensor_array[t]= array(arccos((R_LP+pointing_altitude)/(R+altitude_MATS[t]))/pi*180)
             pitch_sensor = pitch_sensor_array[t][0]
@@ -214,16 +220,37 @@ def date_calculator():
             
             ############# Calculations of orbital and pointing vectors ############
             "Vector normal to the orbital plane of MATS"
-            normal_orbital[t,0:3] = cross(r_MATS[t],r_MATS[t-1])
-            normal_orbital[t,0:3] = normal_orbital[t,0:3] / norm(normal_orbital[t,0:3])
+            normal_orbit[t,0:3] = cross(r_MATS[t],r_MATS[t-1])
+            normal_orbit[t,0:3] = normal_orbit[t,0:3] / norm(normal_orbit[t,0:3])
+            
+            if( yaw_correction == True):
+                "Calculate intersection between the orbital plane and the equator"
+                ascending_node = cross(normal_orbit[t,0:3], celestial_eq_normal)
+                
+                arg_of_lat = arccos( dot(ascending_node, r_MATS[t,0:3]) / norm(r_MATS[t,0:3]) / norm(ascending_node) ) /pi*180
+                
+                "To determine if MATS is moving towards the ascending node"
+                if( dot(cross( ascending_node, r_MATS[t,0:3]), normal_orbit[t,0:3]) >= 0 ):
+                    arg_of_lat = 360 - arg_of_lat
+                    
+                yaw_offset_angle = -3.8 * cos( arg_of_lat/180*pi - pitch_LP/180*pi - 20/180*pi )
+                yaw_offset_angle = yaw_offset_angle[0]
+                
+                if( t*timestep % log_timestep == 0 or t == 1 ):
+                    Logger.debug('ascending_node: '+str(ascending_node))
+                    Logger.debug('arg_of_lat [degrees]: '+str(arg_of_lat))
+                    Logger.debug('yaw_offset_angle [degrees]: '+str(yaw_offset_angle))
+                
+            elif( yaw_correction == False):
+                yaw_offset_angle = 0
             
             
             "Rotate 'vector to MATS', to represent pointing direction, includes vertical offset change (Parallax is negligable)"
-            rot_mat = rot_arbit(-pi/2+(-pitch_sensor+pitch_offset_angle)/180*pi, normal_orbital[t,0:3])
+            rot_mat = rot_arbit(-pi/2+(-pitch_sensor+pitch_offset_angle)/180*pi, normal_orbit[t,0:3])
             r_FOV[t,0:3] = (r_MATS[t] @ rot_mat) /2
             
             
-            #rot_mat2 = rot_arbit(pi/2+(pitch_sensor+pitch_offset_angle)/180*pi, normal_orbital[t,0:3])
+            #rot_mat2 = rot_arbit(pi/2+(pitch_sensor+pitch_offset_angle)/180*pi, normal_orbit[t,0:3])
             #r_FOV2[t,0:3] = (rot_mat2 @ r_MATS[t]) /2
             #r_FOV_unit_vector2[t,0:3] = r_FOV2[t,0:3]/norm(r_FOV2[t,0:3])
             
@@ -235,7 +262,7 @@ def date_calculator():
             
             '''Rotate 'vector to MATS', to represent vector normal to satellite H-offset plane,
             which will be used to project stars onto it which allows the H-offset of stars to be found'''
-            rot_mat = rot_arbit((-pitch_sensor)/180*pi, normal_orbital[t,0:3])
+            rot_mat = rot_arbit((-pitch_sensor)/180*pi, normal_orbit[t,0:3])
             r_H_offset_normal[t,0:3] = (r_MATS[t] @ rot_mat)
             r_H_offset_normal[t,0:3] = r_H_offset_normal[t,0:3] / norm(r_H_offset_normal[t,0:3])
             
@@ -245,7 +272,7 @@ def date_calculator():
             r_H_offset_normal[t,0:3] = r_H_offset_normal[t,0:3]/norm(r_H_offset_normal[t,0:3])
             
             "Rotate orbital plane normal to make it into pointing V-offset plane normal"
-            r_V_offset_normal[t,0:3] = (normal_orbital[t,0:3] @ rot_mat)
+            r_V_offset_normal[t,0:3] = (normal_orbit[t,0:3] @ rot_mat)
             r_V_offset_normal[t,0:3] = r_V_offset_normal[t,0:3]/norm(r_V_offset_normal[t,0:3])
             
             if( t*timestep % log_timestep == 0 or t == 1 ):
@@ -258,7 +285,7 @@ def date_calculator():
                 #Logger.debug('Pointing direction of FOV2: '+str(r_FOV_unit_vector2[t,0:3]))
                 Logger.debug('Orthogonal direction to H-offset plane: '+str(r_H_offset_normal[t,0:3]))
                 Logger.debug('Orthogonal direction to V-offset plane: '+str(r_V_offset_normal[t,0:3]))
-                Logger.debug('Orthogonal direction to the orbital plane: '+str(normal_orbital[t,0:3]))
+                Logger.debug('Orthogonal direction to the orbital plane: '+str(normal_orbit[t,0:3]))
                 Logger.debug('')
             
             
@@ -276,22 +303,6 @@ def date_calculator():
                 if(stars[x].name in skip_star_list):
                     
                     continue
-                '''
-                "Check if a star has already been spotted during this orbit."
-                if( stars[x].name in spotted_star_name ):
-                    
-                    'Check if not enough time has passed so that the star has not left FOV'
-                    if((current_time - spotted_star_timestamp[spotted_star_name.index(stars[x].name)]) < ephem.second*(V_FOV*2*MATS_P[t]/360)):
-                        
-                        continue
-                        
-                        "If enough time has passed (half an orbit), the star can be removed from the exception list"
-                    elif((current_time - spotted_star_timestamp[spotted_star_name.index(stars[x].name)]) >= ephem.second*(180*MATS_P[t]/360)):
-                        spotted_star_timestamp.pop(spotted_star_name.index(stars[x].name))
-                        spotted_star_timecounter.pop(spotted_star_name.index(stars[x].name))
-                        spotted_star_name.remove(stars[x].name)
-                        continue
-                '''        
                 
                 
                 "Project 'star vectors' ontop pointing H-offset and V-offset plane"
@@ -337,7 +348,7 @@ def date_calculator():
         
         
         if( (current_time - initial_time)/ephem.second > (timeskip/ephem.second * time_skip_counter + MATS_P[t] * (time_skip_counter+1)) ):
-            "If one orbit has passed -> increent 'current_time' with 'timeskip' amount of days"
+            "If one orbit has passed -> increment 'current_time' with 'timeskip' amount of days"
             time_skip_counter = time_skip_counter + 1
             current_time = ephem.Date(current_time + timeskip)
         else:
@@ -374,7 +385,7 @@ def date_calculator():
     ax.scatter(stars_r[0][:,0],stars_r[0][:,1],stars_r[0][:,2])
     ax.scatter(r_FOV_unit_vector[points_2_plot_start:points_2_plot,0],r_FOV_unit_vector[points_2_plot_start:points_2_plot,1],r_FOV_unit_vector[points_2_plot_start:points_2_plot,2])
     ax.scatter(r_V_offset_normal[points_2_plot_start:points_2_plot,0]/2, r_V_offset_normal[points_2_plot_start:points_2_plot,1]/2, r_V_offset_normal[points_2_plot_start:points_2_plot,2]/2)
-    ax.scatter(normal_orbital[points_2_plot_start:points_2_plot,0]/2, normal_orbital[points_2_plot_start:points_2_plot,1]/2, normal_orbital[points_2_plot_start:points_2_plot,2]/2)
+    ax.scatter(normal_orbit[points_2_plot_start:points_2_plot,0]/2, normal_orbit[points_2_plot_start:points_2_plot,1]/2, normal_orbit[points_2_plot_start:points_2_plot,2]/2)
     ax.scatter(r_H_offset_normal[points_2_plot_start:points_2_plot,0]/2, r_H_offset_normal[points_2_plot_start:points_2_plot,1]/2, r_H_offset_normal[points_2_plot_start:points_2_plot,2]/2)
     '''
     ########################### END of Optional plotter ########################################

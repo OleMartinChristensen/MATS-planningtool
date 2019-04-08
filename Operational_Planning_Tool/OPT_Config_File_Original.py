@@ -1,38 +1,42 @@
 # -*- coding: utf-8 -*-
-"""
-Contains settings for the Operational Planning Tool
-@author: David
+"""Contains settings for the Operational Planning Tool
+    
 """
 
 import ephem
 from Operational_Planning_Tool.OPT_library import FreezeDuration_calculator
 
 def Logger_name():
-    "Names the shared logger"
+    '''Names the shared logger
+    
+    '''
     Logger_name = "OPT_logger"
     
     return Logger_name
 
 def Version():
-    "Names this version of the Config_File used"
+    ''''Names this version of the Config_File used
+    
+    '''
     version_name = 'Original'
     return version_name
 
 def Modes_priority():
-    '''
-    Creates List of Modes (except 1-4) to be schedueled, the order of which they appear is their priority order.
+    '''Creates List of Modes (except 1-4) to be schedueled, the order of which they appear is their priority order.
+    
     The name must be equal to the name of the top function in the OPT_Timeline_generator_ModeX module, where X is any mode.
+    
     '''
     Modes_priority = [
             'Mode130', 
-          'Mode200',
-          'Mode120',
-          'Mode121',
-          'Mode110',
-          'Mode100',
-          'Mode132',
-          'Mode122',
-          'Mode131']
+            'Mode200',
+            'Mode120',
+            'Mode121',
+            'Mode110',
+            'Mode100',
+            'Mode132',
+            'Mode122',
+            'Mode131']
     return Modes_priority
 
 def getTLE():
@@ -51,22 +55,27 @@ def initialConditions():
     return InitialConditions
 
 def Timeline_settings():
+    '''Function that returns a dict with settings related to the timeline as a whole.
+    
+    Keys:
+        start_time: Sets the starting date of the timeline as a ephem.Date (example: ephem.Date('2018/9/3 08:00:40'))
+        duration: Sets the duration in seconds of the timeline
+        leap_seconds: Sets the amount of leap seconds for GPS time to be used
+        GPS_epoch: Sets the epoch of the GPS time in ephem.Date format (example: ephem.Date('1980/1/6'))
+        mode_separation: Separates the scheduling of Modes 1-4 and the start of a new mode by this amount [s].
+        Is also used as an extra term in the calculations of the duration of other modes to act as an prolonged buffer.
+        Meaning that whenever mode_duration is calculated it is equal to an calculated estimation of the modes duration plus "mode_separation"
+        mode_duration: Sets the amount of time scheduled for modes which do not have their own respective duration settings
+        yaw_correction: If yaw correction will be used for the duration of the timeline. Decides if Mode1/2 or Mode3/4 are to be scheduled. Set to 1 for Mode3/4, set to 0 for Mode1/2
+        command_separation: Minimum ammount of time inbetween scheduled commands [s].
+        pointing_stabilization: Extra time [s] scheduled for fixed pointing commands before new commands are allowed.
+        
+    Returns:
+        settings (dict)
     '''
-    start_time: Sets the starting date of the timeline as a ephem.Date (example: ephem.Date('2018/9/3 08:00:40'))
-    duration: Sets the duration in seconds of the timeline
-    leap_seconds: Sets the amount of leap seconds for GPS time to be used
-    GPS_epoch: Sets the epoch of the GPS time in ephem.Date format (example: ephem.Date('1980/1/6'))
-    mode_separation: Separates the scheduling of Modes 1-4 and the start of a new mode by this amount [s].
-                        Is also used as an extra term in the calculations of the duration of other modes to act as an prolonged buffer.
-                        Meaning that whenever mode_duration is calculated it is equal to an calculated estimation of the modes duration plus "mode_separation"
-    mode_duration: Sets the amount of time scheduled for modes which do not have their own respective duration settings
-    yaw_correction: Decides if Mode1/2 or Mode3/4 are to be scheduled. Set to 1 for Mode3/4, set to 0 for Mode1/2
-    command_separation: Minimum ammount of time inbetween scheduled commands [s].
-    pointing_stabilization: Extra time [s] scheduled for fixed pointing commands before new commands are allowed.
-    '''
-    timeline_settings = {'start_time': ephem.Date('2018/9/3 08:00:40'), 'duration': 1*7*3600, 
+    timeline_settings = {'start_time': ephem.Date('2018/9/3 08:00:40'), 'duration': 1*4*3600, 
                        'leap_seconds': 18, 'GPS_epoch': ephem.Date('1980/1/6'), 'mode_separation': 120,
-                       'mode_duration': 900, 'yaw_correction': 0, 'command_separation': 0.1, 'pointing_stabilization': 60}
+                       'mode_duration': 900, 'yaw_correction': True, 'command_separation': 0.1, 'pointing_stabilization': 60}
     return timeline_settings
 
 def Mode1_settings():
@@ -86,31 +95,49 @@ def Mode2_settings():
     settings = {'pointing_altitude': 92000, 'log_timestep': 800}
     return settings
 
-def Mode100_settings():
+def Mode3_settings():
     '''
-    pointing_altitude_from: Sets in meters the starting altitude
-    pointing_altitude_to: Sets in meters the ending altitude
-    pointing_altitude_interval: Sets in meters the interval size of each succesive pointing
-    pointing_duration: Sets the time [s] from attitude stabilization until next pointing command
+    lat: Sets in degrees the latitude (+ and -) that the LP crosses that causes NLC mode to swith on/off
+    pointing_altitude: Sets in meters the altitude of the pointing command
+    log_timestep: Sets the frequency of data being logged [s]
+    '''
+    settings = {'lat': 45, 'pointing_altitude': 92000, 'log_timestep': 800}
+    return settings
+
+def Mode4_settings():
+    '''
+    pointing_altitude: Sets in meters the altitude of the pointing command
+    log_timestep: Sets the frequency of data being logged [s]
+    '''
+    settings = {'pointing_altitude': 92000, 'log_timestep': 800}
+    return settings
+
+def Mode100_settings():
+    '''Function that returns a dict with settings related to Mode100.
     
-    Args:
-        None
+    Keys:
+        'pointing_altitude_from': Sets in meters the starting altitude\n
+        'pointing_altitude_to': Sets in meters the ending altitude\n
+        'pointing_altitude_interval': Sets in meters the interval size of each succesive pointing\n
+        'pointing_duration': Sets the time [s] from attitude stabilization until next pointing command
+        
     Returns:
         settings (dict)
+            
     '''
     settings = {'pointing_altitude_from': 10000, 'pointing_altitude_to': 150000, 
-                'pointing_altitude_interval': 5000, 'pointing_duration': 10}
+                'pointing_altitude_interval': 5000, 'pointing_duration': 20}
     return settings
 
 def Mode110_settings():
-    '''
-    pointing_altitude_from: Sets in meters the starting altitude of the sweep
-    pointing_altitude_to: Sets in meters the ending altitude of the sweep
-    sweep_rate: Sets in meters rate of the sweep
-    sweep_start: Sets in seconds the time from start of the Mode to when the sweep starts
+    '''Function that returns a dict with settings related to Mode100.
     
-    Args:
-        None
+    Keys:
+        pointing_altitude_from: Sets in meters the starting altitude of the sweep
+        pointing_altitude_to: Sets in meters the ending altitude of the sweep
+        sweep_rate: Sets in meters rate of the sweep
+        sweep_start: Sets in seconds the time from start of the Mode to when the sweep starts
+    
     Returns:
         settings (dict)
     '''
