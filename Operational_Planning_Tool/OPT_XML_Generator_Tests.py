@@ -2,16 +2,39 @@
 """
 Created on Fri Mar 22 12:34:33 2019
 
+Generates and calculates parameters for each Test, and converts them to strings,
+then calls for macros, which will generate commands in the XML-file.
+
+Functions on the form "XML_generator_X", where the last X is any Test:
+    Arguments:
+        root =  XML tree structure. Main container object for the ElementTree API. lxml.etree.Element class
+        date = Starting date of the Test. On the form of the ephem.Date class.
+        duration = The duration of the Test [s] as an integer class.
+        relativeTime = The starting time of the Test with regard to the start of the timeline [s] as an integer class
+        params = Dictionary containing the parameters of the Test.
+    
+    Returns:
+        None
+
+When creating new Test functions it is crucial that the function name is
+XML_generator_Test_name, where Test_name is the same as the string used in the Science Mode Timeline
+
 @author: David
 """
 
+import ephem, logging, sys
+from OPT_Config_File import Logger_name, Timeline_settings
+from Operational_Planning_Tool.OPT_library import rot_arbit
+Logger = logging.getLogger(Logger_name())
+
 def XML_generator_Limb_functional_test(root, date, duration, relativeTime, params = {'ExpTimes': [1,2,4,8,16]}):
-    "Limb_functional_test."
+    """Limb_functional_test. Schedules Limb_functional_test with defined parameters and simulates MATS propagation from TLE.
+    Scheduling of all daylight and nighttime commands are separated and all commands for one is scheduled first.
+    """
     
     from Operational_Planning_Tool.OPT_XML_generator_macros import Limb_functional_test_macro
     from OPT_Config_File import getTLE
     from pylab import dot, arccos, zeros, pi, sin, cos, arctan, cross, norm, sqrt
-    #from OPT_Config_File import Mode=X=_settings
     
     Logger.debug('params from Science Mode List: '+str(params))
     #params = params_checker(params,Mode=X=_settings)
@@ -32,12 +55,7 @@ def XML_generator_Limb_functional_test(root, date, duration, relativeTime, param
         "Altitudes that defines the LP"
         for altitude in [50000,70000,90000,110000,130000,160000,200000]:
             
-            "Variable to alert the program when a new altitude is set"
-            flag_pointing = 'Not Pointed'
-            
             for JPEGQ in JPEGQs:
-                
-                
                 
                 for ExpTime in ExpTimes:
                     
@@ -76,20 +94,18 @@ def XML_generator_Limb_functional_test(root, date, duration, relativeTime, param
                     #lat = params['lat']/180*pi
                     lat = 30/180*pi
                     
-                    #Estimation of the angle [degrees] between the sun and the FOV position when it enters eclipse
+                    "Estimation of the angle [degrees] between the sun and the FOV position when it enters eclipse"
                     LP_eclipse_angle = arccos(R_mean/(R_mean+altitude_km))/pi*180 + 90
-                    
-                    
                     
                     Logger.info('')
                     Logger.info('LP_eclipse_angle : '+str(LP_eclipse_angle))
                     
+                    timestep = 4
                     t=0
                     
                     "Calculate the current angle between MATS and the Sun and the latitude of the LP"
                     "and Loop until it is either day or night and the right latitude"
                     while(True):
-                        
                         
                         mode_relativeTime = relativeTime - initial_relativeTime
                         current_time = ephem.Date(date+ephem.second*mode_relativeTime)
@@ -125,9 +141,6 @@ def XML_generator_Limb_functional_test(root, date, duration, relativeTime, param
                         r_Sun_direction[t,0:3] = [x_Sun[t], y_Sun[t], z_Sun[t]]
                         
                         
-                        
-                        #sun_angle[t]= ephem.separation(Sun,MATS)/pi*180
-                        
                         if( t != 0):
                             "Vector normal to the orbital plane of MATS"
                             normal_orbital[t,0:3] = cross(r_MATS[t],r_MATS[t-1])
@@ -144,14 +157,6 @@ def XML_generator_Limb_functional_test(root, date, duration, relativeTime, param
                             "Calculate angle between LP and the Sun"
                             sun_angle[t] = arccos(dot(r_Sun_direction[t,0:3],r_LP_direction[t,0:3])/norm(r_LP_direction[t,0:3]))/pi*180
                             
-                            if( t % log_timestep == 0 or t == 1):
-                                Logger.info('')
-                                Logger.info('current_time: '+str(current_time))
-                                Logger.info('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
-                                Logger.info('lat_LP [degrees]: '+str(lat_LP[t]/pi*180))
-                                Logger.info('sun_angle [degrees]: '+str(sun_angle[t]))
-                                Logger.info('mode: '+str(mode))
-                                Logger.info('')
                             
                             if( (sun_angle[t] < LP_eclipse_angle and abs(lat_LP[t]) <= lat and mode == 'Day' ) or 
                                (sun_angle[t] > LP_eclipse_angle and abs(lat_LP[t]) <= lat and mode == 'Night' )):
@@ -163,17 +168,27 @@ def XML_generator_Limb_functional_test(root, date, duration, relativeTime, param
                                 Logger.info('lat_LP [degrees]: '+str(lat_LP[t]/pi*180))
                                 Logger.info('sun_angle [degrees]: '+str(sun_angle[t]))
                                 Logger.info('mode: '+str(mode))
-                                
                                 Logger.info('')
+                                
+                                Mode_name = sys._getframe(0).f_code.co_name
+                                comment = Mode_name+', '+str(date)+', '+str(params)
                                 break
                             
+                            elif( t*timestep % log_timestep == 0 or t == 1):
+                                Logger.info('')
+                                Logger.info('current_time: '+str(current_time))
+                                Logger.info('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
+                                Logger.info('lat_LP [degrees]: '+str(lat_LP[t]/pi*180))
+                                Logger.info('sun_angle [degrees]: '+str(sun_angle[t]))
+                                Logger.info('mode: '+str(mode))
+                                Logger.info('')
                             
                             
                         "Increase Loop counter"
                         t= t+1
                         
-                        "Timestep"
-                        relativeTime = relativeTime + 4
+                        "Timestep for propagation of MATS"
+                        relativeTime = round(relativeTime + timestep,2)
                         
                             
                     ############################################################################
@@ -181,53 +196,218 @@ def XML_generator_Limb_functional_test(root, date, duration, relativeTime, param
                     ############################################################################
                     
                     Logger.info('Limb_functional_test_macro: relativeTime = '+str(relativeTime)+', pointing_altitude = '+str(altitude)+
-                                ', ExpTime = '+str(ExpTime)+', JPEGQ = '+str(JPEGQ)+', flag_pointing = '+flag_pointing)
-                    
-                    
+                                ', ExpTime = '+str(ExpTime)+', JPEGQ = '+str(JPEGQ))
                     
                     relativeTime = Limb_functional_test_macro(root = root, relativeTime = str(relativeTime), 
                                                pointing_altitude = str(altitude), ExpTime = str(ExpTime), 
-                                               JPEGQ = JPEGQ, flag_pointing = flag_pointing)
+                                               JPEGQ = JPEGQ, comment=comment)
                     
-                    
-                    
-                    "To only Schedule pointing command once per altitude"
-                    if( ExpTime == ExpTimes[0] and JPEGQ == JPEGQs[0]):
-                        flag_pointing = 'Pointed'
-                    
-                    relativeTime = float(relativeTime) + ExpTime/1000
+                    "Postpone next command until at least the end of ExpTime"
+                    relativeTime = round(float(relativeTime) + ExpTime/1000,2)
                 
     
 
+#############################################################################################
 
 
 
-##############################################################################################
-
-
-
-def XML_generator_Photometer_test_1(root, date, duration, relativeTime, params = {}):
+def XML_generator_Photometer_test_1(root, date, duration, relativeTime, params = {'ExpTimes': [1,2,4,8,16]}):
     "Photometer_test_1"
     
     from Operational_Planning_Tool.OPT_XML_generator_macros import Photometer_test_1_macro
+    #from OPT_Config_File import getTLE
+    #from pylab import pi, sqrt
     #from OPT_Config_File import Mode=X=_settings
     
     #params = params_checker(params,Mode=X=_settings)
     
+    '''
+    MATS = ephem.readtle('MATS', getTLE()[0], getTLE()[1])
+    MATS.compute(date)
+    MATS_altitude = MATS.elevation/1000
+    U = 398600.4418 #Earth gravitational parameter
+    
+    #Semi-Major axis of MATS, assuming circular orbit
+    #MATS_p = norm(r_MATS[t,0:3])
+    MATS_p = 2*(MATS_altitude+6371)
+    
+    #Orbital Period of MATS
+    MATS_P = 2*pi*sqrt(MATS_p**3/U)
+    '''
+    
+    Logger.info('')
+    
+    ExpTimes = params['ExpTimes']
+    
     initial_relativeTime = relativeTime
     
+    Photometer_test_1_duration = duration
+    
     while( True ):
-        mode_relativeTime = relativeTime - initial_relativeTime
+        mode_relativeTime = round(relativeTime - initial_relativeTime,2)
         
-        if( mode_relativeTime >= duration):
-            Logger.info('End of Mode')
+        if( mode_relativeTime >= Photometer_test_1_duration):
+            Logger.info('End of Photometer_test_1')
             break
             
-        
-        relativeTime = Photometer_test_1_macro(root, relativeTime = str(relativeTime))
-        relativeTime = float(relativeTime)
-    
+        for ExpTime in ExpTimes:
+            ExpInt = ExpTime +1
+            
+            Mode_name = sys._getframe(0).f_code.co_name
+            comment = Mode_name+', '+str(date)+', '+str(params)
+            
+            Logger.info('Photometer_test_1_macro: relativeTime = '+str(relativeTime)+
+                                ', ExpTime = '+str(ExpTime)+', ExpInt = '+str(ExpInt))
+            relativeTime = Photometer_test_1_macro(root, relativeTime = str(relativeTime), ExpTime = str(ExpTime), ExpInt = str(ExpInt), comment = comment)
+            
+            "Postpone Next PM settings"
+            relativeTime = round(float(relativeTime) + 120-Timeline_settings()['command_separation'],2)
+            
+
+
 
 
 ##############################################################################################
+
+
+##############################################################################################
+
+
+
+def XML_generator_Nadir_functional_test(root, date, duration, relativeTime, params = {'ExpTimes': [1,2,4,8,16]}):
+    "Nadir_functional_test"
+    
+    from Operational_Planning_Tool.OPT_XML_generator_macros import Nadir_functional_test_macro
+    from OPT_Config_File import getTLE
+    from pylab import zeros, pi, sin, cos, arccos
+    
+    Logger.debug('params from Science Mode List: '+str(params))
+    #params = params_checker(params,Mode=X=_settings)
+    
+    log_timestep = 100
+    Logger.info('log_timestep [s]: '+str(log_timestep))
+    
+    duration_flag = 0
+    
+    JPEGQs = ['101','95']
+    
+    altitude = 92500
+    
+    ExpTimes = params['ExpTimes']
+    
+    initial_relativeTime = relativeTime
+    
+    for mode in ['Day', 'Night']:
+        
+        for JPEGQ in JPEGQs:
+            
+            for ExpTime in ExpTimes:
+                
+                ############################################################################
+                ########################## Orbit simulator #################################
+                ############################################################################
+                
+                Sun = ephem.Sun(date)
+                MATS = ephem.readtle('MATS', getTLE()[0], getTLE()[1])
+                
+                "Pre-allocate space"
+                lat_MATS = zeros((duration,1))
+                sun_angle = zeros((duration,1))
+                altitude_MATS = zeros((duration,1))
+                g_ra_MATS = zeros((duration,1))
+                g_dec_MATS = zeros((duration,1))
+                x_MATS = zeros((duration,1))
+                y_MATS = zeros((duration,1))
+                z_MATS = zeros((duration,1))
+                r_MATS = zeros((duration,3))
+                
+                R_mean = 6371
+                altitude_km = altitude/1000
+                
+                #Estimation of the angle [degrees] between the sun and the FOV position when it enters eclipse
+                nadir_eclipse_angle = arccos(R_mean/(R_mean+altitude_km))/pi*180 + 90
+                
+                #lat = params['lat']/180*pi
+                lat = 30/180*pi
+                
+                Logger.info('')
+                Logger.info('nadir_eclipse_angle : '+str(nadir_eclipse_angle))
+                
+                t=0
+                timestep = 4
+                
+                "Calculate the current angle between MATS and the Sun"
+                "and Loop until it is either day or night and the right latitude"
+                while(True):
+                    
+                    mode_relativeTime = relativeTime - initial_relativeTime
+                    current_time = ephem.Date(date+ephem.second*mode_relativeTime)
+                    
+                    if(mode_relativeTime > duration and duration_flag == 0):
+                        Logger.warning('Warning!! The scheduled time for the mode has ran out.')
+                        input('Enter anything to continue:\n')
+                        duration_flag = 1
+                    
+                    MATS.compute(current_time)
+                    
+                    (lat_MATS[t],altitude_MATS[t],g_ra_MATS[t],g_dec_MATS[t])= (
+                    MATS.sublat,MATS.elevation/1000,MATS.g_ra,MATS.g_dec)
+                    
+                    z_MATS[t] = sin(g_dec_MATS[t])*(altitude_MATS[t]+R_mean)
+                    x_MATS[t] = cos(g_dec_MATS[t])*(altitude_MATS[t]+R_mean)* cos(g_ra_MATS[t])
+                    y_MATS[t] = cos(g_dec_MATS[t])*(altitude_MATS[t]+R_mean)* sin(g_ra_MATS[t])
+                   
+                    r_MATS[t,0:3] = [x_MATS[t], y_MATS[t], z_MATS[t]]
+                    
+                    sun_angle[t]= ephem.separation(Sun,MATS)/pi*180
+                    
+                    
+                    if( t*timestep % log_timestep == 0 == 0 or t == 1):
+                        Logger.info('')
+                        Logger.info('current_time: '+str(current_time))
+                        Logger.info('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
+                        Logger.info('sun_angle [degrees]: '+str(sun_angle[t]))
+                        Logger.info('mode: '+str(mode))
+                        Logger.info('')
+                    
+                    if( (sun_angle[t] < nadir_eclipse_angle and abs(lat_MATS[t]) <= lat and mode == 'Day' ) or 
+                       (sun_angle[t] > nadir_eclipse_angle and abs(lat_MATS[t]) <= lat and mode == 'Night' )):
+                        
+                        Logger.info('!!Break of Loop!!')
+                        Logger.info('Loop Counter (t): '+str(t))
+                        Logger.info('current_time: '+str(current_time))
+                        Logger.info('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
+                        Logger.info('sun_angle [degrees]: '+str(sun_angle[t]))
+                        Logger.info('mode: '+str(mode))
+                        
+                        Logger.info('')
+                        break
+                        
+                        
+                    "Increase Loop counter"
+                    t= t+1
+                    
+                    "Timestep for propagation of MATS"
+                    relativeTime = round(relativeTime + timestep,1)
+                    
+                        
+                ############################################################################
+                ########################## End of Orbit simulator ##########################
+                ############################################################################
+                
+                Logger.info('Limb_functional_test_macro: relativeTime = '+str(relativeTime)+', pointing_altitude = '+str(altitude)+
+                            ', ExpTime = '+str(ExpTime)+', JPEGQ = '+str(JPEGQ))
+                
+                relativeTime = Nadir_functional_test_macro(root = root, relativeTime = str(relativeTime), 
+                                           pointing_altitude = str(altitude), ExpTime = str(ExpTime), 
+                                           JPEGQ = JPEGQ)
+                
+                
+                "Postpone next command until at least the end of ExpTime"
+                relativeTime = round(float(relativeTime) + ExpTime/1000,2)
+
+
+
+#######################################################################################################
+
 
