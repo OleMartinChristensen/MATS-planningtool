@@ -113,8 +113,8 @@ def XML_generator_Limb_functional_test(root, date, duration, relativeTime, param
                         current_time = ephem.Date(date+ephem.second*mode_relativeTime)
                         
                         if(mode_relativeTime > duration and duration_flag == 0):
-                            Logger.warning('Warning!! The scheduled time for the mode has ran out.')
-                            input('Enter anything to continue:\n')
+                            Logger.warning('Warning!! The scheduled time for the Test has ran out.')
+                            #input('Enter anything to continue:\n')
                             duration_flag = 1
                         
                         MATS.compute(current_time)
@@ -339,8 +339,8 @@ def XML_generator_Nadir_functional_test(root, date, duration, relativeTime, para
                     current_time = ephem.Date(date+ephem.second*mode_relativeTime)
                     
                     if(mode_relativeTime > duration and duration_flag == 0):
-                        Logger.warning('Warning!! The scheduled time for the mode has ran out.')
-                        input('Enter anything to continue:\n')
+                        Logger.warning('Warning!! The scheduled time for the Test has ran out.')
+                        #input('Enter anything to continue:\n')
                         duration_flag = 1
                     
                     MATS.compute(current_time)

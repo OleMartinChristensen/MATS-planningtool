@@ -1,13 +1,20 @@
 # -*- coding: utf-8 -*-
-"""Contains the functions for Timeline generator, XML generator and Timeline_analyse, which together constitute the Operational_Planning_Tool.
-    
+"""Contains the functions that can be called to invoke Timeline generator, XML generator and Timeline_analyse, which together constitute the Operational_Planning_Tool.
+
+Example:
+    import Operational_Planning_Tool as OPT
+    OPT.Timeline_gen()
+    OPT.XML_gen('Output/MATS_SCIMOD_TIMELINE_Version-Original.json')
+
 Settings for the program are stated in the OPT_Config_File.py file, which is created in the working directory of the user call
-upon import of the Operational_Planning_Tool package. All generated output files are saved in a folder called 'Output' in the working directory.
-Generated logs are also saved in a folder created in the working directory.
+upon import of the Operational_Planning_Tool package. All settings in the generated 
+OPT_Config_File can be changed to adjust the Operational Planning Tool. 
+All generated output files are saved in a folder called 'Output' in the working directory.
+Generated logs are also saved in folders created in the working directory.
 
 """
 
-import os, shutil
+import os, shutil, sys
 
 from .XML_generator.Core import XML_generator
 from .Timeline_generator.Core import Timeline_generator
@@ -16,10 +23,10 @@ from . import Globals
 
 
 
-sys.path.append(os.getcwd()+'/Operational_Planning_Tool')
+#sys.path.append(os.getcwd()+'/Operational_Planning_Tool')
 
-if(os.path.isfile('OPT_Config_File.py') == False):
-    shutil.copyfile('Operational_Planning_Tool/Config_File_Original.py','OPT_Config_File.py')
+#if(os.path.isfile('OPT_Config_File.py') == False):
+#    shutil.copyfile('Operational_Planning_Tool/Config_File_Original.py','OPT_Config_File.py')
 
 
 def Timeline_gen():

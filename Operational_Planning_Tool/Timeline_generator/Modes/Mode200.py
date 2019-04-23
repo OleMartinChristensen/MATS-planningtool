@@ -47,8 +47,7 @@ def Mode200(Occupied_Timeline):
         ############### End of availability schedueler ##########################
         
         if(iterations != 0):
-            Logger.warning('User Specified date was occupied and got postponed!! Enter anything to ackknowledge and continue')
-            input()
+            Logger.warning('User Specified date was occupied and got postponed!!')
             
         Occupied_Timeline['Mode200'] = (date, endDate)
         Mode200_comment = 'Mode200 scheduled using a user set date, the date got postponed '+str(iterations)+' times'
@@ -257,25 +256,25 @@ def Mode200_date_calculator():
                 yaw_offset_angle = 0
             
             "Rotate 'vector to MATS', to represent pointing direction, includes vertical offset change"
-            rot_mat = rot_arbit(-pi/2+(-pitch_pointing_command)/180*pi, normal_orbit[t,0:3])
-            r_FOV[t,0:3] = (r_MATS[t] @ rot_mat)
+            rot_mat = rot_arbit(pi/2+(pitch_pointing_command)/180*pi, normal_orbit[t,0:3])
+            r_FOV[t,0:3] = (rot_mat @ r_MATS[t])
             
             "Rotate yaw of pointing direction, meaning to rotate around the vector to MATS"
-            rot_mat = rot_arbit( (yaw_offset_angle)/180*pi, r_MATS_unit_vector[t,0:3])
-            r_FOV[t,0:3] = r_FOV[t,0:3] @ rot_mat
+            rot_mat = rot_arbit( (-yaw_offset_angle)/180*pi, r_MATS_unit_vector[t,0:3])
+            r_FOV[t,0:3] =  rot_mat @ r_FOV[t,0:3]
             
             
             "Rotate 'vector to MATS', to represent a vector normal to the H-offset pointing plane, includes vertical offset change (Parallax is negligable)"
-            rot_mat = rot_arbit((-pitch_pointing_command)/180*pi, normal_orbit[t,0:3])
-            r_H_offset_normal[t,0:3] = (r_MATS[t] @ rot_mat)
+            rot_mat = rot_arbit((pitch_pointing_command)/180*pi, normal_orbit[t,0:3])
+            r_H_offset_normal[t,0:3] = (rot_mat @ r_MATS[t])
             
             "If pointing direction has a Yaw defined, Rotate yaw of normal to pointing direction H-offset plane, meaning to rotate around the vector to MATS"
-            rot_mat = rot_arbit(yaw_offset_angle/180*pi, r_MATS_unit_vector[t,0:3])
-            r_H_offset_normal[t,0:3] = (r_H_offset_normal[t] @ rot_mat)
+            rot_mat = rot_arbit(-yaw_offset_angle/180*pi, r_MATS_unit_vector[t,0:3])
+            r_H_offset_normal[t,0:3] = (rot_mat @ r_H_offset_normal[t])
             r_H_offset_normal[t,0:3] = r_H_offset_normal[t,0:3]/norm(r_H_offset_normal[t,0:3])
             
             "Rotate orbital plane normal to make it into pointing V-offset plane normal"
-            r_V_offset_normal[t,0:3] = (normal_orbit[t] @ rot_mat)
+            r_V_offset_normal[t,0:3] = (rot_mat @ normal_orbit[t])
             r_V_offset_normal[t,0:3] = r_V_offset_normal[t,0:3]/norm(r_V_offset_normal[t,0:3])
             
             
@@ -427,7 +426,7 @@ def Mode200_date_select(Occupied_Timeline, Moon_list):
         Mode200_comment = 'Moon not visible (Moon_list is empty)'
         Logger.warning('')
         Logger.warning(Mode200_comment)
-        input('Enter anything to acknowledge and continue\n')
+        #input('Enter anything to acknowledge and continue\n')
         return Occupied_Timeline, Mode200_comment
     
     Moon_H_offset = [Moon_list[x]['H-offset'] for x in range(len(Moon_list))]
@@ -450,7 +449,7 @@ def Mode200_date_select(Occupied_Timeline, Moon_list):
             Mode200_comment = 'No time available for Mode200'
             Logger.error('')
             Logger.error(Mode200_comment)
-            input('Enter anything to ackknowledge and continue')
+            #input('Enter anything to ackknowledge and continue')
             return Occupied_Timeline, Mode200_comment
         
         restart = False

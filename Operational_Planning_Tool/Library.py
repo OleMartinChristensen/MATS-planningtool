@@ -3,7 +3,7 @@
 """
 
 import ephem
-from pylab import cos, sin, sqrt, array, arccos, pi
+from pylab import cos, sin, sqrt, array, arccos, pi, floor, around
 
 import OPT_Config_File
 
@@ -200,3 +200,24 @@ def params_checker(dict1, dict2):
         
     return dict_new
 
+def utc_to_onboardTime(utc_date):
+    """Function which converts a date in utc into onboard time in seconds.
+    
+    Arguments:
+        utc_date (:obj:`ephem.Date`): The date as a ephem.Date class.
+    
+    Returns:
+        (int): Onboard Time in seconds
+        
+    """
+    Timeline_settings = OPT_Config_File.Timeline_settings()
+    
+    GPS_epoch = Timeline_settings['GPS_epoch']
+    leapSeconds = ephem.second*Timeline_settings['leap_seconds']
+    
+    GPS_date = utc_date+leapSeconds-GPS_epoch
+    GPS_week = floor(GPS_date/7)
+    
+    onboardTime = around( (GPS_date/7 - GPS_week) / ephem.second, 1 )
+    
+    return onboardTime

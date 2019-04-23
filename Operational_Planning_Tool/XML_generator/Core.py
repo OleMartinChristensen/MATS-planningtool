@@ -36,13 +36,22 @@ def XML_generator(SCIMOD_Path):
         pass
     
     ############# Set up Logger #################################
-    logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+    "Remove all previous handlers of the logger"
+    for handler in Logger.handlers[:]:
+        Logger.removeHandler(handler)
+    
+    #logging.basicConfig(stream=sys.stdout, level=logging.INFO)
     timestr = time.strftime("%Y%m%d-%H%M%S")
     Handler = logging.FileHandler('Logs_'+__name__+'\\'+__name__+'_'+Version()+'_'+timestr+'.log', mode='a')
     formatter = logging.Formatter("%(levelname)6s : %(message)-80s :: %(module)s :: %(funcName)s")
     Handler.setFormatter(formatter)
     Logger.addHandler(Handler)
     Logger.setLevel(logging.DEBUG)
+    
+    streamHandler = logging.StreamHandler()
+    streamHandler.setLevel(logging.WARNING)
+    streamHandler.setFormatter(formatter)
+    Logger.addHandler(streamHandler)
     ############# Set up Logger ##########################
     
     
@@ -89,15 +98,15 @@ def XML_generator(SCIMOD_Path):
         
         if( relativeTime >= timeline_duration ):
             Logger.warning('relativeTime is exceeding timeline_duration!!!')
-            warning = input('Enter anything to continue or enter 1 to stop\n')
-            if( warning == '1'):
-                sys.exit()
+            #warning = input('Enter anything to continue or enter 1 to stop\n')
+            #if( warning == '1'):
+            #    sys.exit()
                 
         if( ephem.Date(SCIMOD[x][1]) < timeline_start or mode_duration+relativeTime > timeline_duration):
-            Logger.warning('Mode: '+str(SCIMOD[x][0])+', is not scheduled within the boundaries of the timeline!!!')
-            warning = input('Enter anything to continue or enter 1 to stop\n')
-            if( warning == '1'):
-                sys.exit()
+            Logger.warning(str(SCIMOD[x][0])+', is not scheduled within the boundaries of the timeline!!!')
+            #warning = input('Enter anything to continue or enter 1 to stop\n')
+            #if( warning == '1'):
+            #    sys.exit()
         
         Logger.info('Call XML_generator_select')
         XML_generator_select(root=root, duration=mode_duration, relativeTime=relativeTime, mode=SCIMOD[x][0], date=ephem.Date(SCIMOD[x][1]), params=SCIMOD[x][3])
@@ -113,6 +122,8 @@ def XML_generator(SCIMOD_Path):
     f = open(MATS_COMMANDS, 'w')
     f.write(etree.tostring(root, pretty_print=True, encoding = 'unicode'))
     f.close()
+    
+    logging.shutdown()
 
 
 

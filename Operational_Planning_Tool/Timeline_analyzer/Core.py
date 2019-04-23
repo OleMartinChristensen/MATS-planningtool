@@ -8,7 +8,7 @@ import ephem, json, os
 def Timeline_analyzer(science_mode_timeline_path, date):
     '''The core function of the Timeline_analyse program.
     
-    Arg:
+    Arguments:
         science_mode_timeline_path (str): path to the .json file containing the Science Mode Timeline
         date (str): A given date and time ('2019/09/05 12:09:25')
         

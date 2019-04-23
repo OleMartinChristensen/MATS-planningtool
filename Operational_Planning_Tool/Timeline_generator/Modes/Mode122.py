@@ -51,7 +51,9 @@ def date_calculator():
     timesteps = int(floor(duration / timestep))
     Logger.info('Total number of timesteps set to: '+str(timesteps))
     
-    initial_time = Timeline_settings()['start_time']
+    timeline_start = Timeline_settings()['start_time']
+    
+    initial_time = ephem.Date( timeline_start + ephem.second*Mode122_settings()['freeze_start'] )
     Logger.info('initial_time set to: '+str(initial_time))
     
     
@@ -212,9 +214,12 @@ def date_calculator():
                 
             # More accurate estimation of pitch angle of MATS using R_LP instead of R_mean
             pitch_LP_array[t]= array(arccos((R_LP+LP_altitude)/(R+altitude_MATS[t]))/pi*180)
+            "Formatting"
             pitch_LP = pitch_LP_array[t][0]
             
+            
             pitch_sensor_array[t]= array(arccos((R_LP+pointing_altitude)/(R+altitude_MATS[t]))/pi*180)
+            "Formatting"
             pitch_sensor = pitch_sensor_array[t][0]
             
             
@@ -246,8 +251,8 @@ def date_calculator():
             
             
             "Rotate 'vector to MATS', to represent pointing direction, includes vertical offset change (Parallax is negligable)"
-            rot_mat = rot_arbit(-pi/2+(-pitch_sensor+pitch_offset_angle)/180*pi, normal_orbit[t,0:3])
-            r_FOV[t,0:3] = (r_MATS[t] @ rot_mat) /2
+            rot_mat = rot_arbit(pi/2+(pitch_sensor+pitch_offset_angle)/180*pi, normal_orbit[t,0:3])
+            r_FOV[t,0:3] = (rot_mat @ r_MATS[t]) /2
             
             
             #rot_mat2 = rot_arbit(pi/2+(pitch_sensor+pitch_offset_angle)/180*pi, normal_orbit[t,0:3])
@@ -255,24 +260,24 @@ def date_calculator():
             #r_FOV_unit_vector2[t,0:3] = r_FOV2[t,0:3]/norm(r_FOV2[t,0:3])
             
             "Rotate yaw of pointing direction, meaning to rotate around the vector to MATS"
-            rot_mat = rot_arbit(yaw_offset_angle/180*pi, r_MATS[t,0:3])
-            r_FOV[t,0:3] = (r_FOV[t,0:3] @ rot_mat)
+            rot_mat = rot_arbit(-yaw_offset_angle/180*pi, r_MATS[t,0:3])
+            r_FOV[t,0:3] = (rot_mat @ r_FOV[t,0:3])
             r_FOV_unit_vector[t,0:3] = r_FOV[t,0:3]/norm(r_FOV[t,0:3])
             
             
             '''Rotate 'vector to MATS', to represent vector normal to satellite H-offset plane,
             which will be used to project stars onto it which allows the H-offset of stars to be found'''
-            rot_mat = rot_arbit((-pitch_sensor)/180*pi, normal_orbit[t,0:3])
-            r_H_offset_normal[t,0:3] = (r_MATS[t] @ rot_mat)
+            rot_mat = rot_arbit((pitch_sensor)/180*pi, normal_orbit[t,0:3])
+            r_H_offset_normal[t,0:3] = (rot_mat @ r_MATS[t])
             r_H_offset_normal[t,0:3] = r_H_offset_normal[t,0:3] / norm(r_H_offset_normal[t,0:3])
             
             "If pointing direction has a Yaw defined, Rotate yaw of normal to pointing direction H-offset plane, meaning to rotate around the vector to MATS"
-            rot_mat = rot_arbit(yaw_offset_angle/180*pi, r_MATS[t,0:3])
-            r_H_offset_normal[t,0:3] = (r_H_offset_normal[t,0:3] @ rot_mat)
+            rot_mat = rot_arbit(-yaw_offset_angle/180*pi, r_MATS[t,0:3])
+            r_H_offset_normal[t,0:3] = (rot_mat @ r_H_offset_normal[t,0:3])
             r_H_offset_normal[t,0:3] = r_H_offset_normal[t,0:3]/norm(r_H_offset_normal[t,0:3])
             
             "Rotate orbital plane normal to make it into pointing V-offset plane normal"
-            r_V_offset_normal[t,0:3] = (normal_orbit[t,0:3] @ rot_mat)
+            r_V_offset_normal[t,0:3] = (rot_mat @ normal_orbit[t,0:3])
             r_V_offset_normal[t,0:3] = r_V_offset_normal[t,0:3]/norm(r_V_offset_normal[t,0:3])
             
             if( t*timestep % log_timestep == 0 or t == 1 ):
@@ -346,7 +351,7 @@ def date_calculator():
                     
             ######################### End of star_mapper #############################
         
-        
+        "Increment time with timestep or jump ahead in time if a whole orbit was completed"
         if( (current_time - initial_time)/ephem.second > (timeskip/ephem.second * time_skip_counter + MATS_P[t] * (time_skip_counter+1)) ):
             "If one orbit has passed -> increment 'current_time' with 'timeskip' amount of days"
             time_skip_counter = time_skip_counter + 1
@@ -416,9 +421,13 @@ def date_select(Occupied_Timeline, date_magnitude_array):
     
     loop_counter = 0
     arbitraryLowNumber = -100
+    restart = True
     
     "Loop for maximum magnitude visible until the date chosen is not occupied"
-    while(True):
+    while(restart == True):
+        
+        restart = False
+        
         index_max_mag = date_magnitude_array[:,1].argmax()
         value_max_mag = date_magnitude_array[:,1].max()
         
@@ -426,32 +435,32 @@ def date_select(Occupied_Timeline, date_magnitude_array):
         if(value_max_mag == arbitraryLowNumber):
             comment = 'No available time for '+Mode_name
             Logger.warning(comment)
-            input('Enter anything to ackknowledge and continue')
+            #input('Enter anything to ackknowledge and continue')
             return Occupied_Timeline, comment
-            
         
         date_max_mag = date_magnitude_array[index_max_mag,0]
         
         date = ephem.Date(ephem.Date(date_max_mag)-ephem.second*(settings['freeze_start']))
         endDate = ephem.Date(date+ephem.second*settings['mode_duration'])
         
-        irrelevant1, irrelevant2, iterations = scheduler(Occupied_Timeline, date, endDate)
+        "Extract the start and end date of each scheduled mode"
+        for busy_dates in Occupied_Timeline.values():
+            if( busy_dates == []):
+                continue
+            else:
+                "If the planned date collides with any already scheduled ones -> post-pone and restart loop"
+                if( busy_dates[0] <= date < busy_dates[1] or 
+                       busy_dates[0] < endDate <= busy_dates[1] or
+                       (date < busy_dates[0] and endDate > busy_dates[1])):
+                    
+                    restart = True
+                    "Set the current maximum magnitude arbitrary small to allow a new maximum magnitude date to be chosen in next loop"
+                    date_magnitude_array[index_max_mag,1] = arbitraryLowNumber
+                    loop_counter = loop_counter +1
+                    break
+                
         
-        "Break loop if scheduler function determines the date to be available and within the scheduled timeline, else try next faintest magntitude"
-        if( iterations == 0 and date >= Timeline_settings()['start_time']):
-            break
-        else:
-            "Set the current maximum magnitude arbitrary small to allow a new maximum magnitude date to be chosen in next loop"
-            date_magnitude_array[index_max_mag,1] = arbitraryLowNumber
-            loop_counter = loop_counter +1
-            
-    
-    
-    
     comment = 'Number of times date changed: ' + str(loop_counter)+', faintest magnitude visible: '+str(value_max_mag)
-    
-    
-    
     Occupied_Timeline[Mode_name] = (date,endDate)
     
     return Occupied_Timeline, comment

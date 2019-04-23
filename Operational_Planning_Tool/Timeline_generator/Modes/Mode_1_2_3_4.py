@@ -20,7 +20,7 @@ def Mode_1_2_3_4(Occupied_Timeline):
         
     Returns:
         (:obj:`dict` of :obj:`list`): Occupied_Timeline (updated for the current Mode).
-        (str): Comment regarding the scheduling of the active mode.
+        (str): Comment regarding the scheduling result of the active mode.
     
     """
     

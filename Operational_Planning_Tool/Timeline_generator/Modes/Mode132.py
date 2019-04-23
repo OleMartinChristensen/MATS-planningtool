@@ -12,6 +12,7 @@ from OPT_Config_File import Mode132_settings, Timeline_settings, Logger_name
 
 Logger = logging.getLogger(Logger_name())
 
+
 def Mode132(Occupied_Timeline):
     
     initial_date = date_calculator()

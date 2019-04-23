@@ -3,7 +3,7 @@
 Created on Fri Nov  2 14:57:28 2018
 
 The Timeline_generator part of the Operational_Planning_Tool which purpose is to automatically generate a
-mission timeline from parameters defined in the Config_File. The timeline consists of
+mission timeline from settings defined in the OPT_Config_File. The timeline consists of
 science modes together with their planned start/end dates, settings, and comments 
 expressed as a list in chronological order. 
 
@@ -25,9 +25,11 @@ depending on a specialized filtering process (mode 120, 200...), or postponed un
 @author: David
 """
 
-import json, logging, sys, time, os
+import json, logging, sys, time, os, ephem
 from .Modes import Modes_Header
 import OPT_Config_File
+
+Logger = logging.getLogger(OPT_Config_File.Logger_name())
 
 def Timeline_generator():
     """The core function of the Timeline_gen program.
@@ -37,9 +39,8 @@ def Timeline_generator():
         
     """
     
-    ###########################################################################
     
-    logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+    
     
     "Try to make a directory for logs if none is existing"
     try:
@@ -47,8 +48,19 @@ def Timeline_generator():
     except:
         pass
     
-    "Setup for Logger"
-    Logger = logging.getLogger(OPT_Config_File.Logger_name())
+    ######## Try to Create a directory for storage of output files #######
+    try:
+        os.mkdir('Output')
+    except:
+        pass
+    
+    ############# Set up Logger #################################
+    
+    "Remove all previous handlers of the logger"
+    for handler in Logger.handlers[:]:
+        Logger.removeHandler(handler)
+    
+    #logging.basicConfig(stream=sys.stdout, level=logging.INFO)
     timestr = time.strftime("%Y%m%d-%H%M%S")
     Handler = logging.FileHandler('Logs_'+__name__+'\\'+__name__+'_'+OPT_Config_File.Version()+'_'+timestr+'.log', mode='a')
     formatter = logging.Formatter("%(levelname)-6s : %(message)-80s :: %(module)s :: %(funcName)s")
@@ -56,8 +68,14 @@ def Timeline_generator():
     Logger.addHandler(Handler)
     Logger.setLevel(logging.DEBUG)
     
-    ###########################################################################
     
+    streamHandler = logging.StreamHandler()
+    streamHandler.setLevel(logging.WARNING)
+    streamHandler.setFormatter(formatter)
+    Logger.addHandler(streamHandler)
+    
+    
+    ############# Set up Logger #################################
     
     Logger.info('Start of program')
     
@@ -127,9 +145,11 @@ def Timeline_generator():
             
             "Check if the scheduled date is within the time defined for the timeline"
             if( Occupied_Timeline[scimod][0] < Timeline_settings['start_time'] or 
+                   Occupied_Timeline[scimod][0] > (Timeline_settings['start_time']+ephem.second*Timeline_settings['duration']) or
                    Occupied_Timeline[scimod][1] - Occupied_Timeline[scimod][0] > Timeline_settings['duration']):
                 Logger.warning(scimod+' scheduled outside of timeline as defined in OPT_Config_File')
-                input('Enter anything to acknowledge and continue\n')
+                
+                #input('Enter anything to acknowledge and continue\n')
             
             "Append mode and dates and comment to an unchronological Science Mode Timeline"
             SCIMOD_Timeline_unchronological.append((Occupied_Timeline[scimod][0], Occupied_Timeline[scimod][1],scimod, Mode_comment))
@@ -269,7 +289,7 @@ def Timeline_generator():
     except:
         pass
     
-    SCIMOD_NAME = 'Output\\MATS_SCIMOD_TIMELINE_Version-'+Version+'.json'
+    SCIMOD_NAME = 'Output\\Science_Mode_Timeline_Version_'+Version+'.json'
     with open(SCIMOD_NAME, "w") as write_file:
         json.dump(SCIMOD_Timeline, write_file, indent = 2)
     

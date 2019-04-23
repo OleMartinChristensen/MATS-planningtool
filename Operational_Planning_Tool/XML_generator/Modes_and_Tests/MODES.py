@@ -26,7 +26,7 @@ XML_generator_Mode_name, where Mode_name is the same as the string used in the S
 import ephem, logging, sys, pylab
 
 import OPT_Config_File
-from Operational_Planning_Tool.Library import rot_arbit, params_checker
+from Operational_Planning_Tool.Library import rot_arbit, params_checker, utc_to_onboardTime
 from .Macros import Macros
 
 Logger = logging.getLogger(OPT_Config_File.Logger_name())
@@ -168,7 +168,7 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
             rot_mat = rot_arbit(orbangle_between_LP_MATS/180*pi, normal_orbital[t,0:3])
             r_LP_direction[t,0:3] = rot_mat @ r_MATS[t]
             
-            "Estimate latitude by calculating angle between xy-plane vector and z-vector"
+            "Estimate latitude by calculating angle between xy-plane vector and z-vector (ECI)"
             r_LP__direction_xy = sqrt(r_LP_direction[t,0]**2+r_LP_direction[t,1]**2)
             lat_LP[t] = arctan(r_LP_direction[t,2]/r_LP__direction_xy)
             
@@ -527,7 +527,7 @@ def XML_generator_Mode100(root, date, duration, relativeTime, params = {}):
         
         if(mode_relativeTime > duration and duration_flag == 0):
             Logger.warning('Warning!! The scheduled time for the mode has ran out.')
-            input('Enter anything to ackknowledge and continue:\n')
+            #input('Enter anything to ackknowledge and continue:\n')
             duration_flag = 1
         
         relativeTime = Mode_macro(root = root, relativeTime = str(relativeTime), pointing_altitude = str(pointing_altitude), comment = comment)
@@ -585,16 +585,16 @@ def XML_generator_Mode120(root, date, duration, relativeTime,
     Mode_name = sys._getframe(0).f_code.co_name.replace('XML_generator_','')
     comment = Mode_name+' starting date: '+str(date)+', '+str(params)
     
-    GPS_epoch = Timeline_settings['GPS_epoch']
-    leapSeconds = ephem.second*Timeline_settings['leap_seconds']
     freeze_start_utc = ephem.Date(date+ephem.second*params['freeze_start'])
-    freezeTime = str(int((freeze_start_utc+leapSeconds-GPS_epoch)*24*3600))
+    #freezeTime = str(int((freeze_start_utc+leapSeconds-GPS_epoch)*24*3600))
+    
+    freezeTime = str(utc_to_onboardTime(freeze_start_utc))
     
     FreezeDuration = params['freeze_duration']
     
     pointing_altitude = params['pointing_altitude']
     
-    Logger.info('GPS_epoch: '+str(GPS_epoch))
+    
     Logger.info('freeze_start_utc: '+str(freeze_start_utc))
     Logger.info('freezeTime [GPS]: '+freezeTime)
     Logger.info('FreezeDuration: '+str(FreezeDuration))
@@ -632,16 +632,13 @@ def XML_generator_Mode121(root, date, duration, relativeTime,
     Mode_name = sys._getframe(0).f_code.co_name.replace('XML_generator_','')
     comment = Mode_name+' starting date: '+str(date)+', '+str(params)
     
-    GPS_epoch = Timeline_settings['GPS_epoch']
-    leapSeconds = ephem.second*Timeline_settings['leap_seconds']
     freeze_start_utc = ephem.Date(date+ephem.second*params['freeze_start'])
-    freezeTime = str(int((freeze_start_utc+leapSeconds-GPS_epoch)*24*3600))
+    freezeTime = str(utc_to_onboardTime(freeze_start_utc))
     
     FreezeDuration = params['freeze_duration']
     
     pointing_altitude = params['pointing_altitude']
     
-    Logger.info('GPS_epoch: '+str(GPS_epoch))
     Logger.info('freeze_start_utc: '+str(freeze_start_utc))
     Logger.info('freezeTime [GPS]: '+freezeTime)
     Logger.info('FreezeDuration: '+str(FreezeDuration))
@@ -676,16 +673,13 @@ def XML_generator_Mode122(root, date, duration, relativeTime,
     Mode_name = sys._getframe(0).f_code.co_name.replace('XML_generator_','')
     comment = Mode_name+' starting date: '+str(date)+', '+str(params)
     
-    GPS_epoch = Timeline_settings['GPS_epoch']
-    leapSeconds = ephem.second*Timeline_settings['leap_seconds']
     freeze_start_utc = ephem.Date(date+ephem.second*params['freeze_start'])
-    freezeTime = str(int((freeze_start_utc+leapSeconds-GPS_epoch)*24*3600))
+    freezeTime = str(utc_to_onboardTime(freeze_start_utc))
     
     FreezeDuration = params['freeze_duration']
     
     pointing_altitude = params['pointing_altitude']
     
-    Logger.info('GPS_epoch: '+str(GPS_epoch))
     Logger.info('freeze_start_utc: '+str(freeze_start_utc))
     Logger.info('freezeTime [GPS]: '+freezeTime)
     Logger.info('FreezeDuration: '+str(FreezeDuration))
@@ -812,17 +806,14 @@ def XML_generator_Mode200(root, date, duration, relativeTime,
     comment = Mode_name+' starting date: '+str(date)+', '+str(params)
     
     
-    GPS_epoch = Timeline_settings['GPS_epoch']
-    leapSeconds = ephem.second*Timeline_settings['leap_seconds']
     freeze_start_utc = ephem.Date(date+ephem.second*params['freeze_start'])
+    freezeTime = str(utc_to_onboardTime(freeze_start_utc))
     
     FreezeDuration = params['freeze_duration']
     
     pointing_altitude = str(params['pointing_altitude'])
-    freezeTime = str(int((freeze_start_utc+leapSeconds-GPS_epoch)*24*3600))
     
     
-    Logger.info('GPS_epoch: '+str(GPS_epoch))
     Logger.info('freeze_start_utc: '+str(freeze_start_utc))
     Logger.info('freezeTime [GPS]: '+freezeTime)
     Logger.info('FreezeDuration: '+str(FreezeDuration))
