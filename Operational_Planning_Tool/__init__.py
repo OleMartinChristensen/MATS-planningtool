@@ -23,10 +23,10 @@ from . import Globals
 
 
 
-#sys.path.append(os.getcwd()+'/Operational_Planning_Tool')
+sys.path.append(os.getcwd()+'/Operational_Planning_Tool')
 
-#if(os.path.isfile('OPT_Config_File.py') == False):
-#    shutil.copyfile('Operational_Planning_Tool/Config_File_Original.py','OPT_Config_File.py')
+if(os.path.isfile('OPT_Config_File.py') == False):
+    shutil.copyfile('Operational_Planning_Tool/Config_File_Original.py','OPT_Config_File.py')
 
 
 def Timeline_gen():
