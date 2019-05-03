@@ -216,8 +216,11 @@ def utc_to_onboardTime(utc_date):
     leapSeconds = ephem.second*Timeline_settings['leap_seconds']
     
     GPS_date = utc_date+leapSeconds-GPS_epoch
+    
+    onboardTime = around(GPS_date / ephem.second, 1)
+    '''
     GPS_week = floor(GPS_date/7)
     
     onboardTime = around( (GPS_date/7 - GPS_week) / ephem.second, 1 )
-    
+    '''
     return onboardTime

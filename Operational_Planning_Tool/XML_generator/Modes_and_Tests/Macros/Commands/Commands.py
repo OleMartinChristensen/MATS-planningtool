@@ -27,7 +27,7 @@ Logger = logging.getLogger(Logger_name())
 
 def TC_pafMode(root, time, mode, comment = ''):
     
-    etree.SubElement(root[1], 'command', mnemonic = "TC_pafMode")
+    etree.SubElement(root[1], 'command', mnemonic = "TC_pafMODE")
     
     etree.SubElement(root[1][len(root[1])-1], 'relativeTime')
     root[1][len(root[1])-1][0].text = time
@@ -36,7 +36,7 @@ def TC_pafMode(root, time, mode, comment = ''):
     root[1][len(root[1])-1][1].text = comment
     
     etree.SubElement(root[1][len(root[1])-1], 'tcArguments')
-    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "mode")
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "MODE")
     root[1][len(root[1])-1][2][0].text = mode
     
     incremented_time = str(round(float(time)+Timeline_settings()['command_separation'],2))
@@ -126,24 +126,9 @@ def TC_affArgFreezeDuration(root, time, FreezeDuration, comment = ''):
     
     return incremented_time
     
-def TC_pafPWRToggle(root, time, comment = ''):
+def TC_pafPWRToggle(root, time, CONST = '165', comment = ''):
     
-    etree.SubElement(root[1], 'command', mnemonic = "TC_pafPWRToggle")
-    
-    etree.SubElement(root[1][len(root[1])-1], 'relativeTime')
-    root[1][len(root[1])-1][0].text = time
-    
-    etree.SubElement(root[1][len(root[1])-1], 'comment')
-    root[1][len(root[1])-1][1].text = comment
-    
-    incremented_time = str(round(float(time)+Timeline_settings()['command_separation'],2))
-    
-    return incremented_time
-    
-    
-def TC_pafUpload(root, time, PacketIndex, PacketTotal, Data, comment = ''):
-    
-    etree.SubElement(root[1], 'command', mnemonic = "TC_pafUpload")
+    etree.SubElement(root[1], 'command', mnemonic = "TC_pafPWRTOGGLE")
     
     etree.SubElement(root[1][len(root[1])-1], 'relativeTime')
     root[1][len(root[1])-1][0].text = time
@@ -152,14 +137,39 @@ def TC_pafUpload(root, time, PacketIndex, PacketTotal, Data, comment = ''):
     root[1][len(root[1])-1][1].text = comment
     
     etree.SubElement(root[1][len(root[1])-1], 'tcArguments')
-    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "PacketIndex")
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "CONST")
+    root[1][len(root[1])-1][2][0].text = CONST
+    
+    incremented_time = str(round(float(time)+Timeline_settings()['command_separation'],2))
+    
+    return incremented_time
+    
+    
+def TC_pafUpload(root, time, PacketIndex, PacketTotal, WFLASH, NIMG, IMG, comment = ''):
+    
+    etree.SubElement(root[1], 'command', mnemonic = "TC_pafUPLOAD")
+    
+    etree.SubElement(root[1][len(root[1])-1], 'relativeTime')
+    root[1][len(root[1])-1][0].text = time
+    
+    etree.SubElement(root[1][len(root[1])-1], 'comment')
+    root[1][len(root[1])-1][1].text = comment
+    
+    etree.SubElement(root[1][len(root[1])-1], 'tcArguments')
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "PINDEX")
     root[1][len(root[1])-1][2][0].text = PacketIndex
     
-    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "PacketTotal")
-    root[1][len(root[1])-1][2][0].text = PacketTotal
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "PTOTAL")
+    root[1][len(root[1])-1][2][1].text = PacketTotal
     
-    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "Data")
-    root[1][len(root[1])-1][2][0].text = Data
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "WFLASH")
+    root[1][len(root[1])-1][2][2].text = WFLASH
+    
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "NIMG")
+    root[1][len(root[1])-1][2][3].text = NIMG
+    
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "IMG")
+    root[1][len(root[1])-1][2][4].text = IMG
     
     incremented_time = str(round(float(time)+Timeline_settings()['command_separation'],2))
     
@@ -176,20 +186,20 @@ def TC_pafHTR(root, time, HtrSelect, SetPoint, P, I, D, comment = ''):
     root[1][len(root[1])-1][1].text = comment
     
     etree.SubElement(root[1][len(root[1])-1], 'tcArguments')
-    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "HtrSelect")
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "HTRSEL")
     root[1][len(root[1])-1][2][0].text = HtrSelect
     
-    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "SetPoint")
-    root[1][len(root[1])-1][2][0].text = SetPoint
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "SET")
+    root[1][len(root[1])-1][2][1].text = SetPoint
     
     etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "P")
-    root[1][len(root[1])-1][2][0].text = P
+    root[1][len(root[1])-1][2][2].text = P
     
     etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "I")
-    root[1][len(root[1])-1][2][0].text = I
+    root[1][len(root[1])-1][2][3].text = I
     
     etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "D")
-    root[1][len(root[1])-1][2][0].text = D
+    root[1][len(root[1])-1][2][4].text = D
     
     incremented_time = str(round(float(time)+Timeline_settings()['command_separation'],2))
     
@@ -197,11 +207,11 @@ def TC_pafHTR(root, time, HtrSelect, SetPoint, P, I, D, comment = ''):
     
     
 def TC_pafCCDMain(root, time, CCDselect, CCDMode, ExpInterval, ExpTime, NumRowsSkip, NumRowsBin,
-                  NumRows, NumColumnsBin, NumColumns, WindowMode = '128', JPEGquality = "90", Expsync = "1", 
-                  RowBinningMode = "2", ColumnBinningMode = "2", DigitalGain = "0", 
+                  NumRows, NumColumnsBin, NumColumns, WindowMode = '128', JPEGquality = "90", Expsync = "0", 
+                  NCBINFPGA = "0", SIGMODE = "1", DigitalGain = "0", 
                   NumFlush = "10", NumColumnsSkip = "50", comment = ''):
     
-    etree.SubElement(root[1], 'command', mnemonic = "TC_pafCCDMain")
+    etree.SubElement(root[1], 'command', mnemonic = "TC_pafCCD")
     
     etree.SubElement(root[1][len(root[1])-1], 'relativeTime')
     root[1][len(root[1])-1][0].text = time
@@ -210,56 +220,56 @@ def TC_pafCCDMain(root, time, CCDselect, CCDMode, ExpInterval, ExpTime, NumRowsS
     root[1][len(root[1])-1][1].text = comment
     
     etree.SubElement(root[1][len(root[1])-1], 'tcArguments')
-    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "CCDselect")
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "CCDSEL")
     root[1][len(root[1])-1][2][0].text = CCDselect
     
-    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "CCDMode")
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "PWR")
     root[1][len(root[1])-1][2][1].text = CCDMode
     
-    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "WindowMode")
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "WDW")
     root[1][len(root[1])-1][2][2].text = WindowMode
     
-    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "JPEGquality")
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "JPEGQ")
     root[1][len(root[1])-1][2][3].text = JPEGquality
     
-    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "Expsync")
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "SYNC")
     root[1][len(root[1])-1][2][4].text = Expsync
     
-    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "ExpInterval")
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "TEXPIMS")
     root[1][len(root[1])-1][2][5].text = ExpInterval
     
-    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "ExpTime")
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "TEXPMS")
     root[1][len(root[1])-1][2][6].text = ExpTime
     
-    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "RowBinningMode")
-    root[1][len(root[1])-1][2][7].text = RowBinningMode
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "GAIN")
+    root[1][len(root[1])-1][2][7].text = DigitalGain
     
-    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "ColumnBinningMode")
-    root[1][len(root[1])-1][2][8].text = ColumnBinningMode
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "NFLUSH")
+    root[1][len(root[1])-1][2][8].text = NumFlush
     
-    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "DigitalGain")
-    root[1][len(root[1])-1][2][9].text = DigitalGain
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "NRSKIP")
+    root[1][len(root[1])-1][2][9].text = NumRowsSkip
     
-    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "NumFlush")
-    root[1][len(root[1])-1][2][10].text = NumFlush
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "NRBIN")
+    root[1][len(root[1])-1][2][10].text = NumRowsBin
     
-    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "NumRowsSkip")
-    root[1][len(root[1])-1][2][11].text = NumRowsSkip
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "NROW")
+    root[1][len(root[1])-1][2][11].text = NumRows
     
-    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "NumRowsBin")
-    root[1][len(root[1])-1][2][12].text = NumRowsBin
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "NCSKIP")
+    root[1][len(root[1])-1][2][12].text = NumColumnsSkip
     
-    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "NumRows")
-    root[1][len(root[1])-1][2][13].text = NumRows
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "NCBIN")
+    root[1][len(root[1])-1][2][13].text = NumColumnsBin
     
-    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "NumColumnsSkip")
-    root[1][len(root[1])-1][2][14].text = NumColumnsSkip
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "NCOL")
+    root[1][len(root[1])-1][2][14].text = NumColumns
     
-    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "NumColumnsBin")
-    root[1][len(root[1])-1][2][15].text = NumColumnsBin
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "NCBINFPGA")
+    root[1][len(root[1])-1][2][15].text = NCBINFPGA
     
-    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "CumColumns")
-    root[1][len(root[1])-1][2][16].text = NumColumns
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "SIGMODE")
+    root[1][len(root[1])-1][2][16].text = SIGMODE
     
     incremented_time = str(round(float(time)+Timeline_settings()['command_separation'],2))
     
@@ -286,13 +296,13 @@ def TC_pafCCDBadColumn(root, time, CCDSelect, NumColumns, BadColumn, comment = '
     root[1][len(root[1])-1][1].text = comment
     
     etree.SubElement(root[1][len(root[1])-1], 'tcArguments')
-    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "CCDSelect")
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "CCDSEL")
     root[1][len(root[1])-1][2][0].text = CCDSelect
     
-    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "NumColumns")
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "NBC")
     root[1][len(root[1])-1][2][1].text = NumColumns
     
-    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "BadColumn")
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "BC")
     root[1][len(root[1])-1][2][2].text = BadColumn
     
     incremented_time = str(round(float(time)+Timeline_settings()['command_separation'],2))
@@ -311,7 +321,7 @@ def TC_pafCCDFlushBadColumns(root, time, CCDSelect, comment = ''):
     root[1][len(root[1])-1][1].text = comment
     
     etree.SubElement(root[1][len(root[1])-1], 'tcArguments')
-    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "CCDSelect")
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "CCDSEL")
     root[1][len(root[1])-1][2][0].text = CCDSelect
     
     incremented_time = str(round(float(time)+Timeline_settings()['command_separation'],2))
@@ -321,7 +331,7 @@ def TC_pafCCDFlushBadColumns(root, time, CCDSelect, comment = ''):
     
 def TC_pafCCDBias(root, time, CCDSelect, Gate, Substrate, ResetTransitionDrain, OutputDrain, comment = ''):
     
-    etree.SubElement(root[1], 'command', mnemonic = "TC_pafCCDBias")
+    etree.SubElement(root[1], 'command', mnemonic = "TC_pafCCDBIAS")
     
     etree.SubElement(root[1][len(root[1])-1], 'relativeTime')
     root[1][len(root[1])-1][0].text = time
@@ -330,19 +340,19 @@ def TC_pafCCDBias(root, time, CCDSelect, Gate, Substrate, ResetTransitionDrain, 
     root[1][len(root[1])-1][1].text = comment
     
     etree.SubElement(root[1][len(root[1])-1], 'tcArguments')
-    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "CCDSelect")
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "CCDSEL")
     root[1][len(root[1])-1][2][0].text = CCDSelect
     
-    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "Gate")
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "VGATE")
     root[1][len(root[1])-1][2][1].text = Gate
     
-    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "Substrate")
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "VSUBST")
     root[1][len(root[1])-1][2][2].text = Substrate
     
-    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "ResetTransitionDrain")
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "VRD")
     root[1][len(root[1])-1][2][3].text = ResetTransitionDrain
     
-    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "OutputDrain")
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "VOD")
     root[1][len(root[1])-1][2][4].text = OutputDrain
     
     incremented_time = str(round(float(time)+Timeline_settings()['command_separation'],2))
@@ -352,7 +362,7 @@ def TC_pafCCDBias(root, time, CCDSelect, Gate, Substrate, ResetTransitionDrain, 
     
 def TC_pafCCDSnapshot(root, time, CCDSelect, comment = ''):
     
-    etree.SubElement(root[1], 'command', mnemonic = "TC_pafCCDSnapshot")
+    etree.SubElement(root[1], 'command', mnemonic = "TC_pafCCDSNAPSHOT")
     
     etree.SubElement(root[1][len(root[1])-1], 'relativeTime')
     root[1][len(root[1])-1][0].text = time
@@ -361,17 +371,17 @@ def TC_pafCCDSnapshot(root, time, CCDSelect, comment = ''):
     root[1][len(root[1])-1][1].text = comment
     
     etree.SubElement(root[1][len(root[1])-1], 'tcArguments')
-    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "CCDSelect")
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "CCDSEL")
     root[1][len(root[1])-1][2][0].text = CCDSelect
     
     incremented_time = str(round(float(time)+Timeline_settings()['command_separation'],2))
     
     return incremented_time
+
+
+def TC_pafCCDTRANSPARENTCMD(root, time, CCDSelect, CHAR, comment = ''):
     
-    
-def TC_pafCCDPM(root, time, ExposureTime, ExposureInterval, comment = ''):
-    
-    etree.SubElement(root[1], 'command', mnemonic = "TC_pafCCDPM")
+    etree.SubElement(root[1], 'command', mnemonic = "TC_pafCCDTRANSPARENTCMD")
     
     etree.SubElement(root[1][len(root[1])-1], 'relativeTime')
     root[1][len(root[1])-1][0].text = time
@@ -380,11 +390,52 @@ def TC_pafCCDPM(root, time, ExposureTime, ExposureInterval, comment = ''):
     root[1][len(root[1])-1][1].text = comment
     
     etree.SubElement(root[1][len(root[1])-1], 'tcArguments')
-    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "ExposureTime")
-    root[1][len(root[1])-1][2][0].text = ExposureTime
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "CCDSEL")
+    root[1][len(root[1])-1][2][0].text = CCDSelect
     
-    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "ExposureInterval")
-    root[1][len(root[1])-1][2][1].text = ExposureInterval
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "CHAR")
+    root[1][len(root[1])-1][2][1].text = CHAR
+    
+    incremented_time = str(round(float(time)+Timeline_settings()['command_separation'],2))
+    
+    return incremented_time
+    
+
+def TC_pafDbg(root, time, CCDSelect, comment = ''):
+    
+    etree.SubElement(root[1], 'command', mnemonic = "TC_pafDbg")
+    
+    etree.SubElement(root[1][len(root[1])-1], 'relativeTime')
+    root[1][len(root[1])-1][0].text = time
+    
+    etree.SubElement(root[1][len(root[1])-1], 'comment')
+    root[1][len(root[1])-1][1].text = comment
+    
+    etree.SubElement(root[1][len(root[1])-1], 'tcArguments')
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "CCDSEL")
+    root[1][len(root[1])-1][2][0].text = CCDSelect
+    
+    incremented_time = str(round(float(time)+Timeline_settings()['command_separation'],2))
+    
+    return incremented_time
+
+
+def TC_pafCCDPM(root, time, TEXPMS, TEXPIMS, comment = ''):
+    
+    etree.SubElement(root[1], 'command', mnemonic = "TC_pafPM")
+    
+    etree.SubElement(root[1][len(root[1])-1], 'relativeTime')
+    root[1][len(root[1])-1][0].text = time
+    
+    etree.SubElement(root[1][len(root[1])-1], 'comment')
+    root[1][len(root[1])-1][1].text = comment
+    
+    etree.SubElement(root[1][len(root[1])-1], 'tcArguments')
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "TEXPMS")
+    root[1][len(root[1])-1][2][0].text = TEXPMS
+    
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "TEXPIMS")
+    root[1][len(root[1])-1][2][1].text = TEXPIMS
     
     incremented_time = str(round(float(time)+Timeline_settings()['command_separation'],2))
     

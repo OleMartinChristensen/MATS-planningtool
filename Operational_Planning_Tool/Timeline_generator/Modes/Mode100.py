@@ -40,7 +40,7 @@ def Mode100(Occupied_Timeline):
 
 
 def date_calculator():
-    """Returns the initially requested date (defined in Config_File.py) for the Mode to be scheduled.
+    """Subfunction, Returns the initially requested date (defined in Config_File.py) for the Mode to be scheduled.
     
     Returns:
         (ephem.Date): initial_date
@@ -48,11 +48,11 @@ def date_calculator():
     """
     
     
-    try:
+    if( Mode100_settings()['start_time'] != ephem.Date('0') ):
         initial_date = Mode100_settings()['start_time']
         Logger.info('Mode specific start_time used as initial date')
-    except:
-        Logger.warning('!!Error raised in try statement!! Timeline start_time used as initial date')
+    else:
+        Logger.info('Timeline start_time used as initial date')
         initial_date = Timeline_settings()['start_time']
     
     return initial_date
@@ -65,7 +65,7 @@ def date_calculator():
 
 
 def date_select(Occupied_Timeline, initial_date):
-    """Checks if the initially requested date is available and post-pones it until available if occupied.
+    """Subfunction, Checks if the initially requested date is available and post-pones it until available if occupied.
     
     Arguments:
         Occupied_Timeline (:obj:`dict` of :obj:`list`): Dictionary with keys equal to planned and scheduled Modes together with their start and end time in a list. The list is empty if the Mode is unscheduled.

@@ -21,11 +21,11 @@ def Standard_binning_procedure(root, relativeTime, nadir, ExpIntUV = '3001', Exp
     '''Standard CCD binning, see module description for more details.
         
         Arguments: 
-            nadir [str]: Sets the nadir CCD on or off. Either "1" for on or "0" for off.
-            ExpIntUV [str]: Exposure interval of UV CCDs in ms
-            ExpTimeUV [str]: Exposure time of UV CCDs in ms
-            ExpIntIR [str]: Exposure interval of IR CCDs in ms
-            ExpTimeIR [str]: Exposure time of IR CCDs in ms
+            nadir (str): Sets the nadir CCD on or off. Either "1" for on or "0" for off.
+            ExpIntUV (str): Exposure interval of UV CCDs in ms
+            ExpTimeUV (str): Exposure time of UV CCDs in ms
+            ExpIntIR (str): Exposure interval of IR CCDs in ms
+            ExpTimeIR (str): Exposure time of IR CCDs in ms
     '''
     
     relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '3', CCDMode = '1', ExpInterval = ExpIntUV, ExpTime = ExpTimeUV, comment = comment, 
@@ -72,8 +72,8 @@ def Single_pixel_stopNadir_procedure(root, relativeTime, ExpInt, ExpTime, commen
     '''Single Pixel CCD binning with nadir stopped, see module description for more details.
     
         Arguments: 
-            ExpInt [str]: Exposure interval of UV and IR CCDs in ms
-            ExpTime [str]: Exposure time of UV and IR CCDs in ms
+            ExpInt (str): Exposure interval of UV and IR CCDs in ms
+            ExpTime (str): Exposure time of UV and IR CCDs in ms
     '''
     
     relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '3', CCDMode = '1', ExpInterval = ExpInt, ExpTime = ExpTime, comment = comment, 
@@ -98,7 +98,7 @@ def High_res_IR_procedure(root, relativeTime, nadir, comment = ''):
     '''High resolution IR binning, see module description for more details.
         
         Arguments: 
-            nadir [str]: Sets the nadir CCD on or off. Either "1" for on or "0" for off.
+            nadir (str): Sets the nadir CCD on or off. Either "1" for on or "0" for off.
     
     '''
     

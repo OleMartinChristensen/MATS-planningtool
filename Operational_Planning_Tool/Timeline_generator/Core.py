@@ -284,12 +284,14 @@ def Timeline_generator():
     
     Logger.info('Save mode timeline to file version: '+Version)
     
+    
     try:
         os.mkdir('Output')
     except:
         pass
     
     SCIMOD_NAME = 'Output\\Science_Mode_Timeline_Version_'+Version+'.json'
+    print('Save mode timeline to file: '+SCIMOD_NAME)
     with open(SCIMOD_NAME, "w") as write_file:
         json.dump(SCIMOD_Timeline, write_file, indent = 2)
     

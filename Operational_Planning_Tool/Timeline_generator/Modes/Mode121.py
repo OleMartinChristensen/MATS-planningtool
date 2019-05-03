@@ -8,7 +8,7 @@ Created on Mon Nov 12 16:22:16 2018
 
 import logging, sys
 import ephem
-from pylab import array, cos, sin, cross, dot, zeros, sqrt, norm, pi, arccos, floor
+from pylab import array, cos, sin, cross, dot, zeros, sqrt, norm, pi, arccos, floor, arctan
 from astroquery.vizier import Vizier
 
 from Operational_Planning_Tool.Library import rot_arbit, deg2HMS, lat_2_R
@@ -18,6 +18,16 @@ Logger = logging.getLogger(Logger_name())
 
 
 def Mode121(Occupied_Timeline):
+    """Core function for the scheduling of Mode121.
+    
+    Arguments:
+        Occupied_Timeline (:obj:`dict` of :obj:`list`): Dictionary with keys equal to planned and scheduled Modes with entries equal to their start and end time as a list.
+        
+    Returns:
+        (:obj:`dict` of :obj:`list`): Occupied_Timeline (updated with the result from the scheduled Mode).
+        (str): Comment regarding the result of scheduling of the mode.
+    
+    """
     
     date_magnitude_array = date_calculator()
     
@@ -68,7 +78,7 @@ def date_calculator():
         s = "{},f|M|F7,{},{},{},2000"
         s = s.format(star_cat[t]['HIP'], deg2HMS(ra=star_cat[t]['_RA.icrs']), deg2HMS(dec=star_cat[t]['_DE.icrs']), star_cat[t]['Vmag'])
         stars.append(ephem.readdb(s))
-        stars[t].compute(epoch='2018')
+        stars[t].compute(epoch='2000')
         stars_dec[t] = stars[t].dec
         stars_ra[t] = stars[t].ra
     
@@ -104,8 +114,8 @@ def date_calculator():
     
     "Prepare the output"
     "Array containing date in first column and brightest magnitude spotted in the second"
-    date_magnitude_array = zeros((timesteps,2))+100
-    "Set magntidues arbitrary large"
+    date_magnitude_array = zeros((timesteps,4))
+    "Set magntidues arbitrary large, which will correspond to no star being visible"
     date_magnitude_array[:,1] = 100
     
     "Pre-allocate space"
@@ -296,6 +306,14 @@ def date_calculator():
             r_V_offset_normal[t,0:3] = (rot_mat @ normal_orbit[t,0:3])
             r_V_offset_normal[t,0:3] = r_V_offset_normal[t,0:3]/norm(r_V_offset_normal[t,0:3])
             
+            "Calculate Dec and RA of optical axis (disregarding parallax)"
+            optical_axis = r_FOV_unit_vector[t,0:3]
+            Dec = arctan( sqrt(optical_axis[0]**2 + optical_axis[1]**2) / optical_axis[2] ) /pi * 180
+            Ra = arccos( dot( [1,0,0], [optical_axis[0],optical_axis[1],0] ) / norm([optical_axis[0],optical_axis[1],0]) ) / pi * 180
+            
+            if( optical_axis[1] > 0 ):
+                Ra = Ra+180
+            
             if( t*timestep % log_timestep == 0 or t == 1 ):
                 Logger.debug('Current time: '+str(current_time))
                 Logger.debug('R_LP [km]: '+str(R_LP))
@@ -314,6 +332,9 @@ def date_calculator():
             
             "Add current date to date_magnitude_array"
             date_magnitude_array[t-1,0] = current_time 
+            "Add optical axis Dec and RA to date_magnitude_array"
+            date_magnitude_array[t-1,2] = Dec
+            date_magnitude_array[t-1,3] = Ra
             
             ###################### Star-mapper ####################################
             
@@ -322,24 +343,8 @@ def date_calculator():
                 
                 "Skip star if it is not visible during this epoch"
                 if(stars[x].name in skip_star_list):
-                    
                     continue
-                '''
-                "Check if a star has already been spotted during this orbit."
-                if( stars[x].name in spotted_star_name ):
                     
-                    'Check if not enough time has passed so that the star has not left FOV'
-                    if((current_time - spotted_star_timestamp[spotted_star_name.index(stars[x].name)]) < ephem.second*(V_FOV*2*MATS_P[t]/360)):
-                        
-                        continue
-                        
-                        "If enough time has passed (half an orbit), the star can be removed from the exception list"
-                    elif((current_time - spotted_star_timestamp[spotted_star_name.index(stars[x].name)]) >= ephem.second*(180*MATS_P[t]/360)):
-                        spotted_star_timestamp.pop(spotted_star_name.index(stars[x].name))
-                        spotted_star_timecounter.pop(spotted_star_name.index(stars[x].name))
-                        spotted_star_name.remove(stars[x].name)
-                        continue
-                '''        
                 
                 
                 "Project 'star vectors' ontop pointing H-offset and V-offset plane"
@@ -374,7 +379,7 @@ def date_calculator():
                         Logger.debug('Current time: '+str(current_time))
                         Logger.debug('Star: '+stars[x].name+', with H-offset: '+str(stars_hori_offset[t][x])+' V-offset: '+str(stars_vert_offset[t][x])+' in degrees is visible')
                     
-                    "Check if it is the brightest star spotted in the current FOV at the current date, and if so, replace the currently value"
+                    "Check if it is the brightest star spotted in the current FOV at the current date, and if so, replace the current value"
                     if( stars[x].mag < date_magnitude_array[t-1,1] ):
                         date_magnitude_array[t-1,1] = stars[x].mag
                         
@@ -472,6 +477,8 @@ def date_select(Occupied_Timeline, date_magnitude_array):
             return Occupied_Timeline, comment
         
         date_max_mag = date_magnitude_array[index_max_mag,0]
+        dec_max_mag = date_magnitude_array[index_max_mag,2]
+        RA_max_mag = date_magnitude_array[index_max_mag,3]
         
         date = ephem.Date(ephem.Date(date_max_mag)-ephem.second*(settings['freeze_start']))
         endDate = ephem.Date(date+ephem.second*settings['mode_duration'])
@@ -493,7 +500,7 @@ def date_select(Occupied_Timeline, date_magnitude_array):
                     break
                 
         
-    comment = 'Number of times date changed: ' + str(loop_counter)+', faintest magnitude visible: '+str(value_max_mag)
+    comment = 'Number of times date changed: ' + str(loop_counter)+', faintest magnitude visible (100 equals no stars visible): '+str(value_max_mag)+', Dec (J2000): '+str(dec_max_mag)+', RA (J2000): '+str(RA_max_mag)
     Occupied_Timeline[Mode_name] = (date,endDate)
     
     return Occupied_Timeline, comment

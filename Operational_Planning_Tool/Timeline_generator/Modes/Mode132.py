@@ -14,6 +14,16 @@ Logger = logging.getLogger(Logger_name())
 
 
 def Mode132(Occupied_Timeline):
+    """Core function for the scheduling of Mode132.
+    
+    Arguments:
+        Occupied_Timeline (:obj:`dict` of :obj:`list`): Dictionary with keys equal to planned and scheduled Modes with entries equal to their start and end time as a list.
+        
+    Returns:
+        (:obj:`dict` of :obj:`list`): Occupied_Timeline (updated with the result from the scheduled Mode).
+        (str): Comment regarding the result of scheduling of the mode.
+    
+    """
     
     initial_date = date_calculator()
     
@@ -33,11 +43,10 @@ def date_calculator():
     
     
     
-    try:
+    if( Mode132_settings()['start_time'] != ephem.Date('0') ):
         initial_date = Mode132_settings()['start_time']
-        Logger.info('Mode start_time used as initial date')
-    except:
-        Logger.warning('!!Error raised in try statement!!')
+        Logger.info('Mode specific start_time used as initial date')
+    else:
         Logger.info('Timeline start_time used as initial date')
         initial_date = Timeline_settings()['start_time']
     

@@ -34,11 +34,10 @@ def date_calculator():
     
     
     
-    try:
-        initial_date = Mode=X=_settings()['start_time']
+    if( Mode201_settings()['start_time'] != ephem.Date('0') ):
+        initial_date = Mode201_settings()['start_time']
         Logger.info('Mode specific start_time used as initial date')
-    except:
-        Logger.warning('!!Error raised in try statement!!')
+    else:
         Logger.info('Timeline start_time used as initial date')
         initial_date = Timeline_settings()['start_time']
     

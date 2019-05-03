@@ -5,13 +5,13 @@ Created on Mon Oct 22 14:31:43 2018
 Contains macro functions that represent parts of or a whole science-mode/test.
 
 Arguments:
-    root [lxml.etree._Element]:  XML tree structure. Main container object for the ElementTree API.
-    relativeTime [str]: The relative starting time of the macro with regard to the start of the timeline [s]
-    comment [str]: A comment for the macro
+    root (lxml.etree._Element):  XML tree structure. Main container object for the ElementTree API.
+    relativeTime (str): The relative starting time of the macro with regard to the start of the timeline [s]
+    comment (str): A comment for the macro
     *Any other optional inputs depending on the macro which are defined in each macro function*
     
 Returns:
-    relativeTime [str]: Time in seconds as a str class equal to the input "relativeTime" with added delay from the scheduling of commands, where the delay between commands is stated in OPT_Config_File.
+    relativeTime (str): Time in seconds as a str class equal to the input "relativeTime" with added delay from the scheduling of commands, where the delay between commands is stated in OPT_Config_File.
 
 @author: David
 """
@@ -24,7 +24,7 @@ def NLC_night(root, relativeTime, pointing_altitude, comment):
     ''' Macro that corresponds to Mode1 when nadir is on during NLC season at latitudes polewards of +-45 degrees"
         
         Arguments:
-            pointing_altitude [str]: The altitude of the tangential point [m].
+            pointing_altitude (str): The altitude of the tangential point [m].
     '''
     
     
@@ -45,7 +45,7 @@ def NLC_day(root, relativeTime, pointing_altitude, comment):
     ''' Macro that corresponds to Mode1 when nadir is off during NLC season at latitudes polewards of +-45 degrees"
         
         Arguments:
-            pointing_altitude [str]: The altitude of the tangential point [m].
+            pointing_altitude (str): The altitude of the tangential point [m].
     '''
     
     
@@ -67,7 +67,7 @@ def IR_night(root, relativeTime, pointing_altitude, comment):
     ''' Macro that corresponds to Mode1 (at latitudes equatorwards of +-45 degrees) and Mode2. Nadir is on."
         
         Arguments:
-            pointing_altitude [str]: The altitude of the tangential LP [m] as a str class.
+            pointing_altitude (str): The altitude of the tangential LP [m] as a str class.
     '''
     
     
@@ -87,7 +87,7 @@ def IR_day(root, relativeTime, pointing_altitude, comment):
     ''' Macro that corresponds to Mode1 (at latitudes equatorwards of +-45 degrees) and Mode2. Nadir is off."
         
         Arguments:
-            pointing_altitude [str]: The altitude of the tangential LP [m] as a str class.
+            pointing_altitude (str): The altitude of the tangential LP [m] as a str class.
     '''
     
     
@@ -107,7 +107,7 @@ def nadir_on_off(root, relativeTime, nadir, comment):
     ''' Macro that corresponds to turning the nadir imager on/off
         
         Arguments:
-            nadir: nadir [str]: Sets the nadir CCD on or off. Either "1" for on or "0" for off.
+            nadir: nadir (str): Sets the nadir CCD on or off. Either "1" for on or "0" for off.
     '''
     
     relativeTime = Commands.TC_pafMode(root, relativeTime, mode = "2", comment = comment)
@@ -120,11 +120,15 @@ def nadir_on_off(root, relativeTime, nadir, comment):
     return relativeTime
     
 
-def Mode100_macro(root, relativeTime, pointing_altitude, comment = ''):
+def Mode100_macro(root, relativeTime, pointing_altitude, ExpTimeUV, ExpIntUV, ExpTimeIR, ExpIntIR, comment = ''):
     ''' Macro that corresponds to Mode100.
     
         Arguments:
-            pointing_altitude [str]: The altitude of the tangential LP [m] as a str class.
+            pointing_altitude (str): The altitude of the tangential LP [m] as a str class.
+            ExpTimeUV (str) = Sets the exposuretime of the UV CCDs.
+            ExpIntUV (str) = Sets the exposuretime intervall of the UV CCDs.
+            ExpTimeIR (str) = Sets the exposuretime of the IR CCDs.
+            ExpIntIR (str) = Sets the exposuretime intervall of the IR CCDs.
     '''
     
     relativeTime = Commands.TC_pafMode(root, relativeTime, mode = "2", comment = comment)
@@ -132,7 +136,8 @@ def Mode100_macro(root, relativeTime, pointing_altitude, comment = ''):
     
     relativeTime = Commands.TC_acfLimbPointingAltitudeOffset(root, relativeTime, Initial = pointing_altitude, Final = pointing_altitude, comment = comment)
     
-    relativeTime = Standard_binning_procedure(root = root, relativeTime = relativeTime, nadir = '0', comment = comment)
+    relativeTime = Standard_binning_procedure(root = root, relativeTime = relativeTime, nadir = '0', ExpTimeUV = ExpTimeUV, 
+                                              ExpIntUV = ExpIntUV, ExpTimeIR = ExpTimeIR, ExpIntIR = ExpIntIR, comment = comment)
     
     relativeTime = Commands.TC_pafMode(root, relativeTime, mode = "1", comment = comment)
     
@@ -144,10 +149,10 @@ def Mode110_macro(root, relativeTime, pointing_altitude_from, pointing_altitude_
     '''Macro that corresponds to Mode110
     
         Arguments:
-            pointing_altitude_from [str]: The altitude in meters from which to start the sweep 
-            pointing_altitude_from [str]: The altitude in meters where the sweep will end
-            sweep_rate [str]: The rate of the sweep in m/s.
-            relativeTime_sweep [str]: The relative starting time of the sweep in seconds with regard to the start of the timeline
+            pointing_altitude_from (str): The altitude in meters from which to start the sweep 
+            pointing_altitude_from (str): The altitude in meters where the sweep will end
+            sweep_rate (str): The rate of the sweep in m/s.
+            relativeTime_sweep (str): The relative starting time of the sweep in seconds with regard to the start of the timeline
             
     '''
     
@@ -170,9 +175,9 @@ def Mode120_macro(root, relativeTime, freezeTime, FreezeDuration, pointing_altit
     ''' Macro that corresponds to Mode120.
     
         Arguments:
-            freezeTime [str]: Start time of attitude freeze command in on-board time [s] as a str class.
-            FreezeDuration [str]: Duration of freeze [s] as a str class.
-            pointing_altitude [str]: The altitude of the tangential point [m] as a str class.
+            freezeTime (str): Start time of attitude freeze command in on-board time [s] as a str class.
+            FreezeDuration (str): Duration of freeze [s] as a str class.
+            pointing_altitude (str): The altitude of the tangential point [m] as a str class.
     '''
     
     
@@ -199,9 +204,9 @@ def Mode121_macro(root, relativeTime, freezeTime, FreezeDuration, pointing_altit
     ''' Macro that corresponds to Mode121.
     
         Arguments:
-            freezeTime [str]: Start time of attitude freeze command in on-board time [s] as a str class.
-            FreezeDuration [str]: Duration of freeze [s] as a str class.
-            pointing_altitude [str]: The altitude of the tangential point [m] as a str class.
+            freezeTime (str): Start time of attitude freeze command in on-board time [s] as a str class.
+            FreezeDuration (str): Duration of freeze [s] as a str class.
+            pointing_altitude (str): The altitude of the tangential point [m] as a str class.
     '''
     
     
@@ -228,11 +233,11 @@ def Mode122_macro(root, relativeTime, freezeTime, FreezeDuration, pointing_altit
     ''' Macro that corresponds to Mode122.
     
         Arguments:
-            freezeTime [str]: Start time of attitude freeze command in on-board time [s] as a str class.
-            FreezeDuration [str]: Duration of freeze [s] as a str class.
-            pointing_altitude [str]: The altitude of the tangential point [m] as a str class.
-            ExpInt [str]: Exposure interval [ms] as a str.
-            ExpTime [str]: Exposure time [ms] as a str.
+            freezeTime (str): Start time of attitude freeze command in on-board time [s] as a str class.
+            FreezeDuration (str): Duration of freeze [s] as a str class.
+            pointing_altitude (str): The altitude of the tangential point [m] as a str class.
+            ExpInt (str): Exposure interval [ms] as a str.
+            ExpTime (str): Exposure time [ms] as a str.
     '''
     
     
@@ -260,7 +265,7 @@ def Mode130_macro(root, relativeTime, pointing_altitude, comment):
     ''' Macro that corresponds to Mode130
     
         Arguments:
-            pointing_altitude [str]: The altitude of the tangential point [m] as a str class.
+            pointing_altitude (str): The altitude of the tangential point [m] as a str class.
     '''
     
     
@@ -281,9 +286,9 @@ def Mode131_macro(root, relativeTime, pointing_altitude, comment):
     ''' Macro that corresponds to Mode131
     
         Arguments:
-            pointing_altitude [str]: The altitude of the tangential point [m] as a str class.
-            ExpInt [str]: Exposure interval [ms] as a str.
-            ExpTime [str]: Exposure time [ms] as a str.
+            pointing_altitude (str): The altitude of the tangential point [m] as a str class.
+            ExpInt (str): Exposure interval [ms] as a str.
+            ExpTime (str): Exposure time [ms] as a str.
     '''
     
     
@@ -303,9 +308,9 @@ def Mode132_macro(root, relativeTime, pointing_altitude, ExpInt, ExpTime, commen
     ''' Macro that corresponds to Mode132
     
         Arguments:
-            pointing_altitude [str]: The altitude of the tangential point [m] as a str class.
-            ExpInt [str]: Exposure interval [ms] as a str.
-            ExpTime [str]: Exposure time [ms] as a str.
+            pointing_altitude (str): The altitude of the tangential point [m] as a str class.
+            ExpInt (str): Exposure interval [ms] as a str.
+            ExpTime (str): Exposure time [ms] as a str.
     '''
     
     
@@ -325,9 +330,9 @@ def Mode200_macro(root, relativeTime, freezeTime, FreezeDuration, pointing_altit
     ''' Macro that corresponds to Mode200.
     
         Arguments:
-            freezeTime [str]: Start time of attitude freeze command in on-board time [s] as a str class.
-            FreezeDuration [str]: Duration of freeze [s] as a str class.
-            pointing_altitude [str]: The altitude of the tangential point [m] as a str class.
+            freezeTime (str): Start time of attitude freeze command in on-board time [s] as a str class.
+            FreezeDuration (str): Duration of freeze [s] as a str class.
+            pointing_altitude (str): The altitude of the tangential point [m] as a str class.
     '''
     
     
@@ -355,9 +360,9 @@ def Limb_functional_test_macro(root, relativeTime, pointing_altitude, ExpTime, J
     '''Limb_functional_test_macro
     
         Arguments: 
-            pointing_altitude [str]: The altitude of the tangential point [m].
-            ExpTime [str]: Exposure time in ms
-            JPEGQ [str]: The JPEG quality in %
+            pointing_altitude (str): The altitude of the tangential point [m].
+            ExpTime (str): Exposure time in ms
+            JPEGQ (str): The JPEG quality in %
     '''
     
     relativeTime = Commands.TC_pafMode(root, relativeTime, mode = "2", comment = comment)
@@ -396,8 +401,8 @@ def Photometer_test_1_macro(root, relativeTime, ExpTime, ExpInt, comment = ''):
     '''Photometer_test_1_macro
 
         Arguments:
-            ExpTime [str]: Exposure time in ms
-            ExpInt [str]: Exposure interval in ms
+            ExpTime (str): Exposure time in ms
+            ExpInt (str): Exposure interval in ms
     '''
     
     relativeTime = Commands.TC_pafMode(root, relativeTime, mode = "2", comment = comment)
@@ -414,9 +419,9 @@ def Nadir_functional_test_macro(root, relativeTime, pointing_altitude, ExpTime, 
     '''Nadir_functional_test
     
         Arguments: 
-            pointing_altitude [str]: The altitude of the tangential point [m].
-            ExpTime [str]: Exposure time in ms
-            JPEGQ [str]: The JPEG quality in %
+            pointing_altitude (str): The altitude of the tangential point [m].
+            ExpTime (str): Exposure time in ms
+            JPEGQ (str): The JPEG quality in %
     '''
     
     relativeTime = Commands.TC_pafMode(root, relativeTime, mode = "2", comment = comment)

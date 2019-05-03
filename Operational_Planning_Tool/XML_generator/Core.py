@@ -119,6 +119,7 @@ def XML_generator(SCIMOD_Path):
     ### Write finished XML-tree with all commands to a file #######
     MATS_COMMANDS = 'Output\\MATS_COMMANDS_'+Version()+'__'+SCIMOD_Path+'.xml'
     Logger.info('Write XML-tree to: '+MATS_COMMANDS)
+    print('Write XML-tree to: '+MATS_COMMANDS)
     f = open(MATS_COMMANDS, 'w')
     f.write(etree.tostring(root, pretty_print=True, encoding = 'unicode'))
     f.close()

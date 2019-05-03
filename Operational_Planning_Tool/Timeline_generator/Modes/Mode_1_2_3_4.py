@@ -88,7 +88,7 @@ def Mode_1_2_3_4date_select(Occupied_Timeline, Mode_1_2_3_4initial_date):
     Mode_1_2_3_4dates = []
     
     "The least amount of time that needs to be available for mode1/2 to be scheduled"
-    Mode_1_2_3_4minDuration = ephem.second*settings['mode_separation']*2
+    Mode_1_2_3_4minDuration = ephem.second*settings['Mode_1_2_3_4minDuration']
     iterations = 0
     
     ## To fill in mode1/2 inbetween already schedueled modes. The amount of iterations is equal to 

@@ -512,6 +512,10 @@ def XML_generator_Mode100(root, date, duration, relativeTime, params = {}):
     pointing_altitude_from = params['pointing_altitude_from']
     pointing_altitude_to = params['pointing_altitude_to']
     pointing_altitude_interval = params['pointing_altitude_interval']
+    ExpTimeUV = params['ExpTimeUV']
+    ExpIntUV =  ExpTimeUV + 1
+    ExpTimeIR = params['ExpTimeIR']
+    ExpIntIR =  ExpTimeIR + 1
     
     number_of_altitudes = round( (pointing_altitude_to - pointing_altitude_from) / pointing_altitude_interval +1 )
     
@@ -526,11 +530,12 @@ def XML_generator_Mode100(root, date, duration, relativeTime, params = {}):
         mode_relativeTime = relativeTime - initial_relativeTime
         
         if(mode_relativeTime > duration and duration_flag == 0):
-            Logger.warning('Warning!! The scheduled time for the mode has ran out.')
+            Logger.warning('Warning!! The scheduled time for '+Mode_name+' has ran out.')
             #input('Enter anything to ackknowledge and continue:\n')
             duration_flag = 1
         
-        relativeTime = Mode_macro(root = root, relativeTime = str(relativeTime), pointing_altitude = str(pointing_altitude), comment = comment)
+        relativeTime = Mode_macro(root = root, relativeTime = str(relativeTime), pointing_altitude = str(pointing_altitude),  ExpTimeUV = str(ExpTimeUV), 
+                                              ExpIntUV = str(ExpIntUV), ExpTimeIR = str(ExpTimeIR), ExpIntIR = str(ExpIntIR), comment = comment)
         relativeTime = round(float(relativeTime) + params['pointing_duration'], 1)
 
 
@@ -629,6 +634,7 @@ def XML_generator_Mode121(root, date, duration, relativeTime,
     params = params_checker(params,settings)
     Logger.info('params after params_checker function: '+str(params))
     
+    "Get Mode name as string"
     Mode_name = sys._getframe(0).f_code.co_name.replace('XML_generator_','')
     comment = Mode_name+' starting date: '+str(date)+', '+str(params)
     

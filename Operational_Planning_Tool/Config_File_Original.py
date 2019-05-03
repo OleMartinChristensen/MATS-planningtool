@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-"""Contains settings for the Operational Planning Tool
+"""Contains settings for the Operational Planning Tool. The Config file used must be
+named OPT_Config_File.py and be located in the working directoy of the user call.
     
 """
 
@@ -84,25 +85,25 @@ def Timeline_settings():
     '''Contains the settings related to the timeline as a whole as a dict.
     
     Keys:
-        start_time: Sets the starting date of the timeline as a ephem.Date (example: ephem.Date('2018/9/3 08:00:40')). \n
-        duration: Sets the duration in seconds of the timeline. (int) \n
-        leap_seconds: Sets the amount of leap seconds for GPS time to be used. (int) \n
-        GPS_epoch: Sets the epoch of the GPS time in ephem.Date format (example: ephem.Date('1980/1/6')). \n
+        'start_time': Sets the starting date of the timeline as a ephem.Date (example: ephem.Date('2018/9/3 08:00:40')). \n
+        'duration': Sets the duration in seconds of the timeline. (int) \n
+        'leap_seconds': Sets the amount of leap seconds for GPS time to be used. (int) \n
+        'GPS_epoch': Sets the epoch of the GPS time in ephem.Date format (example: ephem.Date('1980/1/6')). \n
         
-        mode_separation: Separates the scheduling of Modes 1-4 and the start of a new mode by this amount [s].
-        Is also used in Library.scheduler and as an extra term in the calculations of the duration of other modes to act as an prolonged buffer.
+        'Mode_1_2_3_4minDuration': Minimum amount of time needed (inbetween scheduled Modes) for the scheduling of Modes 1-4 [s]. \n
+        'mode_separation': Time in seconds. Is used in Library.scheduler to postpone Modes and also as an extra term in the calculations of the duration of other modes to act as an prolonged buffer.
         Meaning that whenever mode_duration is calculated it is equal to an calculated estimation of the modes duration plus "mode_separation". (int) \n
         
-        mode_duration: Sets the amount of time scheduled for modes which do not have their own respective duration settings. (int) \n
-        yaw_correction: If yaw correction will be used for the duration of the timeline. Decides if Mode1/2 or Mode3/4 are to be scheduled. Set to True for Mode3/4, set to False for Mode1/2. (bool) \n
-        command_separation: Minimum ammount of time inbetween scheduled commands [s]. (float) \n
-        pointing_stabilization: Extra time [s] scheduled for fixed pointing commands before new commands are allowed. (int) \n
+        'mode_duration': Sets the amount of time scheduled for modes which do not have their own respective duration settings. (int) \n
+        'yaw_correction': If yaw correction will be used for the duration of the timeline. Decides if Mode1/2 or Mode3/4 are to be scheduled. Set to True for Mode3/4, set to False for Mode1/2. (bool) \n
+        'command_separation': Minimum ammount of time inbetween scheduled commands [s]. (float) \n
+        'pointing_stabilization': Extra time [s] scheduled for fixed pointing commands before new commands are allowed. (int) \n
         
     Returns:
         (dict): timeline_settings
     '''
     timeline_settings = {'start_time': ephem.Date('2018/9/3 08:00:40'), 'duration': 1*4*3600, 
-                       'leap_seconds': 18, 'GPS_epoch': ephem.Date('1980/1/6'), 'mode_separation': 120,
+                       'leap_seconds': 18, 'GPS_epoch': ephem.Date('1980/1/6'), 'Mode_1_2_3_4minDuration': 300, 'mode_separation': 120,
                        'mode_duration': 900, 'yaw_correction': True, 'command_separation': 0.1, 'pointing_stabilization': 60}
     return timeline_settings
 
@@ -176,14 +177,17 @@ def Mode100_settings():
         'pointing_altitude_from': Sets in meters the starting altitude. (int) \n
         'pointing_altitude_to': Sets in meters the ending altitude. (int) \n
         'pointing_altitude_interval': Sets in meters the interval size of each succesive pointing. (int) \n
-        'pointing_duration': Sets the time [s] from attitude stabilization until next pointing command. (int)
+        'pointing_duration': Sets the time [s] from attitude stabilization until next pointing command. (int) \n
+        'ExpTimeUV': Sets the exposuretime of the UV CCDs. \n
+        'ExpTimeIR': Sets the exposuretime of the IR CCDs. \n
+        'start_time': Sets the scheduled date for the mode as a ephem.Date (example: ephem.Date('2018/9/3 08:00:40'). If the date is set to ephem.Date('0'), Timeline start_time will be used.
         
     Returns:
         (dict): settings
             
     '''
     settings = {'pointing_altitude_from': 10000, 'pointing_altitude_to': 150000, 
-                'pointing_altitude_interval': 5000, 'pointing_duration': 20}
+                'pointing_altitude_interval': 5000, 'pointing_duration': 20, 'ExpTimeUV': 3000, 'ExpTimeIR': 5000, 'start_time': ephem.Date('0')}
     return settings
 
 
@@ -195,12 +199,13 @@ def Mode110_settings():
         'pointing_altitude_to': Sets in meters the ending altitude of the sweep. (int) \n
         'sweep_rate': Sets in meters rate of the sweep. (int) \n
         'sweep_start': Sets in seconds the time from start of the Mode to when the sweep starts. (int) \n
+        'start_time': Sets the scheduled date for the mode as a ephem.Date (example: ephem.Date('2018/9/3 08:00:40'). If the date is set to ephem.Date('0'), Timeline start_time will be used.
     
     Returns:
         (dict): settings
         
     '''
-    settings = {'pointing_altitude_from': 10000, 'pointing_altitude_to': 150000, 'sweep_rate': 500, 'sweep_start': 120}
+    settings = {'pointing_altitude_from': 10000, 'pointing_altitude_to': 150000, 'sweep_rate': 500, 'sweep_start': 120, 'start_time': ephem.Date('0')}
     return settings
 
 
@@ -313,7 +318,7 @@ def Mode130_settings():
     Keys:
         'pointing_altitude': Sets in meters the altitude of the pointing command. \n
         'mode_duration': Sets the scheduled duration of the Mode in seconds. \n
-        'start_time': Sets the scheduled date for the mode as a ephem.Date (example: ephem.Date('2018/9/3 08:00:40').
+        'start_time': Sets the scheduled date for the mode as a ephem.Date (example: ephem.Date('2018/9/3 08:00:40'). If the date is set to ephem.Date('0'), Timeline start_time will be used.
     
     Returns:
         (dict): settings
@@ -329,7 +334,7 @@ def Mode131_settings():
     Keys:
         'pointing_altitude': Sets in meters the altitude of the pointing command. \n
         'mode_duration': Sets the scheduled duration of the Mode in seconds. \n
-        'start_time': Sets the scheduled date for the mode as a ephem.Date (example: ephem.Date('2018/9/3 08:00:40').
+        'start_time': Sets the scheduled date for the mode as a ephem.Date (example: ephem.Date('2018/9/3 08:00:40'). If the date is set to ephem.Date('0'), Timeline start_time will be used.
     
     Returns:
         (dict): settings
@@ -344,7 +349,7 @@ def Mode132_settings():
     
     Keys:
         'pointing_altitude': Sets in meters the altitude of the pointing command. \n
-        'start_time': Sets the scheduled date for the mode as a ephem.Date (example: ephem.Date('2018/9/3 08:00:40'). \n
+        'start_time': Sets the scheduled date for the mode as a ephem.Date (example: ephem.Date('2018/9/3 08:00:40'). If the date is set to ephem.Date('0'), Timeline start_time will be used. \n
         'ExpTimes': Sets exposure times [s] as a integer list and the exposure intervall (ExpInt = ExpTime + 1). \n
         'session_duration': Sets the duration [s] of each session using the different exposure times in ExpTimes.
     
@@ -387,24 +392,24 @@ def Mode200_settings():
     
     return settings
 
-
+"""
 def Mode201_settings():
     '''Contain settings related to Mode201 as a dict.
     
     Keys:
         'pointing_altitude': Sets in meters the altitude of the pointing command. \n
         'mode_duration': Sets the scheduled duration of the Mode in seconds. \n
-        'start_time': Sets the scheduled date for the mode as a ephem.Date (example: ephem.Date('2018/9/3 08:00:40').
+        'start_time': Sets the scheduled date for the mode as a ephem.Date (example: ephem.Date('2018/9/3 08:00:40'). If the date is set to ephem.Date('0'), Timeline start_time will be used.
     
     Returns:
         (dict): settings
     
     '''
-    settings = {'pointing_altitude': 70000}
+    settings = {'pointing_altitude': 70000, 'mode_duration': 600, 'start_time': ephem.Date('0')}
     return settings
 
 
-"""
+
 def Mode203_settings():
     '''Contain settings related to Mode203 as a dict.
     

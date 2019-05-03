@@ -41,8 +41,7 @@ def date_calculator():
         initial_date = ModeX_settings()['start_time']
         Logger.info('Mode specific start_time used as initial date')
     except:
-        Logger.warning('!!Error raised in try statement!!')
-        Logger.info('Timeline start_time used as initial date')
+        Logger.warning('!!Error raised in try statement!! Could not use Mode specific start_time; Timeline start_time used as initial date')
         initial_date = Timeline_settings()['start_time']
     
     return initial_date

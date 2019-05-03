@@ -16,6 +16,10 @@ Generated logs are also saved in folders created in the working directory.
 
 import os, shutil, sys
 
+if(os.path.isfile('OPT_Config_File.py') == False):
+    shutil.copyfile('Operational_Planning_Tool/Config_File_Original.py','OPT_Config_File.py')
+
+
 from .XML_generator.Core import XML_generator
 from .Timeline_generator.Core import Timeline_generator
 from .Timeline_analyzer.Core import Timeline_analyzer
@@ -25,8 +29,6 @@ from . import Globals
 
 #sys.path.append(os.getcwd()+'/Operational_Planning_Tool')
 
-#if(os.path.isfile('OPT_Config_File.py') == False):
-#    shutil.copyfile('Operational_Planning_Tool/Config_File_Original.py','OPT_Config_File.py')
 
 
 def Timeline_gen():
@@ -47,7 +49,7 @@ def XML_gen(science_mode_timeline_path):
     Converts a .json file containing a list of scheduled Science Modes into commands and saves them to a .xml command file.
     
     Arguments: 
-        science_mode_timeline_path [str]: Path to the .json file containing the Science Mode Timeline.
+        science_mode_timeline_path (str): Path to the .json file containing the Science Mode Timeline.
     
     Returns: 
         None
