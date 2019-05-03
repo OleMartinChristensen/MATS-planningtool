@@ -29,6 +29,11 @@ from . import Globals
 
 #sys.path.append(os.getcwd()+'/Operational_Planning_Tool')
 
+<<<<<<< HEAD
+=======
+if(os.path.isfile('OPT_Config_File.py') == False):
+    shutil.copyfile('Operational_Planning_Tool/Config_File_Original.py','OPT_Config_File.py')
+>>>>>>> 55445e11001e42bf72315e1b45b2a2e2277947ea
 
 
 def Timeline_gen():
