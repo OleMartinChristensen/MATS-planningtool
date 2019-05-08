@@ -30,6 +30,7 @@ def NLC_night(root, relativeTime, pointing_altitude, comment):
     
     relativeTime = Commands.TC_pafMode(root, relativeTime, mode = "2", comment = comment)
     
+    relativeTime = Commands.TC_pafPM(root, relativeTime, comment = comment)
     
     relativeTime = Commands.TC_acfLimbPointingAltitudeOffset(root, relativeTime, Initial = pointing_altitude, Final = pointing_altitude, comment = comment)
     
@@ -51,6 +52,7 @@ def NLC_day(root, relativeTime, pointing_altitude, comment):
     
     relativeTime = Commands.TC_pafMode(root, relativeTime, mode = "2", comment = comment)
     
+    relativeTime = Commands.TC_pafPM(root, relativeTime, comment = comment)
     
     relativeTime = Commands.TC_acfLimbPointingAltitudeOffset(root, relativeTime,  Initial = pointing_altitude, Final = pointing_altitude, comment = comment)
     
@@ -73,6 +75,7 @@ def IR_night(root, relativeTime, pointing_altitude, comment):
     
     relativeTime = Commands.TC_pafMode(root, relativeTime, mode = "2", comment = comment)
     
+    relativeTime = Commands.TC_pafPM(root, relativeTime, comment = comment)
     
     relativeTime = Commands.TC_acfLimbPointingAltitudeOffset(root, relativeTime, Initial = pointing_altitude, Final = pointing_altitude, comment = comment)
     
@@ -93,6 +96,7 @@ def IR_day(root, relativeTime, pointing_altitude, comment):
     
     relativeTime = Commands.TC_pafMode(root, relativeTime, mode = "2", comment = comment)
     
+    relativeTime = Commands.TC_pafPM(root, relativeTime, comment = comment)
     
     relativeTime = Commands.TC_acfLimbPointingAltitudeOffset(root, relativeTime, Initial = pointing_altitude, Final = pointing_altitude, comment = comment)
     
@@ -112,8 +116,8 @@ def nadir_on_off(root, relativeTime, nadir, comment):
     
     relativeTime = Commands.TC_pafMode(root, relativeTime, mode = "2", comment = comment)
     
-    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '64', CCDMode = nadir, ExpInterval = '5000', ExpTime = '5000', comment = comment, 
-                  NumRowsSkip = '0', NumRowsBin= '110', NumRows = '500', NumColumnsBin = '196', NumColumns = '1980', JPEGquality = '100')
+    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '64', PWR = nadir, ExpInterval = '5000', ExpTime = '5000', comment = comment, 
+                  NRSKIP = '0', NRBIN= '110', NROW = '500', NCBIN = '196', NCOL = '1980', JPEGQ = '100')
     
     relativeTime = Commands.TC_pafMode(root, relativeTime, mode = "1", comment = comment)
     
@@ -367,20 +371,20 @@ def Limb_functional_test_macro(root, relativeTime, pointing_altitude, ExpTime, J
     
     relativeTime = Commands.TC_pafMode(root, relativeTime, mode = "2", comment = comment)
     
-    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '3', CCDMode = '1', ExpInterval = '0', ExpTime = ExpTime, comment = comment, 
-                  NumRowsSkip = '100', NumRowsBin= '2', NumRows = '400', NumColumnsBin = '40', NumColumns = '2000', JPEGquality = JPEGQ)
+    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '3', PWR = '1', ExpInterval = '0', ExpTime = ExpTime, comment = comment, 
+                  NRSKIP = '100', NRBIN= '2', NROW = '400', NCBIN = '40', NCOL = '2000', JPEGQ = JPEGQ)
     
     
-    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '12', CCDMode = '1', ExpInterval = '0', ExpTime = ExpTime, comment = comment, 
-                  NumRowsSkip = '100', NumRowsBin= '3', NumRows = '400', NumColumnsBin = '81', NumColumns = '2000', JPEGquality = JPEGQ)
+    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '12', PWR = '1', ExpInterval = '0', ExpTime = ExpTime, comment = comment, 
+                  NRSKIP = '100', NRBIN= '3', NROW = '400', NCBIN = '81', NCOL = '2000', JPEGQ = JPEGQ)
     
     
-    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '48', CCDMode = '1', ExpInterval = '0', ExpTime = ExpTime, comment = comment, 
-                  NumRowsSkip = '100', NumRowsBin= '7', NumRows = '400', NumColumnsBin = '409', NumColumns = '2000', JPEGquality = JPEGQ)
+    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '48', PWR = '1', ExpInterval = '0', ExpTime = ExpTime, comment = comment, 
+                  NRSKIP = '100', NRBIN= '7', NROW = '400', NCBIN = '409', NCOL = '2000', JPEGQ = JPEGQ)
     
     
-    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '64', CCDMode = '0', ExpInterval = '5000', ExpTime = '5000', comment = comment, 
-                  NumRowsSkip = '0', NumRowsBin= '110', NumRows = '500', NumColumnsBin = '196', NumColumns = '1980', JPEGquality = '100')
+    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '64', PWR = '0', ExpInterval = '5000', ExpTime = '5000', comment = comment, 
+                  NRSKIP = '0', NRBIN= '110', NROW = '500', NCBIN = '196', NCOL = '1980', JPEGQ = '100')
     
     relativeTime = Commands.TC_acfLimbPointingAltitudeOffset(root, relativeTime, Initial = pointing_altitude, Final = pointing_altitude, comment = comment)
     
@@ -407,7 +411,7 @@ def Photometer_test_1_macro(root, relativeTime, ExpTime, ExpInt, comment = ''):
     
     relativeTime = Commands.TC_pafMode(root, relativeTime, mode = "2", comment = comment)
     
-    relativeTime = Commands.TC_pafCCDPM(root, time = relativeTime, ExposureTime = ExpTime, ExposureInterval = ExpInt)
+    relativeTime = Commands.TC_pafPM(root, time = relativeTime, TEXPMS= ExpTime, TEXPIMS = ExpInt)
     
     relativeTime = Commands.TC_pafMode(root, relativeTime, mode = "1", comment = comment)
         
@@ -426,20 +430,20 @@ def Nadir_functional_test_macro(root, relativeTime, pointing_altitude, ExpTime, 
     
     relativeTime = Commands.TC_pafMode(root, relativeTime, mode = "2", comment = comment)
     
-    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '3', CCDMode = '0', ExpInterval = '0', ExpTime = ExpTime, comment = comment, 
-                  NumRowsSkip = '100', NumRowsBin= '2', NumRows = '400', NumColumnsBin = '40', NumColumns = '2000', JPEGquality = JPEGQ)
+    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '3', PWR = '0', ExpInterval = '0', ExpTime = ExpTime, comment = comment, 
+                  NRSKIP = '100', NRBIN= '2', NROW = '400', NCBIN = '40', NCOL = '2000', JPEGQ = JPEGQ)
     
     
-    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '12', CCDMode = '0', ExpInterval = '0', ExpTime = ExpTime, comment = comment, 
-                  NumRowsSkip = '100', NumRowsBin= '3', NumRows = '400', NumColumnsBin = '81', NumColumns = '2000', JPEGquality = JPEGQ)
+    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '12', PWR = '0', ExpInterval = '0', ExpTime = ExpTime, comment = comment, 
+                  NRSKIP = '100', NRBIN= '3', NROW = '400', NCBIN = '81', NCOL = '2000', JPEGQ = JPEGQ)
     
     
-    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '48', CCDMode = '0', ExpInterval = '0', ExpTime = ExpTime, comment = comment, 
-                  NumRowsSkip = '100', NumRowsBin= '7', NumRows = '400', NumColumnsBin = '409', NumColumns = '2000', JPEGquality = JPEGQ)
+    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '48', PWR = '0', ExpInterval = '0', ExpTime = ExpTime, comment = comment, 
+                  NRSKIP = '100', NRBIN= '7', NROW = '400', NCBIN = '409', NCOL = '2000', JPEGQ = JPEGQ)
     
     
-    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '64', CCDMode = '1', ExpInterval = '0', ExpTime = ExpTime, comment = comment, 
-                  NumRowsSkip = '0', NumRowsBin= '110', NumRows = '500', NumColumnsBin = '196', NumColumns = '1980', JPEGquality = JPEGQ)
+    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '64', PWR = '1', ExpInterval = '0', ExpTime = ExpTime, comment = comment, 
+                  NRSKIP = '0', NRBIN= '110', NROW = '500', NCBIN = '196', NCOL = '1980', JPEGQ = JPEGQ)
     
     
     relativeTime = Commands.TC_acfLimbPointingAltitudeOffset(root, relativeTime, Initial = pointing_altitude, Final = pointing_altitude, comment = comment)

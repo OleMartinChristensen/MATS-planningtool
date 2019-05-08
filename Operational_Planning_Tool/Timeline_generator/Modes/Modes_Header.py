@@ -2,7 +2,7 @@
 """
 Created on Wed Mar 13 12:23:04 2019
 
-Header containing the functions which schedules each mode. 
+Header containing the functions which schedules each mode and CMD. 
 
 @author: David
 """
@@ -20,4 +20,6 @@ from .Mode201 import Mode201
 from .Mode203 import Mode203
 from .Mode110 import Mode110
 from .Mode_1_2_3_4 import Mode_1_2_3_4
+from .PayloadCmds import PWRTOGGLE, HTR, CCDBadColumn
+from .PayloadCmds import CCDFlushBadColumns, CCDBIAS, PM
 

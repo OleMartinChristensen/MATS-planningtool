@@ -46,21 +46,28 @@ def Mode120(Occupied_Timeline):
 
 
 def Mode120_date_calculator():
-    """Simulates MATS FOV and determines when stars are in the vertical center when pointing at the LP altitude
-        and when pointing at the desired pointing command altitude.
+    """Subfunction, Either selects a user provided date, or simulates MATS FOV and stars.
+    
+    Determines when stars are in the vertical center when pointing at the pointing_altitude, 
+    as defined in OPT_Config_File.py. Saves the date and parameters regarding the spotting of a star.
+    
+    Arguments:
+        
+    Returns:
+        dates ((:obj:`list` of :obj:`dict`)): A list containing dictionaries containing parameters for each time a star is spotted.
     
     """
     
     automatic = Mode120_settings()['automatic']
     Logger.info('automatic = '+str(automatic))
     
-    "To either calculate when stars are visible and schedule from that data or just schedule at a given time given by Mode120_settings()['date']"
+    "To either calculate when stars are visible and schedule from that data or just schedule at a given time given by Mode120_settings()['start_date']"
     if( automatic == False ):
         try:
-            date = Mode120_settings()['date']
+            date =ephem.Date(Mode120_settings()['start_date'])
             return date
         except:
-            Logger.error('Could not get OPT_Config_File.Mode120_settings()["date"], exiting...')
+            Logger.error('Could not get OPT_Config_File.Mode120_settings()["start_date"], exiting...')
             sys.exit()
         
     elif( automatic == True ):
@@ -79,7 +86,7 @@ def Mode120_date_calculator():
         timesteps = int(floor(duration / timestep))
         Logger.info('Total number of timesteps set to: '+str(timesteps)+' s')
         
-        date = Timeline_settings()['start_time']
+        date = ephem.Date(Timeline_settings()['start_date'])
         Logger.info('date set to: '+str(date))
         
         
@@ -546,6 +553,24 @@ def Mode120_date_calculator():
 
 
 def Mode120_date_select(Occupied_Timeline, dates):
+    """Subfunction, Either schedules a user provided date or a simulated date.
+    
+    If automatic in OPT_Config_File is set to False, the date is user provided. It will be postponed until available. \n
+    If automatic in OPT_Config_File is set to True. A list of dictionaries containing simulated dates is provided. 
+    A date is selected for which the brightest star is visible at the minimum amount of H-offset in the FOV.
+    If the date is occupied the same star will be selected with the 2nd least amount of H-offset and so on. Another star will not be chosen and if 
+    no date is available for the brightest star; the Mode will not be scheduled.
+    
+    Arguments:
+        Occupied_Timeline (:obj:`dict` of :obj:`list`): Dictionary with keys equal to planned and scheduled Modes together with their start and end time in a list. The list is empty if the Mode is unscheduled.
+        dates ((:obj:`list` of :obj:`dict`)): A list containing dictionaries containing parameters for each time a star is spotted.
+        dates (ephem.Date): A user provided date for the to schedule the Mode.
+        
+    Returns:
+        (:obj:`dict` of :obj:`list`): Occupied_Timeline (updated with the result from the scheduled Mode).
+        (str): Comment regarding the result of the scheduling of the Mode.
+    
+    """
     
     automatic = Mode120_settings()['automatic']
     
@@ -565,7 +590,7 @@ def Mode120_date_select(Occupied_Timeline, dates):
             #input()
             
             
-        Occupied_Timeline['Mode120'] = (date, endDate)
+        Occupied_Timeline['Mode120'].append( (Mode120_date, Mode120_endDate) )
         Mode120_comment = 'Mode120 scheduled using a user given date, the date got postponed '+str(iterations)+' times'
         
         
@@ -643,7 +668,7 @@ def Mode120_date_select(Occupied_Timeline, dates):
             Mode120_endDate = ephem.Date(Mode120_date+ephem.second*Mode120_settings()['mode_duration'])
             
             "Check that the scheduled date is not before the start of the timeline"
-            if( Mode120_date < Timeline_settings()['start_time']):
+            if( Mode120_date < ephem.Date(Timeline_settings()['start_date']) ):
                 iterations = iterations + 1
                 restart = True
                 continue
@@ -653,15 +678,18 @@ def Mode120_date_select(Occupied_Timeline, dates):
                 if( busy_dates == []):
                     continue
                 else:
-                    if( busy_dates[0] <= Mode120_date <= busy_dates[1] or 
-                           busy_dates[0] <= Mode120_endDate <= busy_dates[1]):
-                        
-                        iterations = iterations + 1
-                        restart = True
-                        break
+                    "Extract the start and end date of each instance of a scheduled mode"
+                    for busy_date in busy_dates:
+                        if( busy_date[0] <= Mode120_date <= busy_date[1] or 
+                               busy_date[0] <= Mode120_endDate <= busy_date[1] or
+                           (Mode120_date < busy_date[0] and Mode120_endDate > busy_date[1])):
+                            
+                            iterations = iterations + 1
+                            restart = True
+                            break
         
         
-        Occupied_Timeline['Mode120'] = (Mode120_date, Mode120_endDate)
+        Occupied_Timeline['Mode120'].append( (Mode120_date, Mode120_endDate) )
         
         Mode120_comment = ('Star name:'+star_name[x]+', V-offset: '+str(star_V_offset[x])+', H-offset: '+str(star_H_offset[x])+', V-mag: '+str(star_mag[x])+', Number of times date changed: '+str(iterations)
             +', MATS (long,lat) in degrees = ('+str(star_long[x])+', '+str(star_lat[x])+'), star Dec (J2000 ECI): '+str(dates[x]['Dec'])+', star RA (J2000 ECI): '+str(dates[x]['RA']))

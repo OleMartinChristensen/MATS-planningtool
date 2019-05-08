@@ -46,7 +46,7 @@ def Mode_1_2_3_4date_calculator():
     
     """
     
-    Mode_1_2_3_4initial_date = Timeline_settings()['start_time']
+    Mode_1_2_3_4initial_date = ephem.Date(Timeline_settings()['start_date'])
         
     
     return Mode_1_2_3_4initial_date
@@ -78,12 +78,16 @@ def Mode_1_2_3_4date_select(Occupied_Timeline, Mode_1_2_3_4initial_date):
     for Occupied_value in Occupied_Timeline.values():
         if( Occupied_value == [] ):
             continue
-        elif( Occupied_value[0] < Mode_1_2_3_4initial_date and Occupied_value[1] < Mode_1_2_3_4initial_date):
-            continue
-        else:
-            Occupied_values.append(Occupied_value)
-    Occupied_values.sort()
+        
+        for date in Occupied_value:
+        
+            if( date[0] < Mode_1_2_3_4initial_date and date[1] < Mode_1_2_3_4initial_date):
+                continue
+                
+            else:
+                Occupied_values.append(date)
     
+    Occupied_values.sort()
     
     Mode_1_2_3_4dates = []
     
@@ -109,7 +113,7 @@ def Mode_1_2_3_4date_select(Occupied_Timeline, Mode_1_2_3_4initial_date):
                 
         ## For last iteration; Check if there is spacing in between end of the last mode and the end of the timeline
         elif( x == len(Occupied_values) ):
-            timeline_end = ephem.Date(settings['start_time']+ephem.second*settings['duration'])
+            timeline_end = ephem.Date( ephem.Date(settings['start_date'])+ephem.second*settings['duration'])
             time_between_modes = timeline_end - Occupied_values[-1][1] 
             if(time_between_modes > Mode_1_2_3_4minDuration ):
                 Mode_1_2_3_4date = Occupied_values[-1][1]
@@ -127,8 +131,8 @@ def Mode_1_2_3_4date_select(Occupied_Timeline, Mode_1_2_3_4initial_date):
                 iterations = iterations + 1
                 
             
-    if( settings['start_time'].tuple()[1] in [11,12,1,2,5,6,7,8] or 
-        ( settings['start_time'].tuple()[1] in [3,9] and settings['start_time'].tuple()[2] in range(11) )):
+    if( ephem.Date(settings['start_date']).tuple()[1] in [11,12,1,2,5,6,7,8] or 
+        ( ephem.Date(settings['start_date']).tuple()[1] in [3,9] and ephem.Date(settings['start_date']).tuple()[2] in range(11) )):
         
         if( settings['yaw_correction'] == True):
             Occupied_Timeline['Mode3'] = Mode_1_2_3_4dates

@@ -15,7 +15,7 @@ from lxml import etree
 import ephem, logging, sys, time, os, json
 
 from OPT_Config_File import Timeline_settings, initialConditions, Logger_name, Version
-from .Modes_and_Tests import MODES, Tests
+from .Modes_and_Tests import MODES, Tests, SeparateCmds
 
 Logger = logging.getLogger(Logger_name())
 
@@ -71,7 +71,7 @@ def XML_generator(SCIMOD_Path):
     timeline_duration = Timeline_settings()['duration']
     Logger.info('timeline_duration: '+str(timeline_duration))
     
-    timeline_start = Timeline_settings()['start_time']
+    timeline_start = ephem.Date(Timeline_settings()['start_date'])
     Logger.info('timeline_start: '+str(timeline_start))
     
     
@@ -86,6 +86,10 @@ def XML_generator(SCIMOD_Path):
     for x in range(len(SCIMOD)):
         Logger.info('')
         Logger.info('Iteration number: '+str(x+1))
+        
+        "Skip the first entry which only contains Timeline_settings used for the creation of the Science Mode Timeline"
+        if( str(SCIMOD[x][0]) == 'Timeline_settings' ):
+            continue
         
         Logger.info(str(SCIMOD[x][0]))
         Logger.info('Start Date: '+str(SCIMOD[x][1]))
@@ -200,19 +204,22 @@ def XML_generator_select(mode, root, date, duration, relativeTime, params):
     
     
     try:
-        Mode_Test_func = getattr(MODES,'XML_generator_'+mode)
-    except:
+        Mode_Test_SeparateCmd_func = getattr(MODES,'XML_generator_'+mode)
+    except AttributeError:
         try:
-            Mode_Test_func = getattr(Tests,'XML_generator_'+mode)
-        except:
-            Logger.error('No XML-generator is defined for the scheduled Mode or Test')
-            sys.exit()
+            Mode_Test_SeparateCmd_func = getattr(Tests,'XML_generator_'+mode)
+        except AttributeError:
+            try:
+                Mode_Test_SeparateCmd_func = getattr(SeparateCmds,'XML_generator_'+mode)
+            except AttributeError:
+                Logger.error('No XML-generator is defined for '+mode)
+                sys.exit()
     
     "Check if no parameters are given"
     if(len(params.keys()) == 0):
-        Mode_Test_func(root, date, duration, relativeTime)
+        Mode_Test_SeparateCmd_func(root, date, duration, relativeTime)
     else:
-        Mode_Test_func(root, date, duration, relativeTime, params = params)
+        Mode_Test_SeparateCmd_func(root, date, duration, relativeTime, params = params)
 
 ####################### End of Mode selecter #############################
 

@@ -28,20 +28,20 @@ def Standard_binning_procedure(root, relativeTime, nadir, ExpIntUV = '3001', Exp
             ExpTimeIR (str): Exposure time of IR CCDs in ms
     '''
     
-    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '3', CCDMode = '1', ExpInterval = ExpIntUV, ExpTime = ExpTimeUV, comment = comment, 
-                  NumRowsSkip = '100', NumRowsBin= '2', NumRows = '400', NumColumnsBin = '40', NumColumns = '2000')
+    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '3', PWR = '1', ExpInterval = ExpIntUV, ExpTime = ExpTimeUV, comment = comment, 
+                  NRSKIP = '100', NRBIN= '2', NROW = '400', NCBIN = '40', NCOL = '2000')
     
     
-    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '12', CCDMode = '1', ExpInterval = ExpIntIR, ExpTime = ExpTimeIR, comment = comment, 
-                  NumRowsSkip = '100', NumRowsBin= '3', NumRows = '400', NumColumnsBin = '81', NumColumns = '2000')
+    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '12', PWR = '1', ExpInterval = ExpIntIR, ExpTime = ExpTimeIR, comment = comment, 
+                  NRSKIP = '100', NRBIN= '3', NROW = '400', NCBIN = '81', NCOL = '2000')
     
     
-    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '48', CCDMode = '1', ExpInterval = ExpIntIR, ExpTime = ExpTimeIR, comment = comment, 
-                  NumRowsSkip = '100', NumRowsBin= '7', NumRows = '400', NumColumnsBin = '409', NumColumns = '2000')
+    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '48', PWR = '1', ExpInterval = ExpIntIR, ExpTime = ExpTimeIR, comment = comment, 
+                  NRSKIP = '100', NRBIN= '7', NROW = '400', NCBIN = '409', NCOL = '2000')
     
     
-    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '64', CCDMode = nadir, ExpInterval = '1400', ExpTime = '1000', comment = comment, 
-                  NumRowsSkip = '0', NumRowsBin= '110', NumRows = '500', NumColumnsBin = '196', NumColumns = '1980', JPEGquality = '100')
+    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '64', PWR = nadir, ExpInterval = '1400', ExpTime = '1000', comment = comment, 
+                  NRSKIP = '0', NRBIN= '110', NROW = '500', NCBIN = '196', NCOL = '1980', JPEGQ = '100')
     
     return relativeTime
 
@@ -50,20 +50,20 @@ def Full_CCD_stopNadir_procedure(root, relativeTime, comment = ''):
     '''Full CCD binning with nadir camera off, see module description for more details.
     '''
     
-    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '3', CCDMode = '1', ExpInterval = '3000', ExpTime = '3000', comment = comment, 
-                  NumRowsSkip = '0', NumRowsBin= '1', NumRows = '512', NumColumnsBin = '1', NumColumns = '2048')
+    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '3', PWR = '1', ExpInterval = '3000', ExpTime = '3000', comment = comment, 
+                  NRSKIP = '0', NRBIN= '1', NROW = '512', NCBIN = '1', NCOL = '2048')
     
     
-    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '12', CCDMode = '1', ExpInterval = '5000', ExpTime = '5000', comment = comment, 
-                  NumRowsSkip = '0', NumRowsBin= '1', NumRows = '512', NumColumnsBin = '1', NumColumns = '2048')
+    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '12', PWR = '1', ExpInterval = '5000', ExpTime = '5000', comment = comment, 
+                  NRSKIP = '0', NRBIN= '1', NROW = '512', NCBIN = '1', NCOL = '2048')
     
     
-    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '48', CCDMode = '1', ExpInterval = '5000', ExpTime = '5000', comment = comment, 
-                  NumRowsSkip = '0', NumRowsBin= '1', NumRows = '512', NumColumnsBin = '1', NumColumns = '2048')
+    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '48', PWR = '1', ExpInterval = '5000', ExpTime = '5000', comment = comment, 
+                  NRSKIP = '0', NRBIN= '1', NROW = '512', NCBIN = '1', NCOL = '2048')
     
     
-    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '64', CCDMode = '0', ExpInterval = '1400', ExpTime = '1000', comment = comment, 
-                  NumRowsSkip = '0', NumRowsBin= '110', NumRows = '500', NumColumnsBin = '196', NumColumns = '1980', JPEGquality = '100')
+    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '64', PWR = '0', ExpInterval = '1400', ExpTime = '1000', comment = comment, 
+                  NRSKIP = '0', NRBIN= '110', NROW = '500', NCBIN = '196', NCOL = '1980', JPEGQ = '100')
     
     return relativeTime
 
@@ -76,20 +76,20 @@ def Single_pixel_stopNadir_procedure(root, relativeTime, ExpInt, ExpTime, commen
             ExpTime (str): Exposure time of UV and IR CCDs in ms
     '''
     
-    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '3', CCDMode = '1', ExpInterval = ExpInt, ExpTime = ExpTime, comment = comment, 
-                  NumRowsSkip = '0', NumRowsBin= '512', NumRows = '512', NumColumnsBin = '2048', NumColumns = '2048')
+    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '3', PWR = '1', ExpInterval = ExpInt, ExpTime = ExpTime, comment = comment, 
+                  NRSKIP = '0', NRBIN= '512', NROW = '512', NCBIN = '2048', NCOL = '2048')
     
     
-    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '12', CCDMode = '1', ExpInterval = ExpInt, ExpTime = ExpTime, comment = comment, 
-                  NumRowsSkip = '0', NumRowsBin= '512', NumRows = '512', NumColumnsBin = '2048', NumColumns = '2048')
+    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '12', PWR = '1', ExpInterval = ExpInt, ExpTime = ExpTime, comment = comment, 
+                  NRSKIP = '0', NRBIN= '512', NROW = '512', NCBIN = '2048', NCOL = '2048')
     
     
-    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '48', CCDMode = '1', ExpInterval = ExpInt, ExpTime = ExpTime, comment = comment, 
-                  NumRowsSkip = '0', NumRowsBin= '512', NumRows = '512', NumColumnsBin = '2048', NumColumns = '2048')
+    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '48', PWR = '1', ExpInterval = ExpInt, ExpTime = ExpTime, comment = comment, 
+                  NRSKIP = '0', NRBIN= '512', NROW = '512', NCBIN = '2048', NCOL = '2048')
     
     
-    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '64', CCDMode = '0', ExpInterval = '1400', ExpTime = '1000', comment = comment, 
-                  NumRowsSkip = '0', NumRowsBin= '110', NumRows = '500', NumColumnsBin = '196', NumColumns = '1980', JPEGquality = '100')
+    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '64', PWR = '0', ExpInterval = '1400', ExpTime = '1000', comment = comment, 
+                  NRSKIP = '0', NRBIN= '110', NROW = '500', NCBIN = '196', NCOL = '1980', JPEGQ = '100')
     
     return relativeTime
 
@@ -102,19 +102,19 @@ def High_res_IR_procedure(root, relativeTime, nadir, comment = ''):
     
     '''
     
-    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '3', CCDMode = '0', ExpInterval = '3000', ExpTime = '3000', comment = comment, 
-                  NumRowsSkip = '100', NumRowsBin= '2', NumRows = '400', NumColumnsBin = '40', NumColumns = '2000')
+    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '3', PWR = '0', ExpInterval = '3000', ExpTime = '3000', comment = comment, 
+                  NRSKIP = '100', NRBIN= '2', NROW = '400', NCBIN = '40', NCOL = '2000')
     
     
-    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '12', CCDMode = '1', ExpInterval = '5000', ExpTime = '5000', comment = comment, 
-                  NumRowsSkip = '100', NumRowsBin= '3', NumRows = '400', NumColumnsBin = '81', NumColumns = '2000')
+    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '12', PWR = '1', ExpInterval = '5000', ExpTime = '5000', comment = comment, 
+                  NRSKIP = '100', NRBIN= '3', NROW = '400', NCBIN = '81', NCOL = '2000')
     
     
-    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '48', CCDMode = '1', ExpInterval = '5000', ExpTime = '5000', comment = comment, 
-                  NumRowsSkip = '100', NumRowsBin= '7', NumRows = '400', NumColumnsBin = '409', NumColumns = '2000')
+    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '48', PWR = '1', ExpInterval = '5000', ExpTime = '5000', comment = comment, 
+                  NRSKIP = '100', NRBIN= '7', NROW = '400', NCBIN = '409', NCOL = '2000')
     
     
-    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '64', CCDMode = nadir, ExpInterval = '1400', ExpTime = '1000', comment = comment, 
-                  NumRowsSkip = '0', NumRowsBin= '110', NumRows = '500', NumColumnsBin = '196', NumColumns = '1980', JPEGquality = '100')
+    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '64', PWR = nadir, ExpInterval = '1400', ExpTime = '1000', comment = comment, 
+                  NRSKIP = '0', NRBIN= '110', NROW = '500', NCBIN = '196', NCOL = '1980', JPEGQ = '100')
     
     return relativeTime

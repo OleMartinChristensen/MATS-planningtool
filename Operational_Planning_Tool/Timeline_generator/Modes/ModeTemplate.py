@@ -37,12 +37,12 @@ def date_calculator():
     
     
     
-    try:
-        initial_date = ModeX_settings()['start_time']
-        Logger.info('Mode specific start_time used as initial date')
-    except:
-        Logger.warning('!!Error raised in try statement!! Could not use Mode specific start_time; Timeline start_time used as initial date')
-        initial_date = Timeline_settings()['start_time']
+    if( ModeX_settings()['start_date'] != '0' ):
+        initial_date = ephem.Date(ModeX_settings()['start_date'])
+        Logger.info('Mode specific start_date used as initial date')
+    else:
+        Logger.info('Timeline start_date used as initial date')
+        initial_date = ephem.Date(Timeline_settings()['start_date'])
     
     return initial_date
 
@@ -79,6 +79,6 @@ def date_select(Occupied_Timeline, initial_date):
     "Get the name of the parent function, which is always defined as the name of the mode"
     Mode_name = sys._getframe(1).f_code.co_name
     
-    Occupied_Timeline[Mode_name] = (date,endDate)
+    Occupied_Timeline[Mode_name].append((date,endDate))
     
     return Occupied_Timeline, comment

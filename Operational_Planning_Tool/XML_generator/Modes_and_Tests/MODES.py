@@ -23,11 +23,12 @@ XML_generator_Mode_name, where Mode_name is the same as the string used in the S
 """
 
 
-import ephem, logging, sys, pylab
+import ephem, logging, sys, pylab, csv, os
 
 import OPT_Config_File
 from Operational_Planning_Tool.Library import rot_arbit, params_checker, utc_to_onboardTime
 from .Macros import Macros
+from Operational_Planning_Tool import Globals
 
 Logger = logging.getLogger(OPT_Config_File.Logger_name())
 
@@ -164,7 +165,7 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
             normal_orbital[t,0:3] = normal_orbital[t,0:3] / norm(normal_orbital[t,0:3])
             
             
-            "Rotate 'vector to MATS', to represent pointing direction, includes vertical offset change (Parallax is negligable)"
+            "Rotate 'vector to MATS', to represent pointing direction, (Parallax is negligable)"
             rot_mat = rot_arbit(orbangle_between_LP_MATS/180*pi, normal_orbital[t,0:3])
             r_LP_direction[t,0:3] = rot_mat @ r_MATS[t]
             
@@ -372,8 +373,18 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
                 
                 
                 ############### End of SCI-mode operation planner #################
-
-
+                
+    try:
+        os.mkdir('Output')
+    except:
+        pass
+    
+    
+    
+    Mode1_data_path = 'Output\\Mode2_data__Config_File_'+OPT_Config_File.Version()+'.json'
+    print('Save Mode2_data to file: '+Mode2_data_path)
+    with open(Mode2_data_path, "w") as write_file:
+        json.dump(SCIMOD_Timeline, write_file, indent = 2)
 
 
 #######################################################################################
@@ -485,8 +496,8 @@ def XML_generator_Mode2(root, date, duration, relativeTime, params = {}):
                     
                  
         ############### End of SCI-mode operation planner #################
-
-
+    
+    
 
 
 

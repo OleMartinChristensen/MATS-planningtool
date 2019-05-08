@@ -121,22 +121,26 @@ def scheduler(Occupied_Timeline, date, endDate):
     while( restart == True):
         restart = False
         
-        "Extract the start and end date of each scheduled mode"
+        "Extract the start and end dates of scheduled mode"
         for busy_dates in Occupied_Timeline.values():
             if( busy_dates == []):
                 continue
             else:
-                "If the planned date collides with any already scheduled ones -> post-pone and restart loop"
-                if( busy_dates[0] <= date < busy_dates[1] or 
-                       busy_dates[0] < endDate <= busy_dates[1] or
-                       (date < busy_dates[0] and endDate > busy_dates[1])):
+                
+                "Extract the start and end date of each instance of a scheduled mode"
+                for busy_date in busy_dates:
                     
-                    date = ephem.Date(date + ephem.second*Timeline_settings['mode_separation']*2)
-                    endDate = ephem.Date(endDate + ephem.second*Timeline_settings['mode_separation']*2)
-                    
-                    iterations = iterations + 1
-                    restart = True
-                    break
+                    "If the planned date collides with any already scheduled ones -> post-pone and restart loop"
+                    if( busy_date[0] <= date < busy_date[1] or 
+                           busy_date[0] < endDate <= busy_date[1] or
+                           (date < busy_date[0] and endDate > busy_date[1])):
+                        
+                        date = ephem.Date(date + ephem.second*Timeline_settings['mode_separation']*2)
+                        endDate = ephem.Date(endDate + ephem.second*Timeline_settings['mode_separation']*2)
+                        
+                        iterations = iterations + 1
+                        restart = True
+                        break
                 
     return date, endDate, iterations
 
@@ -212,7 +216,7 @@ def utc_to_onboardTime(utc_date):
     """
     Timeline_settings = OPT_Config_File.Timeline_settings()
     
-    GPS_epoch = Timeline_settings['GPS_epoch']
+    GPS_epoch = ephem.Date(Timeline_settings['GPS_epoch'])
     leapSeconds = ephem.second*Timeline_settings['leap_seconds']
     
     GPS_date = utc_date+leapSeconds-GPS_epoch

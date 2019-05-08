@@ -88,6 +88,7 @@ def Timeline_generator():
     
     "Get settings for the timeline"
     Timeline_settings = OPT_Config_File.Timeline_settings()
+    Timeline_start_date = ephem.Date(Timeline_settings['start_date'])
     Logger.info('Timeline_settings: '+str(Timeline_settings))
     
     "Check if yaw_correction setting is set correct"
@@ -130,7 +131,7 @@ def Timeline_generator():
         try:
             Mode_function = getattr(Modes_Header,scimod)
         except:
-            Logger.error('Name of Mode in Modes_priority was not found in OPT_Timeline_generator_Modes_Header')
+            Logger.error(scimod+' in Modes_priority was not found in OPT_Timeline_generator_Modes_Header')
             sys.exit()
             
         Occupied_Timeline, Mode_comment = Mode_function(Occupied_Timeline)
@@ -143,16 +144,18 @@ def Timeline_generator():
         "Check if a date was scheduled"
         if( Occupied_Timeline[scimod] != [] ):
             
+            scheduled_instances = len(Occupied_Timeline[scimod])
+            
             "Check if the scheduled date is within the time defined for the timeline"
-            if( Occupied_Timeline[scimod][0] < Timeline_settings['start_time'] or 
-                   Occupied_Timeline[scimod][0] > (Timeline_settings['start_time']+ephem.second*Timeline_settings['duration']) or
-                   Occupied_Timeline[scimod][1] - Occupied_Timeline[scimod][0] > Timeline_settings['duration']):
+            if( Occupied_Timeline[scimod][scheduled_instances-1][0] < Timeline_start_date or 
+                   Occupied_Timeline[scimod][scheduled_instances-1][0] > (Timeline_start_date+ephem.second*Timeline_settings['duration']) or
+                   Occupied_Timeline[scimod][scheduled_instances-1][1] - Occupied_Timeline[scimod][scheduled_instances-1][0] > Timeline_settings['duration']):
                 Logger.warning(scimod+' scheduled outside of timeline as defined in OPT_Config_File')
                 
                 #input('Enter anything to acknowledge and continue\n')
             
             "Append mode and dates and comment to an unchronological Science Mode Timeline"
-            SCIMOD_Timeline_unchronological.append((Occupied_Timeline[scimod][0], Occupied_Timeline[scimod][1],scimod, Mode_comment))
+            SCIMOD_Timeline_unchronological.append((Occupied_Timeline[scimod][scheduled_instances-1][0], Occupied_Timeline[scimod][scheduled_instances-1][1],scimod, Mode_comment))
             Logger.info('Entry number '+str(len(SCIMOD_Timeline_unchronological))+' in unchronological Science Mode list: '+str(SCIMOD_Timeline_unchronological[-1]))
             Logger.info('')
         
@@ -176,8 +179,8 @@ def Timeline_generator():
     Mode_1_2_3_4 = getattr(Modes_Header,'Mode_1_2_3_4')
     
     ### Check if it is NLC season ###
-    if( Timeline_settings['start_time'].tuple()[1] in [11,12,1,2,5,6,7,8] or 
-            ( Timeline_settings['start_time'].tuple()[1] in [3,9] and Timeline_settings['start_time'].tuple()[2] in range(11) )):
+    if( Timeline_start_date.tuple()[1] in [11,12,1,2,5,6,7,8] or 
+            ( Timeline_start_date.tuple()[1] in [3,9] and Timeline_start_date.tuple()[2] in range(11) )):
         
         Logger.info('NLC season')
         
@@ -232,6 +235,7 @@ def Timeline_generator():
     Logger.info('')
     
     SCIMOD_Timeline = []
+    SCIMOD_Timeline.append([ 'Timeline_settings','This Timeline was created using these settings', Timeline_settings, 'Note: These settings are not actually used when generating an XML, the ones in OPT_Config_File are' ])
     
     Logger.info("Create a science mode list in chronological order. The list contains Mode name, start date, enddate, params for XML-gen and comment")
     t=0
@@ -243,14 +247,15 @@ def Timeline_generator():
         
         Logger.info('Get the parameters for XML-gen from OPT_Config_File and add them to Science Mode timeline')
         try:
-            Config_File = getattr(OPT_Config_File,x[2]+'_settings')
+            Config_File = getattr(OPT_Config_File,x[2]+'_settings')()
         except:
-            Logger.error('Config function for '+x[2]+' for XML-gen in OPT_Config_File is misnamed or missing')
-            sys.exit()
+            Logger.warning('No Config function for '+x[2])
+            Config_File = []
+            
                 
         #SCIMOD_Timeline.append([ x[2],str(x[0]), str(x[1]),{},x[3] ])
         
-        SCIMOD_Timeline.append([ x[2],str(x[0]), str(x[1]),Config_File(),x[3] ])
+        SCIMOD_Timeline.append([ x[2],str(x[0]), str(x[1]),Config_File,x[3] ])
         Logger.info(str(t+1)+' entry in Science Mode list: '+str(SCIMOD_Timeline[t]))
         Logger.info('')
         t= t+1

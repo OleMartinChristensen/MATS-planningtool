@@ -44,7 +44,16 @@ def Mode121(Occupied_Timeline):
 
 
 def date_calculator():
+    """Subfunction, Simulates MATS FOV and stars.
     
+    Saves the date and parameters regarding the brightest stars visible at each timestep.
+    
+    Arguments:
+        
+    Returns:
+        (array): Array containing date in first column and brightest magnitude visible in the second. Contains current Dec and RA in 3rd and 4th column respectively.
+    
+    """
     
     "Simulation length and timestep"
     log_timestep = Mode121_settings()['log_timestep']
@@ -59,7 +68,7 @@ def date_calculator():
     timesteps = int(floor(duration / timestep))
     Logger.info('Total number of timesteps set to: '+str(timesteps)+' s')
     
-    timeline_start = Timeline_settings()['start_time']
+    timeline_start = ephem.Date(Timeline_settings()['start_date'])
     
     initial_time = ephem.Date( timeline_start + ephem.second*Mode121_settings()['freeze_start'] )
     Logger.info('initial_time set to: '+str(initial_time))
@@ -113,7 +122,7 @@ def date_calculator():
     star_list_excel.append(['Classification;'])
     
     "Prepare the output"
-    "Array containing date in first column and brightest magnitude spotted in the second"
+    "Array containing date in first column and brightest magnitude visible in the second. Contains current Dec and RA in 3rd and 4th column"
     date_magnitude_array = zeros((timesteps,4))
     "Set magntidues arbitrary large, which will correspond to no star being visible"
     date_magnitude_array[:,1] = 100
@@ -446,7 +455,21 @@ def date_calculator():
 
 
 def date_select(Occupied_Timeline, date_magnitude_array):
+    """Subfunction, Schedules a simulated date.
     
+    A date is selected for when the brightest star visible, has the faintest magntitude compared
+    to other brightest stars visible at other timesteps.
+    
+    Arguments:
+        Occupied_Timeline (:obj:`dict` of :obj:`list`): Dictionary with keys equal to planned and scheduled Modes together with their start and end time in a list. The list is empty if the Mode is unscheduled.
+        date_magnitude_array (array): Array containing date in first column and brightest magnitude visible in the second. Contains Dec and RA in 3rd and 4th column respectively.
+        
+        
+    Returns:
+        (:obj:`dict` of :obj:`list`): Occupied_Timeline (updated with the result from the scheduled Mode).
+        (str): Comment regarding the result of the scheduling of the Mode.
+    
+    """
     
     Logger.info('Start of filtering function')
     
@@ -488,20 +511,23 @@ def date_select(Occupied_Timeline, date_magnitude_array):
             if( busy_dates == []):
                 continue
             else:
-                "If the planned date collides with any already scheduled ones -> post-pone and restart loop"
-                if( busy_dates[0] <= date < busy_dates[1] or 
-                       busy_dates[0] < endDate <= busy_dates[1] or
-                       (date < busy_dates[0] and endDate > busy_dates[1])):
+                "Extract the start and end date of each instance of a scheduled mode"
+                for busy_date in busy_dates:
                     
-                    restart = True
-                    "Set the current maximum magnitude arbitrary small to allow a new maximum magnitude date to be chosen in next loop"
-                    date_magnitude_array[index_max_mag,1] = arbitraryLowNumber
-                    loop_counter = loop_counter +1
-                    break
+                    "If the planned date collides with any already scheduled ones -> post-pone and restart loop"
+                    if( busy_date[0] <= date < busy_date[1] or 
+                           busy_date[0] < endDate <= busy_date[1] or
+                           (date < busy_date[0] and endDate > busy_date[1])):
+                        
+                        restart = True
+                        "Set the current maximum magnitude arbitrary small to allow a new maximum magnitude date to be chosen in next loop"
+                        date_magnitude_array[index_max_mag,1] = arbitraryLowNumber
+                        loop_counter = loop_counter +1
+                        break
                 
         
     comment = 'Number of times date changed: ' + str(loop_counter)+', faintest magnitude visible (100 equals no stars visible): '+str(value_max_mag)+', Dec (J2000): '+str(dec_max_mag)+', RA (J2000): '+str(RA_max_mag)
-    Occupied_Timeline[Mode_name] = (date,endDate)
+    Occupied_Timeline[Mode_name].append((date,endDate))
     
     return Occupied_Timeline, comment
         

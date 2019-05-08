@@ -49,13 +49,13 @@ def Mode200_date_calculator():
     automatic = Mode200_settings()['automatic']
     Logger.info('automatic = '+str(automatic))
     
-    "To either calculate when Moon is visible and schedule from that data or just schedule at a given time given by Mode200_settings()['date']"
+    "To either calculate when Moon is visible and schedule from that data or just schedule at a given time given by Mode200_settings()['start_date']"
     if( automatic == False ):
         try:
-            date = Mode200_settings()['date']
+            date = ephem.Date(Mode200_settings()['start_date'])
             return date
         except:
-            Logger.error('Could not get OPT_Config_File.Mode200_settings()["date"], exiting...')
+            Logger.error('Could not get OPT_Config_File.Mode200_settings()["start_date"], exiting...')
             sys.exit()
         
     elif( automatic == True ):
@@ -75,7 +75,7 @@ def Mode200_date_calculator():
         Logger.info('Duration set to [s]: '+str(duration))
         
         
-        date = Timeline_settings()['start_time']
+        date = ephem.Date(Timeline_settings()['start_date'])
         Logger.info('date set to: '+str(date))
         
         MATS = ephem.readtle('MATS',getTLE()[0],getTLE()[1])
@@ -433,7 +433,7 @@ def Mode200_date_select(Occupied_Timeline, dates):
             #input()
             
             
-        Occupied_Timeline['Mode200'] = (date, endDate)
+        Occupied_Timeline['Mode200'].append( (date, endDate) )
         Mode200_comment = 'Mode200 scheduled using a user given date, the date got postponed '+str(iterations)+' times'
         
         
@@ -484,7 +484,7 @@ def Mode200_date_select(Occupied_Timeline, dates):
             Mode200_endDate = ephem.Date(Mode200_date+ephem.second*Mode200_settings()['mode_duration'])
             
             #Check that the scheduled date is not before the start of the timeline
-            if( Mode200_date < Timeline_settings()['start_time']):
+            if( Mode200_date < ephem.Date(Timeline_settings()['start_date']) ):
                 iterations = iterations + 1
                 restart = True
                 continue
@@ -494,14 +494,18 @@ def Mode200_date_select(Occupied_Timeline, dates):
                 if( busy_dates == []):
                     continue
                 else:
-                    if( busy_dates[0] <= Mode200_date <= busy_dates[1] or 
-                           busy_dates[0] <= Mode200_endDate <= busy_dates[1]):
+                    "Extract the start and end date of each instance of a scheduled mode"
+                    for busy_date in busy_dates:
                         
-                        iterations = iterations + 1
-                        restart = True
-                        break
+                        if( busy_date[0] <= Mode200_date <= busy_date[1] or 
+                               busy_date[0] <= Mode200_endDate <= busy_date[1] or
+                           (Mode200_date < busy_date[0] and Mode200_endDate > busy_date[1])):
+                            
+                            iterations = iterations + 1
+                            restart = True
+                            break
             
-        Occupied_Timeline['Mode200'] = (Mode200_date, Mode200_endDate)
+        Occupied_Timeline['Mode200'].append( (Mode200_date, Mode200_endDate) )
         
         Mode200_comment = ('V-offset: '+str(Moon_V_offset[x])+' H-offset: '+str(Moon_H_offset[x])+', Number of times date changed: '+str(iterations)+
                                           ', MATS (long,lat) in degrees = ('+str(Moon_long[x])+', '+str(Moon_lat[x])+'), Dec (J2000): '+str(dates[x]['Dec'])+', RA (J2000): '+str(dates[x]['RA']))
