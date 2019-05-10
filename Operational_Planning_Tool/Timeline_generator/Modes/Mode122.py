@@ -304,8 +304,8 @@ def date_calculator():
             Dec = arctan( sqrt(optical_axis[0]**2 + optical_axis[1]**2) / optical_axis[2] ) /pi * 180
             Ra = arccos( dot( [1,0,0], [optical_axis[0],optical_axis[1],0] ) / norm([optical_axis[0],optical_axis[1],0]) ) / pi * 180
             
-            if( optical_axis[1] > 0 ):
-                Ra = Ra+180
+            if( optical_axis[1] < 0 ):
+                Ra = 360-Ra
             
             if( t*timestep % log_timestep == 0 or t == 1 ):
                 Logger.debug('Current time: '+str(current_time))

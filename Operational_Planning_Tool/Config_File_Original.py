@@ -34,6 +34,10 @@ def Version():
 def Modes_priority():
     '''Contain the Modes (except 1-4) planned to be schedueled as a list. Only one entry of each mode is allowed.
     
+    'PWRTOGGLE',
+    'CCDFlushBadColumns',
+    'CCDBadColumn',
+    'Mode130', 
     'Mode110', 
     'Mode100', 
     'Mode120', 

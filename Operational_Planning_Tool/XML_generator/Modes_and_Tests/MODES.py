@@ -24,11 +24,12 @@ XML_generator_Mode_name, where Mode_name is the same as the string used in the S
 
 
 import ephem, logging, sys, pylab, csv, os
+import pymap3d as pm3d
 
 import OPT_Config_File
 from Operational_Planning_Tool.Library import rot_arbit, params_checker, utc_to_onboardTime
 from .Macros import Macros
-from Operational_Planning_Tool import Globals
+from Operational_Planning_Tool import Globals, MATS_coordinates
 
 Logger = logging.getLogger(OPT_Config_File.Logger_name())
 
@@ -68,6 +69,7 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
     
     "Pre-allocate space"
     lat_MATS = zeros((duration,1))
+    
     altitude_MATS = zeros((duration,1))
     g_ra_MATS = zeros((duration,1))
     g_dec_MATS = zeros((duration,1))
@@ -75,7 +77,14 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
     y_MATS = zeros((duration,1))
     z_MATS = zeros((duration,1))
     r_MATS = zeros((duration,3))
-    r_LP_direction = zeros((duration,3))
+    r_MATS_ECEF = zeros((duration,3))
+    optical_axis = zeros((duration,3))
+    optical_axis_ECEF = zeros((duration,3))
+    LP_ECEF = zeros((duration,3))
+    lat_LP = zeros((duration,1))
+    long_LP = zeros((duration,1))
+    alt_LP = zeros((duration,1))
+    
     sun_angle = zeros((duration,1))
     lat_LP = zeros((duration,1))
     normal_orbital = zeros((duration,3))
@@ -86,7 +95,7 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
     
     R_mean = 6371
     pointing_altitude = params['pointing_altitude']
-    lat = params['lat']/180*pi
+    lat = params['lat']
     
     
     
@@ -99,7 +108,7 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
     "Loop and calculate the relevant angle of each star to each direction of MATS's FOV"
     for t in range(duration):
         
-        current_time = ephem.Date(date+ephem.second*t)
+        current_time = ephem.Date(date+ephem.second*4*t)
         
         MATS.compute(current_time)
         
@@ -112,6 +121,8 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
         y_MATS[t] = cos(g_dec_MATS[t])*(altitude_MATS[t]+R_mean)* sin(g_ra_MATS[t])
        
         r_MATS[t,0:3] = [x_MATS[t], y_MATS[t], z_MATS[t]]
+        r_MATS_ECEF[t,0], r_MATS_ECEF[t,1], r_MATS_ECEF[t,2] = pm3d.eci2ecef(
+                (r_MATS[t,0]*1000, r_MATS[t,1]*1000, r_MATS[t,2]*1000), ephem.Date(current_time).datetime())
         
         orbangle_between_LP_MATS_array[t]= arccos((R_mean+pointing_altitude/1000)/(R_mean+altitude_MATS[t]))/pi*180
         orbangle_between_LP_MATS = orbangle_between_LP_MATS_array[t][0]
@@ -166,13 +177,23 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
             
             
             "Rotate 'vector to MATS', to represent pointing direction, (Parallax is negligable)"
-            rot_mat = rot_arbit(orbangle_between_LP_MATS/180*pi, normal_orbital[t,0:3])
-            r_LP_direction[t,0:3] = rot_mat @ r_MATS[t]
+            rot_mat = rot_arbit((orbangle_between_LP_MATS+90)/180*pi, normal_orbital[t,0:3])
+            optical_axis[t,0:3] = rot_mat @ r_MATS[t]
+            optical_axis[t,0:3] = optical_axis[t,0:3] / norm(optical_axis[t,0:3])
             
+            optical_axis_ECEF[t,0], optical_axis_ECEF[t,1], optical_axis_ECEF[t,2] = pm3d.eci2ecef(
+                (optical_axis[t,0]*1000, optical_axis[t,1]*1000, optical_axis[t,2]*1000), ephem.Date(current_time).datetime())
+            
+            LP_ECEF[t,0], LP_ECEF[t,1], LP_ECEF[t,2] = MATS_coordinates.ecef2tanpoint(r_MATS_ECEF[t][0]*1000, r_MATS_ECEF[t][1]*1000, r_MATS_ECEF[t][2]*1000, 
+                                       optical_axis_ECEF[t,0], optical_axis_ECEF[t,1], optical_axis_ECEF[t,2])
+            
+            lat_LP[t], long_LP[t], alt_LP[t]  = pm3d.ecef2geodetic(LP_ECEF[t,0], LP_ECEF[t,1], LP_ECEF[t,2], deg = True)
+            
+            """
             "Estimate latitude by calculating angle between xy-plane vector and z-vector (ECI)"
-            r_LP__direction_xy = sqrt(r_LP_direction[t,0]**2+r_LP_direction[t,1]**2)
-            lat_LP[t] = arctan(r_LP_direction[t,2]/r_LP__direction_xy)
-            
+            r_LP__direction_xy = sqrt(optical_axis[t,0]**2+optical_axis[t,1]**2)
+            lat_LP[t] = arctan(optical_axis[t,2]/r_LP__direction_xy)
+            """
             '''
             if( abs(lat_MATS[t])-abs(lat_MATS[t-1]) > 0 ):
                 lat_LP[t] = lat_MATS[t] - lat_diff_LP_MATS * sign(lat_MATS[t])
@@ -187,14 +208,14 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
                 Logger.info('')
                 '''
                 Logger.info(str(r_MATS[t,0:3]))
-                Logger.info(str(r_LP_direction[t,0:3]))
+                Logger.info(str(optical_axis[t,0:3]))
                 Logger.info(str(orbangle_between_LP_MATS_array[t]))
                 '''
                 Logger.info('current_time: '+str(current_time))
                 Logger.info('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
                 Logger.info('sun_angle [degrees]: '+str(sun_angle[t]))
-                Logger.info('lat_LP [degrees]: '+str(lat_LP[t]/pi*180))
-                
+                Logger.info('lat_LP [degrees]: '+str(lat_LP[t]))
+                Logger.info('r_MATS_ECEF: '+str(r_MATS_ECEF[t,0]))
                 
                 
                 "Check if night or day"
@@ -250,7 +271,7 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
                             Logger.info(current_state)
                             Logger.info('current_time: '+str(current_time))
                             Logger.info('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
-                            Logger.info('lat_LP [degrees]: '+str(lat_LP[t]/pi*180))
+                            Logger.info('lat_LP [degrees]: '+str(lat_LP[t]))
                             Logger.info('sun_angle [degrees]: '+str(sun_angle[t]))
                             #IR_night(root,str(t+relativeTime),str(pointing_altitude), comment = comment)
                             Macros.nadir_on_off(root, str(t+relativeTime), nadir = '1', comment = comment)
@@ -264,7 +285,7 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
                             Logger.info(current_state)
                             Logger.info('current_time: '+str(current_time))
                             Logger.info('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
-                            Logger.info('lat_LP [degrees]: '+str(lat_LP[t]/pi*180))
+                            Logger.info('lat_LP [degrees]: '+str(lat_LP[t]))
                             Logger.info('sun_angle [degrees]: '+str(sun_angle[t]))
                             Macros.IR_night(root,str(t+relativeTime),str(pointing_altitude), comment = comment)
                             
@@ -282,7 +303,7 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
                             Logger.info(current_state)
                             Logger.info('current_time: '+str(current_time))
                             Logger.info('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
-                            Logger.info('lat_LP [degrees]: '+str(lat_LP[t]/pi*180))
+                            Logger.info('lat_LP [degrees]: '+str(lat_LP[t]))
                             Logger.info('sun_angle [degrees]: '+str(sun_angle[t]))
                             #NLC_night(root,str(t+relativeTime),str(pointing_altitude), comment = comment)
                             Macros.nadir_on_off(root, str(t+relativeTime), nadir = '1', comment = comment)
@@ -296,7 +317,7 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
                             Logger.info(current_state)
                             Logger.info('current_time: '+str(current_time))
                             Logger.info('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
-                            Logger.info('lat_LP [degrees]: '+str(lat_LP[t]/pi*180))
+                            Logger.info('lat_LP [degrees]: '+str(lat_LP[t]))
                             Logger.info('sun_angle [degrees]: '+str(sun_angle[t]))
                             Macros.NLC_night(root,str(t+relativeTime),str(pointing_altitude), comment = comment)
                             
@@ -317,7 +338,7 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
                             Logger.info(current_state)
                             Logger.info('current_time: '+str(current_time))
                             Logger.info('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
-                            Logger.info('lat_LP [degrees]: '+str(lat_LP[t]/pi*180))
+                            Logger.info('lat_LP [degrees]: '+str(lat_LP[t]))
                             Logger.info('sun_angle [degrees]: '+str(sun_angle[t]))
                             #IR_day(root,str(t+relativeTime),str(pointing_altitude), comment = comment)
                             Macros.nadir_on_off(root, str(t+relativeTime), nadir = '0', comment = comment)
@@ -331,7 +352,7 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
                             Logger.info(current_state)
                             Logger.info('current_time: '+str(current_time))
                             Logger.info('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
-                            Logger.info('lat_LP [degrees]: '+str(lat_LP[t]/pi*180))
+                            Logger.info('lat_LP [degrees]: '+str(lat_LP[t]))
                             Logger.info('sun_angle [degrees]: '+str(sun_angle[t]))
                             Macros.IR_day(root,str(t+relativeTime),str(pointing_altitude), comment = comment)
                             
@@ -349,7 +370,7 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
                             Logger.info(current_state)
                             Logger.info('current_time: '+str(current_time))
                             Logger.info('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
-                            Logger.info('lat_LP [degrees]: '+str(lat_LP[t]/pi*180))
+                            Logger.info('lat_LP [degrees]: '+str(lat_LP[t]))
                             Logger.info('sun_angle [degrees]: '+str(sun_angle[t]))
                             #NLC_day(root,str(t+relativeTime),str(pointing_altitude), comment = comment)
                             Macros.nadir_on_off(root, str(t+relativeTime), nadir = '0', comment = comment)
@@ -363,7 +384,7 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
                             Logger.info(current_state)
                             Logger.info('current_time: '+str(current_time))
                             Logger.info('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
-                            Logger.info('lat_LP [degrees]: '+str(lat_LP[t]/pi*180))
+                            Logger.info('lat_LP [degrees]: '+str(lat_LP[t]))
                             Logger.info('sun_angle [degrees]: '+str(sun_angle[t]))
                             Macros.NLC_day(root,str(t+relativeTime),str(pointing_altitude), comment = comment)
                             
@@ -374,17 +395,11 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
                 
                 ############### End of SCI-mode operation planner #################
                 
-    try:
-        os.mkdir('Output')
-    except:
-        pass
     
     
     
-    Mode1_data_path = 'Output\\Mode2_data__Config_File_'+OPT_Config_File.Version()+'.json'
-    print('Save Mode2_data to file: '+Mode2_data_path)
-    with open(Mode2_data_path, "w") as write_file:
-        json.dump(SCIMOD_Timeline, write_file, indent = 2)
+    
+    
 
 
 #######################################################################################
@@ -426,7 +441,7 @@ def XML_generator_Mode2(root, date, duration, relativeTime, params = {}):
     for t in range(duration):
         
         
-        current_time = ephem.Date(date+ephem.second*t)
+        current_time = ephem.Date(date+ephem.second*4*t)
         
         MATS.compute(current_time)
         

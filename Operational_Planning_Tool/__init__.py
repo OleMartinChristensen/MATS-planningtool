@@ -82,7 +82,7 @@ def Timeline_analyse(science_mode_timeline_path, date):
     
     return Mode, Parameters
 
-def Data_Plot(science_mode_timeline_path, date):
+def Data_Plot():
     '''Invokes the Timeline analyzer program part of Operational Planning Tool.
     
     Searches a Science Mode Timeline json file for a given date and returns the scheduled mode and its parameters"
@@ -97,6 +97,6 @@ def Data_Plot(science_mode_timeline_path, date):
     '''
     
     
-    Data_Plotter(data)
+    Data_Plotter()
     
     

@@ -235,7 +235,7 @@ def Timeline_generator():
     Logger.info('')
     
     SCIMOD_Timeline = []
-    SCIMOD_Timeline.append([ 'Timeline_settings','This Timeline was created using these settings', Timeline_settings, 'Note: These settings are not actually used when generating an XML, the ones in OPT_Config_File are' ])
+    SCIMOD_Timeline.append([ 'Timeline_settings','This Timeline was created using these settings', Timeline_settings, OPT_Config_File.getTLE(), 'Note: These settings are not actually used when generating an XML, the ones in OPT_Config_File are' ])
     
     Logger.info("Create a science mode list in chronological order. The list contains Mode name, start date, enddate, params for XML-gen and comment")
     t=0
