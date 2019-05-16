@@ -1,0 +1,231 @@
+[
+  [
+    "Timeline_settings",
+    "This Timeline was created using these settings",
+    {
+      "start_date": "2018/9/3 08:00:40",
+      "duration": 14400,
+      "leap_seconds": 18,
+      "GPS_epoch": "1980/1/6",
+      "Mode_1_2_3_4minDuration": 300,
+      "mode_separation": 120,
+      "CMD_duration": 60,
+      "yaw_correction": true,
+      "command_separation": 0.1,
+      "pointing_stabilization": 60
+    },
+    [
+      "1 26702U 01007A   18231.91993126  .00000590  00000-0  00000-0 0  9994",
+      "2 26702 97.61000 65.95030 0000001 0.000001 359.9590 14.97700580100  4"
+    ],
+    "Note: These settings are not actually used when generating an XML, the ones in OPT_Config_File are"
+  ],
+  [
+    "PWRTOGGLE",
+    "2018/9/3 08:00:40",
+    "2018/9/3 08:03:40",
+    {
+      "CONST": 165
+    },
+    "Number of times date postponed: 0"
+  ],
+  [
+    "CCDFlushBadColumns",
+    "2018/9/3 08:04:40",
+    "2018/9/3 08:07:40",
+    {
+      "CCDSEL": 1
+    },
+    "Number of times date postponed: 1"
+  ],
+  [
+    "CCDBadColumn",
+    "2018/9/3 08:08:40",
+    "2018/9/3 08:11:40",
+    {
+      "CCDSEL": 1,
+      "NBC": 0,
+      "BC": 0
+    },
+    "Number of times date postponed: 2"
+  ],
+  [
+    "Mode121",
+    "2018/9/3 08:11:45",
+    "2018/9/3 08:19:37",
+    {
+      "pointing_altitude": 227000,
+      "H_FOV": 5.67,
+      "V_FOV": 0.91,
+      "Vmag": "<4",
+      "timestep": 5,
+      "TimeSkip": 1,
+      "log_timestep": 3600,
+      "automatic": true,
+      "start_date": "2019",
+      "mode_duration": 472.2,
+      "LP_pointing_altitude": 92000,
+      "freeze_start": 300,
+      "freeze_duration": 52.2
+    },
+    "Number of times date changed: 251, faintest magnitude visible (100 equals no stars visible): 100.0, Dec (J2000): 57.100544353332296, RA (J2000): 261.61269035563157"
+  ],
+  [
+    "Mode110",
+    "2018/9/3 08:20:40",
+    "2018/9/3 08:30:20",
+    {
+      "pointing_altitude_from": 10000,
+      "pointing_altitude_to": 150000,
+      "sweep_rate": 500,
+      "sweep_start": 120,
+      "start_date": "0"
+    },
+    "Number of times date postponed: 5"
+  ],
+  [
+    "Mode120",
+    "2018/9/3 08:34:56",
+    "2018/9/3 08:42:48",
+    {
+      "pointing_altitude": 227000,
+      "V_offset": 0,
+      "H_offset": 2.5,
+      "Vmag": "<2",
+      "timestep": 2,
+      "log_timestep": 3600,
+      "automatic": true,
+      "date": "2019",
+      "mode_duration": 472.2,
+      "LP_pointing_altitude": 92000,
+      "freeze_start": 300,
+      "freeze_duration": 52.2
+    },
+    "Star name:30438, V-offset: -0.015548359047618792, H-offset: 0.035681430423779914, V-mag: -0.62, Number of times date changed: 0, MATS (long,lat) in degrees = (-42.715460069220725, 53.25186697723331), star Dec (J2000 ECI): [-52.71154477], star RA (J2000 ECI): [96.08687066]"
+  ],
+  [
+    "Mode100",
+    "2018/9/3 08:44:40",
+    "2018/9/3 09:25:20",
+    {
+      "pointing_altitude_from": 10000,
+      "pointing_altitude_to": 150000,
+      "pointing_altitude_interval": 5000,
+      "pointing_duration": 20,
+      "ExpTimeUV": 3000,
+      "ExpTimeIR": 5000,
+      "start_date": "0"
+    },
+    "Number of times date postponed: 11"
+  ],
+  [
+    "Mode122",
+    "2018/9/3 09:25:25",
+    "2018/9/3 09:33:17",
+    {
+      "pointing_altitude": 227000,
+      "H_FOV": 5.67,
+      "V_FOV": 0.91,
+      "Vmag": "<4",
+      "timestep": 5,
+      "TimeSkip": 1,
+      "log_timestep": 3600,
+      "automatic": true,
+      "start_date": "2019",
+      "mode_duration": 472.2,
+      "LP_pointing_altitude": 92000,
+      "freeze_start": 300,
+      "freeze_duration": 52.2,
+      "ExpTimes": [
+        1000,
+        3000,
+        5000,
+        10000,
+        20000
+      ],
+      "session_duration": 120
+    },
+    "Number of times date changed: 1423, faintest magnitude visible: 100.0, Dec (J2000): 28.23350391820825, RA (J2000): 63.89103712900372"
+  ],
+  [
+    "Mode3",
+    "2018/9/3 09:33:17",
+    "2018/9/3 10:28:35",
+    {
+      "lat": 45,
+      "pointing_altitude": 92000,
+      "log_timestep": 800
+    },
+    "Number of Modes inserted: 2"
+  ],
+  [
+    "Mode200",
+    "2018/9/3 10:30:35",
+    "2018/9/3 10:38:27",
+    {
+      "pointing_altitude": 227000,
+      "V_offset": 0,
+      "H_offset": 5.5,
+      "timestep": 2,
+      "log_timestep": 1200,
+      "automatic": 1,
+      "date": "2019",
+      "mode_duration": 472.2,
+      "LP_pointing_altitude": 92000,
+      "freeze_start": 300,
+      "freeze_duration": 52.2
+    },
+    "V-offset: [-0.04373472] H-offset: [3.27696071], Number of times date changed: 0, MATS (long,lat) in degrees = (128.71093973879334, 52.47949211041534), Dec (J2000): 18.626521022035067, RA (J2000): 74.33902661896565"
+  ],
+  [
+    "Mode3",
+    "2018/9/3 10:38:27",
+    "2018/9/3 11:58:40",
+    {
+      "lat": 45,
+      "pointing_altitude": 92000,
+      "log_timestep": 800
+    },
+    "Number of Modes inserted: 2"
+  ],
+  [
+    "Mode130",
+    "2018/9/3 12:00:40",
+    "2018/9/3 12:15:40",
+    {
+      "pointing_altitude": 200000,
+      "mode_duration": 900,
+      "start_date": "2018/9/3 12:00:40"
+    },
+    "Number of times date postponed: 0"
+  ],
+  [
+    "Mode132",
+    "2018/9/3 12:16:40",
+    "2018/9/3 12:28:40",
+    {
+      "pointing_altitude": 200000,
+      "start_date": "2018/9/3 12:00:40",
+      "ExpTimes": [
+        1000,
+        3000,
+        5000,
+        10000,
+        20000
+      ],
+      "session_duration": 120
+    },
+    "Number of times date postponed: 4"
+  ],
+  [
+    "Mode131",
+    "2018/9/3 12:28:40",
+    "2018/9/3 12:43:40",
+    {
+      "pointing_altitude": 200000,
+      "mode_duration": 900,
+      "start_date": "2018/9/3 12:00:40"
+    },
+    "Number of times date postponed: 7"
+  ]
+]
