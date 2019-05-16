@@ -21,7 +21,7 @@
 
 #
 
-import numpy as np
+import pylab
 
 #import numpy.transformations as tp
 
@@ -101,23 +101,23 @@ def ecef2tanpoint(x,y,z,dx,dy,dz):
 
      b2 = a2 * ( 1 - e**2 )
 
-     X = np.array([x,y,z])
+     X = pylab.array([x,y,z])
 
   
 
-     xunit = np.array([dx,dy,dz])
+     xunit = pylab.array([dx,dy,dz])
 
   
 
-     zunit = np.cross( xunit, X )
+     zunit = pylab.cross( xunit, X )
 
-     zunit = zunit / np.linalg.norm(zunit)
+     zunit = zunit / pylab.linalg.norm(zunit)
 
  	
 
-     yunit = np.cross( zunit, xunit )
+     yunit = pylab.cross( zunit, xunit )
 
-     yunit = yunit / np.linalg.norm(yunit)
+     yunit = yunit / pylab.linalg.norm(yunit)
 
   
 
@@ -133,9 +133,9 @@ def ecef2tanpoint(x,y,z,dx,dy,dz):
 
      w32 = yunit[2]
 
-     yr  = np.dot( X, yunit )
+     yr  = pylab.dot( X, yunit )
 
-     xr  = np.dot( X, xunit )
+     xr  = pylab.dot( X, xunit )
 
  	   
 
@@ -157,7 +157,7 @@ def ecef2tanpoint(x,y,z,dx,dy,dz):
 
         factor = 1.0/(A+(B+C*K)*K)
 
-        xx = np.sqrt(factor)
+        xx = pylab.sqrt(factor)
 
         yy = K*x
 
@@ -511,9 +511,9 @@ def find_orbit_plane(satpos1_eci_1,satpos2_eci):
 
     
 
-    n = np.cross(satpos1_eci_1,satpos2_eci)
+    n = pylab.cross(satpos1_eci_1,satpos2_eci)
 
-    n_norm = np.linalg.norm(n)
+    n_norm = pylab.linalg.norm(n)
 
     
 
@@ -525,9 +525,9 @@ def los_from_tanpoint_spherical(satpos1_eci_1,satpos2_eci):
 
     
 
-    n = np.cross(satpos1_eci_1,satpos2_eci)
+    n = pylab.cross(satpos1_eci_1,satpos2_eci)
 
-    n_norm = np.linalg.norm(n)
+    n_norm = pylab.linalg.norm(n)
 
     
 

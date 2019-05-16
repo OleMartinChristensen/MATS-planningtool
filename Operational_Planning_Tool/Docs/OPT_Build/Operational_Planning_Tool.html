@@ -1,0 +1,203 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="python 3.7">
+  <head>
+    <meta charset="utf-8" />
+    <title>Operational_Planning_Tool package &#8212; Operational_Planning_Tool  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Operational_Planning_Tool" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-Operational_Planning_Tool">
+<span id="operational-planning-tool-package"></span><h1>Operational_Planning_Tool package<a class="headerlink" href="#module-Operational_Planning_Tool" title="Permalink to this headline">¶</a></h1>
+<p>Contains the functions that can be called to invoke Timeline generator, XML generator, Data_Plotter and Timeline_analyse, which together constitute the Operational_Planning_Tool.</p>
+<p class="rubric">Examples</p>
+<p>import Operational_Planning_Tool as OPT</p>
+<p>OPT.Create_ConfigFile()</p>
+<p>OPT.Timeline_gen()</p>
+<p>OPT.XML_gen('Output/Science_Mode_Timeline_Version_Original.json')</p>
+<p>Settings for the programs are stated in the <em>OPT_Config_File.py</em> file located in the working directory of the user call. This file can be created by
+by calling the <em>OPT.Create_ConfigFile</em> function (unless there already is an <em>OPT_Config_File.py</em> file inte working directory of the user call).
+It is an copy of the original <em>Config_File_Original</em>, located in the Operational_Planning_Tool directory.
+All settings in the generated <em>OPT_Config_File.py</em> can be changed to adjust the operation of the Operational Planning Tool.
+All generated output files are saved in a folder called 'Output' in the working directory.
+Generated logs are also saved in folders created in the working directory.</p>
+<dl class="function">
+<dt id="Operational_Planning_Tool.Create_ConfigFile">
+<code class="descclassname">Operational_Planning_Tool.</code><code class="descname">Create_ConfigFile</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool.html#Create_ConfigFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool.Create_ConfigFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Makes a copy of the original Config file (Config_File_Original, located in Operational_Planning_Tool).</p>
+<p>The copy is created in the working directory of the user call and can be freely modified. Operational_Planning_Tool will
+use whatever file named &quot;OPT_Config_File&quot; that is also located in the working directory of the user call.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Operational_Planning_Tool.Data_Plotter">
+<code class="descclassname">Operational_Planning_Tool.</code><code class="descname">Data_Plotter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool.html#Data_Plotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool.Data_Plotter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Invokes the Data_Plotter program part of Operational Planning Tool.</p>
+<p>Simulates the position and attitude of MATS during normal operation and compares it to
+the actual positional and attitude data given in a data set. Plots both the simulated data and given data.</p>
+<p>Settings for the operation of the program is stated in <em>OPT_Config_File.py</em>, which is created by running Operational_Planning_Tool.Create_ConfigFile.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>DataSet_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Path to the .csv file containing the relevant data of analysis.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Operational_Planning_Tool.Timeline_analyser">
+<code class="descclassname">Operational_Planning_Tool.</code><code class="descname">Timeline_analyser</code><span class="sig-paren">(</span><em>science_mode_timeline_path</em>, <em>date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool.html#Timeline_analyser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool.Timeline_analyser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Invokes the Timeline analyzer program part of Operational Planning Tool.</p>
+<p>Searches a Science Mode Timeline json file for a given date and returns the scheduled mode and its parameters&quot;</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>science_mode_timeline_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- path to the .json file containing the Science Mode Timeline</p></li>
+<li><p><strong>date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- A given date and time ('2019/09/05 12:09:25')</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl>
+<dt>tuple containing:</dt><dd><p>(str): The currently scheduled Mode.</p>
+<p>(dict): The parameters of the Mode.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)">tuple</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Operational_Planning_Tool.Timeline_gen">
+<code class="descclassname">Operational_Planning_Tool.</code><code class="descname">Timeline_gen</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool.html#Timeline_gen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool.Timeline_gen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Invokes the Timeline generator part of Operational Planning Tool.</p>
+<p>Predicts and schedueles Science Modes into a list containing dates for each Mode and saves it to a .json file in /Output.</p>
+<p>Settings for the operation of the program are stated in <em>OPT_Config_File.py</em>, which is created by running Operational_Planning_Tool.Create_ConfigFile.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Operational_Planning_Tool.XML_gen">
+<code class="descclassname">Operational_Planning_Tool.</code><code class="descname">XML_gen</code><span class="sig-paren">(</span><em>science_mode_timeline_path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool.html#XML_gen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool.XML_gen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Invokes the XML generator program part of Operational Planning Tool for MATS.</p>
+<p>Converts a .json file containing a list of scheduled Science Modes/CMDs into commands and saves them to a .xml command file.
+Each Mode/CMD in the Science Mode Timeline may contain or be given specific settings to override the Mode/CMD specific settings given in OPT_Config_File.py file.</p>
+<p>Settings for the operation of the program is stated in <em>OPT_Config_File.py</em>, which is created by running Operational_Planning_Tool.Create_ConfigFile.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>science_mode_timeline_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Path to the .json file containing the Science Mode Timeline.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Operational_Planning_Tool</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Operational_Planning_Tool package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Operational_Planning_Tool</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, David Skånberg.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/Operational_Planning_Tool.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
