@@ -50,7 +50,7 @@ def XML_generator(SCIMOD_Path):
     Logger.setLevel(logging.DEBUG)
     
     streamHandler = logging.StreamHandler()
-    streamHandler.setLevel(logging.WARNING)
+    streamHandler.setLevel(logging.INFO)
     streamHandler.setFormatter(formatter)
     Logger.addHandler(streamHandler)
     ############# Set up Logger ##########################
@@ -93,13 +93,13 @@ def XML_generator(SCIMOD_Path):
             continue
         
         Logger.info(str(SCIMOD[x][0]))
-        Logger.info('Start Date: '+str(SCIMOD[x][1]))
-        Logger.info('End Date: '+str(SCIMOD[x][2]))
+        Logger.debug('Start Date: '+str(SCIMOD[x][1]))
+        Logger.debug('End Date: '+str(SCIMOD[x][2]))
         
         mode_duration = round((ephem.Date(SCIMOD[x][2]) - ephem.Date(SCIMOD[x][1]) ) *24*3600)
         relativeTime = round((ephem.Date(SCIMOD[x][1])-ephem.Date(timeline_start))*24*3600)
-        Logger.info('mode_duration: '+str(mode_duration))
-        Logger.info('relativeTime: '+str(relativeTime))
+        Logger.debug('mode_duration: '+str(mode_duration))
+        Logger.debug('relativeTime: '+str(relativeTime))
         
         if( relativeTime >= timeline_duration ):
             Logger.warning('relativeTime is exceeding timeline_duration!!!')
@@ -113,7 +113,7 @@ def XML_generator(SCIMOD_Path):
             #if( warning == '1'):
             #    sys.exit()
         
-        Logger.info('Call XML_generator_select')
+        Logger.debug('Call XML_generator_select')
         XML_generator_select(root=root, duration=mode_duration, relativeTime=relativeTime, mode=SCIMOD[x][0], date=ephem.Date(SCIMOD[x][1]), params=SCIMOD[x][3])
         
     
@@ -124,7 +124,6 @@ def XML_generator(SCIMOD_Path):
     ### Write finished XML-tree with all commands to a file #######
     MATS_COMMANDS = 'Output\\MATS_COMMANDS__Version_'+Version()+'__'+SCIMOD_Path+'.xml'
     Logger.info('Write XML-tree to: '+MATS_COMMANDS)
-    print('Write XML-tree to: '+MATS_COMMANDS)
     f = open(MATS_COMMANDS, 'w')
     f.write(etree.tostring(root, pretty_print=True, encoding = 'unicode'))
     f.close()

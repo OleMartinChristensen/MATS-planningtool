@@ -160,16 +160,16 @@ def date_calculator():
     pitch_offset_angle = 0
     yaw_correction = Timeline_settings()['yaw_correction']
     
-    Logger.info('Earth radius used [km]: '+str(R_mean))
-    Logger.info('LP_altitude set to [km]: '+str(LP_altitude))
-    Logger.info('H_FOV set to [degrees]: '+str(H_FOV))
-    Logger.info('V_FOV set to [degrees]: '+str(V_FOV))
-    Logger.info('yaw_correction set to: '+str(yaw_correction))
+    Logger.debug('Earth radius used [km]: '+str(R_mean))
+    Logger.debug('LP_altitude set to [km]: '+str(LP_altitude))
+    Logger.debug('H_FOV set to [degrees]: '+str(H_FOV))
+    Logger.debug('V_FOV set to [degrees]: '+str(V_FOV))
+    Logger.debug('yaw_correction set to: '+str(yaw_correction))
     
     
     
     
-    Logger.info('TLE used: '+getTLE()[0]+getTLE()[1])
+    Logger.debug('TLE used: '+getTLE()[0]+getTLE()[1])
     MATS = ephem.readtle('MATS',getTLE()[0],getTLE()[1])
     
     "Loop counter"
@@ -430,7 +430,7 @@ def date_calculator():
     ########################### END of Optional plotter ########################################
     
     
-    Logger.info('brightest_star_per_timestep: '+str(brightest_star_per_timestep))
+    Logger.debug('brightest_star_per_timestep: '+str(brightest_star_per_timestep))
     
     return(date_magnitude_array)
     

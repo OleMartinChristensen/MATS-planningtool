@@ -363,7 +363,7 @@ def Mode200_settings():
     
     '''
     settings = {'pointing_altitude': 227000, 'V_offset': 0, 'H_offset': 3+2.5, 'timestep': 2, 'log_timestep': 1200, 
-                      'automatic': 1, 'date': '2019', 'mode_duration': 0, 'freeze_start': 300, 'freeze_duration': 0}
+                      'automatic': True, 'date': '2019', 'mode_duration': 0, 'freeze_start': 300, 'freeze_duration': 0}
     
     if( settings['freeze_duration'] == 0):
         settings['freeze_duration'] = FreezeDuration_calculator( Timeline_settings()['LP_pointing_altitude'], settings['pointing_altitude'])

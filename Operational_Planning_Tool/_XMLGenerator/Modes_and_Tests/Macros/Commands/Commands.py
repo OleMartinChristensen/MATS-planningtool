@@ -52,11 +52,11 @@ def TC_acfLimbPointingAltitudeOffset(root, time, Initial = "92500", Final = "925
     
     current_pointing = _Globals.current_pointing
     
-    Logger.info('current_pointing: '+str(current_pointing))
-    Logger.info('Initial: '+Initial+', Final: '+Final+', Rate: '+Rate)
+    Logger.debug('current_pointing: '+str(current_pointing))
+    Logger.debug('Initial: '+Initial+', Final: '+Final+', Rate: '+Rate)
     
     if(current_pointing != Final or current_pointing != Initial ):
-        Logger.info('Scheduling pointing command')
+        Logger.debug('Scheduling pointing command')
         
         etree.SubElement(root[1], 'command', mnemonic = "TC_acfLimbPointingAltitudeOffset")
         
@@ -84,7 +84,7 @@ def TC_acfLimbPointingAltitudeOffset(root, time, Initial = "92500", Final = "925
             incremented_time = str(round(float(time)+Timeline_settings()['pointing_stabilization'],2))
         
     else:
-        Logger.info('Skipping pointing command as satellite is already oriented the desired way')
+        Logger.debug('Skipping pointing command as satellite is already oriented the desired way')
         incremented_time = time
         
     return incremented_time

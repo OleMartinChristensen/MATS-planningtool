@@ -89,8 +89,10 @@ def Mode120_date_calculator():
         timesteps = int(floor(duration / timestep))
         Logger.info('Total number of timesteps set to: '+str(timesteps)+' s')
         
-        date = ephem.Date(Timeline_settings()['start_date'])
-        Logger.info('date set to: '+str(date))
+        timeline_start = ephem.Date(Timeline_settings()['start_date'])
+        initial_time = ephem.Date( timeline_start + ephem.second*Mode120_settings()['freeze_start'] )
+        
+        Logger.info('Initial simulation date set to: '+str(initial_time))
         
         
         "Get relevant stars"
@@ -195,14 +197,16 @@ def Mode120_date_calculator():
         pitch_offset_angle = 0
         yaw_correction = Timeline_settings()['yaw_correction']
         
-        Logger.info('Earth radius used [km]: '+str(R_mean))
-        Logger.info('LP_altitude set to [km]: '+str(LP_altitude))
-        Logger.info('H_offset set to [degrees]: '+str(H_offset))
-        Logger.info('V_offset set to [degrees]: '+str(V_offset))
-        Logger.info('yaw_correction set to: '+str(yaw_correction))
+        Logger.debug('Earth radius used [km]: '+str(R_mean))
+        Logger.debug('LP_altitude set to [km]: '+str(LP_altitude))
+        Logger.debug('H_offset set to [degrees]: '+str(H_offset))
+        Logger.debug('V_offset set to [degrees]: '+str(V_offset))
+        Logger.debug('yaw_correction set to: '+str(yaw_correction))
         
-        Logger.info('TLE used: '+getTLE()[0]+getTLE()[1])
+        Logger.debug('TLE used: '+getTLE()[0]+getTLE()[1])
         MATS = ephem.readtle('MATS',getTLE()[0],getTLE()[1])
+        
+        date = initial_time
         
         Logger.info('')
         Logger.info('Start of simulation of MATS for Mode120')
@@ -487,6 +491,7 @@ def Mode120_date_calculator():
                 ######################### End of star_mapper #############################
             
         
+        Logger.info('End of simulation for Mode200')
         
         ########################## Optional plotter ###########################################
         '''
@@ -579,6 +584,8 @@ def Mode120_date_select(Occupied_Timeline, dates):
     
     automatic = Mode120_settings()['automatic']
     
+    Logger.info('Start of filtering function')
+    
     "Either schedules a user provided date or filters and schedules calculated dates"
     if( automatic == False ):
         
@@ -595,7 +602,7 @@ def Mode120_date_select(Occupied_Timeline, dates):
             #input()
             
             
-        Occupied_Timeline['Mode120'].append( (Mode120_date, Mode120_endDate) )
+        Occupied_Timeline['Mode120'].append( (date, endDate) )
         Mode120_comment = 'Mode120 scheduled using a user given date, the date got postponed '+str(iterations)+' times'
         
         

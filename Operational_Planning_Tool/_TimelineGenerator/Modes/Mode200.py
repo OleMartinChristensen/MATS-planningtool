@@ -81,7 +81,7 @@ def Mode200_date_calculator():
         
         
         log_timestep = Mode200_settings()['log_timestep']
-        Logger.info('log_timestep: '+str(log_timestep))
+        Logger.debug('log_timestep: '+str(log_timestep))
         
         
         "Simulation length and timestep"
@@ -92,9 +92,10 @@ def Mode200_date_calculator():
         duration = Timeline_settings()['duration']
         Logger.info('Duration set to [s]: '+str(duration))
         
+        timeline_start = ephem.Date(Timeline_settings()['start_date'])
+        initial_time= ephem.Date( timeline_start + ephem.second*Mode200_settings()['freeze_start'] )
         
-        date = ephem.Date(Timeline_settings()['start_date'])
-        Logger.info('date set to: '+str(date))
+        Logger.info('Initial simulation date set to: '+str(initial_time))
         
         MATS = ephem.readtle('MATS',getTLE()[0],getTLE()[1])
         
@@ -152,20 +153,21 @@ def Mode200_date_calculator():
         celestial_eq_normal = array([[0,0,1]])
         yaw_correction = Timeline_settings()['yaw_correction']
         
-        Logger.info('LP_altitude set to [km]: '+str(LP_altitude))
-        Logger.info('H_offset set to [degrees]: '+str(H_offset))
-        Logger.info('V_offset set to [degrees]: '+str(V_offset))
-        Logger.info('Moon_orbital_period [s]: '+str(Moon_orbital_period))
-        Logger.info('yaw_correction set to: '+str(yaw_correction))
+        Logger.debug('LP_altitude set to [km]: '+str(LP_altitude))
+        Logger.debug('H_offset set to [degrees]: '+str(H_offset))
+        Logger.debug('V_offset set to [degrees]: '+str(V_offset))
+        Logger.debug('Moon_orbital_period [s]: '+str(Moon_orbital_period))
+        Logger.debug('yaw_correction set to: '+str(yaw_correction))
         
         t=0
         
-        current_time = date
+        
+        current_time = initial_time
         
         Logger.info('')
         Logger.info('Start of simulation for Mode200')
         
-        while(current_time < date+ephem.second*duration):
+        while(current_time < initial_time+ephem.second*duration):
             
             MATS.compute(current_time)
             Moon.compute(current_time)
@@ -383,10 +385,10 @@ def Mode200_date_calculator():
                 
                 current_time = ephem.Date(current_time+ephem.second * H_offset/4 / 360 * Moon_orbital_period)
                 #if( t*timestep % floor(log_timestep/400) == 0 ):
-                Logger.info('')
-                Logger.info('angle_between_orbital_plane_and_moon [degrees]: '+str(angle_between_orbital_plane_and_moon[t]))
-                Logger.info('Moon currently not visible -> jump ahead')
-                Logger.info('current_time after jump is is: '+str(current_time))
+                Logger.debug('')
+                Logger.debug('angle_between_orbital_plane_and_moon [degrees]: '+str(angle_between_orbital_plane_and_moon[t]))
+                Logger.debug('Moon currently not visible -> jump ahead')
+                Logger.debug('current_time after jump is is: '+str(current_time))
                 
                 t= t + 1
             else:
@@ -396,7 +398,7 @@ def Mode200_date_calculator():
             
             
         Logger.info('End of simulation for Mode200')
-        Logger.info('Moon_list: '+str(Moon_list))
+        Logger.debug('Moon_list: '+str(Moon_list))
         
         
         ########################## Optional plotter ###########################################
@@ -450,7 +452,7 @@ def Mode200_date_select(Occupied_Timeline, dates):
             (str): Comment regarding the result of scheduling of the mode.
     
     """
-    
+    Logger.info('Start of filtering function')
     automatic = Mode200_settings()['automatic']
     
     "Either schedules a user provided date or filters and schedules calculated dates"

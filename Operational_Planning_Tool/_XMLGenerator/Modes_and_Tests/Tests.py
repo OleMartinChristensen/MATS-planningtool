@@ -44,7 +44,7 @@ def XML_generator_Limb_functional_test(root, date, duration, relativeTime, param
     #params = params_checker(params,Mode=X=_settings)
     
     log_timestep = 500
-    Logger.info('log_timestep [s]: '+str(log_timestep))
+    Logger.debug('log_timestep [s]: '+str(log_timestep))
     
     duration_flag = 0
     
@@ -101,8 +101,8 @@ def XML_generator_Limb_functional_test(root, date, duration, relativeTime, param
                     "Estimation of the angle [degrees] between the sun and the FOV position when it enters eclipse"
                     LP_eclipse_angle = arccos(R_mean/(R_mean+altitude_km))/pi*180 + 90
                     
-                    Logger.info('')
-                    Logger.info('LP_eclipse_angle : '+str(LP_eclipse_angle))
+                    Logger.debug('')
+                    Logger.debug('LP_eclipse_angle : '+str(LP_eclipse_angle))
                     
                     timestep = 4
                     t=0
@@ -165,27 +165,27 @@ def XML_generator_Limb_functional_test(root, date, duration, relativeTime, param
                             if( (sun_angle[t] < LP_eclipse_angle and abs(lat_LP[t]) <= lat and mode == 'Day' ) or 
                                (sun_angle[t] > LP_eclipse_angle and abs(lat_LP[t]) <= lat and mode == 'Night' )):
                                 
-                                Logger.info('!!Break of Loop!!')
-                                Logger.info('Loop Counter (t): '+str(t))
-                                Logger.info('current_time: '+str(current_time))
-                                Logger.info('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
-                                Logger.info('lat_LP [degrees]: '+str(lat_LP[t]/pi*180))
-                                Logger.info('sun_angle [degrees]: '+str(sun_angle[t]))
-                                Logger.info('mode: '+str(mode))
-                                Logger.info('')
+                                Logger.debug('!!Break of Loop!!')
+                                Logger.debug('Loop Counter (t): '+str(t))
+                                Logger.debug('current_time: '+str(current_time))
+                                Logger.debug('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
+                                Logger.debug('lat_LP [degrees]: '+str(lat_LP[t]/pi*180))
+                                Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
+                                Logger.debug('mode: '+str(mode))
+                                Logger.debug('')
                                 
                                 Mode_name = sys._getframe(0).f_code.co_name
                                 comment = Mode_name+', '+str(date)+', '+str(params)
                                 break
                             
                             elif( t*timestep % log_timestep == 0 or t == 1):
-                                Logger.info('')
-                                Logger.info('current_time: '+str(current_time))
-                                Logger.info('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
-                                Logger.info('lat_LP [degrees]: '+str(lat_LP[t]/pi*180))
-                                Logger.info('sun_angle [degrees]: '+str(sun_angle[t]))
-                                Logger.info('mode: '+str(mode))
-                                Logger.info('')
+                                Logger.debug('')
+                                Logger.debug('current_time: '+str(current_time))
+                                Logger.debug('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
+                                Logger.debug('lat_LP [degrees]: '+str(lat_LP[t]/pi*180))
+                                Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
+                                Logger.debug('mode: '+str(mode))
+                                Logger.debug('')
                             
                             
                         "Increase Loop counter"
@@ -199,7 +199,7 @@ def XML_generator_Limb_functional_test(root, date, duration, relativeTime, param
                     ########################## End of Orbit simulator ##########################
                     ############################################################################
                     
-                    Logger.info('Limb_functional_test_macro: relativeTime = '+str(relativeTime)+', pointing_altitude = '+str(altitude)+
+                    Logger.debug('Limb_functional_test_macro: relativeTime = '+str(relativeTime)+', pointing_altitude = '+str(altitude)+
                                 ', ExpTime = '+str(ExpTime)+', JPEGQ = '+str(JPEGQ))
                     
                     relativeTime = Macros.Limb_functional_test_macro(root = root, relativeTime = str(relativeTime), 
@@ -236,7 +236,7 @@ def XML_generator_Photometer_test_1(root, date, duration, relativeTime, params =
     MATS_P = 2*pi*sqrt(MATS_p**3/U)
     '''
     
-    Logger.info('')
+    Logger.debug('')
     
     ExpTimes = params['ExpTimes']
     
@@ -257,7 +257,7 @@ def XML_generator_Photometer_test_1(root, date, duration, relativeTime, params =
             Mode_name = sys._getframe(0).f_code.co_name
             comment = Mode_name+', '+str(date)+', '+str(params)
             
-            Logger.info('Photometer_test_1_macro: relativeTime = '+str(relativeTime)+
+            Logger.debug('Photometer_test_1_macro: relativeTime = '+str(relativeTime)+
                                 ', ExpTime = '+str(ExpTime)+', ExpInt = '+str(ExpInt))
             relativeTime = Macros.Photometer_test_1_macro(root, relativeTime = str(relativeTime), ExpTime = str(ExpTime), ExpInt = str(ExpInt), comment = comment)
             
@@ -284,7 +284,7 @@ def XML_generator_Nadir_functional_test(root, date, duration, relativeTime, para
     #params = params_checker(params,Mode=X=_settings)
     
     log_timestep = 100
-    Logger.info('log_timestep [s]: '+str(log_timestep))
+    Logger.debug('log_timestep [s]: '+str(log_timestep))
     
     duration_flag = 0
     
@@ -329,8 +329,8 @@ def XML_generator_Nadir_functional_test(root, date, duration, relativeTime, para
                 #lat = params['lat']/180*pi
                 lat = 30/180*pi
                 
-                Logger.info('')
-                Logger.info('nadir_eclipse_angle : '+str(nadir_eclipse_angle))
+                Logger.debug('')
+                Logger.debug('nadir_eclipse_angle : '+str(nadir_eclipse_angle))
                 
                 t=0
                 timestep = 4
@@ -362,24 +362,24 @@ def XML_generator_Nadir_functional_test(root, date, duration, relativeTime, para
                     
                     
                     if( t*timestep % log_timestep == 0 == 0 or t == 1):
-                        Logger.info('')
-                        Logger.info('current_time: '+str(current_time))
-                        Logger.info('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
-                        Logger.info('sun_angle [degrees]: '+str(sun_angle[t]))
-                        Logger.info('mode: '+str(mode))
-                        Logger.info('')
+                        Logger.debug('')
+                        Logger.debug('current_time: '+str(current_time))
+                        Logger.debug('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
+                        Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
+                        Logger.debug('mode: '+str(mode))
+                        Logger.debug('')
                     
                     if( (sun_angle[t] < nadir_eclipse_angle and abs(lat_MATS[t]) <= lat and mode == 'Day' ) or 
                        (sun_angle[t] > nadir_eclipse_angle and abs(lat_MATS[t]) <= lat and mode == 'Night' )):
                         
-                        Logger.info('!!Break of Loop!!')
-                        Logger.info('Loop Counter (t): '+str(t))
-                        Logger.info('current_time: '+str(current_time))
-                        Logger.info('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
-                        Logger.info('sun_angle [degrees]: '+str(sun_angle[t]))
-                        Logger.info('mode: '+str(mode))
+                        Logger.debug('!!Break of Loop!!')
+                        Logger.debug('Loop Counter (t): '+str(t))
+                        Logger.debug('current_time: '+str(current_time))
+                        Logger.debug('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
+                        Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
+                        Logger.debug('mode: '+str(mode))
                         
-                        Logger.info('')
+                        Logger.debug('')
                         break
                         
                         
@@ -394,7 +394,7 @@ def XML_generator_Nadir_functional_test(root, date, duration, relativeTime, para
                 ########################## End of Orbit simulator ##########################
                 ############################################################################
                 
-                Logger.info('Limb_functional_test_macro: relativeTime = '+str(relativeTime)+', pointing_altitude = '+str(altitude)+
+                Logger.debug('Limb_functional_test_macro: relativeTime = '+str(relativeTime)+', pointing_altitude = '+str(altitude)+
                             ', ExpTime = '+str(ExpTime)+', JPEGQ = '+str(JPEGQ))
                 
                 relativeTime = Macros.Nadir_functional_test_macro(root = root, relativeTime = str(relativeTime), 

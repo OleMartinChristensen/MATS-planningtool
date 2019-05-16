@@ -70,7 +70,7 @@ def Timeline_generator():
     
     
     streamHandler = logging.StreamHandler()
-    streamHandler.setLevel(logging.WARNING)
+    streamHandler.setLevel(logging.INFO)
     streamHandler.setFormatter(formatter)
     Logger.addHandler(streamHandler)
     
@@ -89,7 +89,7 @@ def Timeline_generator():
     "Get settings for the timeline"
     Timeline_settings = OPT_Config_File.Timeline_settings()
     Timeline_start_date = ephem.Date(Timeline_settings['start_date'])
-    Logger.info('Timeline_settings: '+str(Timeline_settings))
+    Logger.debug('Timeline_settings: '+str(Timeline_settings))
     
     "Check if yaw_correction setting is set correct"
     if( Timeline_settings['yaw_correction'] == 1):
@@ -102,12 +102,12 @@ def Timeline_generator():
         
     SCIMOD_Timeline_unchronological = []
     
-    Logger.info('Create "Occupied_Timeline" variable')
+    Logger.debug('Create "Occupied_Timeline" variable')
     Occupied_Timeline = {key:[] for key in Modes_priority}
     
-    Logger.info('')
-    Logger.info('Occupied_Timeline: \n'+"{" + "\n".join("        {}: {}".format(k, v) for k, v in Occupied_Timeline.items()) + "}")
-    Logger.info('')
+    Logger.debug('')
+    Logger.debug('Occupied_Timeline: \n'+"{" + "\n".join("        {}: {}".format(k, v) for k, v in Occupied_Timeline.items()) + "}")
+    Logger.debug('')
     
     Logger.info('')
     Logger.info('Start looping through modes priority list')
@@ -119,11 +119,12 @@ def Timeline_generator():
     "Loop through the Modes to be ran and schedule each one in the priority order of which they appear in the list"
     for x in range(len(Modes_priority)):
         
+        Logger.info('')
         Logger.info('Iteration '+str(x+1)+' in Mode scheduling loop')
         
         scimod = Modes_priority[x]
         
-        Logger.info('')
+        
         Logger.info('Start of '+scimod)
         Logger.info('')
         
@@ -156,8 +157,8 @@ def Timeline_generator():
             
             "Append mode and dates and comment to an unchronological Science Mode Timeline"
             SCIMOD_Timeline_unchronological.append((Occupied_Timeline[scimod][scheduled_instances-1][0], Occupied_Timeline[scimod][scheduled_instances-1][1],scimod, Mode_comment))
-            Logger.info('Entry number '+str(len(SCIMOD_Timeline_unchronological))+' in unchronological Science Mode list: '+str(SCIMOD_Timeline_unchronological[-1]))
-            Logger.info('')
+            Logger.debug('Entry number '+str(len(SCIMOD_Timeline_unchronological))+' in unchronological Science Mode list: '+str(SCIMOD_Timeline_unchronological[-1]))
+            Logger.debug('')
         
     ################################################################################################################
     
@@ -173,7 +174,7 @@ def Timeline_generator():
     
     yaw_correction = Timeline_settings['yaw_correction']
     Logger.info('Mode 1/2/3/4 started')
-    Logger.info('yaw_correction: '+str(yaw_correction))
+    Logger.info('yaw_correction = '+str(yaw_correction))
     Logger.info('')
     
     Mode_1_2_3_4 = getattr(Modes_Header,'Mode_1_2_3_4')
@@ -217,7 +218,7 @@ def Timeline_generator():
         Logger.debug('Post-'+mode+' Occupied_Timeline: \n'+"{" + "\n".join("        {}: {}".format(k, v) for k, v in Occupied_Timeline.items()) + "}")
         Logger.debug('')
         
-        Logger.info(mode+' getting added to unchronological timeline')
+        Logger.debug(mode+' getting added to unchronological timeline')
         for x in range(len(Occupied_Timeline[mode])):
             Logger.debug('Appended to timeline: '+str((Occupied_Timeline[mode][x][0], Occupied_Timeline[mode][x][1],mode, Mode_comment)))
             SCIMOD_Timeline_unchronological.append((Occupied_Timeline[mode][x][0], Occupied_Timeline[mode][x][1],mode, Mode_comment))
@@ -230,22 +231,22 @@ def Timeline_generator():
     ################# Sort Planned Modes and create a Science Mode Timeline List ################
     
     SCIMOD_Timeline_unchronological.sort()
-    Logger.info('')
-    Logger.info('Unchronological timeline sorted')
-    Logger.info('')
+    Logger.debug('')
+    Logger.debug('Unchronological timeline sorted')
+    Logger.debug('')
     
     SCIMOD_Timeline = []
     SCIMOD_Timeline.append([ 'Timeline_settings','This Timeline was created using these settings', Timeline_settings, OPT_Config_File.getTLE(), 'Note: These settings are not actually used when generating an XML, the ones in OPT_Config_File are' ])
     
-    Logger.info("Create a science mode list in chronological order. The list contains Mode name, start date, enddate, params for XML-gen and comment")
+    Logger.debug("Create a science mode list in chronological order. The list contains Mode name, start date, enddate, params for XML-gen and comment")
     t=0
     "Create a science mode list in chronological order. The list contains Mode name, start date, enddate, params for XML-gen and comment"
     for x in SCIMOD_Timeline_unchronological:
         
-        Logger.info(str(t+1)+' Timeline entry: '+str(x))
+        Logger.debug(str(t+1)+' Timeline entry: '+str(x))
         
         
-        Logger.info('Get the parameters for XML-gen from OPT_Config_File and add them to Science Mode timeline')
+        Logger.debug('Get the parameters for XML-gen from OPT_Config_File and add them to Science Mode timeline')
         try:
             Config_File = getattr(OPT_Config_File,x[2]+'_settings')()
         except AttributeError:
@@ -259,8 +260,8 @@ def Timeline_generator():
         #SCIMOD_Timeline.append([ x[2],str(x[0]), str(x[1]),{},x[3] ])
         
         SCIMOD_Timeline.append([ x[2],str(x[0]), str(x[1]),Config_File,x[3] ])
-        Logger.info(str(t+1)+' entry in Science Mode list: '+str(SCIMOD_Timeline[t]))
-        Logger.info('')
+        Logger.debug(str(t+1)+' entry in Science Mode list: '+str(SCIMOD_Timeline[t]))
+        Logger.debug('')
         t= t+1
     
     ###########################################################################################
@@ -299,7 +300,7 @@ def Timeline_generator():
         pass
     
     SCIMOD_NAME = 'Output\\Science_Mode_Timeline_Version_'+Version+'.json'
-    print('Save mode timeline to file: '+SCIMOD_NAME)
+    Logger.info('Save mode timeline to file: '+SCIMOD_NAME)
     with open(SCIMOD_NAME, "w") as write_file:
         json.dump(SCIMOD_Timeline, write_file, indent = 2)
     
