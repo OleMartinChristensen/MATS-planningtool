@@ -2,7 +2,6 @@ Operational_Planning_Tool require these packages:
     
     ephem
     matplotlib
-    pylab
     scipy
     lxml
     json
