@@ -144,36 +144,6 @@ def scheduler(Occupied_Timeline, date, endDate):
     return date, endDate, iterations
 
 
-def FreezeDuration_calculator(pointing_altitude1, pointing_altitude2):
-    '''Function that calculates the angle between two tangential altitudes and then calculates
-    the time it takes for orbital position angle of a satellite in a circular orbit to change by the same amount.
-    
-    Arguments:
-        pointing_altitude1 (int): First tangential pointing altitude in m
-        pointing_altitude2 (int): Second tangential pointing altitude in m
-        
-    Returns:
-        (int): FreezeDuration, Time [s] it takes for the satellites orbital position angle to change 
-        by the same amount as the angle between the two tangential pointing altitudes as seen from the satellite.
-    '''
-    
-    TLE2 = OPT_Config_File.getTLE()[1] #Orbits per day
-    U = 398600.4418 #Earth gravitational parameter
-    MATS_P = 24*3600/float(TLE2[52:63]) #Orbital Period of MATS [s]
-    MATS_p = ((MATS_P/2/pi)**2*U)**(1/3) #Semi-major axis of MATS assuming circular orbit [km]
-    R_mean = 6371 #Mean Earth radius [km]
-    pitch1 = arccos((R_mean+pointing_altitude1/1000)/(MATS_p))/pi*180
-    pitch2 = arccos((R_mean+pointing_altitude2/1000 )/(MATS_p))/pi*180
-    pitch_angle_difference = abs(pitch1 - pitch2)
-    
-    #The time it takes for the orbital position angle to change by the same amount as
-    #the angle between the pointing axes
-    FreezeDuration = round(MATS_P*(pitch_angle_difference)/360,1)
-    
-    return FreezeDuration
-
-
-
 def params_checker(dict1, dict2):
     """Function which compares the keys of two dictionaries and outputs a new dictionary. 
     

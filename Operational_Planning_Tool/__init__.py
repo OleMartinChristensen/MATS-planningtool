@@ -11,8 +11,8 @@ Examples:
     OPT.XML_gen('Output/Science_Mode_Timeline_Version_Original.json')
 
 Settings for the programs are stated in the *OPT_Config_File.py* file located in the working directory of the user call. This file can be created by
-by calling the *OPT.Create_ConfigFile* function (unless there already is an *OPT_Config_File.py* file inte working directory of the user call). 
-It is an copy of the original *Config_File_Original*, located in the Operational_Planning_Tool directory. 
+by calling the *OPT.Create_ConfigFile* function (unless there already is an *OPT_Config_File.py* file in the working directory of the user call). 
+It is an copy of the original *Config_File_Original*, located in the *Operational_Planning_Tool* directory. 
 All settings in the generated *OPT_Config_File.py* can be changed to adjust the operation of the Operational Planning Tool. 
 All generated output files are saved in a folder called 'Output' in the working directory.
 Generated logs are also saved in folders created in the working directory.
@@ -22,10 +22,10 @@ Generated logs are also saved in folders created in the working directory.
 
 
 def Create_ConfigFile():
-    """Makes a copy of the original Config file (Config_File_Original, located in Operational_Planning_Tool).
+    """Makes a copy of the original Config file (*Config_File_Original*, located in *Operational_Planning_Tool*).
     
-    The copy is created in the working directory of the user call and can be freely modified. Operational_Planning_Tool will
-    use whatever file named "OPT_Config_File" that is also located in the working directory of the user call.
+    The copy is created in the working directory of the user call and can be freely modified. *Operational_Planning_Tool* will
+    use whatever file named *OPT_Config_File.py* that is located in the working directory of the user call.
     
     Returns:
         None
@@ -40,7 +40,8 @@ def Create_ConfigFile():
 def Timeline_gen():
     """Invokes the Timeline generator part of Operational Planning Tool.
     
-    Predicts and schedueles Science Modes into a list containing dates for each Mode and saves it to a .json file in /Output. \n
+    Predicts and schedueles Science Modes and some separate payload CMDs into a list containing dates for each Mode and saves it to a .json file in /Output. \n
+    The Modes and CMDs to be scheduled are listed in *OPT_Config_File.Modes_priority*.
     
     Settings for the operation of the program are stated in *OPT_Config_File.py*, which is created by running Operational_Planning_Tool.Create_ConfigFile.
     
@@ -55,10 +56,10 @@ def Timeline_gen():
 def XML_gen(science_mode_timeline_path):
     """Invokes the XML generator program part of Operational Planning Tool for MATS.
     
-    Converts a .json file containing a list of scheduled Science Modes/CMDs into commands and saves them to a .xml command file. 
-    Each Mode/CMD in the Science Mode Timeline may contain or be given specific settings to override the Mode/CMD specific settings given in OPT_Config_File.py file. \n
+    Converts a .json file containing a list of scheduled Science Modes/CMDs/Tests into commands and saves them as a .xml command file. 
+    Each Mode/CMD/Test in the Science Mode Timeline may contain or be given specific settings to override the Mode/CMD/Test specific settings given in OPT_Config_File.py file. \n
     
-    Settings for the operation of the program is stated in *OPT_Config_File.py*, which is created by running Operational_Planning_Tool.Create_ConfigFile.
+    Settings for the operation of the program is stated in *OPT_Config_File.py*, which is created by running *Operational_Planning_Tool.Create_ConfigFile*.
     
     Arguments: 
         science_mode_timeline_path (str): Path to the .json file containing the Science Mode Timeline.
@@ -98,11 +99,11 @@ def Timeline_analyser(science_mode_timeline_path, date):
     return Mode, Parameters
 
 def Data_Plotter():
-    '''Invokes the Data_Plotter program part of Operational Planning Tool.
+    '''Invokes the *Data_Plotter* program part of *Operational_Planning_Tool*.
     
     Simulates the position and attitude of MATS during normal operation and compares it to 
     the actual positional and attitude data given in a data set. Plots both the simulated data and given data. \n
-    Settings for the operation of the program is stated in *OPT_Config_File.py*, which is created by running Operational_Planning_Tool.Create_ConfigFile.
+    Settings for the operation of the program is stated in *OPT_Config_File.py*, which is created by running *Operational_Planning_Tool.Create_ConfigFile*.
     
     Arguments:
         DataSet_path (str): Path to the .csv file containing the relevant data of analysis.

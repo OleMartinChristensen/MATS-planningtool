@@ -2,21 +2,21 @@
 """
 Created on Fri Nov  2 14:57:28 2018
 
-The Timeline_generator part of the Operational_Planning_Tool which purpose is to automatically generate a
-mission timeline from settings defined in the OPT_Config_File. The timeline consists of
-science modes together with their planned start/end dates, settings, and comments 
-expressed as a list in chronological order. 
+The *Timeline_generator* part of the *Operational_Planning_Tool* which purpose is to automatically generate a
+mission timeline from settings defined in the *OPT_Config_File*. The generated timeline consists of
+Science Modes and separate CMDs together with their planned start/end dates, settings, and comments, 
+expressed as a list in chronological order. \n
 
-Timeline_generator has a setable priority for the scheduling of modes, 
+Timeline_generator has a setable priority for the scheduling of modes and CMDs, 
 which can be seen in the order of the modes in the list fetched from the 
-function Modes_priority in the OPT_Config_File module.
+function Modes_priority in the OPT_Config_File module. \n
 
-For each mode, one at a time, an appropriate date is calculated, or
+For each mode/CMD, one at a time, an appropriate date is calculated, or
 a predetermined date is already set in the OPT_Config_File. A dictionary (Occupied_Timeline) keeps track of the planned runtime of all Modes, 
-this to prevent colliding scheduling. 
+this to prevent colliding scheduling. \n
 
-Depending on Config_File.Timeline_settings()['yaw_correction'], Mode1/2 or Mode3/4 is chosen, 
-these modes will fill out time left available after the scheduling of the rest of the modes, 
+Depending on *Config_File.Timeline_settings()['yaw_correction']* is set for the timeline, Mode1/2 or Mode3/4 is chosen.
+These modes will fill out time left available after the scheduling of the rest of the modes, 
 set in Config_File.Modes_priority.
 
 If calculated starting dates for modes are occupied, they will be changed  

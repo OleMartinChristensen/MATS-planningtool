@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-
+Searches a Science Mode Timeline json file for a given date and returns the scheduled mode and its parameters"
 """
 
 import ephem, json, os

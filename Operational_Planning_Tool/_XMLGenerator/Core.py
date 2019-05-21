@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 """Creates the base of the XML-tree and calculates initial values such as the 
 start and end time and also duration of the timeline. Then goes through the 
-supplied Science Mode Timeline List chronologically and calls for the corresponding function.
+supplied Science Mode Timeline List chronologically and calls for the corresponding function. \n
+
+Mode/Test/CMD specific settings given in the Science Mode Timeline List will overirde the use of the same settings stated in OPT_Config_File.
 
 """
 

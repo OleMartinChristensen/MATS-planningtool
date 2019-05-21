@@ -546,7 +546,7 @@ def Mode200_date_select(Occupied_Timeline, dates):
         Occupied_Timeline['Mode200'].append( (Mode200_date, Mode200_endDate) )
         
         Mode200_comment = ('V-offset: '+str(Moon_V_offset[x])+' H-offset: '+str(Moon_H_offset[x])+', Number of times date changed: '+str(iterations)+
-                                          ', MATS (long,lat) in degrees = ('+str(Moon_long[x])+', '+str(Moon_lat[x])+'), Dec (J2000): '+str(dates[x]['Dec'])+', RA (J2000): '+str(dates[x]['RA']))
+                                          ', MATS (long,lat) in degrees = ('+str(Moon_long[x])+', '+str(Moon_lat[x])+'), Dec (J2000) [degrees]: '+str(dates[x]['Dec'])+', RA (J2000) [degrees]: '+str(dates[x]['RA']))
         
         
     return Occupied_Timeline, Mode200_comment

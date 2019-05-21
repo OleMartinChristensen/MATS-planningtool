@@ -156,7 +156,7 @@ def date_calculator():
     skip_star_list = []
     MATS_p = zeros((timesteps,1))
     MATS_P = zeros((timesteps,1))
-    brightest_star_per_timestep = []
+    
     
     angle_between_orbital_plane_and_star = zeros((timesteps,ROWS))
     
@@ -445,9 +445,7 @@ def date_calculator():
     '''
     ########################### END of Optional plotter ########################################
     
-    
-    Logger.debug('brightest_star_per_timestep: '+str(brightest_star_per_timestep))
-    
+        
     return(date_magnitude_array)
     
 
@@ -496,17 +494,16 @@ def date_select(Occupied_Timeline, date_magnitude_array):
         
         index_max_mag = date_magnitude_array[:,1].argmax()
         value_max_mag = date_magnitude_array[:,1].max()
+        date_max_mag = date_magnitude_array[index_max_mag,0]
+        dec_max_mag = date_magnitude_array[index_max_mag,2]
+        RA_max_mag = date_magnitude_array[index_max_mag,3]
         
-        "If the all the magnitudes have been set arbitrary low -> No Date available -> Exit"
-        if(value_max_mag == arbitraryLowNumber):
+        "If the all the magnitudes have been set arbitrary low (all dates occupied) or there are no simulated dates left (date=0) -> No Date available -> Exit"
+        if(value_max_mag == arbitraryLowNumber or date_max_mag == 0):
             comment = 'No available time for '+Mode_name
             Logger.warning(comment)
             #input('Enter anything to ackknowledge and continue')
             return Occupied_Timeline, comment
-        
-        date_max_mag = date_magnitude_array[index_max_mag,0]
-        dec_max_mag = date_magnitude_array[index_max_mag,2]
-        RA_max_mag = date_magnitude_array[index_max_mag,3]
         
         date = ephem.Date(ephem.Date(date_max_mag)-ephem.second*(settings['freeze_start']))
         endDate = ephem.Date(date+ephem.second*settings['mode_duration'])

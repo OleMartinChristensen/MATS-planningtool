@@ -84,7 +84,7 @@ def date_select(Occupied_Timeline, initial_date):
     
     date = initial_date
     
-    number_of_altitudes = round( (settings['pointing_altitude_to'] - settings['pointing_altitude_from']) / settings['pointing_altitude_interval'] + 1 )
+    number_of_altitudes = int( (settings['pointing_altitude_to'] - settings['pointing_altitude_from']) / settings['pointing_altitude_interval'] + 1 )
     
     duration = (settings['pointing_duration'] + Timeline_settings()['pointing_stabilization']) * number_of_altitudes
     

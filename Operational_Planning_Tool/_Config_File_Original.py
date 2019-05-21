@@ -4,8 +4,8 @@ named OPT_Config_File.py and be located in the working directoy of the user call
     
 """
 
- 
-from Operational_Planning_Tool._Library import FreezeDuration_calculator
+from pylab import pi, arccos
+
 
 def Logger_name():
     '''Contains the name of the shared logger.
@@ -62,6 +62,7 @@ def Modes_priority():
             'PWRTOGGLE',
             'CCDFlushBadColumns',
             'CCDBadColumn',
+            'PM',
             'Mode130', 
             'Mode200',
             'Mode120',
@@ -113,12 +114,12 @@ def Timeline_settings():
         'Mode_1_2_3_4minDuration': Minimum amount of time needed (inbetween scheduled Modes) for the scheduling of Modes 1-4 [s]. \n
         'mode_separation': Time in seconds. Is used in Library.scheduler to postpone Modes and also as an extra term in the calculations of the duration of other modes to act as an prolonged buffer.
         Meaning that whenever mode_duration is calculated it is equal to an calculated estimation of the modes duration plus "mode_separation". (int) \n
-        'CMD_duration': Sets the amount of time scheduled for PayloadCMDs. (int) \n
+        'CMD_duration': Sets the amount of time scheduled for PayloadCMDs using *Timeline_gen*. (int) \n
         
         'yaw_correction': If yaw correction will be used for the duration of the timeline. Decides if Mode1/2 or Mode3/4 are to be scheduled. Set to True for Mode3/4, set to False for Mode1/2. (bool) \n
         'yaw_amplitude': Amplitude of the yaw function (float). \n
         'yaw_phase': Phase of the yaw function (float). \n
-        'LP_pointing_altitude': Sets altitude of LP in meters. (int) \n
+        'LP_pointing_altitude': Sets default altitude of LP in meters for the timeline. (int) \n
         
         'command_separation': Minimum ammount of time inbetween scheduled commands [s]. (float) \n
         'pointing_stabilization': Extra time [s] scheduled for fixed pointing commands before new commands are allowed. (int) \n
@@ -128,8 +129,8 @@ def Timeline_settings():
         (dict): timeline_settings
     '''
     timeline_settings = {'start_date': '2018/9/3 08:00:40', 'duration': 1*4*3600, 
-                       'leap_seconds': 18, 'GPS_epoch': '1980/1/6', 'Mode_1_2_3_4minDuration': 300, 'mode_separation': 120,
-                       'CMD_duration': 60, 'yaw_correction': True, 'yaw_amplitude': -3.8, 'yaw_phase': -20, 'LP_pointing_altitude': 92500, 
+                       'leap_seconds': 18, 'GPS_epoch': '1980/1/6', 'Mode_1_2_3_4minDuration': 300, 'mode_separation': 60,
+                       'CMD_duration': 30, 'yaw_correction': True, 'yaw_amplitude': -3.8, 'yaw_phase': -20, 'LP_pointing_altitude': 92500, 
                        'command_separation': 1, 'pointing_stabilization': 60}
     return timeline_settings
 
@@ -159,8 +160,8 @@ def Mode100_settings():
         'pointing_altitude_to': Sets in meters the ending altitude. (int) \n
         'pointing_altitude_interval': Sets in meters the interval size of each succesive pointing. (int) \n
         'pointing_duration': Sets the time [s] from attitude stabilization until next pointing command. (int) \n
-        'ExpTimeUV': Sets the exposuretime of the UV CCDs in ms. (int) \n
-        'ExpTimeIR': Sets the exposuretime of the IR CCDs in ms. (int) \n
+        'Exp_Time_and_Interval_IR': Sets starting exposure and interval time [ms] as a duple of integers. \n
+        'Exp_Time_and_Interval_UV': Sets starting exposure and interval time [ms] as a duple of integers. \n
         'ExpTime_interval': Sets in ms the interval size of both ExpTimeUV and ExpTimeIR for each succesive pointing. (int) \n
         'start_date': Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). If the date is set to '0', Timeline start_date will be used.
         
@@ -169,7 +170,7 @@ def Mode100_settings():
             
     '''
     settings = {'pointing_altitude_from': 10000, 'pointing_altitude_to': 150000, 
-                'pointing_altitude_interval': 5000, 'pointing_duration': 20, 'ExpTimeUV': 1000, 'ExpTimeIR': 1000, 'ExpTime_interval': 100,  'start_date': '0'}
+                'pointing_altitude_interval': 5000, 'pointing_duration': 20, 'Exp_Time_and_Interval_UV': (1000,2000), 'Exp_Time_and_Interval_IR': (1000,2000), 'ExpTime_interval': 1000,  'start_date': '0'}
     return settings
 
 
@@ -206,7 +207,8 @@ def Mode120_settings():
         'mode_duration': Sets the scheduled duration of the Mode in seconds. If set to 0 it is calculated. (int) \n
         'freeze_start': Sets in seconds the time from start of the Mode to when the attitude freezes. (int) \n
         'freeze_duration': Sets in seconds the duration of the attitude freeze. If set to 0, it will be estimated to a 
-        value corresponding to the attitude being frozen until realigned with LP_pointing_altitude. (int)
+        value corresponding to the attitude being frozen until realigned with LP_pointing_altitude. (int) \n
+        'SnapshotTime': Sets in seconds the time, from the start of the attitude freeze, to when the Snapshot is taken. (int)
     
     Returns:
         (dict): settings
@@ -214,7 +216,7 @@ def Mode120_settings():
     '''
     settings = {'pointing_altitude': 227000, 'V_offset': 0, 'H_offset': 2.5, 'Vmag': '<2', 'timestep': 2,'log_timestep': 3600, 
                       'automatic': True, 'date': '2019', 'mode_duration': 0, 'freeze_start': 300, 
-                      'freeze_duration': 0}
+                      'freeze_duration': 0, 'SnapshotTime': 10}
     
     if( settings['freeze_duration'] == 0):
         settings['freeze_duration'] = FreezeDuration_calculator( Timeline_settings()['LP_pointing_altitude'], settings['pointing_altitude'])
@@ -238,9 +240,12 @@ def Mode121_settings():
         'automatic': Sets if the mode date is to be calculated or user provided. True for calculated or False for user provided. \n
         'start_date': Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). Note! only applies if automatic is set to False. \n
         'mode_duration': Sets the scheduled duration of the Mode in seconds. If set to 0 it is calculated. \n
+        'Exp_Times_and_Intervals_IR': Sets exposure and interval times [s] as a list of duples of integers. \n
+        'Exp_Times_and_Intervals_UV': Sets exposure and interval times [s] as a list of duples of integers. \n
         'freeze_start': Sets in seconds the time from start of the Mode to when the attitude freezes. \n
         'freeze_duration': Sets in seconds the duration of the attitude freeze. If set to 0, it will be estimated to a 
-        value corresponding to the attitude being frozen until realigned with LP_pointing_altitude.
+        value corresponding to the attitude being frozen until realigned with LP_pointing_altitude. \n
+        'SnapshotTime': Sets in seconds the time, from the start of the attitude freeze, to when the Snapshot is taken. (int)
     
     Returns:
         (dict): settings
@@ -248,7 +253,7 @@ def Mode121_settings():
     '''
     settings = {'pointing_altitude': 227000, 'H_FOV': 5.67, 'V_FOV': 0.91, 'Vmag': '<4', 'timestep': 5, 'TimeSkip': 1, 'log_timestep': 3600, 
                       'automatic': True, 'start_date': '2019', 'mode_duration': 0, 'freeze_start': 300, 
-                      'freeze_duration': 0}
+                      'freeze_duration': 0, 'Exp_Times_and_Intervals_IR': [(5000,6000)], 'Exp_Times_and_Intervals_UV': [(3000,4000)], 'SnapshotTime': 10}
     
     if( settings['freeze_duration'] == 0):
         settings['freeze_duration'] = FreezeDuration_calculator( Timeline_settings()['LP_pointing_altitude'], settings['pointing_altitude'])
@@ -272,10 +277,12 @@ def Mode122_settings():
         'automatic': Sets if the mode date is to be calculated or user provided. True for calculated or False for user provided. \n
         'start_date': Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). Note! only applies if automatic is set to False. \n
         'mode_duration': Sets the scheduled duration of the Mode in seconds. If set to 0 it is calculated. \n
-        'ExpTimes': Sets exposure times [s] as a integer list and the exposure intervall (ExpInt = ExpTime + 2000). \n
+        'Exp_Times_and_Intervals_IR': Sets exposure and interval times [s] as a list of duples of integers. \n
+        'Exp_Times_and_Intervals_UV': Sets exposure and interval times [s] as a list of duples of integers. \n
         'freeze_start': Sets in seconds the time from start of the Mode to when the attitude freezes. \n
         'freeze_duration': Sets in seconds the duration of the attitude freeze. If set to 0, it will be estimated to a 
-        value corresponding to the attitude being frozen until realigned with LP_pointing_altitude.
+        value corresponding to the attitude being frozen until realigned with LP_pointing_altitude (Normally around 50 s).
+        'SnapshotTime': Sets in seconds the time, from the start of the attitude freeze, to when the Snapshot is taken. (int)
     
     Returns:
         (dict): settings
@@ -283,7 +290,7 @@ def Mode122_settings():
     '''
     settings = {'pointing_altitude': 227000, 'H_FOV': 5.67, 'V_FOV': 0.91, 'Vmag': '<4', 'timestep': 5, 'TimeSkip': 1, 'log_timestep': 3600, 
                       'automatic': True, 'start_date': '2019', 'mode_duration': 0, 'freeze_start': 300, 
-                      'freeze_duration': 0, 'ExpTimes': [1000, 3000, 5000, 10000, 20000], 'session_duration': 120}
+                      'freeze_duration': 0, 'Exp_Times_and_Intervals_IR': [(5000,6000)], 'Exp_Times_and_Intervals_UV': [(3000,6000)], 'SnapshotTime': 10}
     
     if( settings['freeze_duration'] == 0):
         settings['freeze_duration'] = FreezeDuration_calculator( Timeline_settings()['LP_pointing_altitude'], settings['pointing_altitude'])
@@ -305,7 +312,7 @@ def Mode130_settings():
         (dict): settings
         
     '''
-    settings = {'pointing_altitude': 200000, 'mode_duration': 900, 'start_date': '2018/9/3 12:00:40'}
+    settings = {'pointing_altitude': 200000, 'mode_duration': 900, 'start_date': '0'}
     return settings
 
 
@@ -314,14 +321,17 @@ def Mode131_settings():
     
     Keys:
         'pointing_altitude': Sets in meters the altitude of the pointing command. \n
-        'mode_duration': Sets the scheduled duration of the Mode in seconds. \n
-        'start_date': Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). If the date is set to '0', Timeline start_date will be used.
+        'start_date': Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). If the date is set to '0', Timeline start_date will be used. \n
+        'Exp_Times_and_Intervals_IR': Sets exposure and interval times [s] as a list of duples of integers. \n
+        'Exp_Times_and_Intervals_UV': Sets exposure and interval times [s] as a list of duples of integers. \n
+        'session_duration': Sets the duration [s] of each session using the different exposure times and intervals in *Exp_Times_and_Intervals*.
     
     Returns:
         (dict): settings
     
     '''
-    settings = {'pointing_altitude': 200000, 'mode_duration': 900, 'start_date': '2018/9/3 12:00:40'}
+    settings = {'pointing_altitude': 200000, 'start_date': '0', 'Exp_Times_and_Intervals_IR': [(4000,5000), (5000,6000), (6000,7000), (6000,7000)],
+                'Exp_Times_and_Intervals_UV': [(2000,3000), (3000,4000), (4000,5000), (5000,6000)], 'session_duration': 120}
     return settings
 
 
@@ -331,14 +341,16 @@ def Mode132_settings():
     Keys:
         'pointing_altitude': Sets in meters the altitude of the pointing command. \n
         'start_date': Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). If the date is set to '0', Timeline start_date will be used. \n
-        'ExpTimes': Sets exposure times [s] as a integer list and the exposure intervall (ExpInt = ExpTime + 1). \n
-        'session_duration': Sets the duration [s] of each session using the different exposure times in ExpTimes.
+        'Exp_Times_and_Intervals_IR': Sets exposure and interval times [s] as a list of duples of integers. \n
+        'Exp_Times_and_Intervals_UV': Sets exposure and interval times [s] as a list of duples of integers. \n
+        'session_duration': Sets the duration [s] of each session using the different exposure times and intervals in *Exp_Times_and_Intervals*.
     
     Returns:
         (dict): settings
     
     '''
-    settings = {'pointing_altitude': 200000, 'start_date': '2018/9/3 12:00:40', 'ExpTimes': [1000, 3000, 5000, 10000, 20000], 'session_duration': 120}
+    settings = {'pointing_altitude': 200000, 'start_date': '0',  'Exp_Times_and_Intervals_IR': [(4000,5000), (5000,6000), (6000,7000), (6000,7000)],
+                'Exp_Times_and_Intervals_UV': [(2000,5000), (3000,6000), (4000,7000), (5000,8000)], 'session_duration': 120}
     return settings
 
 
@@ -447,7 +459,7 @@ def CCDBadColumn_settings():
     return parameters
 
 def PM_settings():
-    '''Contain default parameters related to PM as a dict.
+    '''Returns default parameters related to PM as a dict.
     
     Keys:
         'TEXPMS': Exposure time [ms] for the photometer (int) \n
@@ -457,6 +469,37 @@ def PM_settings():
         (dict): parameters
     
     '''
-    parameters = {'TEXPMS': 1000, 'TEXPIMS': 3000}
+    parameters = {'TEXPMS': 1500, 'TEXPIMS': 2000}
     return parameters
 
+
+#################################################################################
+#################################################################################
+
+def FreezeDuration_calculator(pointing_altitude1, pointing_altitude2):
+    '''Function that calculates the angle between two tangential altitudes and then calculates
+    the time it takes for orbital position angle of a satellite in a circular orbit to change by the same amount.
+    
+    Arguments:
+        pointing_altitude1 (int): First tangential pointing altitude in m
+        pointing_altitude2 (int): Second tangential pointing altitude in m
+        
+    Returns:
+        (int): FreezeDuration, Time [s] it takes for the satellites orbital position angle to change 
+        by the same amount as the angle between the two tangential pointing altitudes as seen from the satellite.
+    '''
+    
+    TLE2 = getTLE()[1] #Orbits per day
+    U = 398600.4418 #Earth gravitational parameter
+    MATS_P = 24*3600/float(TLE2[52:63]) #Orbital Period of MATS [s]
+    MATS_p = ((MATS_P/2/pi)**2*U)**(1/3) #Semi-major axis of MATS assuming circular orbit [km]
+    R_mean = 6371 #Mean Earth radius [km]
+    pitch1 = arccos((R_mean+pointing_altitude1/1000)/(MATS_p))/pi*180
+    pitch2 = arccos((R_mean+pointing_altitude2/1000 )/(MATS_p))/pi*180
+    pitch_angle_difference = abs(pitch1 - pitch2)
+    
+    #The time it takes for the orbital position angle to change by the same amount as
+    #the angle between the pointing axes
+    FreezeDuration = round(MATS_P*(pitch_angle_difference)/360,1)
+    
+    return FreezeDuration

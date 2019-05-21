@@ -82,8 +82,12 @@ def date_select(Occupied_Timeline, initial_date):
     
     settings = Mode132_settings()
     
+    if( len(settings['Exp_Times_and_Intervals_UV']) <= len(settings['Exp_Times_and_Intervals_IR'])):
+        duration = settings['session_duration']*len(settings['Exp_Times_and_Intervals_UV'])+Timeline_settings()['mode_separation']
+    elif( len(settings['Exp_Times_and_Intervals_IR']) < len(settings['Exp_Times_and_Intervals_UV']) ):
+        duration = settings['session_duration']*len(settings['Exp_Times_and_Intervals_IR'])+Timeline_settings()['mode_separation']
+    
     date = initial_date
-    duration = settings['session_duration']*len(settings['ExpTimes'])+Timeline_settings()['mode_separation']
     endDate = ephem.Date(initial_date + ephem.second*duration)
     
     
