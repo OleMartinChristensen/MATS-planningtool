@@ -146,7 +146,7 @@ def XML_Initial_Basis_Creator(timeline_start,timeline_duration, SCIMOD_Path):
         SCIMOD_Path (str): The path as a string to the Science Mode Timeline .json file used in this run.
     '''
     
-    earliestStartingDate = ephem.Date(timeline_start-ephem.second).datetime().strftime("%Y-%m-%dT%H:%M:%S")
+    earliestStartingDate = ephem.Date(timeline_start).datetime().strftime("%Y-%m-%dT%H:%M:%S")
     latestStartingDate = ephem.Date(timeline_start).datetime().strftime("%Y-%m-%dT%H:%M:%S")
     
     
@@ -177,7 +177,7 @@ def XML_Initial_Basis_Creator(timeline_start,timeline_duration, SCIMOD_Path):
     root[0][3][2].text = str(timeline_duration)
     
     etree.SubElement(root[0], 'comment')
-    root[0][4].text = "This command sequence is an Innosat timeline \nScience Mode Timeline used to generate: "+SCIMOD_Path
+    root[0][4].text = "This command sequence is an Innosat timeline. Science Mode Timeline used to generate: "+SCIMOD_Path
     
     
     root.append(etree.Element('listOfCommands'))

@@ -208,7 +208,7 @@ def TC_pafHTR(root, time, HTRSEL, SET, P, I, D, comment = ''):
     
 def TC_pafCCDMain(root, time, CCDselect, PWR, ExpInterval, ExpTime, NRSKIP = '0', NRBIN = '1',
                   NROW = '1', NCBIN = '1', NCOL = '1', WDW = '128', JPEGQ = "90", SYNC = "0", 
-                  NCBINFPGA = "0", SIGMODE = "1", GAIN = "8", 
+                  NCBINFPGA = "0", SIGMODE = "1", GAIN = "0", 
                   NFLUSH = "1023", NCSKIP = "0", comment = ''):
     
     etree.SubElement(root[1], 'command', mnemonic = "TC_pafCCD")

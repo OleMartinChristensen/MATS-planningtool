@@ -207,7 +207,7 @@ def Mode120_settings():
         'mode_duration': Sets the scheduled duration of the Mode in seconds. If set to 0 it is calculated. (int) \n
         'freeze_start': Sets in seconds the time from start of the Mode to when the attitude freezes. (int) \n
         'freeze_duration': Sets in seconds the duration of the attitude freeze. If set to 0, it will be estimated to a 
-        value corresponding to the attitude being frozen until realigned with LP_pointing_altitude. (int) \n
+        value corresponding to the attitude being frozen until realigned with *LP_pointing_altitude* (Normally around 50 s). (int) \n
         'SnapshotTime': Sets in seconds the time, from the start of the attitude freeze, to when the Snapshot is taken. (int)
     
     Returns:
@@ -215,7 +215,7 @@ def Mode120_settings():
     
     '''
     settings = {'pointing_altitude': 227000, 'V_offset': 0, 'H_offset': 2.5, 'Vmag': '<2', 'timestep': 2,'log_timestep': 3600, 
-                      'automatic': True, 'date': '2019', 'mode_duration': 0, 'freeze_start': 300, 
+                      'automatic': True, 'date': '2019', 'mode_duration': 0, 'freeze_start': 120, 
                       'freeze_duration': 0, 'SnapshotTime': 10}
     
     if( settings['freeze_duration'] == 0):
@@ -244,7 +244,7 @@ def Mode121_settings():
         'Exp_Times_and_Intervals_UV': Sets exposure and interval times [s] as a list of duples of integers. \n
         'freeze_start': Sets in seconds the time from start of the Mode to when the attitude freezes. \n
         'freeze_duration': Sets in seconds the duration of the attitude freeze. If set to 0, it will be estimated to a 
-        value corresponding to the attitude being frozen until realigned with LP_pointing_altitude. \n
+        value corresponding to the attitude being frozen until realigned with *LP_pointing_altitude* (Normally around 50 s). \n
         'SnapshotTime': Sets in seconds the time, from the start of the attitude freeze, to when the Snapshot is taken. (int)
     
     Returns:
@@ -252,7 +252,7 @@ def Mode121_settings():
     
     '''
     settings = {'pointing_altitude': 227000, 'H_FOV': 5.67, 'V_FOV': 0.91, 'Vmag': '<4', 'timestep': 5, 'TimeSkip': 1, 'log_timestep': 3600, 
-                      'automatic': True, 'start_date': '2019', 'mode_duration': 0, 'freeze_start': 300, 
+                      'automatic': True, 'start_date': '2019', 'mode_duration': 0, 'freeze_start': 120, 
                       'freeze_duration': 0, 'Exp_Times_and_Intervals_IR': [(5000,6000)], 'Exp_Times_and_Intervals_UV': [(3000,4000)], 'SnapshotTime': 10}
     
     if( settings['freeze_duration'] == 0):
@@ -281,7 +281,7 @@ def Mode122_settings():
         'Exp_Times_and_Intervals_UV': Sets exposure and interval times [s] as a list of duples of integers. \n
         'freeze_start': Sets in seconds the time from start of the Mode to when the attitude freezes. \n
         'freeze_duration': Sets in seconds the duration of the attitude freeze. If set to 0, it will be estimated to a 
-        value corresponding to the attitude being frozen until realigned with LP_pointing_altitude (Normally around 50 s).
+        value corresponding to the attitude being frozen until realigned with *LP_pointing_altitude* (Normally around 50 s).
         'SnapshotTime': Sets in seconds the time, from the start of the attitude freeze, to when the Snapshot is taken. (int)
     
     Returns:
@@ -289,7 +289,7 @@ def Mode122_settings():
         
     '''
     settings = {'pointing_altitude': 227000, 'H_FOV': 5.67, 'V_FOV': 0.91, 'Vmag': '<4', 'timestep': 5, 'TimeSkip': 1, 'log_timestep': 3600, 
-                      'automatic': True, 'start_date': '2019', 'mode_duration': 0, 'freeze_start': 300, 
+                      'automatic': True, 'start_date': '2019', 'mode_duration': 0, 'freeze_start': 120, 
                       'freeze_duration': 0, 'Exp_Times_and_Intervals_IR': [(5000,6000)], 'Exp_Times_and_Intervals_UV': [(3000,6000)], 'SnapshotTime': 10}
     
     if( settings['freeze_duration'] == 0):
@@ -312,7 +312,7 @@ def Mode130_settings():
         (dict): settings
         
     '''
-    settings = {'pointing_altitude': 200000, 'mode_duration': 900, 'start_date': '0'}
+    settings = {'pointing_altitude': 200000, 'mode_duration': 120, 'start_date': '0'}
     return settings
 
 

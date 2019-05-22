@@ -195,22 +195,22 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
                     if( abs(lat_LP[t]) < lat):
                         current_state = "NLC_night_UV_off"
                         comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                        Macros.NLC_night(root, str(t+relativeTime), str(pointing_altitude), UV_on = False, comment = comment)
+                        Macros.NLC_night(root, str(t*timestep+relativeTime), str(pointing_altitude), UV_on = False, comment = comment)
                     elif( abs(lat_LP[t]) > lat):
                         current_state = "NLC_night_UV_on"
                         comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                        Macros.NLC_night(root,str(t+relativeTime),str(pointing_altitude), UV_on = True, comment = comment)
+                        Macros.NLC_night(root,str(t*timestep+relativeTime),str(pointing_altitude), UV_on = True, comment = comment)
                         
                 elif( sun_angle[t] < MATS_nadir_eclipse_angle ):
                     
                     if( abs(lat_LP[t]) < lat):
                         current_state = "NLC_day_UV_off"
                         comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                        Macros.NLC_day(root,str(t+relativeTime),str(pointing_altitude), UV_on = False, comment = comment)
+                        Macros.NLC_day(root,str(t*timestep+relativeTime),str(pointing_altitude), UV_on = False, comment = comment)
                     elif( abs(lat_LP[t]) > lat):
                         current_state = "NLC_day_UV_on"
                         comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                        Macros.NLC_day(root,str(t+relativeTime),str(pointing_altitude), UV_on = True, comment = comment)
+                        Macros.NLC_day(root,str(t*timestep+relativeTime),str(pointing_altitude), UV_on = True, comment = comment)
                 
                 Logger.debug(current_state)
             
@@ -245,10 +245,10 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
                             Logger.debug('lat_LP [degrees]: '+str(lat_LP[t]))
                             Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
                             #IR_night(root,str(t+relativeTime),str(pointing_altitude), comment = comment)
-                            Macros.NLC_nadir_on_off(root, str(t+relativeTime), nadir_on = True, comment = comment)
+                            Macros.NLC_nadir_on_off(root, str(t*timestep+relativeTime), nadir_on = True, comment = comment)
                             
                             
-                        if(abs(lat_LP[t]) < lat and abs(lat_LP[t-1]) > lat):
+                        elif(abs(lat_LP[t]) < lat and abs(lat_LP[t-1]) > lat):
                             current_state = "NLC_night_UV_off"
                             comment = current_state+': '+str(current_time)+', parameters: '+str(params)
                             
@@ -258,12 +258,12 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
                             Logger.debug('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
                             Logger.debug('lat_LP [degrees]: '+str(lat_LP[t]))
                             Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
-                            Macros.NLC_night(root,str(t+relativeTime),str(pointing_altitude), UV_on = False, comment = comment)
+                            Macros.NLC_night(root,str(t*timestep+relativeTime),str(pointing_altitude), UV_on = False, comment = comment)
                             
                             
                             
                     #Check latitude
-                    if( abs(lat_LP[t]) > lat and current_state != "NLC_night_UV_on"):
+                    elif( abs(lat_LP[t]) > lat and current_state != "NLC_night_UV_on"):
                         
                         #Check dusk/dawn and latitude boundaries
                         if( sun_angle[t] > MATS_nadir_eclipse_angle and sun_angle[t-1] < MATS_nadir_eclipse_angle):
@@ -277,10 +277,10 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
                             Logger.debug('lat_LP [degrees]: '+str(lat_LP[t]))
                             Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
                             #NLC_night(root,str(t+relativeTime),str(pointing_altitude), comment = comment)
-                            Macros.NLC_nadir_on_off(root, str(t+relativeTime), nadir_on = 'True', comment = comment)
+                            Macros.NLC_nadir_on_off(root, str(t*timestep+relativeTime), nadir_on = 'True', comment = comment)
                             
                             
-                        if(abs(lat_LP[t]) > lat and abs(lat_LP[t-1]) < lat):
+                        elif(abs(lat_LP[t]) > lat and abs(lat_LP[t-1]) < lat):
                             current_state = "NLC_night_UV_on"
                             comment = current_state+': '+str(current_time)+', parameters: '+str(params)
                             
@@ -290,7 +290,7 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
                             Logger.debug('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
                             Logger.debug('lat_LP [degrees]: '+str(lat_LP[t]))
                             Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
-                            Macros.NLC_night(root,str(t+relativeTime),str(pointing_altitude), UV_on = True, comment = comment)
+                            Macros.NLC_night(root,str(t*timestep+relativeTime),str(pointing_altitude), UV_on = True, comment = comment)
                             
                             
                             
@@ -312,7 +312,7 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
                             Logger.debug('lat_LP [degrees]: '+str(lat_LP[t]))
                             Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
                             #IR_day(root,str(t+relativeTime),str(pointing_altitude), comment = comment)
-                            Macros.NLC_nadir_on_off(root, str(t+relativeTime), nadir_on = False, comment = comment)
+                            Macros.NLC_nadir_on_off(root, str(t*timestep+relativeTime), nadir_on = False, comment = comment)
                             
                             
                         if(abs(lat_LP[t]) < lat and abs(lat_LP[t-1]) > lat):
@@ -325,7 +325,7 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
                             Logger.debug('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
                             Logger.debug('lat_LP [degrees]: '+str(lat_LP[t]))
                             Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
-                            Macros.NLC_day(root,str(t+relativeTime),str(pointing_altitude), UV_on = False, comment = comment)
+                            Macros.NLC_day(root,str(t*timestep+relativeTime),str(pointing_altitude), UV_on = False, comment = comment)
                             
                             
                             
@@ -344,7 +344,7 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
                             Logger.debug('lat_LP [degrees]: '+str(lat_LP[t]))
                             Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
                             #NLC_day(root,str(t+relativeTime),str(pointing_altitude), comment = comment)
-                            Macros.NLC_nadir_on_off(root, str(t+relativeTime), nadir_on = False, comment = comment)
+                            Macros.NLC_nadir_on_off(root, str(t*timestep+relativeTime), nadir_on = False, comment = comment)
                             
                             
                         if(abs(lat_LP[t]) > lat and abs(lat_LP[t-1]) < lat):
@@ -357,7 +357,7 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
                             Logger.debug('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
                             Logger.debug('lat_LP [degrees]: '+str(lat_LP[t]))
                             Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
-                            Macros.NLC_day(root,str(t+relativeTime),str(pointing_altitude), UV_on = True, comment = comment)
+                            Macros.NLC_day(root,str(t*timestep+relativeTime),str(pointing_altitude), UV_on = True, comment = comment)
                             
                             
                 
@@ -438,13 +438,13 @@ def XML_generator_Mode2(root, date, duration, relativeTime, params = {}):
             if( sun_angle[t] > MATS_nadir_eclipse_angle):
                 current_state = "IR_night"
                 comment = current_state+': '+str(params)
-                Macros.IR_night(root,str(t+relativeTime),str(pointing_altitude), comment = comment)
+                Macros.IR_night(root,str(t*timestep+relativeTime),str(pointing_altitude), comment = comment)
                 
                 
             elif( sun_angle[t] < MATS_nadir_eclipse_angle):
                 current_state = "IR_day"
                 comment = current_state+': '+str(params)
-                Macros.IR_day(root,str(t+relativeTime),str(pointing_altitude), comment = comment)
+                Macros.IR_day(root,str(t*timestep+relativeTime),str(pointing_altitude), comment = comment)
                 
         
         ############# End of Initial Mode setup ###################################
@@ -467,7 +467,7 @@ def XML_generator_Mode2(root, date, duration, relativeTime, params = {}):
                     Logger.debug('')
                     Logger.debug('current_time: '+str(current_time))
                     Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
-                    Macros.IR_nadir_on_off(root, str(t+relativeTime), nadir_on = True, comment = comment)
+                    Macros.IR_nadir_on_off(root, str(t*timestep+relativeTime), nadir_on = True, comment = comment)
                     #Macros.IR_night(root,str(t+relativeTime),str(pointing_altitude), comment = comment)
                     
                     
@@ -483,7 +483,7 @@ def XML_generator_Mode2(root, date, duration, relativeTime, params = {}):
                     Logger.debug('')
                     Logger.debug('current_time: '+str(current_time))
                     Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
-                    Macros.IR_nadir_on_off(root, str(t+relativeTime), nadir_on = False, comment = comment)
+                    Macros.IR_nadir_on_off(root, str(t*timestep+relativeTime), nadir_on = False, comment = comment)
                     #Macros.IR_day(root,str(t+relativeTime),str(pointing_altitude), comment = comment)
                     
                     
@@ -686,22 +686,22 @@ def XML_generator_Mode3(root, date, duration, relativeTime, params = {}):
                     if( abs(lat_LP[t]) < lat):
                         current_state = "NLC_night_UV_off"
                         comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                        Macros.NLC_night(root,str(t+relativeTime),str(pointing_altitude), UV_on = False, comment = comment)
+                        Macros.NLC_night(root,str(t*timestep+relativeTime),str(pointing_altitude), UV_on = False, comment = comment)
                     elif( abs(lat_LP[t]) > lat):
                         current_state = "NLC_night_UV_on"
                         comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                        Macros.NLC_night(root,str(t+relativeTime),str(pointing_altitude), UV_on = True, comment = comment)
+                        Macros.NLC_night(root,str(t*timestep+relativeTime),str(pointing_altitude), UV_on = True, comment = comment)
                         
                 elif( sun_angle[t] < MATS_nadir_eclipse_angle ):
                     
                     if( abs(lat_LP[t]) < lat):
                         current_state = "NLC_day_UV_off"
                         comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                        Macros.NLC_day(root,str(t+relativeTime),str(pointing_altitude), UV_on = False, comment = comment)
+                        Macros.NLC_day(root,str(t*timestep+relativeTime),str(pointing_altitude), UV_on = False, comment = comment)
                     elif( abs(lat_LP[t]) > lat):
                         current_state = "NLC_day_UV_on"
                         comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                        Macros.NLC_day(root,str(t+relativeTime),str(pointing_altitude), UV_on = True, comment = comment)
+                        Macros.NLC_day(root,str(t*timestep+relativeTime),str(pointing_altitude), UV_on = True, comment = comment)
                 
                 Logger.debug(current_state)
             
@@ -736,7 +736,7 @@ def XML_generator_Mode3(root, date, duration, relativeTime, params = {}):
                             Logger.debug('lat_LP [degrees]: '+str(lat_LP[t]))
                             Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
                             #IR_night(root,str(t+relativeTime),str(pointing_altitude), comment = comment)
-                            Macros.NLC_nadir_on_off(root, str(t+relativeTime), nadir_on = True, comment = comment)
+                            Macros.NLC_nadir_on_off(root, str(t*timestep+relativeTime), nadir_on = True, comment = comment)
                             
                             
                         if(abs(lat_LP[t]) < lat and abs(lat_LP[t-1]) > lat):
@@ -749,7 +749,7 @@ def XML_generator_Mode3(root, date, duration, relativeTime, params = {}):
                             Logger.debug('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
                             Logger.debug('lat_LP [degrees]: '+str(lat_LP[t]))
                             Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
-                            Macros.NLC_night(root,str(t+relativeTime),str(pointing_altitude), UV_on = False, comment = comment)
+                            Macros.NLC_night(root,str(t*timestep+relativeTime),str(pointing_altitude), UV_on = False, comment = comment)
                             
                             
                             
@@ -768,7 +768,7 @@ def XML_generator_Mode3(root, date, duration, relativeTime, params = {}):
                             Logger.debug('lat_LP [degrees]: '+str(lat_LP[t]))
                             Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
                             #NLC_night(root,str(t+relativeTime),str(pointing_altitude), comment = comment)
-                            Macros.NLC_nadir_on_off(root, str(t+relativeTime), nadir_on = True, comment = comment)
+                            Macros.NLC_nadir_on_off(root, str(t*timestep+relativeTime), nadir_on = True, comment = comment)
                             
                             
                         if(abs(lat_LP[t]) > lat and abs(lat_LP[t-1]) < lat):
@@ -781,7 +781,7 @@ def XML_generator_Mode3(root, date, duration, relativeTime, params = {}):
                             Logger.debug('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
                             Logger.debug('lat_LP [degrees]: '+str(lat_LP[t]))
                             Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
-                            Macros.NLC_night(root,str(t+relativeTime),str(pointing_altitude), UV_on = True, comment = comment)
+                            Macros.NLC_night(root,str(t*timestep+relativeTime),str(pointing_altitude), UV_on = True, comment = comment)
                             
                             
                             
@@ -803,7 +803,7 @@ def XML_generator_Mode3(root, date, duration, relativeTime, params = {}):
                             Logger.debug('lat_LP [degrees]: '+str(lat_LP[t]))
                             Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
                             #IR_day(root,str(t+relativeTime),str(pointing_altitude), comment = comment)
-                            Macros.NLC_nadir_on_off(root, str(t+relativeTime), nadir_on = False, comment = comment)
+                            Macros.NLC_nadir_on_off(root, str(t*timestep+relativeTime), nadir_on = False, comment = comment)
                             
                             
                         if(abs(lat_LP[t]) < lat and abs(lat_LP[t-1]) > lat):
@@ -816,7 +816,7 @@ def XML_generator_Mode3(root, date, duration, relativeTime, params = {}):
                             Logger.debug('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
                             Logger.debug('lat_LP [degrees]: '+str(lat_LP[t]))
                             Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
-                            Macros.NLC_day(root,str(t+relativeTime),str(pointing_altitude), UV_on = False, comment = comment)
+                            Macros.NLC_day(root,str(t*timestep+relativeTime),str(pointing_altitude), UV_on = False, comment = comment)
                             
                             
                             
@@ -835,7 +835,7 @@ def XML_generator_Mode3(root, date, duration, relativeTime, params = {}):
                             Logger.debug('lat_LP [degrees]: '+str(lat_LP[t]))
                             Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
                             #NLC_day(root,str(t+relativeTime),str(pointing_altitude), comment = comment)
-                            Macros.NLC_nadir_on_off(root, str(t+relativeTime), nadir_on = False, comment = comment)
+                            Macros.NLC_nadir_on_off(root, str(t*timestep+relativeTime), nadir_on = False, comment = comment)
                             
                             
                         if(abs(lat_LP[t]) > lat and abs(lat_LP[t-1]) < lat):
@@ -848,7 +848,7 @@ def XML_generator_Mode3(root, date, duration, relativeTime, params = {}):
                             Logger.debug('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
                             Logger.debug('lat_LP [degrees]: '+str(lat_LP[t]))
                             Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
-                            Macros.NLC_day(root,str(t+relativeTime),str(pointing_altitude), UV_on = True, comment = comment)
+                            Macros.NLC_day(root,str(t*timestep+relativeTime),str(pointing_altitude), UV_on = True, comment = comment)
                             
                             
                 
@@ -926,13 +926,13 @@ def XML_generator_Mode4(root, date, duration, relativeTime, params = {}):
             if( sun_angle[t] > MATS_nadir_eclipse_angle):
                 current_state = "IR_night"
                 comment = current_state+': '+str(params)
-                Macros.IR_night(root,str(t+relativeTime),str(pointing_altitude), comment = comment)
+                Macros.IR_night(root,str(t*timestep+relativeTime),str(pointing_altitude), comment = comment)
                 
                 
             elif( sun_angle[t] < MATS_nadir_eclipse_angle):
                 current_state = "IR_day"
                 comment = current_state+': '+str(params)
-                Macros.IR_day(root,str(t+relativeTime),str(pointing_altitude), comment = comment)
+                Macros.IR_day(root,str(t*timestep+relativeTime),str(pointing_altitude), comment = comment)
                 
         
         ############# End of Initial Mode setup ###################################
@@ -955,7 +955,7 @@ def XML_generator_Mode4(root, date, duration, relativeTime, params = {}):
                     Logger.debug('')
                     Logger.debug('current_time: '+str(current_time))
                     Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
-                    Macros.IR_nadir_on_off(root, str(t+relativeTime), nadir_on = True, comment = comment)
+                    Macros.IR_nadir_on_off(root, str(t*timestep+relativeTime), nadir_on = True, comment = comment)
                     #Macros.IR_night(root,str(t+relativeTime),str(pointing_altitude), comment = comment)
                     
                     
@@ -971,7 +971,7 @@ def XML_generator_Mode4(root, date, duration, relativeTime, params = {}):
                     Logger.debug('')
                     Logger.debug('current_time: '+str(current_time))
                     Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
-                    Macros.IR_nadir_on_off(root, str(t+relativeTime), nadir_on = False, comment = comment)
+                    Macros.IR_nadir_on_off(root, str(t*timestep+relativeTime), nadir_on = False, comment = comment)
                     #Macros.IR_day(root,str(t+relativeTime),str(pointing_altitude), comment = comment)
                     
                     

@@ -71,7 +71,7 @@ def date_calculator():
     duration = Timeline_settings()['duration']
     Logger.info('Duration set to: '+str(duration)+' s')
     
-    timesteps = int(floor(duration / timestep))
+    timesteps = int(duration / timestep)
     Logger.info('Total number of timesteps set to: '+str(timesteps))
     
     timeline_start = ephem.Date(Timeline_settings()['start_date'])
@@ -185,7 +185,7 @@ def date_calculator():
     
     ################## Start of Simulation ########################################
     "Loop and calculate the relevant angle of each star to each direction of MATS's FOV"
-    while(current_time < initial_time+ephem.second*duration):
+    while(current_time < timeline_start+ephem.second*duration):
         
         MATS.compute(current_time)
         
