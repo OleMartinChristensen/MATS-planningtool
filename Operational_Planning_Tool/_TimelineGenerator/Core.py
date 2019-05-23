@@ -25,7 +25,7 @@ depending on a specialized filtering process (mode 120, 200...), or postponed un
 @author: David
 """
 
-import json, logging, sys, time, os, ephem
+import json, logging, sys, time, os, ephem, os.path
 from .Modes import Modes_Header
 import OPT_Config_File
 
@@ -298,8 +298,7 @@ def Timeline_generator():
         os.mkdir('Output')
     except:
         pass
-    
-    SCIMOD_NAME = 'Output\\Science_Mode_Timeline_Version_'+Version+'.json'
+    SCIMOD_NAME = os.path.join('Output', 'Science_Mode_Timeline_Version_'+Version+'.json')
     Logger.info('Save mode timeline to file: '+SCIMOD_NAME)
     with open(SCIMOD_NAME, "w") as write_file:
         json.dump(SCIMOD_Timeline, write_file, indent = 2)

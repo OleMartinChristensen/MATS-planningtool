@@ -530,7 +530,7 @@ def Mode120_date_calculator():
         
         while(True):
             try:
-                file_directory = 'Output\\'+sys._getframe(1).f_code.co_name+'_Visible_Stars_'+Version()+'.csv'
+                file_directory = os.path.join('Output',sys._getframe(1).f_code.co_name+'_Visible_Stars_'+Version()+'.csv')
                 with open(file_directory, 'w', newline='') as write_file:
                     writer = csv.writer(write_file, dialect='excel-tab')
                     writer.writerows(star_list_excel)

@@ -592,7 +592,7 @@ def XML_generator_Mode3(root, date, duration, relativeTime, params = {}):
        
         r_MATS[t,0:3] = [x_MATS[t], y_MATS[t], z_MATS[t]]
         r_MATS_ECEF[t,0], r_MATS_ECEF[t,1], r_MATS_ECEF[t,2] = pm3d.eci2ecef(
-                (r_MATS[t,0]*1000, r_MATS[t,1]*1000, r_MATS[t,2]*1000), ephem.Date(current_time).datetime())
+                r_MATS[t,0]*1000, r_MATS[t,1]*1000, r_MATS[t,2]*1000, ephem.Date(current_time).datetime())
         
         r_MATS_unit_vector[t,0:3] = r_MATS[t,0:3] / norm(r_MATS[t,0:3])
         
@@ -644,7 +644,7 @@ def XML_generator_Mode3(root, date, duration, relativeTime, params = {}):
             optical_axis[t,0:3] = optical_axis[t,0:3] / norm(optical_axis[t,0:3])
             
             optical_axis_ECEF[t,0], optical_axis_ECEF[t,1], optical_axis_ECEF[t,2] = pm3d.eci2ecef(
-                (optical_axis[t,0]*1000, optical_axis[t,1]*1000, optical_axis[t,2]*1000), ephem.Date(current_time).datetime())
+                optical_axis[t,0]*1000, optical_axis[t,1]*1000, optical_axis[t,2]*1000, ephem.Date(current_time).datetime())
             
             LP_ECEF[t,0], LP_ECEF[t,1], LP_ECEF[t,2] = _MATS_coordinates.ecef2tanpoint(r_MATS_ECEF[t][0]*1000, r_MATS_ECEF[t][1]*1000, r_MATS_ECEF[t][2]*1000, 
                                        optical_axis_ECEF[t,0], optical_axis_ECEF[t,1], optical_axis_ECEF[t,2])

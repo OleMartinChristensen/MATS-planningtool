@@ -124,7 +124,7 @@ def XML_generator(SCIMOD_Path):
     SCIMOD_Path = SCIMOD_Path.replace('.json','')
     
     ### Write finished XML-tree with all commands to a file #######
-    MATS_COMMANDS = 'Output\\MATS_COMMANDS__Version_'+Version()+'__'+SCIMOD_Path+'.xml'
+    MATS_COMMANDS = os.path.join('Output','MATS_COMMANDS__Version_'+Version()+'__'+SCIMOD_Path+'.xml')
     Logger.info('Write XML-tree to: '+MATS_COMMANDS)
     f = open(MATS_COMMANDS, 'w')
     f.write(etree.tostring(root, pretty_print=True, encoding = 'unicode'))
