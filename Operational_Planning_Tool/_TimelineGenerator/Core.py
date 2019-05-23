@@ -62,7 +62,8 @@ def Timeline_generator():
     
     #logging.basicConfig(stream=sys.stdout, level=logging.INFO)
     timestr = time.strftime("%Y%m%d-%H%M%S")
-    Handler = logging.FileHandler('Logs_'+__name__+'\\'+__name__+'_'+OPT_Config_File.Version()+'_'+timestr+'.log', mode='a')
+    logstring = os.path.join('Logs_'+__name__, __name__+'_'+OPT_Config_File.Version()+'_'+timestr+'.log')
+    Handler = logging.FileHandler(logstring, mode='a')
     formatter = logging.Formatter("%(levelname)-6s : %(message)-80s :: %(module)s :: %(funcName)s")
     Handler.setFormatter(formatter)
     Logger.addHandler(Handler)
