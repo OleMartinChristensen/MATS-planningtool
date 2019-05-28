@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
-"""Schedules Mode1-4 wherever time is available as defined by the Occupied_Timeline dictionary and Config_File.Timeline_settings.
+"""Schedules Mode1-4 wherever time is available as defined by the *Occupied_Timeline* dictionary, and *Timeline_settings* from the *Configuration File*.
 
 Part of Timeline_generator, as part of OPT. This part is run after the rest of the planned Modes have been scheduled. Result is saved in the Occupied_Timeline variable.
 
 """
 
-import ephem, logging
+import ephem, logging, importlib
 
-from OPT_Config_File import Timeline_settings, Logger_name
+from Operational_Planning_Tool import _Globals
 
-Logger = logging.getLogger(Logger_name())
+OPT_Config_File = importlib.import_module(_Globals.Config_File)
+Logger = logging.getLogger(OPT_Config_File.Logger_name())
 
 
 def Mode_1_2_3_4(Occupied_Timeline):
@@ -47,7 +48,7 @@ def Mode_1_2_3_4date_calculator():
     
     """
     
-    Mode_1_2_3_4initial_date = ephem.Date(Timeline_settings()['start_date'])
+    Mode_1_2_3_4initial_date = ephem.Date(OPT_Config_File.Timeline_settings()['start_date'])
         
     
     return Mode_1_2_3_4initial_date
@@ -59,7 +60,7 @@ def Mode_1_2_3_4date_calculator():
 
 
 def Mode_1_2_3_4date_select(Occupied_Timeline, Mode_1_2_3_4initial_date):
-    """Schedules Mode1-4 anywhere in the planned timeline (defined in Config_File.Timeline_settings) depending on the Occupied_Timeline dictionary.
+    """Schedules Mode1-4 anywhere in the planned timeline (defined in Timeline_settings) depending on the Occupied_Timeline dictionary.
     
     Arguments:
         Occupied_Timeline (:obj:`dict` of :obj:`list`): Dictionary with keys equal to planned and scheduled Modes together with their start and end time in a list. The list is empty if the Mode is unscheduled.
@@ -72,7 +73,7 @@ def Mode_1_2_3_4date_select(Occupied_Timeline, Mode_1_2_3_4initial_date):
     
     """
     
-    settings = Timeline_settings()
+    settings = OPT_Config_File.Timeline_settings()
     
     Occupied_values = []
     

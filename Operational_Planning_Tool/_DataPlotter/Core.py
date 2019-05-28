@@ -8,22 +8,35 @@ Created on Thu Apr 18 13:51:48 2019
 from scipy.spatial.transform import Rotation as R
 #from numpy import sin, pi, cos, cross, array, arccos, arctan, dot
 from pylab import sin, pi, cos, cross, array, arccos, arctan, dot, norm, transpose, zeros, sqrt, floor, figure, plot, plot_date, datestr2num, xlabel, ylabel, title, legend
-import ephem, logging, csv
+import ephem, logging, csv, os, sys, importlib
 import pymap3d as pm3d
 
 
 
-import OPT_Config_File
-from Operational_Planning_Tool import _Library, _MATS_coordinates
+#import OPT_Config_File
+from Operational_Planning_Tool import _Library, _MATS_coordinates, _Globals
 
-
+OPT_Config_File = importlib.import_module(_Globals.Config_File)
 Logger = logging.getLogger(OPT_Config_File.Logger_name())
 
 
 def Data_Plotter():
+    """
+    
+    """
+    
+    """
+    if(os.path.isfile('OPT_Config_File.py') == False):
+        print('No OPT_Config_File.py found. Try running Create_ConfigFile()')
+        sys.exit()
+    """
+    
+    Version = OPT_Config_File.Version()
+    Logger.info(_Globals.Config_File+' used, Version: '+Version)
     
     #timesteps = 29
     Settings = OPT_Config_File.Timeline_settings()
+    
     
     "Simulation length and timestep"
     log_timestep = 3600
@@ -114,7 +127,7 @@ def Data_Plotter():
         r_MATS_unit_vector[t,0:3] = r_MATS[t,0:3] / norm(r_MATS[t,0:3])
         
         r_MATS_ECEF[t,0], r_MATS_ECEF[t,1], r_MATS_ECEF[t,2] = pm3d.eci2ecef(
-                (r_MATS[t,0], r_MATS[t,1], r_MATS[t,2]), ephem.Date(current_time[t][0]).datetime())
+                r_MATS[t,0], r_MATS[t,1], r_MATS[t,2], ephem.Date(current_time[t][0]).datetime())
         
         #Initial Estimated pitch or elevation angle for MATS pointing using R_mean
         if(t == 0):
@@ -176,7 +189,7 @@ def Data_Plotter():
             optical_axis[t,0:3] = optical_axis[t,0:3]/norm(optical_axis[t,0:3])
             
             optical_axis_ECEF[t,0], optical_axis_ECEF[t,1], optical_axis_ECEF[t,2] = pm3d.eci2ecef(
-                (optical_axis[t,0], optical_axis[t,1], optical_axis[t,2]), ephem.Date(current_time[t][0]).datetime())
+                optical_axis[t,0], optical_axis[t,1], optical_axis[t,2], ephem.Date(current_time[t][0]).datetime())
             
             LP_ECEF[t,0], LP_ECEF[t,1], LP_ECEF[t,2] = _MATS_coordinates.ecef2tanpoint(r_MATS_ECEF[t][0]*1000, r_MATS_ECEF[t][1]*1000, r_MATS_ECEF[t][2]*1000, 
                                        optical_axis_ECEF[t,0], optical_axis_ECEF[t,1], optical_axis_ECEF[t,2])
@@ -439,7 +452,7 @@ def Data_Plotter():
         #Euler_angles_SLOF[t,:] = MATS_SLOF.as_euler('yzx', degrees=True)
         
         optical_axis_OHB_ECEF[t,0], optical_axis_OHB_ECEF[t,1], optical_axis_OHB_ECEF[t,2] = pm3d.eci2ecef(
-                (optical_axis_OHB[t,0], optical_axis_OHB[t,1], optical_axis_OHB[t,2]), ephem.Date(current_time[t][0]).datetime())
+                optical_axis_OHB[t,0], optical_axis_OHB[t,1], optical_axis_OHB[t,2], ephem.Date(current_time[t][0]).datetime())
         
         
         
@@ -452,7 +465,7 @@ def Data_Plotter():
         
         
         r_MATS_OHB_ECEF[t,0], r_MATS_OHB_ECEF[t,1], r_MATS_OHB_ECEF[t,2] = pm3d.eci2ecef(
-                (r_MATS_OHB[t,0]*1000, r_MATS_OHB[t,1]*1000, r_MATS_OHB[t,2]*1000), ephem.Date(current_time[t][0]).datetime())
+                r_MATS_OHB[t,0]*1000, r_MATS_OHB[t,1]*1000, r_MATS_OHB[t,2]*1000, ephem.Date(current_time[t][0]).datetime())
         
         lat_MATS_OHB[t], long_MATS_OHB[t], alt_MATS_OHB[t]  = pm3d.ecef2geodetic(r_MATS_OHB_ECEF[t,0], r_MATS_OHB_ECEF[t,1], r_MATS_OHB_ECEF[t,2], deg = True)
         

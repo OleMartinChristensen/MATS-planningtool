@@ -1,0 +1,257 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="python 3.7">
+  <head>
+    <meta charset="utf-8" />
+    <title>Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Procedures &#8212; Operational_Planning_Tool  documentation</title>
+    <link rel="stylesheet" href="../../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../../" src="../../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Procedures</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Contain procedures which represent a sequence of commands often used by macros.</span>
+
+<span class="sd">Arguments:</span>
+<span class="sd">    root (lxml.etree._Element) =  XML tree structure. Main container object for the ElementTree API. \n</span>
+<span class="sd">    relativeTime (str) = The relative time of the procedure with regard to the start of the timeline [s]. \n</span>
+<span class="sd">    comment (str) = A comment for the procedure. \n</span>
+<span class="sd">    *Any other optional inputs depending on the procedure which are defined in each procedure function*</span>
+<span class="sd">    </span>
+<span class="sd">Output:</span>
+<span class="sd">    relativeTime (str) = Time [s] as a str class equal to the input &quot;relativeTime&quot; with added delay from the scheduling of each command, where the delay between commands is stated in OPT_Config_File.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">.</span> <span class="n">Commands</span> <span class="kn">import</span> <span class="nn">Commands</span>
+
+
+
+
+<div class="viewcode-block" id="BinnedCalibration_procedure"><a class="viewcode-back" href="../../../../../Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.html#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Procedures.BinnedCalibration_procedure">[docs]</a><span class="k">def</span> <span class="nf">BinnedCalibration_procedure</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">nadirTEXPMS</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="n">ExpIntUV</span> <span class="o">=</span> <span class="s1">&#39;4000&#39;</span><span class="p">,</span> <span class="n">ExpTimeUV</span> <span class="o">=</span> <span class="s1">&#39;3000&#39;</span><span class="p">,</span> <span class="n">ExpIntIR</span> <span class="o">=</span> <span class="s1">&#39;6000&#39;</span><span class="p">,</span> <span class="n">ExpTimeIR</span> <span class="o">=</span> <span class="s1">&#39;5000&#39;</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Standard CCD binning with exposure on nadir camera by default is disabled, see module description for more details.</span>
+<span class="sd">        </span>
+<span class="sd">    Arguments: </span>
+<span class="sd">        nadir (str): Sets the nadir CCD on or off. Either &quot;1&quot; for on or &quot;0&quot; for off.</span>
+<span class="sd">        ExpIntUV (str): Exposure interval of UV CCDs in ms</span>
+<span class="sd">        ExpTimeUV (str): Exposure time of UV CCDs in ms</span>
+<span class="sd">        ExpIntIR (str): Exposure interval of IR CCDs in ms</span>
+<span class="sd">        ExpTimeIR (str): Exposure time of IR CCDs in ms</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    
+    <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafCCDMain</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCDselect</span> <span class="o">=</span> <span class="s1">&#39;48&#39;</span><span class="p">,</span> <span class="n">PWR</span> <span class="o">=</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="n">ExpInterval</span> <span class="o">=</span> <span class="n">ExpIntUV</span><span class="p">,</span> <span class="n">ExpTime</span> <span class="o">=</span> <span class="n">ExpTimeUV</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">,</span> 
+                  <span class="n">NRSKIP</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="n">NRBIN</span><span class="o">=</span> <span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="n">NROW</span> <span class="o">=</span> <span class="s1">&#39;255&#39;</span><span class="p">,</span> <span class="n">NCBIN</span> <span class="o">=</span> <span class="s1">&#39;40&#39;</span><span class="p">,</span> <span class="n">NCOL</span> <span class="o">=</span> <span class="s1">&#39;50&#39;</span><span class="p">,</span> <span class="n">SIGMODE</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span><span class="p">)</span>
+    
+    
+    <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafCCDMain</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCDselect</span> <span class="o">=</span> <span class="s1">&#39;9&#39;</span><span class="p">,</span> <span class="n">PWR</span> <span class="o">=</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="n">ExpInterval</span> <span class="o">=</span> <span class="n">ExpIntIR</span><span class="p">,</span> <span class="n">ExpTime</span> <span class="o">=</span> <span class="n">ExpTimeIR</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">,</span> 
+                  <span class="n">NRSKIP</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="n">NRBIN</span><span class="o">=</span> <span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="n">NROW</span> <span class="o">=</span> <span class="s1">&#39;255&#39;</span><span class="p">,</span> <span class="n">NCBIN</span> <span class="o">=</span> <span class="s1">&#39;40&#39;</span><span class="p">,</span> <span class="n">NCOL</span> <span class="o">=</span> <span class="s1">&#39;50&#39;</span><span class="p">)</span>
+    
+    
+    <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafCCDMain</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCDselect</span> <span class="o">=</span> <span class="s1">&#39;6&#39;</span><span class="p">,</span> <span class="n">PWR</span> <span class="o">=</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="n">ExpInterval</span> <span class="o">=</span> <span class="n">ExpIntIR</span><span class="p">,</span> <span class="n">ExpTime</span> <span class="o">=</span> <span class="n">ExpTimeIR</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">,</span> 
+                  <span class="n">NRSKIP</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="n">NRBIN</span><span class="o">=</span> <span class="s1">&#39;6&#39;</span><span class="p">,</span> <span class="n">NROW</span> <span class="o">=</span> <span class="s1">&#39;85&#39;</span><span class="p">,</span> <span class="n">NCBIN</span> <span class="o">=</span> <span class="s1">&#39;200&#39;</span><span class="p">,</span> <span class="n">NCOL</span> <span class="o">=</span> <span class="s1">&#39;8&#39;</span><span class="p">)</span>
+    
+    
+    <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafCCDMain</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCDselect</span> <span class="o">=</span> <span class="s1">&#39;64&#39;</span><span class="p">,</span> <span class="n">PWR</span> <span class="o">=</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="n">ExpInterval</span> <span class="o">=</span> <span class="s1">&#39;4500&#39;</span><span class="p">,</span> <span class="n">ExpTime</span> <span class="o">=</span> <span class="n">nadirTEXPMS</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">,</span> 
+                  <span class="n">NRSKIP</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="n">NRBIN</span><span class="o">=</span> <span class="s1">&#39;25&#39;</span><span class="p">,</span> <span class="n">NROW</span> <span class="o">=</span> <span class="s1">&#39;16&#39;</span><span class="p">,</span> <span class="n">NCBIN</span> <span class="o">=</span> <span class="s1">&#39;25&#39;</span><span class="p">,</span> <span class="n">NCOL</span> <span class="o">=</span> <span class="s1">&#39;64&#39;</span><span class="p">,</span> <span class="n">JPEGQ</span> <span class="o">=</span> <span class="s1">&#39;90&#39;</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">relativeTime</span></div>
+
+
+<div class="viewcode-block" id="Full_CCD_procedure"><a class="viewcode-back" href="../../../../../Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.html#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Procedures.Full_CCD_procedure">[docs]</a><span class="k">def</span> <span class="nf">Full_CCD_procedure</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">nadirTEXPMS</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Full CCD binning with exposure on nadir camera by default is disabled, see module description for more details.</span>
+<span class="sd">    </span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        nadir (str): Sets the nadir CCD on or off. Either &quot;1&quot; for on or &quot;0&quot; for off.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    
+    <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafCCDMain</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCDselect</span> <span class="o">=</span> <span class="s1">&#39;48&#39;</span><span class="p">,</span> <span class="n">PWR</span> <span class="o">=</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="n">ExpInterval</span> <span class="o">=</span> <span class="s1">&#39;60000&#39;</span><span class="p">,</span> <span class="n">ExpTime</span> <span class="o">=</span> <span class="s1">&#39;3000&#39;</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">,</span> 
+                  <span class="n">NRSKIP</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="n">NRBIN</span><span class="o">=</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="n">NROW</span> <span class="o">=</span> <span class="s1">&#39;511&#39;</span><span class="p">,</span> <span class="n">NCBIN</span> <span class="o">=</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="n">NCOL</span> <span class="o">=</span> <span class="s1">&#39;2047&#39;</span><span class="p">,</span> <span class="n">JPEGQ</span> <span class="o">=</span> <span class="s1">&#39;110&#39;</span><span class="p">,</span> <span class="n">SIGMODE</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span><span class="p">)</span>
+    
+    
+    <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafCCDMain</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCDselect</span> <span class="o">=</span> <span class="s1">&#39;9&#39;</span><span class="p">,</span> <span class="n">PWR</span> <span class="o">=</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="n">ExpInterval</span> <span class="o">=</span> <span class="s1">&#39;60000&#39;</span><span class="p">,</span> <span class="n">ExpTime</span> <span class="o">=</span> <span class="s1">&#39;5000&#39;</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">,</span> 
+                  <span class="n">NRSKIP</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="n">NRBIN</span><span class="o">=</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="n">NROW</span> <span class="o">=</span> <span class="s1">&#39;511&#39;</span><span class="p">,</span> <span class="n">NCBIN</span> <span class="o">=</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="n">NCOL</span> <span class="o">=</span> <span class="s1">&#39;2047&#39;</span><span class="p">,</span> <span class="n">JPEGQ</span> <span class="o">=</span> <span class="s1">&#39;110&#39;</span><span class="p">,</span> <span class="n">WDW</span> <span class="o">=</span> <span class="s1">&#39;4&#39;</span><span class="p">)</span>
+    
+    
+    <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafCCDMain</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCDselect</span> <span class="o">=</span> <span class="s1">&#39;6&#39;</span><span class="p">,</span> <span class="n">PWR</span> <span class="o">=</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="n">ExpInterval</span> <span class="o">=</span> <span class="s1">&#39;60000&#39;</span><span class="p">,</span> <span class="n">ExpTime</span> <span class="o">=</span> <span class="s1">&#39;5000&#39;</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">,</span> 
+                  <span class="n">NRSKIP</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="n">NRBIN</span><span class="o">=</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="n">NROW</span> <span class="o">=</span> <span class="s1">&#39;511&#39;</span><span class="p">,</span> <span class="n">NCBIN</span> <span class="o">=</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="n">NCOL</span> <span class="o">=</span> <span class="s1">&#39;2047&#39;</span><span class="p">,</span> <span class="n">JPEGQ</span> <span class="o">=</span> <span class="s1">&#39;110&#39;</span><span class="p">)</span>
+    
+    
+    <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafCCDMain</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCDselect</span> <span class="o">=</span> <span class="s1">&#39;64&#39;</span><span class="p">,</span> <span class="n">PWR</span> <span class="o">=</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="n">ExpInterval</span> <span class="o">=</span> <span class="s1">&#39;60000&#39;</span><span class="p">,</span> <span class="n">ExpTime</span> <span class="o">=</span> <span class="n">nadirTEXPMS</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">,</span> 
+                  <span class="n">NRSKIP</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="n">NRBIN</span><span class="o">=</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="n">NROW</span> <span class="o">=</span> <span class="s1">&#39;511&#39;</span><span class="p">,</span> <span class="n">NCBIN</span> <span class="o">=</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="n">NCOL</span> <span class="o">=</span> <span class="s1">&#39;2047&#39;</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">relativeTime</span></div>
+
+
+<div class="viewcode-block" id="Single_pixel_procedure"><a class="viewcode-back" href="../../../../../Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.html#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Procedures.Single_pixel_procedure">[docs]</a><span class="k">def</span> <span class="nf">Single_pixel_procedure</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">ExpTimeUV</span><span class="p">,</span> <span class="n">ExpIntUV</span><span class="p">,</span> <span class="n">ExpTimeIR</span><span class="p">,</span> <span class="n">ExpIntIR</span><span class="p">,</span> <span class="n">nadirTEXPMS</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Single Pixel CCD binning with exposure on nadir camera by default is disabled, see module description for more details.</span>
+<span class="sd">    </span>
+<span class="sd">    Arguments: </span>
+<span class="sd">        ExpInt (str): Exposure interval of UV and IR CCDs in ms</span>
+<span class="sd">        ExpTime (str): Exposure time of UV and IR CCDs in ms</span>
+<span class="sd">        nadir (str): Sets the nadir CCD on or off. Either &quot;1&quot; for on or &quot;0&quot; for off.</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    
+    <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafCCDMain</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCDselect</span> <span class="o">=</span> <span class="s1">&#39;48&#39;</span><span class="p">,</span> <span class="n">PWR</span> <span class="o">=</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="n">ExpInterval</span> <span class="o">=</span> <span class="n">ExpIntUV</span><span class="p">,</span> <span class="n">ExpTime</span> <span class="o">=</span> <span class="n">ExpTimeUV</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">,</span> 
+                  <span class="n">NRSKIP</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="n">NRBIN</span><span class="o">=</span> <span class="s1">&#39;63&#39;</span><span class="p">,</span> <span class="n">NROW</span> <span class="o">=</span> <span class="s1">&#39;7&#39;</span><span class="p">,</span> <span class="n">NCBIN</span> <span class="o">=</span> <span class="s1">&#39;255&#39;</span><span class="p">,</span> <span class="n">NCOL</span> <span class="o">=</span> <span class="s1">&#39;7&#39;</span><span class="p">,</span> <span class="n">JPEGQ</span> <span class="o">=</span> <span class="s1">&#39;110&#39;</span><span class="p">)</span>
+    
+    
+    <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafCCDMain</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCDselect</span> <span class="o">=</span> <span class="s1">&#39;9&#39;</span><span class="p">,</span> <span class="n">PWR</span> <span class="o">=</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="n">ExpInterval</span> <span class="o">=</span> <span class="n">ExpIntIR</span><span class="p">,</span> <span class="n">ExpTime</span> <span class="o">=</span> <span class="n">ExpTimeIR</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">,</span> 
+                  <span class="n">NRSKIP</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="n">NRBIN</span><span class="o">=</span> <span class="s1">&#39;63&#39;</span><span class="p">,</span> <span class="n">NROW</span> <span class="o">=</span> <span class="s1">&#39;7&#39;</span><span class="p">,</span> <span class="n">NCBIN</span> <span class="o">=</span> <span class="s1">&#39;255&#39;</span><span class="p">,</span> <span class="n">NCOL</span> <span class="o">=</span> <span class="s1">&#39;7&#39;</span><span class="p">,</span> <span class="n">JPEGQ</span> <span class="o">=</span> <span class="s1">&#39;110&#39;</span><span class="p">)</span>
+    
+    
+    <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafCCDMain</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCDselect</span> <span class="o">=</span> <span class="s1">&#39;6&#39;</span><span class="p">,</span> <span class="n">PWR</span> <span class="o">=</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="n">ExpInterval</span> <span class="o">=</span> <span class="n">ExpIntIR</span><span class="p">,</span> <span class="n">ExpTime</span> <span class="o">=</span> <span class="n">ExpTimeIR</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">,</span> 
+                  <span class="n">NRSKIP</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="n">NRBIN</span><span class="o">=</span> <span class="s1">&#39;63&#39;</span><span class="p">,</span> <span class="n">NROW</span> <span class="o">=</span> <span class="s1">&#39;7&#39;</span><span class="p">,</span> <span class="n">NCBIN</span> <span class="o">=</span> <span class="s1">&#39;255&#39;</span><span class="p">,</span> <span class="n">NCOL</span> <span class="o">=</span> <span class="s1">&#39;7&#39;</span><span class="p">,</span> <span class="n">JPEGQ</span> <span class="o">=</span> <span class="s1">&#39;110&#39;</span><span class="p">)</span>
+    
+    
+    <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafCCDMain</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCDselect</span> <span class="o">=</span> <span class="s1">&#39;64&#39;</span><span class="p">,</span> <span class="n">PWR</span> <span class="o">=</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="n">ExpInterval</span> <span class="o">=</span> <span class="s1">&#39;2000&#39;</span><span class="p">,</span> <span class="n">ExpTime</span> <span class="o">=</span> <span class="n">nadirTEXPMS</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">,</span> 
+                  <span class="n">NRSKIP</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="n">NRBIN</span><span class="o">=</span> <span class="s1">&#39;63&#39;</span><span class="p">,</span> <span class="n">NROW</span> <span class="o">=</span> <span class="s1">&#39;7&#39;</span><span class="p">,</span> <span class="n">NCBIN</span> <span class="o">=</span> <span class="s1">&#39;255&#39;</span><span class="p">,</span> <span class="n">NCOL</span> <span class="o">=</span> <span class="s1">&#39;7&#39;</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">relativeTime</span></div>
+
+
+<div class="viewcode-block" id="High_res_UV_procedure"><a class="viewcode-back" href="../../../../../Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.html#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Procedures.High_res_UV_procedure">[docs]</a><span class="k">def</span> <span class="nf">High_res_UV_procedure</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">nadirTEXPMS</span><span class="p">,</span> <span class="n">UV_TEXPMS</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Standard CCD binning, see module description for more details.</span>
+<span class="sd">        </span>
+<span class="sd">    Arguments: </span>
+<span class="sd">        nadir (str): Sets the nadir CCD on or off. Either &quot;1&quot; for on or &quot;0&quot; for off.</span>
+<span class="sd">        ExpIntUV (str): Exposure interval of UV CCDs in ms</span>
+<span class="sd">        ExpTimeUV (str): Exposure time of UV CCDs in ms</span>
+<span class="sd">        ExpIntIR (str): Exposure interval of IR CCDs in ms</span>
+<span class="sd">        ExpTimeIR (str): Exposure time of IR CCDs in ms</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    
+    <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafCCDMain</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCDselect</span> <span class="o">=</span> <span class="s1">&#39;48&#39;</span><span class="p">,</span> <span class="n">PWR</span> <span class="o">=</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="n">ExpInterval</span> <span class="o">=</span> <span class="s1">&#39;4000&#39;</span><span class="p">,</span> <span class="n">ExpTime</span> <span class="o">=</span> <span class="n">UV_TEXPMS</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">,</span> 
+                  <span class="n">NRSKIP</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="n">NRBIN</span><span class="o">=</span> <span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="n">NROW</span> <span class="o">=</span> <span class="s1">&#39;255&#39;</span><span class="p">,</span> <span class="n">NCBIN</span> <span class="o">=</span> <span class="s1">&#39;40&#39;</span><span class="p">,</span> <span class="n">NCOL</span> <span class="o">=</span> <span class="s1">&#39;50&#39;</span><span class="p">,</span> <span class="n">SIGMODE</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span><span class="p">)</span>
+    
+    
+    <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafCCDMain</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCDselect</span> <span class="o">=</span> <span class="s1">&#39;9&#39;</span><span class="p">,</span> <span class="n">PWR</span> <span class="o">=</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="n">ExpInterval</span> <span class="o">=</span> <span class="s1">&#39;6000&#39;</span><span class="p">,</span> <span class="n">ExpTime</span> <span class="o">=</span> <span class="s1">&#39;5000&#39;</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">,</span> 
+                  <span class="n">NRSKIP</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="n">NRBIN</span><span class="o">=</span> <span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="n">NROW</span> <span class="o">=</span> <span class="s1">&#39;170&#39;</span><span class="p">,</span> <span class="n">NCBIN</span> <span class="o">=</span> <span class="s1">&#39;80&#39;</span><span class="p">,</span> <span class="n">NCOL</span> <span class="o">=</span> <span class="s1">&#39;24&#39;</span><span class="p">,</span> <span class="n">WDW</span> <span class="o">=</span> <span class="s1">&#39;4&#39;</span><span class="p">)</span>
+    
+    
+    <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafCCDMain</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCDselect</span> <span class="o">=</span> <span class="s1">&#39;6&#39;</span><span class="p">,</span> <span class="n">PWR</span> <span class="o">=</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="n">ExpInterval</span> <span class="o">=</span> <span class="s1">&#39;6000&#39;</span><span class="p">,</span> <span class="n">ExpTime</span> <span class="o">=</span> <span class="s1">&#39;5000&#39;</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">,</span> 
+                  <span class="n">NRSKIP</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="n">NRBIN</span><span class="o">=</span> <span class="s1">&#39;6&#39;</span><span class="p">,</span> <span class="n">NROW</span> <span class="o">=</span> <span class="s1">&#39;85&#39;</span><span class="p">,</span> <span class="n">NCBIN</span> <span class="o">=</span> <span class="s1">&#39;200&#39;</span><span class="p">,</span> <span class="n">NCOL</span> <span class="o">=</span> <span class="s1">&#39;8&#39;</span><span class="p">)</span>
+    
+    
+    <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafCCDMain</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCDselect</span> <span class="o">=</span> <span class="s1">&#39;64&#39;</span><span class="p">,</span> <span class="n">PWR</span> <span class="o">=</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="n">ExpInterval</span> <span class="o">=</span> <span class="s1">&#39;2000&#39;</span><span class="p">,</span> <span class="n">ExpTime</span> <span class="o">=</span> <span class="n">nadirTEXPMS</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">,</span> 
+                  <span class="n">NRSKIP</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="n">NRBIN</span><span class="o">=</span> <span class="s1">&#39;50&#39;</span><span class="p">,</span> <span class="n">NROW</span> <span class="o">=</span> <span class="s1">&#39;8&#39;</span><span class="p">,</span> <span class="n">NCBIN</span> <span class="o">=</span> <span class="s1">&#39;50&#39;</span><span class="p">,</span> <span class="n">NCOL</span> <span class="o">=</span> <span class="s1">&#39;32&#39;</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">relativeTime</span></div>
+
+
+<div class="viewcode-block" id="High_res_IR_procedure"><a class="viewcode-back" href="../../../../../Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.html#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Procedures.High_res_IR_procedure">[docs]</a><span class="k">def</span> <span class="nf">High_res_IR_procedure</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">nadirTEXPMS</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;High resolution IR binning, see module description for more details.</span>
+<span class="sd">        </span>
+<span class="sd">    Arguments: </span>
+<span class="sd">        nadir (str): Sets the nadir CCD on or off. Either &quot;1&quot; for on or &quot;0&quot; for off.</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    
+    <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafCCDMain</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCDselect</span> <span class="o">=</span> <span class="s1">&#39;48&#39;</span><span class="p">,</span> <span class="n">PWR</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="n">ExpInterval</span> <span class="o">=</span> <span class="s1">&#39;6000&#39;</span><span class="p">,</span> <span class="n">ExpTime</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">,</span> 
+                  <span class="n">NRSKIP</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="n">NRBIN</span><span class="o">=</span> <span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="n">NROW</span> <span class="o">=</span> <span class="s1">&#39;255&#39;</span><span class="p">,</span> <span class="n">NCBIN</span> <span class="o">=</span> <span class="s1">&#39;40&#39;</span><span class="p">,</span> <span class="n">NCOL</span> <span class="o">=</span> <span class="s1">&#39;50&#39;</span><span class="p">,</span> <span class="n">SIGMODE</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span><span class="p">)</span>
+    
+    
+    <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafCCDMain</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCDselect</span> <span class="o">=</span> <span class="s1">&#39;9&#39;</span><span class="p">,</span> <span class="n">PWR</span> <span class="o">=</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="n">ExpInterval</span> <span class="o">=</span> <span class="s1">&#39;6000&#39;</span><span class="p">,</span> <span class="n">ExpTime</span> <span class="o">=</span> <span class="s1">&#39;5000&#39;</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">,</span> 
+                  <span class="n">NRSKIP</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="n">NRBIN</span><span class="o">=</span> <span class="s1">&#39;2&#39;</span><span class="p">,</span> <span class="n">NROW</span> <span class="o">=</span> <span class="s1">&#39;255&#39;</span><span class="p">,</span> <span class="n">NCBIN</span> <span class="o">=</span> <span class="s1">&#39;40&#39;</span><span class="p">,</span> <span class="n">NCOL</span> <span class="o">=</span> <span class="s1">&#39;50&#39;</span><span class="p">,</span> <span class="n">WDW</span> <span class="o">=</span> <span class="s1">&#39;4&#39;</span><span class="p">)</span>
+    
+    
+    <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafCCDMain</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCDselect</span> <span class="o">=</span> <span class="s1">&#39;6&#39;</span><span class="p">,</span> <span class="n">PWR</span> <span class="o">=</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="n">ExpInterval</span> <span class="o">=</span> <span class="s1">&#39;6000&#39;</span><span class="p">,</span> <span class="n">ExpTime</span> <span class="o">=</span> <span class="s1">&#39;5000&#39;</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">,</span> 
+                  <span class="n">NRSKIP</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="n">NRBIN</span><span class="o">=</span> <span class="s1">&#39;6&#39;</span><span class="p">,</span> <span class="n">NROW</span> <span class="o">=</span> <span class="s1">&#39;85&#39;</span><span class="p">,</span> <span class="n">NCBIN</span> <span class="o">=</span> <span class="s1">&#39;200&#39;</span><span class="p">,</span> <span class="n">NCOL</span> <span class="o">=</span> <span class="s1">&#39;8&#39;</span><span class="p">)</span>
+    
+    
+    <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafCCDMain</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCDselect</span> <span class="o">=</span> <span class="s1">&#39;64&#39;</span><span class="p">,</span> <span class="n">PWR</span> <span class="o">=</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="n">ExpInterval</span> <span class="o">=</span> <span class="s1">&#39;4500&#39;</span><span class="p">,</span> <span class="n">ExpTime</span> <span class="o">=</span> <span class="n">nadirTEXPMS</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">,</span> 
+                  <span class="n">NRSKIP</span> <span class="o">=</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="n">NRBIN</span><span class="o">=</span> <span class="s1">&#39;25&#39;</span><span class="p">,</span> <span class="n">NROW</span> <span class="o">=</span> <span class="s1">&#39;16&#39;</span><span class="p">,</span> <span class="n">NCBIN</span> <span class="o">=</span> <span class="s1">&#39;36&#39;</span><span class="p">,</span> <span class="n">NCOL</span> <span class="o">=</span> <span class="s1">&#39;55&#39;</span><span class="p">,</span> <span class="n">JPEGQ</span> <span class="o">=</span> <span class="s1">&#39;90&#39;</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">relativeTime</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../../index.html">Operational_Planning_Tool</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../../Operational_Planning_Tool.html">Operational_Planning_Tool package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../../index.html">Module code</a><ul>
+  <li><a href="../../../../Operational_Planning_Tool.html">Operational_Planning_Tool</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, David Skånberg.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

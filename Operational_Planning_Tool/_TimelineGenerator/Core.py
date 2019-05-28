@@ -25,10 +25,13 @@ depending on a specialized filtering process (mode 120, 200...), or postponed un
 @author: David
 """
 
-import json, logging, sys, time, os, ephem
-from .Modes import Modes_Header
-import OPT_Config_File
+import json, logging, sys, time, os, ephem, importlib
 
+
+from .Modes import Modes_Header
+from Operational_Planning_Tool import _Globals
+
+OPT_Config_File = importlib.import_module(_Globals.Config_File)
 Logger = logging.getLogger(OPT_Config_File.Logger_name())
 
 def Timeline_generator():
@@ -39,8 +42,11 @@ def Timeline_generator():
         
     """
     
-    
-    
+    """
+    if(os.path.isfile('OPT_Config_File.py') == False):
+        print('No OPT_Config_File.py found. Try running Create_ConfigFile()')
+        sys.exit()
+    """
     
     "Try to make a directory for logs if none is existing"
     try:
@@ -62,7 +68,8 @@ def Timeline_generator():
     
     #logging.basicConfig(stream=sys.stdout, level=logging.INFO)
     timestr = time.strftime("%Y%m%d-%H%M%S")
-    Handler = logging.FileHandler('Logs_'+__name__+'\\'+__name__+'_'+OPT_Config_File.Version()+'_'+timestr+'.log', mode='a')
+    logstring = os.path.join('Logs_'+__name__, __name__+'_'+OPT_Config_File.Version()+'_'+timestr+'.log')
+    Handler = logging.FileHandler(logstring, mode='a')
     formatter = logging.Formatter("%(levelname)-6s : %(message)-80s :: %(module)s :: %(funcName)s")
     Handler.setFormatter(formatter)
     Logger.addHandler(Handler)
@@ -80,7 +87,7 @@ def Timeline_generator():
     Logger.info('Start of program')
     
     Version = OPT_Config_File.Version()
-    Logger.info('OPT_Config_File version used: '+Version)
+    Logger.info(_Globals.Config_File+' used, Version: '+Version)
     
     "Get a List of Modes in a prioritized order which are to be scheduled"
     Modes_priority = OPT_Config_File.Modes_priority()
@@ -236,7 +243,9 @@ def Timeline_generator():
     Logger.debug('')
     
     SCIMOD_Timeline = []
-    SCIMOD_Timeline.append([ 'Timeline_settings','This Timeline was created using these settings', Timeline_settings, OPT_Config_File.getTLE(), 'Note: These settings are not actually used when generating an XML, the ones in OPT_Config_File are' ])
+    SCIMOD_Timeline.append([ 'Timeline_settings','This Timeline was created using these settings from '+_Globals.Config_File,
+                            'Note: These Timeline_settings are not actually used when generating an XML, the ones in the set Configuration File are', 
+                            Timeline_settings, OPT_Config_File.getTLE()])
     
     Logger.debug("Create a science mode list in chronological order. The list contains Mode name, start date, enddate, params for XML-gen and comment")
     t=0
@@ -298,8 +307,7 @@ def Timeline_generator():
         os.mkdir('Output')
     except:
         pass
-    
-    SCIMOD_NAME = 'Output\\Science_Mode_Timeline_Version_'+Version+'.json'
+    SCIMOD_NAME = os.path.join('Output', 'Science_Mode_Timeline__ConfigFile_'+_Globals.Config_File+'.json')
     Logger.info('Save mode timeline to file: '+SCIMOD_NAME)
     with open(SCIMOD_NAME, "w") as write_file:
         json.dump(SCIMOD_Timeline, write_file, indent = 2)

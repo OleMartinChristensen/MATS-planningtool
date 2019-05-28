@@ -1,0 +1,272 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="python 3.7">
+  <head>
+    <meta charset="utf-8" />
+    <title>Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.SeparateCmds &#8212; Operational_Planning_Tool  documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.SeparateCmds</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">For PWRTOGGLE, PM, CCDBadColumn, CCDFlushBadColumns: Compares parameters given in the Science Mode Timeline to default parameters </span>
+<span class="sd">given in OPT_Config_File and fills in any parameters missing in the Science Mode Timeline. \n</span>
+
+<span class="sd">For the rest CMDS, each parameter must be given in the Science Mode Timeline. \n</span>
+
+<span class="sd">Then calls for macros, which will generate commands in the XML-file. \n</span>
+
+<span class="sd">Functions on the form &quot;XML_generator_X&quot;, where the last X is any CMD:</span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        root =  XML tree structure. Main container object for the ElementTree API. lxml.etree.Element class \n</span>
+<span class="sd">        date = Starting date of the CMD. On the form of the ephem.Date class. \n</span>
+<span class="sd">        duration = The duration of the CMD [s] as an integer class. \n</span>
+<span class="sd">        relativeTime = The starting time [s] of the CMD with regard to the start of the timeline as an integer class \n</span>
+<span class="sd">        params = Dictionary containing the parameters of the CMD given in the Science_Mode_Timeline.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+
+<span class="sd">@author: David</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">importlib</span>
+
+<span class="kn">from</span> <span class="nn">.Macros.Commands</span> <span class="k">import</span> <span class="n">Commands</span>
+<span class="kn">from</span> <span class="nn">.Macros</span> <span class="k">import</span> <span class="n">Macros</span>
+<span class="kn">from</span> <span class="nn">Operational_Planning_Tool._Library</span> <span class="k">import</span> <span class="n">params_checker</span>
+<span class="kn">from</span> <span class="nn">Operational_Planning_Tool</span> <span class="k">import</span> <span class="n">_Globals</span>
+
+<span class="n">OPT_Config_File</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">_Globals</span><span class="o">.</span><span class="n">Config_File</span><span class="p">)</span>
+
+<span class="n">Logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Logger_name</span><span class="p">())</span>
+
+<div class="viewcode-block" id="XML_generator_MODE"><a class="viewcode-back" href="../../../../Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.html#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.SeparateCmds.XML_generator_MODE">[docs]</a><span class="k">def</span> <span class="nf">XML_generator_MODE</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
+                       <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
+    
+    <span class="c1">#params_default = {&#39;MODE&#39;: 0}</span>
+    <span class="c1">#params = params_checker(params, params_default)</span>
+    
+    <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafMode</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">relativeTime</span><span class="p">),</span> <span class="n">mode</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;MODE&#39;</span><span class="p">]),</span> <span class="n">comment</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">))</span></div>
+ 
+
+<div class="viewcode-block" id="XML_generator_PWRTOGGLE"><a class="viewcode-back" href="../../../../Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.html#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.SeparateCmds.XML_generator_PWRTOGGLE">[docs]</a><span class="k">def</span> <span class="nf">XML_generator_PWRTOGGLE</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
+                       <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
+    
+    <span class="n">params_default</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">PWRTOGGLE_settings</span><span class="p">()</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">params_checker</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">params_default</span><span class="p">)</span>
+    <span class="n">Macros</span><span class="o">.</span><span class="n">PWRTOGGLE_macro</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">relativeTime</span><span class="p">),</span> <span class="n">CONST</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;CONST&#39;</span><span class="p">]),</span> <span class="n">comment</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">))</span></div>
+    
+    
+<div class="viewcode-block" id="XML_generator_UPLOAD"><a class="viewcode-back" href="../../../../Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.html#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.SeparateCmds.XML_generator_UPLOAD">[docs]</a><span class="k">def</span> <span class="nf">XML_generator_UPLOAD</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
+                       <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
+    
+    <span class="c1">#params_default = {&#39;PINDEX&#39;: 0, &#39;PTOTAL&#39;: 0, &#39;WFLASH&#39;: 0, &#39;NIMG&#39;: 0, &#39;IMG&#39;: 0}</span>
+    <span class="c1">#params = params_checker(params, params_default)</span>
+    <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafUpload</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">relativeTime</span><span class="p">),</span> <span class="n">PINDEX</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;PINDEX&#39;</span><span class="p">]),</span> <span class="n">PTOTAL</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;PTOTAL&#39;</span><span class="p">]),</span> 
+                          <span class="n">WFLASH</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;WFLASH&#39;</span><span class="p">])</span> <span class="p">,</span> <span class="n">NIMG</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;NIMG&#39;</span><span class="p">]),</span> <span class="n">IMG</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;IMG&#39;</span><span class="p">]),</span> <span class="n">comment</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="XML_generator_HTR"><a class="viewcode-back" href="../../../../Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.html#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.SeparateCmds.XML_generator_HTR">[docs]</a><span class="k">def</span> <span class="nf">XML_generator_HTR</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
+                       <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
+    
+    <span class="c1">#params_default = {&#39;HTRSEL&#39;: 1, &#39;SET&#39;: 2000, &#39;P&#39;: 10, &#39;I&#39;: 0, &#39;D&#39;: 0}</span>
+    <span class="c1">#params = params_checker(params, params_default)</span>
+    <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafHTR</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">relativeTime</span><span class="p">),</span> <span class="n">HTRSEL</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;HTRSEL&#39;</span><span class="p">]),</span> <span class="n">SET</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;SET&#39;</span><span class="p">]),</span> 
+                          <span class="n">P</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;P&#39;</span><span class="p">])</span> <span class="p">,</span> <span class="n">I</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;I&#39;</span><span class="p">]),</span> <span class="n">D</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;D&#39;</span><span class="p">]),</span> <span class="n">comment</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">))</span></div>
+    
+
+<div class="viewcode-block" id="XML_generator_CCD"><a class="viewcode-back" href="../../../../Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.html#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.SeparateCmds.XML_generator_CCD">[docs]</a><span class="k">def</span> <span class="nf">XML_generator_CCD</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
+                       <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
+    
+    <span class="c1">#params_default = {&#39;CCDSEL&#39;: 1, &#39;PWR&#39;: 1, &#39;WDW&#39;: 4, &#39;JPEGQ&#39;: 95, &#39;SYNC&#39;: 0, &#39;TEXPIMS&#39;: 3000, &#39;TEXPMS&#39;: 1000, &#39;GAIN&#39;: 0, &#39;NFLUSH&#39;: 1023, </span>
+    <span class="c1">#                             &#39;NRSKIP&#39;: 0, &#39;NRBIN&#39;: 1, &#39;NROW&#39;: 50, &#39;NCSKIP&#39;: 0, &#39;NCBIN&#39;: 1, &#39;NCOL&#39;: 200, &#39;NCBINFPGA&#39;: 0, &#39;SIGMODE&#39;: 1}</span>
+    <span class="c1">#params = params_checker(params, params_default)</span>
+    <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafCCDMain</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">relativeTime</span><span class="p">),</span> <span class="n">CCDselect</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;CCDSEL&#39;</span><span class="p">]),</span> <span class="n">PWR</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;PWR&#39;</span><span class="p">]),</span> <span class="n">WDW</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;WDW&#39;</span><span class="p">]),</span> 
+                       <span class="n">JPEGQ</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;JPEGQ&#39;</span><span class="p">]),</span> <span class="n">SYNC</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;SYNC&#39;</span><span class="p">]),</span> <span class="n">ExpInterval</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;TEXPIMS&#39;</span><span class="p">]),</span> 
+                       <span class="n">ExpTime</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]),</span> <span class="n">GAIN</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;GAIN&#39;</span><span class="p">]),</span> <span class="n">NFLUSH</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;NFLUSH&#39;</span><span class="p">]),</span> 
+                        <span class="n">NRSKIP</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;NRSKIP&#39;</span><span class="p">]),</span> <span class="n">NRBIN</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;NRBIN&#39;</span><span class="p">]),</span> <span class="n">NROW</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;NROW&#39;</span><span class="p">]),</span> 
+                        <span class="n">NCSKIP</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;NCSKIP&#39;</span><span class="p">]),</span> <span class="n">NCBIN</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;NCBIN&#39;</span><span class="p">]),</span> <span class="n">NCOL</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;NCOL&#39;</span><span class="p">]),</span> 
+                        <span class="n">NCBINFPGA</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">]),</span> <span class="n">SIGMODE</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;SIGMODE&#39;</span><span class="p">]),</span> <span class="n">comment</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">))</span></div>
+    
+
+<div class="viewcode-block" id="XML_generator_CCDBadColumn"><a class="viewcode-back" href="../../../../Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.html#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.SeparateCmds.XML_generator_CCDBadColumn">[docs]</a><span class="k">def</span> <span class="nf">XML_generator_CCDBadColumn</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
+                       <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
+    
+    <span class="n">params_default</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">CCDBadColumn_settings</span><span class="p">()</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">params_checker</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">params_default</span><span class="p">)</span>
+    <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafCCDBadColumn</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">relativeTime</span><span class="p">),</span> <span class="n">CCDSEL</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;CCDSEL&#39;</span><span class="p">]),</span> <span class="n">NBC</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;NBC&#39;</span><span class="p">]),</span> 
+                             <span class="n">BC</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;BC&#39;</span><span class="p">]),</span> <span class="n">comment</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="XML_generator_CCDFlushBadColumns"><a class="viewcode-back" href="../../../../Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.html#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.SeparateCmds.XML_generator_CCDFlushBadColumns">[docs]</a><span class="k">def</span> <span class="nf">XML_generator_CCDFlushBadColumns</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
+                       <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
+    
+    <span class="n">params_default</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">CCDFlushBadColumns_settings</span><span class="p">()</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">params_checker</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">params_default</span><span class="p">)</span>
+    <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafCCDFlushBadColumns</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">relativeTime</span><span class="p">),</span> <span class="n">CCDSEL</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;CCDSEL&#39;</span><span class="p">]),</span> <span class="n">comment</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="XML_generator_CCDBIAS"><a class="viewcode-back" href="../../../../Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.html#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.SeparateCmds.XML_generator_CCDBIAS">[docs]</a><span class="k">def</span> <span class="nf">XML_generator_CCDBIAS</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
+                       <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
+    
+    <span class="c1">#params_default = {&#39;CCDSEL&#39;: 1, &#39;VGATE&#39;: 0, &#39;VSUBST&#39;: 0, &#39;VRD&#39;: 0, &#39;VOD&#39;: 0}</span>
+    <span class="c1">#params = params_checker(params, params_default)</span>
+    
+    <span class="k">if</span><span class="p">(</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;VGATE&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">127</span> <span class="ow">or</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;VSUBSTR&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">127</span> <span class="ow">or</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;VRD&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">127</span> <span class="ow">or</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;VOD&#39;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">127</span><span class="p">):</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;CCDBIAS values are set to high. Skipping scheduling of CMD&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafCCDBIAS</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">relativeTime</span><span class="p">),</span> <span class="n">CCDSEL</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;CCDSEL&#39;</span><span class="p">]),</span> <span class="n">VGATE</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;VGATE&#39;</span><span class="p">]),</span> 
+                             <span class="n">VSUBST</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;VSUBST&#39;</span><span class="p">]),</span> <span class="n">VRD</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;VRD&#39;</span><span class="p">]),</span> <span class="n">VOD</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;VOD&#39;</span><span class="p">]),</span> <span class="n">comment</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="XML_generator_CCDSNAPSHOT"><a class="viewcode-back" href="../../../../Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.html#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.SeparateCmds.XML_generator_CCDSNAPSHOT">[docs]</a><span class="k">def</span> <span class="nf">XML_generator_CCDSNAPSHOT</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
+                       <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
+    
+    <span class="c1">#params_default = {&#39;CCDSEL&#39;: 1}</span>
+    <span class="c1">#params = params_checker(params, params_default)</span>
+    <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafCCDSnapshot</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">relativeTime</span><span class="p">),</span> <span class="n">CCDSelect</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;CCDSEL&#39;</span><span class="p">]),</span> <span class="n">comment</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">))</span></div>
+    
+
+<div class="viewcode-block" id="XML_generator_CCDTRANSPARENTCMD"><a class="viewcode-back" href="../../../../Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.html#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.SeparateCmds.XML_generator_CCDTRANSPARENTCMD">[docs]</a><span class="k">def</span> <span class="nf">XML_generator_CCDTRANSPARENTCMD</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
+                       <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
+    
+    <span class="c1">#params_default = {&#39;CCDSEL&#39;: 1, &#39;CHAR&#39;: 0}</span>
+    <span class="c1">#params = params_checker(params, params_default)</span>
+    <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafCCDTRANSPARENTCMD</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">relativeTime</span><span class="p">),</span> <span class="n">CCDSEL</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;CCDSEL&#39;</span><span class="p">]),</span> <span class="n">CHAR</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;CHAR&#39;</span><span class="p">]),</span> <span class="n">comment</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">))</span></div>
+    
+
+<div class="viewcode-block" id="XML_generator_Dbg"><a class="viewcode-back" href="../../../../Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.html#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.SeparateCmds.XML_generator_Dbg">[docs]</a><span class="k">def</span> <span class="nf">XML_generator_Dbg</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
+                       <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
+    
+    <span class="c1">#params_default = {&#39;CCDSEL&#39;: 1}</span>
+    <span class="c1">#params = params_checker(params, params_default)</span>
+    <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafDbg</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">relativeTime</span><span class="p">),</span> <span class="n">CCDSEL</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;CCDSEL&#39;</span><span class="p">]),</span> <span class="n">comment</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">))</span></div>
+    
+
+<div class="viewcode-block" id="XML_generator_PM"><a class="viewcode-back" href="../../../../Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.html#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.SeparateCmds.XML_generator_PM">[docs]</a><span class="k">def</span> <span class="nf">XML_generator_PM</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
+                       <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
+    
+    <span class="n">params_default</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">PM_settings</span><span class="p">()</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="n">params_checker</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">params_default</span><span class="p">)</span>
+    <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafPM</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">relativeTime</span><span class="p">),</span> <span class="n">TEXPMS</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]),</span> <span class="n">TEXPIMS</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;TEXPIMS&#39;</span><span class="p">]),</span> <span class="n">comment</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">))</span></div>
+    
+
+<div class="viewcode-block" id="XML_generator_LimbPointingAltitudeOffset"><a class="viewcode-back" href="../../../../Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.html#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.SeparateCmds.XML_generator_LimbPointingAltitudeOffset">[docs]</a><span class="k">def</span> <span class="nf">XML_generator_LimbPointingAltitudeOffset</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
+                       <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
+    
+    <span class="c1">#params_default = {&#39;Initial&#39;: 92500, &#39;Final&#39;: 92500, &#39;Rate&#39;: 0}</span>
+    <span class="c1">#params = params_checker(params, params_default)</span>
+    <span class="n">Commands</span><span class="o">.</span><span class="n">TC_acfLimbPointingAltitudeOffset</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">relativeTime</span><span class="p">),</span> <span class="n">Initial</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;Initial&#39;</span><span class="p">]),</span> <span class="n">Final</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;Final&#39;</span><span class="p">]),</span> 
+                                              <span class="n">Rate</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;Rate&#39;</span><span class="p">]),</span> <span class="n">comment</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">))</span></div>
+    
+
+<div class="viewcode-block" id="XML_generator_ArgFreezeStart"><a class="viewcode-back" href="../../../../Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.html#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.SeparateCmds.XML_generator_ArgFreezeStart">[docs]</a><span class="k">def</span> <span class="nf">XML_generator_ArgFreezeStart</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
+                       <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
+    
+    <span class="c1">#params_default = {&#39;StartTime&#39;: 0}</span>
+    <span class="c1">#params = params_checker(params, params_default)</span>
+    <span class="n">Commands</span><span class="o">.</span><span class="n">TC_affArgFreezeStart</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">relativeTime</span><span class="p">),</span> <span class="n">StartTime</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;StartTime&#39;</span><span class="p">]),</span> <span class="n">comment</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">))</span></div>
+    
+
+<div class="viewcode-block" id="XML_generator_ArgFreezeDuration"><a class="viewcode-back" href="../../../../Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.html#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.SeparateCmds.XML_generator_ArgFreezeDuration">[docs]</a><span class="k">def</span> <span class="nf">XML_generator_ArgFreezeDuration</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
+                       <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
+    
+    <span class="c1">#params_default = {&#39;FreezeDuration&#39;: 0}</span>
+    <span class="c1">#params = params_checker(params, params_default)</span>
+    <span class="n">Commands</span><span class="o">.</span><span class="n">TC_affArgFreezeDuration</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">relativeTime</span><span class="p">),</span> <span class="n">FreezeDuration</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;FreezeDuration&#39;</span><span class="p">]),</span> <span class="n">comment</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">))</span></div>
+    
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../index.html">Operational_Planning_Tool</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../Operational_Planning_Tool.html">Operational_Planning_Tool package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  <li><a href="../../../Operational_Planning_Tool.html">Operational_Planning_Tool</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, David Skånberg.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

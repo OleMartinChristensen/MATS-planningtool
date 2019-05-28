@@ -8,12 +8,14 @@ Mode/Test/CMD specific settings given in the Science Mode Timeline List will ove
 """
 
 from lxml import etree
-import ephem, logging, sys, time, os, json
+import ephem, logging, sys, time, os, json, importlib
 
-from OPT_Config_File import Timeline_settings, initialConditions, Logger_name, Version
+from Operational_Planning_Tool import _Globals
+OPT_Config_File = importlib.import_module(_Globals.Config_File)
+#from OPT_Config_File import Timeline_settings, initialConditions, Logger_name, Version
 from .Modes_and_Tests import MODES, Tests, SeparateCmds
 
-Logger = logging.getLogger(Logger_name())
+Logger = logging.getLogger(OPT_Config_File.Logger_name())
 
 
 def XML_generator(SCIMOD_Path):
@@ -24,6 +26,12 @@ def XML_generator(SCIMOD_Path):
     Returns:
         None
         
+    """
+    
+    """
+    if(os.path.isfile('OPT_Config_File.py') == False):
+        print('No OPT_Config_File.py found. Try running Create_ConfigFile()')
+        sys.exit()
     """
     
     ######## Try to Create a directory for storage of Logs #######
@@ -45,7 +53,8 @@ def XML_generator(SCIMOD_Path):
     
     #logging.basicConfig(stream=sys.stdout, level=logging.INFO)
     timestr = time.strftime("%Y%m%d-%H%M%S")
-    Handler = logging.FileHandler('Logs_'+__name__+'\\'+__name__+'_'+Version()+'_'+timestr+'.log', mode='a')
+    logstring = os.path.join('Logs_'+__name__, __name__+'_'+OPT_Config_File.Version()+'_'+timestr+'.log')
+    Handler = logging.FileHandler(logstring, mode='a')
     formatter = logging.Formatter("%(levelname)6s : %(message)-80s :: %(module)s :: %(funcName)s")
     Handler.setFormatter(formatter)
     Logger.addHandler(Handler)
@@ -60,7 +69,8 @@ def XML_generator(SCIMOD_Path):
     
     Logger.info('Start of Program')
     Logger.info('')
-    Logger.info('OPT_Config_File version used: '+Version())
+    Version = OPT_Config_File.Version()
+    Logger.info(_Globals.Config_File+' used, Version: '+Version)
     Logger.info('')
     
     
@@ -71,10 +81,10 @@ def XML_generator(SCIMOD_Path):
     
     
     ################ Get settings for Timeline from Config module ############
-    timeline_duration = Timeline_settings()['duration']
+    timeline_duration = OPT_Config_File.Timeline_settings()['duration']
     Logger.info('timeline_duration: '+str(timeline_duration))
     
-    timeline_start = ephem.Date(Timeline_settings()['start_date'])
+    timeline_start = ephem.Date(OPT_Config_File.Timeline_settings()['start_date'])
     Logger.info('timeline_start: '+str(timeline_start))
     
     
@@ -124,7 +134,7 @@ def XML_generator(SCIMOD_Path):
     SCIMOD_Path = SCIMOD_Path.replace('.json','')
     
     ### Write finished XML-tree with all commands to a file #######
-    MATS_COMMANDS = 'Output\\MATS_COMMANDS__Version_'+Version()+'__'+SCIMOD_Path+'.xml'
+    MATS_COMMANDS = os.path.join('Output','MATS_COMMANDS__ConfigFile_'+_Globals.Config_File+'__'+SCIMOD_Path+'.xml')
     Logger.info('Write XML-tree to: '+MATS_COMMANDS)
     f = open(MATS_COMMANDS, 'w')
     f.write(etree.tostring(root, pretty_print=True, encoding = 'unicode'))
@@ -164,8 +174,8 @@ def XML_Initial_Basis_Creator(timeline_start,timeline_duration, SCIMOD_Path):
     
     
     etree.SubElement(root[0], 'initialConditions')
-    etree.SubElement(root[0][2], 'spacecraft', mode = initialConditions()['spacecraft']['mode'], acs = initialConditions()['spacecraft']['acs'])
-    etree.SubElement(root[0][2], 'payload', power = initialConditions()['payload']['power'], mode = initialConditions()['payload']['mode'])
+    etree.SubElement(root[0][2], 'spacecraft', mode = OPT_Config_File.initialConditions()['spacecraft']['mode'], acs = OPT_Config_File.initialConditions()['spacecraft']['acs'])
+    etree.SubElement(root[0][2], 'payload', power = OPT_Config_File.initialConditions()['payload']['power'], mode = OPT_Config_File.initialConditions()['payload']['mode'])
     
     
     etree.SubElement(root[0], 'validity')
@@ -177,7 +187,7 @@ def XML_Initial_Basis_Creator(timeline_start,timeline_duration, SCIMOD_Path):
     root[0][3][2].text = str(timeline_duration)
     
     etree.SubElement(root[0], 'comment')
-    root[0][4].text = "This command sequence is an Innosat timeline. Science Mode Timeline used to generate: "+SCIMOD_Path
+    root[0][4].text = "This command sequence is an Innosat timeline. Science Mode Timeline used to generate: "+SCIMOD_Path+', Configuration File used: '+_Globals.Config_File
     
     
     root.append(etree.Element('listOfCommands'))

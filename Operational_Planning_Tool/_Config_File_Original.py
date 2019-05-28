@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-"""Contains settings for the Operational Planning Tool. The Config file used must be
-named OPT_Config_File.py and be located in the working directoy of the user call.
+"""Contains functions that return settings for the Operational Planning Tool. The Config file used is set 
+by calling *Operational_Planning_Tool.Set_ConfigFile()* and must be visible in *sys.path*.
     
 """
 
@@ -21,7 +21,7 @@ def Logger_name():
 
 
 def Version():
-    ''''Contains the version name of this Config_File.
+    ''''Contains the version ID of this Config_File.
     
     Returns:
         (str): version_name 

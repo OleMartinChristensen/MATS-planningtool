@@ -22,14 +22,17 @@ XML_generator_Test_name, where Test_name is the same as the string used in the S
 @author: David
 """
 
-import ephem, logging, sys
+import ephem, logging, sys, importlib
 from pylab import dot, arccos, zeros, pi, sin, cos, arctan, cross, norm, sqrt
 
-from OPT_Config_File import Logger_name, Timeline_settings, getTLE
+from Operational_Planning_Tool import _Globals
+
+OPT_Config_File = importlib.import_module(_Globals.Config_File)
+#from OPT_Config_File import Logger_name, Timeline_settings, getTLE
 from Operational_Planning_Tool._Library import rot_arbit
 from .Macros import Macros
 
-Logger = logging.getLogger(Logger_name())
+Logger = logging.getLogger(OPT_Config_File.Logger_name())
 
 def XML_generator_Limb_functional_test(root, date, duration, relativeTime, params = {'ExpTimes': [1,2,4,8,16]}):
     """Limb_functional_test. 
@@ -68,7 +71,7 @@ def XML_generator_Limb_functional_test(root, date, duration, relativeTime, param
                     ############################################################################
                     
                     Sun = ephem.Sun(date)
-                    MATS = ephem.readtle('MATS', getTLE()[0], getTLE()[1])
+                    MATS = ephem.readtle('MATS', OPT_Config_File.getTLE()[0], OPT_Config_File.getTLE()[1])
                     
                     "Pre-allocate space"
                     lat_MATS = zeros((duration,1))
@@ -223,7 +226,7 @@ def XML_generator_Photometer_test_1(root, date, duration, relativeTime, params =
     #params = params_checker(params,Mode=X=_settings)
     
     '''
-    MATS = ephem.readtle('MATS', getTLE()[0], getTLE()[1])
+    MATS = ephem.readtle('MATS', OPT_Config_File.getTLE()[0], OPT_Config_File.getTLE()[1])
     MATS.compute(date)
     MATS_altitude = MATS.elevation/1000
     U = 398600.4418 #Earth gravitational parameter
@@ -262,7 +265,7 @@ def XML_generator_Photometer_test_1(root, date, duration, relativeTime, params =
             relativeTime = Macros.Photometer_test_1_macro(root, relativeTime = str(relativeTime), ExpTime = str(ExpTime), ExpInt = str(ExpInt), comment = comment)
             
             "Postpone Next PM settings"
-            relativeTime = round(float(relativeTime) + 120-Timeline_settings()['command_separation'],2)
+            relativeTime = round(float(relativeTime) + 120-OPT_Config_File.Timeline_settings()['command_separation'],2)
             
 
 
@@ -307,7 +310,7 @@ def XML_generator_Nadir_functional_test(root, date, duration, relativeTime, para
                 ############################################################################
                 
                 Sun = ephem.Sun(date)
-                MATS = ephem.readtle('MATS', getTLE()[0], getTLE()[1])
+                MATS = ephem.readtle('MATS', OPT_Config_File.getTLE()[0], OPT_Config_File.getTLE()[1])
                 
                 "Pre-allocate space"
                 lat_MATS = zeros((duration,1))

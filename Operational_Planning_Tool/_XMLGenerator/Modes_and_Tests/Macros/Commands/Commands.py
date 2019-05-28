@@ -15,13 +15,15 @@ Returns:
 
 """
 
-import logging
+import logging, importlib
 from lxml import etree
 
-from OPT_Config_File import Timeline_settings, Logger_name, PM_settings
 from Operational_Planning_Tool import _Globals
 
-Logger = logging.getLogger(Logger_name())
+OPT_Config_File = importlib.import_module(_Globals.Config_File)
+#from OPT_Config_File import Timeline_settings, Logger_name, PM_settings
+
+Logger = logging.getLogger(OPT_Config_File.Logger_name())
 
 
 
@@ -39,7 +41,7 @@ def TC_pafMode(root, time, mode, comment = ''):
     etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "MODE")
     root[1][len(root[1])-1][2][0].text = mode
     
-    incremented_time = str(round(float(time)+Timeline_settings()['command_separation'],2))
+    incremented_time = str(round(float(time)+OPT_Config_File.Timeline_settings()['command_separation'],2))
     
     return incremented_time
     
@@ -77,11 +79,11 @@ def TC_acfLimbPointingAltitudeOffset(root, time, Initial = "92500", Final = "925
         root[1][len(root[1])-1][2][2].text = Rate
         
         if( Rate != '0' ):
-            incremented_time = str(round(float(time)+Timeline_settings()['command_separation'],2))
+            incremented_time = str(round(float(time)+OPT_Config_File.Timeline_settings()['command_separation'],2))
             _Globals.current_pointing= None
         elif( Final == Initial and Rate == '0'):
             _Globals.current_pointing= Final
-            incremented_time = str(round(float(time)+Timeline_settings()['pointing_stabilization'],2))
+            incremented_time = str(round(float(time)+OPT_Config_File.Timeline_settings()['pointing_stabilization'],2))
         
     else:
         Logger.debug('Skipping pointing command as satellite is already oriented the desired way')
@@ -103,7 +105,7 @@ def TC_affArgFreezeStart(root, time, StartTime, comment = ''):
     etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "StartTime")
     root[1][len(root[1])-1][2][0].text = StartTime
     
-    incremented_time = str(round(float(time)+Timeline_settings()['command_separation'],2))
+    incremented_time = str(round(float(time)+OPT_Config_File.Timeline_settings()['command_separation'],2))
     
     return incremented_time
     
@@ -122,7 +124,7 @@ def TC_affArgFreezeDuration(root, time, FreezeDuration, comment = ''):
     etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "FreezeDuration")
     root[1][len(root[1])-1][2][0].text = FreezeDuration
     
-    incremented_time = str(round(float(time)+Timeline_settings()['command_separation'],2))
+    incremented_time = str(round(float(time)+OPT_Config_File.Timeline_settings()['command_separation'],2))
     
     return incremented_time
     
@@ -140,7 +142,7 @@ def TC_pafPWRToggle(root, time, CONST = '165', comment = ''):
     etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "CONST")
     root[1][len(root[1])-1][2][0].text = CONST
     
-    incremented_time = str(round(float(time)+Timeline_settings()['command_separation'],2))
+    incremented_time = str(round(float(time)+OPT_Config_File.Timeline_settings()['command_separation'],2))
     
     return incremented_time
     
@@ -171,7 +173,7 @@ def TC_pafUpload(root, time, PINDEX = '0', PTOTAL = '0', WFLASH = '0', NIMG = '0
     etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "IMG")
     root[1][len(root[1])-1][2][4].text = IMG
     
-    incremented_time = str(round(float(time)+Timeline_settings()['command_separation'],2))
+    incremented_time = str(round(float(time)+OPT_Config_File.Timeline_settings()['command_separation'],2))
     
     return incremented_time
     
@@ -201,7 +203,7 @@ def TC_pafHTR(root, time, HTRSEL, SET, P, I, D, comment = ''):
     etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "D")
     root[1][len(root[1])-1][2][4].text = D
     
-    incremented_time = str(round(float(time)+Timeline_settings()['command_separation'],2))
+    incremented_time = str(round(float(time)+OPT_Config_File.Timeline_settings()['command_separation'],2))
     
     return incremented_time
     
@@ -271,20 +273,19 @@ def TC_pafCCDMain(root, time, CCDselect, PWR, ExpInterval, ExpTime, NRSKIP = '0'
     etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "SIGMODE")
     root[1][len(root[1])-1][2][16].text = SIGMODE
     
-    incremented_time = str(round(float(time)+Timeline_settings()['command_separation'],2))
+    incremented_time = str(round(float(time)+OPT_Config_File.Timeline_settings()['command_separation'],2))
     
     return incremented_time
     
     
 def TC_pafCCDBadColumn(root, time, CCDSEL, NBC, BC, comment = ''):
     
-    import logging
-    from OPT_Config_File import Logger_name
-    Logger = logging.getLogger(Logger_name())
     
-    if( int(BC) >= 2**256):
-        Logger.warning('More than 256 BadColumns chosen, risk of command being too large')
-        input('Enter anything to confirm the chosen size of BadColumns\n')
+    
+    if not( 0 <= int(NBC) <= 63 or int(BC) >= 2**255):
+        Logger.error('Invalid argument: More than 63 BadColumns chosen (or less than 0)')
+        raise ValueError
+        
         
     
     etree.SubElement(root[1], 'command', mnemonic = "TC_pafCCDBadColumn")
@@ -305,7 +306,7 @@ def TC_pafCCDBadColumn(root, time, CCDSEL, NBC, BC, comment = ''):
     etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "BC")
     root[1][len(root[1])-1][2][2].text = BC
     
-    incremented_time = str(round(float(time)+Timeline_settings()['command_separation'],2))
+    incremented_time = str(round(float(time)+OPT_Config_File.Timeline_settings()['command_separation'],2))
     
     return incremented_time
     
@@ -324,7 +325,7 @@ def TC_pafCCDFlushBadColumns(root, time, CCDSEL, comment = ''):
     etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "CCDSEL")
     root[1][len(root[1])-1][2][0].text = CCDSEL
     
-    incremented_time = str(round(float(time)+Timeline_settings()['command_separation'],2))
+    incremented_time = str(round(float(time)+OPT_Config_File.Timeline_settings()['command_separation'],2))
     
     return incremented_time
     
@@ -357,7 +358,7 @@ def TC_pafCCDBIAS(root, time, CCDSEL, VGATE, VSUBST, VRD, VOD, comment = ''):
     etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "VOD")
     root[1][len(root[1])-1][2][4].text = VOD
     
-    incremented_time = str(round(float(time)+Timeline_settings()['command_separation'],2))
+    incremented_time = str(round(float(time)+OPT_Config_File.Timeline_settings()['command_separation'],2))
     
     return incremented_time
     
@@ -376,7 +377,7 @@ def TC_pafCCDSnapshot(root, time, CCDSelect, comment = ''):
     etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "CCDSEL")
     root[1][len(root[1])-1][2][0].text = CCDSelect
     
-    incremented_time = str(round(float(time)+Timeline_settings()['command_separation'],2))
+    incremented_time = str(round(float(time)+OPT_Config_File.Timeline_settings()['command_separation'],2))
     
     return incremented_time
 
@@ -398,7 +399,7 @@ def TC_pafCCDTRANSPARENTCMD(root, time, CCDSEL, CHAR, comment = ''):
     etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "CHAR")
     root[1][len(root[1])-1][2][1].text = CHAR
     
-    incremented_time = str(round(float(time)+Timeline_settings()['command_separation'],2))
+    incremented_time = str(round(float(time)+OPT_Config_File.Timeline_settings()['command_separation'],2))
     
     return incremented_time
     
@@ -417,12 +418,12 @@ def TC_pafDbg(root, time, CCDSEL, comment = ''):
     etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "CCDSEL")
     root[1][len(root[1])-1][2][0].text = CCDSEL
     
-    incremented_time = str(round(float(time)+Timeline_settings()['command_separation'],2))
+    incremented_time = str(round(float(time)+OPT_Config_File.Timeline_settings()['command_separation'],2))
     
     return incremented_time
 
 
-def TC_pafPM(root, time, TEXPMS = str(PM_settings()['TEXPMS']), TEXPIMS = str(PM_settings()['TEXPIMS']), comment = ''):
+def TC_pafPM(root, time, TEXPMS = str(OPT_Config_File.PM_settings()['TEXPMS']), TEXPIMS = str(OPT_Config_File.PM_settings()['TEXPIMS']), comment = ''):
     
     etree.SubElement(root[1], 'command', mnemonic = "TC_pafPM")
     
@@ -439,6 +440,6 @@ def TC_pafPM(root, time, TEXPMS = str(PM_settings()['TEXPMS']), TEXPIMS = str(PM
     etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "TEXPIMS")
     root[1][len(root[1])-1][2][1].text = TEXPIMS
     
-    incremented_time = str(round(float(time)+Timeline_settings()['command_separation'],2))
+    incremented_time = str(round(float(time)+OPT_Config_File.Timeline_settings()['command_separation'],2))
     
     return incremented_time

@@ -23,10 +23,12 @@ XML_generator_Mode_name, where Mode_name is the same as the string used in the S
 """
 
 
-import ephem, logging, sys, pylab
+import ephem, logging, sys, pylab, importlib
 import pymap3d as pm3d
 
-import OPT_Config_File
+from Operational_Planning_Tool import _Globals
+
+OPT_Config_File = importlib.import_module(_Globals.Config_File)
 from Operational_Planning_Tool._Library import rot_arbit, params_checker, utc_to_onboardTime
 from .Macros import Macros
 from Operational_Planning_Tool import _MATS_coordinates
@@ -57,15 +59,17 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
     
     settings = OPT_Config_File.Mode_1_2_3_4_settings()
     
-    timestep = settings['timestep']
     
-    log_timestep = settings['log_timestep']
-    Logger.debug('log_timestep [s]: '+str(log_timestep))
     
     Logger.debug('params from Science Mode List: '+str(params))
     params = params_checker(params,settings)
     Logger.debug('params after params_checker function: '+str(params))
     Logger.info('params used: '+str(params))
+    
+    timestep = params['timestep']
+    
+    log_timestep = params['log_timestep']
+    Logger.debug('log_timestep [s]: '+str(log_timestep))
     
     Sun = ephem.Sun(date)
     MATS = ephem.readtle('MATS', OPT_Config_File.getTLE()[0], OPT_Config_File.getTLE()[1])
@@ -125,7 +129,7 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
        
         r_MATS[t,0:3] = [x_MATS[t], y_MATS[t], z_MATS[t]]
         r_MATS_ECEF[t,0], r_MATS_ECEF[t,1], r_MATS_ECEF[t,2] = pm3d.eci2ecef(
-                (r_MATS[t,0]*1000, r_MATS[t,1]*1000, r_MATS[t,2]*1000), ephem.Date(current_time).datetime())
+                r_MATS[t,0]*1000, r_MATS[t,1]*1000, r_MATS[t,2]*1000, ephem.Date(current_time).datetime(), useastropy = True)
         
         orbangle_between_LP_MATS_array[t]= arccos((R_mean+pointing_altitude/1000)/(R_mean+altitude_MATS[t]))/pi*180
         orbangle_between_LP_MATS = orbangle_between_LP_MATS_array[t][0]
@@ -153,7 +157,7 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
             optical_axis[t,0:3] = optical_axis[t,0:3] / norm(optical_axis[t,0:3])
             
             optical_axis_ECEF[t,0], optical_axis_ECEF[t,1], optical_axis_ECEF[t,2] = pm3d.eci2ecef(
-                (optical_axis[t,0]*1000, optical_axis[t,1]*1000, optical_axis[t,2]*1000), ephem.Date(current_time).datetime())
+                optical_axis[t,0]*1000, optical_axis[t,1]*1000, optical_axis[t,2]*1000, ephem.Date(current_time).datetime(), useastropy = True)
             
             LP_ECEF[t,0], LP_ECEF[t,1], LP_ECEF[t,2] = _MATS_coordinates.ecef2tanpoint(r_MATS_ECEF[t][0]*1000, r_MATS_ECEF[t][1]*1000, r_MATS_ECEF[t][2]*1000, 
                                        optical_axis_ECEF[t,0], optical_axis_ECEF[t,1], optical_axis_ECEF[t,2])
@@ -389,16 +393,17 @@ def XML_generator_Mode2(root, date, duration, relativeTime, params = {}):
     pi = pylab.pi
     arccos = pylab.arccos
     
-    timestep = settings['timestep']
     
-    log_timestep = settings['log_timestep']
-    Logger.debug('log_timestep [s]: '+str(log_timestep))
     
     Logger.debug('params from Science Mode List: '+str(params))
     params = params_checker(params,settings)
     Logger.debug('params after params_checker function: '+str(params))
     Logger.info('params used: '+str(params))
     
+    timestep = params['timestep']
+    
+    log_timestep = params['log_timestep']
+    Logger.debug('log_timestep [s]: '+str(log_timestep))
     
     Sun = ephem.Sun(date)
     MATS = ephem.readtle('MATS', OPT_Config_File.getTLE()[0], OPT_Config_File.getTLE()[1])
@@ -522,15 +527,17 @@ def XML_generator_Mode3(root, date, duration, relativeTime, params = {}):
     
     settings = OPT_Config_File.Mode_1_2_3_4_settings()
     
-    timestep = settings['timestep']
     
-    log_timestep = settings['log_timestep']
-    Logger.debug('log_timestep [s]: '+str(log_timestep))
     
     Logger.debug('params from Science Mode List: '+str(params))
     params = params_checker(params,settings)
     Logger.debug('params after params_checker function: '+str(params))
     Logger.info('params used: '+str(params))
+    
+    timestep = params['timestep']
+    
+    log_timestep = params['log_timestep']
+    Logger.debug('log_timestep [s]: '+str(log_timestep))
     
     Sun = ephem.Sun(date)
     MATS = ephem.readtle('MATS', OPT_Config_File.getTLE()[0], OPT_Config_File.getTLE()[1])
@@ -592,7 +599,7 @@ def XML_generator_Mode3(root, date, duration, relativeTime, params = {}):
        
         r_MATS[t,0:3] = [x_MATS[t], y_MATS[t], z_MATS[t]]
         r_MATS_ECEF[t,0], r_MATS_ECEF[t,1], r_MATS_ECEF[t,2] = pm3d.eci2ecef(
-                (r_MATS[t,0]*1000, r_MATS[t,1]*1000, r_MATS[t,2]*1000), ephem.Date(current_time).datetime())
+                r_MATS[t,0]*1000, r_MATS[t,1]*1000, r_MATS[t,2]*1000, ephem.Date(current_time).datetime(), useastropy = True)
         
         r_MATS_unit_vector[t,0:3] = r_MATS[t,0:3] / norm(r_MATS[t,0:3])
         
@@ -644,7 +651,7 @@ def XML_generator_Mode3(root, date, duration, relativeTime, params = {}):
             optical_axis[t,0:3] = optical_axis[t,0:3] / norm(optical_axis[t,0:3])
             
             optical_axis_ECEF[t,0], optical_axis_ECEF[t,1], optical_axis_ECEF[t,2] = pm3d.eci2ecef(
-                (optical_axis[t,0]*1000, optical_axis[t,1]*1000, optical_axis[t,2]*1000), ephem.Date(current_time).datetime())
+                optical_axis[t,0]*1000, optical_axis[t,1]*1000, optical_axis[t,2]*1000, ephem.Date(current_time).datetime(), useastropy = True)
             
             LP_ECEF[t,0], LP_ECEF[t,1], LP_ECEF[t,2] = _MATS_coordinates.ecef2tanpoint(r_MATS_ECEF[t][0]*1000, r_MATS_ECEF[t][1]*1000, r_MATS_ECEF[t][2]*1000, 
                                        optical_axis_ECEF[t,0], optical_axis_ECEF[t,1], optical_axis_ECEF[t,2])
@@ -878,15 +885,17 @@ def XML_generator_Mode4(root, date, duration, relativeTime, params = {}):
     pi = pylab.pi
     arccos = pylab.arccos
     
-    timestep = settings['timestep']
     
-    log_timestep = settings['log_timestep']
-    Logger.debug('log_timestep [s]: '+str(log_timestep))
     
     Logger.debug('params from Science Mode List: '+str(params))
     params = params_checker(params,settings)
     Logger.debug('params after params_checker function: '+str(params))
     Logger.info('params used: '+str(params))
+    
+    timestep = params['timestep']
+    
+    log_timestep = params['log_timestep']
+    Logger.debug('log_timestep [s]: '+str(log_timestep))
     
     Sun = ephem.Sun(date)
     MATS = ephem.readtle('MATS', OPT_Config_File.getTLE()[0], OPT_Config_File.getTLE()[1])

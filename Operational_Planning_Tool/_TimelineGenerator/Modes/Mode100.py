@@ -5,12 +5,14 @@ Part of Timeline_generator, as part of OPT.
 
 """
 
-import ephem, sys, logging
+import ephem, sys, logging, importlib
 
-from OPT_Config_File import Timeline_settings, Logger_name, Mode100_settings
+#from OPT_Config_File import Timeline_settings, Logger_name, Mode100_settings
 from Operational_Planning_Tool._Library import scheduler
+from Operational_Planning_Tool import _Globals
 
-Logger = logging.getLogger(Logger_name())
+OPT_Config_File = importlib.import_module(_Globals.Config_File)
+Logger = logging.getLogger(OPT_Config_File.Logger_name())
 
 
 def Mode100(Occupied_Timeline):
@@ -49,12 +51,12 @@ def date_calculator():
     """
     
     
-    if( Mode100_settings()['start_date'] != '0' ):
-        initial_date = ephem.Date(Mode100_settings()['start_date'])
+    if( OPT_Config_File.Mode100_settings()['start_date'] != '0' ):
+        initial_date = ephem.Date(OPT_Config_File.Mode100_settings()['start_date'])
         Logger.info('Mode specific start_date used as initial date')
     else:
         Logger.info('Timeline start_date used as initial date')
-        initial_date = ephem.Date(Timeline_settings()['start_date'])
+        initial_date = ephem.Date(OPT_Config_File.Timeline_settings()['start_date'])
     
     return initial_date
 
@@ -80,25 +82,25 @@ def date_select(Occupied_Timeline, initial_date):
     """
     
     
-    settings = Mode100_settings()
+    settings = OPT_Config_File.Mode100_settings()
     
     date = initial_date
     
     number_of_altitudes = int( (settings['pointing_altitude_to'] - settings['pointing_altitude_from']) / settings['pointing_altitude_interval'] + 1 )
     
-    duration = (settings['pointing_duration'] + Timeline_settings()['pointing_stabilization']) * number_of_altitudes
+    duration = (settings['pointing_duration'] + OPT_Config_File.Timeline_settings()['pointing_stabilization']) * number_of_altitudes
     
-    endDate = ephem.Date(initial_date + ephem.second*(Timeline_settings()['mode_separation'] + duration) )
+    endDate = ephem.Date(initial_date + ephem.second*(OPT_Config_File.Timeline_settings()['mode_separation'] + duration) )
     
     '''
     try:
         Logger.info('Mode specific mode_duration used as initial date')
-        endDate = ephem.Date(initial_date + ephem.second*Timeline_settings()['mode_separation'] +
-                             ephem.second*Mode100_settings()['mode_duration'])
+        endDate = ephem.Date(initial_date + ephem.second*OPT_Config_File.Timeline_settings()['mode_separation'] +
+                             ephem.second*OPT_Config_File.Mode100_settings()['mode_duration'])
     except:
         Logger.info('Timeline mode_duration used as initial date')
-        endDate = ephem.Date(initial_date + ephem.second*Timeline_settings()['mode_separation'] +
-                             ephem.second*Timeline_settings()['mode_duration'])
+        endDate = ephem.Date(initial_date + ephem.second*OPT_Config_File.Timeline_settings()['mode_separation'] +
+                             ephem.second*OPT_Config_File.Timeline_settings()['mode_duration'])
     '''
     
     ############### Start of availability schedueler ##########################

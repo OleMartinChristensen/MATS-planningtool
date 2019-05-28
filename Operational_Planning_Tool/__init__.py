@@ -6,13 +6,17 @@ Examples:
     
     OPT.Create_ConfigFile()
     
+    OPT.Set_ConfigFile('OPT_Config_File')
+    
     OPT.Timeline_gen()
     
     OPT.XML_gen('Output/Science_Mode_Timeline_Version_Original.json')
 
-Settings for the programs are stated in the *OPT_Config_File.py* file located in the working directory of the user call. This file can be created by
-by calling the *OPT.Create_ConfigFile* function (unless there already is an *OPT_Config_File.py* file in the working directory of the user call). 
+Settings for the programs are stated in a .py *Configuration File*, and the *Configuration File* to be used is set
+by calling *Set_ConfigFile()*. The file must be visible in *sys.path*. A .py *Configuration File* with default values 
+can be created by calling the *Create_ConfigFile* function (unless there already is an *OPT_Config_File.py* file located in the directory of the user call). 
 It is an copy of the original *Config_File_Original*, located in the *Operational_Planning_Tool* directory. 
+
 All settings in the generated *OPT_Config_File.py* can be changed to adjust the operation of the Operational Planning Tool. 
 All generated output files are saved in a folder called 'Output' in the working directory.
 Generated logs are also saved in folders created in the working directory.
@@ -30,11 +34,27 @@ def Create_ConfigFile():
     Returns:
         None
     """
-    import os, shutil
+    import shutil, os
     
     if(os.path.isfile('OPT_Config_File.py') == False):
         shutil.copyfile('Operational_Planning_Tool/_Config_File_Original.py','OPT_Config_File.py')
 
+
+def Set_ConfigFile(Config_File_Name):
+    """Sets the name of the .py file that is to be used as a Config File for OPT.
+    
+    The file must be visible in sys.path.
+    
+    Arguments:
+        Config_File_Name (str): The name of the Config File to be used (excluding .py).
+        
+    Returns:
+        None
+    """
+    
+    from . import _Globals as Globals
+    
+    Globals.Config_File = Config_File_Name
 
 
 def Timeline_gen():
@@ -50,6 +70,7 @@ def Timeline_gen():
     """
     from ._TimelineGenerator.Core import Timeline_generator
     
+    
     Timeline_generator()
     
     
@@ -57,7 +78,7 @@ def XML_gen(science_mode_timeline_path):
     """Invokes the XML generator program part of Operational Planning Tool for MATS.
     
     Converts a .json file containing a list of scheduled Science Modes/CMDs/Tests into commands and saves them as a .xml command file. 
-    Each Mode/CMD/Test in the Science Mode Timeline may contain or be given specific settings to override the Mode/CMD/Test specific settings given in OPT_Config_File.py file. \n
+    Each Mode/CMD/Test in the Science Mode Timeline may contain or be given specific settings to override the Mode/CMD/Test specific settings given in the chosen Config file. \n
     
     Settings for the operation of the program is stated in *OPT_Config_File.py*, which is created by running *Operational_Planning_Tool.Create_ConfigFile*.
     
@@ -70,6 +91,7 @@ def XML_gen(science_mode_timeline_path):
     
     from ._XMLGenerator.Core import XML_generator
     from . import _Globals as Globals
+    
     
     "Initialize current_pointing to None"
     Globals.current_pointing = None
@@ -94,6 +116,7 @@ def Timeline_analyser(science_mode_timeline_path, date):
     '''
     from ._TimelineAnalyzer.Core import Timeline_analyzer
     
+    
     Mode, Parameters = Timeline_analyzer(science_mode_timeline_path, date)
     
     return Mode, Parameters
@@ -112,6 +135,7 @@ def Data_Plotter():
         None
     '''
     from ._DataPlotter.Core import Data_Plotter
+    
     
     Data_Plotter()
     

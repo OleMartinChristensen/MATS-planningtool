@@ -5,15 +5,16 @@ Part of Timeline_generator, as part of OPT.
 
 """
 
-import logging, sys, csv, os
+import logging, sys, csv, os, importlib
 import ephem
 from pylab import array, cos, sin, cross, dot, zeros, sqrt, norm, pi, arccos, around, floor
 from astroquery.vizier import Vizier
 
 from Operational_Planning_Tool._Library import rot_arbit, deg2HMS, lat_2_R, scheduler
-from OPT_Config_File import Timeline_settings, getTLE, Mode120_settings, Logger_name, Version
+from Operational_Planning_Tool import _Globals
 
-Logger = logging.getLogger(Logger_name())
+OPT_Config_File = importlib.import_module(_Globals.Config_File)
+Logger = logging.getLogger(OPT_Config_File.Logger_name())
 
 
 def Mode120(Occupied_Timeline):
@@ -61,6 +62,8 @@ def Mode120_date_calculator():
     
     """
     
+    Mode120_settings = OPT_Config_File.Mode120_settings
+    
     automatic = Mode120_settings()['automatic']
     Logger.info('automatic = '+str(automatic))
     
@@ -83,13 +86,13 @@ def Mode120_date_calculator():
         timestep = Mode120_settings()['timestep'] #In seconds
         Logger.info('timestep set to: '+str(timestep)+' s')
         
-        duration = Timeline_settings()['duration']
+        duration = OPT_Config_File.Timeline_settings()['duration']
         Logger.info('Duration set to: '+str(duration)+' s')
         
         timesteps = int(floor(duration / timestep))
         Logger.info('Total number of timesteps set to: '+str(timesteps)+' s')
         
-        timeline_start = ephem.Date(Timeline_settings()['start_date'])
+        timeline_start = ephem.Date(OPT_Config_File.Timeline_settings()['start_date'])
         initial_time = ephem.Date( timeline_start + ephem.second*Mode120_settings()['freeze_start'] )
         
         Logger.info('Initial simulation date set to: '+str(initial_time))
@@ -187,7 +190,7 @@ def Mode120_date_calculator():
         #wgs84_Re = 6378.137 #Equatorial radius of wgs84 spheroid [km]
         # wgs84_Rp = 6356752.3142 #Polar radius of wgs84 spheroid [km]
         U = 398600.4418 #Earth gravitational parameter
-        LP_altitude = Timeline_settings()['LP_pointing_altitude']/1000  #Altitude at which MATS center of FOV is looking [km]
+        LP_altitude = OPT_Config_File.Timeline_settings()['LP_pointing_altitude']/1000  #Altitude at which MATS center of FOV is looking [km]
         pointing_altitude = Mode120_settings()['pointing_altitude']/1000 
         #extended_Re = wgs84_Re + LP_altitude #Equatorial radius of extended wgs84 spheroid
         #f_e = (wgs84_Re - wgs84_Rp) / Re_extended #Flattening of extended wgs84 spheroid
@@ -195,7 +198,7 @@ def Mode120_date_calculator():
         H_offset = Mode120_settings()['H_offset']  #5.67 is actual H_FOV
         
         pitch_offset_angle = 0
-        yaw_correction = Timeline_settings()['yaw_correction']
+        yaw_correction = OPT_Config_File.Timeline_settings()['yaw_correction']
         
         Logger.debug('Earth radius used [km]: '+str(R_mean))
         Logger.debug('LP_altitude set to [km]: '+str(LP_altitude))
@@ -203,8 +206,8 @@ def Mode120_date_calculator():
         Logger.debug('V_offset set to [degrees]: '+str(V_offset))
         Logger.debug('yaw_correction set to: '+str(yaw_correction))
         
-        Logger.debug('TLE used: '+getTLE()[0]+getTLE()[1])
-        MATS = ephem.readtle('MATS',getTLE()[0],getTLE()[1])
+        Logger.debug('TLE used: '+OPT_Config_File.getTLE()[0]+OPT_Config_File.getTLE()[1])
+        MATS = ephem.readtle('MATS',OPT_Config_File.getTLE()[0],OPT_Config_File.getTLE()[1])
         
         date = initial_time
         
@@ -296,7 +299,7 @@ def Mode120_date_calculator():
                     if( dot(cross( ascending_node, r_MATS[t,0:3]), normal_orbit[t,0:3]) >= 0 ):
                         arg_of_lat = 360 - arg_of_lat
                         
-                    yaw_offset_angle = Timeline_settings()['yaw_amplitude'] * cos( arg_of_lat/180*pi - pitch_LP/180*pi + Timeline_settings()['yaw_phase']/180*pi )
+                    yaw_offset_angle = OPT_Config_File.Timeline_settings()['yaw_amplitude'] * cos( arg_of_lat/180*pi - pitch_LP/180*pi + OPT_Config_File.Timeline_settings()['yaw_phase']/180*pi )
                     yaw_offset_angle = yaw_offset_angle[0]
                     
                     if( t*timestep % log_timestep == 0 or t == 1 ):
@@ -530,7 +533,7 @@ def Mode120_date_calculator():
         
         while(True):
             try:
-                file_directory = 'Output\\'+sys._getframe(1).f_code.co_name+'_Visible_Stars_'+Version()+'.csv'
+                file_directory = os.path.join('Output',sys._getframe(1).f_code.co_name+'_Visible_Stars_'+_Globals.Config_File+'.csv')
                 with open(file_directory, 'w', newline='') as write_file:
                     writer = csv.writer(write_file, dialect='excel-tab')
                     writer.writerows(star_list_excel)
@@ -581,6 +584,8 @@ def Mode120_date_select(Occupied_Timeline, dates):
             (str): Comment regarding the result of scheduling of the mode.
     
     """
+    
+    Mode120_settings = OPT_Config_File.Mode120_settings
     
     automatic = Mode120_settings()['automatic']
     
@@ -680,7 +685,7 @@ def Mode120_date_select(Occupied_Timeline, dates):
             Mode120_endDate = ephem.Date(Mode120_date+ephem.second*Mode120_settings()['mode_duration'])
             
             "Check that the scheduled date is not before the start of the timeline"
-            if( Mode120_date < ephem.Date(Timeline_settings()['start_date']) ):
+            if( Mode120_date < ephem.Date(OPT_Config_File.Timeline_settings()['start_date']) ):
                 iterations = iterations + 1
                 restart = True
                 continue

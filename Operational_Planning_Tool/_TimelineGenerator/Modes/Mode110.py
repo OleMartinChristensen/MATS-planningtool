@@ -8,12 +8,14 @@ Part of Timeline_generator, as part of OPT.
 
 
 
-import ephem, sys, logging
+import ephem, sys, logging, importlib
 
 from Operational_Planning_Tool._Library import scheduler
-from OPT_Config_File import Mode110_settings, Timeline_settings, Logger_name
+from Operational_Planning_Tool import _Globals
 
-Logger = logging.getLogger(Logger_name())
+OPT_Config_File = importlib.import_module(_Globals.Config_File)
+
+Logger = logging.getLogger(OPT_Config_File.Logger_name())
 
 
 def Mode110(Occupied_Timeline):
@@ -52,12 +54,12 @@ def date_calculator():
     """
     
     
-    if( Mode110_settings()['start_date'] != '0' ):
-        initial_date = ephem.Date(Mode110_settings()['start_date'])
+    if( OPT_Config_File.Mode110_settings()['start_date'] != '0' ):
+        initial_date = ephem.Date(OPT_Config_File.Mode110_settings()['start_date'])
         Logger.info('Mode specific start_date used as initial date')
     else:
         Logger.info('Timeline start_date used as initial date')
-        initial_date = ephem.Date(Timeline_settings()['start_date'])
+        initial_date = ephem.Date(OPT_Config_File.Timeline_settings()['start_date'])
     
     return initial_date
 
@@ -83,13 +85,13 @@ def date_select(Occupied_Timeline, initial_date):
     """
     
     
-    settings = Mode110_settings()
+    settings = OPT_Config_File.Mode110_settings()
     
     date = initial_date
     
-    duration = round(Timeline_settings()['pointing_stabilization'] + settings['sweep_start'] + round((settings['pointing_altitude_to'] - settings['pointing_altitude_from']) / settings['sweep_rate']) )
+    duration = round(OPT_Config_File.Timeline_settings()['pointing_stabilization'] + settings['sweep_start'] + round((settings['pointing_altitude_to'] - settings['pointing_altitude_from']) / settings['sweep_rate']) )
     
-    endDate = ephem.Date(initial_date + ephem.second * (duration + Timeline_settings()['mode_separation']))
+    endDate = ephem.Date(initial_date + ephem.second * (duration + OPT_Config_File.Timeline_settings()['mode_separation']))
     
     
     ############### Start of availability schedueler ##########################

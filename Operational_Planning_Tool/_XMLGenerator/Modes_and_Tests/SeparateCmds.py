@@ -21,11 +21,14 @@ Functions on the form "XML_generator_X", where the last X is any CMD:
 @author: David
 """
 
-import logging
+import logging, importlib
 
 from .Macros.Commands import Commands
+from .Macros import Macros
 from Operational_Planning_Tool._Library import params_checker
-import OPT_Config_File
+from Operational_Planning_Tool import _Globals
+
+OPT_Config_File = importlib.import_module(_Globals.Config_File)
 
 Logger = logging.getLogger(OPT_Config_File.Logger_name())
 
@@ -43,7 +46,7 @@ def XML_generator_PWRTOGGLE(root, date, duration, relativeTime,
     
     params_default = OPT_Config_File.PWRTOGGLE_settings()
     params = params_checker(params, params_default)
-    Commands.TC_pafPWRToggle(root, str(relativeTime), CONST = str(params['CONST']), comment = str(date))
+    Macros.PWRTOGGLE_macro(root, str(relativeTime), CONST = str(params['CONST']), comment = str(date))
     
     
 def XML_generator_UPLOAD(root, date, duration, relativeTime, 

@@ -1,0 +1,538 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="python 3.7">
+  <head>
+    <meta charset="utf-8" />
+    <title>Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros package &#8212; Operational_Planning_Tool  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands package" href="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.html" />
+    <link rel="prev" title="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests package" href="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros">
+<span id="operational-planning-tool-xmlgenerator-modes-and-tests-macros-package"></span><h1>Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros package<a class="headerlink" href="#module-Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.html">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.html#module-Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands module</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros">
+<span id="operational-planning-tool-xmlgenerator-modes-and-tests-macros-macros-module"></span><h2>Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros module<a class="headerlink" href="#module-Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros" title="Permalink to this headline">¶</a></h2>
+<p>Created on Mon Oct 22 14:31:43 2018</p>
+<p>Contains macro functions that represent parts of or a whole science-mode/test.</p>
+<dl class="field-list simple">
+<dt class="field-odd">param root</dt>
+<dd class="field-odd"><p>XML tree structure. Main container object for the ElementTree API.</p>
+</dd>
+<dt class="field-even">type root</dt>
+<dd class="field-even"><p>lxml.etree._Element</p>
+</dd>
+<dt class="field-odd">param relativeTime</dt>
+<dd class="field-odd"><p>The relative starting time of the macro with regard to the start of the timeline [s]</p>
+</dd>
+<dt class="field-even">type relativeTime</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+<dt class="field-odd">param comment</dt>
+<dd class="field-odd"><p>A comment for the macro</p>
+</dd>
+<dt class="field-even">type comment</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+<dt class="field-odd">param *Any other optional inputs depending on the macro which are defined in each macro function*</dt>
+<dd class="field-odd"><p></p></dd>
+<dt class="field-even">returns</dt>
+<dd class="field-even"><p>Time in seconds as a str class equal to the input &quot;relativeTime&quot; with added delay from the scheduling of commands, where the delay between commands is stated in OPT_Config_File.</p>
+</dd>
+<dt class="field-odd">rtype</dt>
+<dd class="field-odd"><p>relativeTime (str)</p>
+</dd>
+</dl>
+<dl class="function">
+<dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.IR_day">
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.</code><code class="descname">IR_day</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>pointing_altitude</em>, <em>comment</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Macros.html#IR_day"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.IR_day" title="Permalink to this definition">¶</a></dt>
+<dd><p>Macro that corresponds to Mode1/3 (at LP latitudes equatorwards of +-45 degrees) and Mode2/4. Exposure on Nadir is disabled.&quot;</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pointing_altitude</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- The altitude of the tangential LP [m] as a str class.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.IR_nadir_on_off">
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.</code><code class="descname">IR_nadir_on_off</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>nadir_on</em>, <em>comment</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Macros.html#IR_nadir_on_off"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.IR_nadir_on_off" title="Permalink to this definition">¶</a></dt>
+<dd><p>Macro that corresponds to effectively turning the nadir imager on/off by setting the TEXPMS. Used by Mode1-4 to avoid having to re-send commands for all CCDs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>nadirTEXPMS</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Either enables or disables exposure on the nadir CCD by setting the TEXPMS to &quot;X&quot;, where X is a number in ms, for enabled or to &quot;0&quot; for disabled.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.IR_night">
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.</code><code class="descname">IR_night</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>pointing_altitude</em>, <em>comment</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Macros.html#IR_night"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.IR_night" title="Permalink to this definition">¶</a></dt>
+<dd><p>Macro that corresponds to Mode1/3 (at LP latitudes equatorwards of +-45 degrees) and Mode2/4. Exposure on Nadir is enabled.&quot;</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pointing_altitude</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- The altitude of the tangential LP [m] as a str class.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.Limb_functional_test_macro">
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.</code><code class="descname">Limb_functional_test_macro</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>pointing_altitude</em>, <em>ExpTime</em>, <em>JPEGQ</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Macros.html#Limb_functional_test_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.Limb_functional_test_macro" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pointing_altitude</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- The altitude of the tangential point [m].</p></li>
+<li><p><strong>ExpTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Exposure time in ms</p></li>
+<li><p><strong>JPEGQ</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- The JPEG quality in %</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.Mode100_macro">
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.</code><code class="descname">Mode100_macro</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>pointing_altitude</em>, <em>ExpTimeUV</em>, <em>ExpIntUV</em>, <em>ExpTimeIR</em>, <em>ExpIntIR</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Macros.html#Mode100_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.Mode100_macro" title="Permalink to this definition">¶</a></dt>
+<dd><p>Macro that corresponds to Mode100.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pointing_altitude</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- The altitude of the tangential LP [m] as a str class.</p></li>
+<li><p><strong>ExpTimeUV</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- </p></li>
+<li><p><strong>ExpIntUV</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- </p></li>
+<li><p><strong>ExpTimeIR</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- </p></li>
+<li><p><strong>ExpIntIR</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.Mode110_macro">
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.</code><code class="descname">Mode110_macro</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>pointing_altitude_from</em>, <em>pointing_altitude_to</em>, <em>sweep_rate</em>, <em>relativeTime_sweep_start</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Macros.html#Mode110_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.Mode110_macro" title="Permalink to this definition">¶</a></dt>
+<dd><p>Macro that corresponds to Mode110</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pointing_altitude_from</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- The altitude in meters from which to start the sweep</p></li>
+<li><p><strong>pointing_altitude_from</strong> -- The altitude in meters where the sweep will end</p></li>
+<li><p><strong>sweep_rate</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- The rate of the sweep in m/s.</p></li>
+<li><p><strong>relativeTime_sweep</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- The relative starting time of the sweep in seconds with regard to the start of the timeline</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.Mode120_macro">
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.</code><code class="descname">Mode120_macro</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>freezeTime</em>, <em>FreezeDuration</em>, <em>pointing_altitude</em>, <em>Snapshot_relativeTime</em>, <em>comment</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Macros.html#Mode120_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.Mode120_macro" title="Permalink to this definition">¶</a></dt>
+<dd><p>Macro that corresponds to Mode120.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freezeTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Start time of attitude freeze command in on-board time [s] as a str class.</p></li>
+<li><p><strong>FreezeDuration</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Duration of freeze [s] as a str class.</p></li>
+<li><p><strong>pointing_altitude</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- The altitude of the tangential point [m] as a str class.</p></li>
+<li><p><strong>Snapshot_relativeTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- The relativeTime (time from start of timeline) at which the Snapshot is taken.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.Mode121_macro">
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.</code><code class="descname">Mode121_macro</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>freezeTime</em>, <em>FreezeDuration</em>, <em>pointing_altitude</em>, <em>Snapshot_relativeTime</em>, <em>ExpTimeUV</em>, <em>ExpIntUV</em>, <em>ExpTimeIR</em>, <em>ExpIntIR</em>, <em>comment</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Macros.html#Mode121_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.Mode121_macro" title="Permalink to this definition">¶</a></dt>
+<dd><p>Macro that corresponds to Mode121.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freezeTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Start time of attitude freeze command in on-board time [s] as a str class.</p></li>
+<li><p><strong>FreezeDuration</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Duration of freeze [s] as a str class.</p></li>
+<li><p><strong>pointing_altitude</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- The altitude of the tangential point [m] as a str class.</p></li>
+<li><p><strong>Snapshot_relativeTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- The relativeTime (time from start of timeline) at which the Snapshot is taken.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.Mode122_macro">
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.</code><code class="descname">Mode122_macro</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>freezeTime</em>, <em>FreezeDuration</em>, <em>pointing_altitude</em>, <em>Snapshot_relativeTime</em>, <em>ExpTimeUV</em>, <em>ExpIntUV</em>, <em>ExpTimeIR</em>, <em>ExpIntIR</em>, <em>comment</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Macros.html#Mode122_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.Mode122_macro" title="Permalink to this definition">¶</a></dt>
+<dd><p>Macro that corresponds to Mode122.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freezeTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Start time of attitude freeze command in on-board time [s] as a str class.</p></li>
+<li><p><strong>FreezeDuration</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Duration of freeze [s] as a str class.</p></li>
+<li><p><strong>pointing_altitude</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- The altitude of the tangential point [m] as a str class.</p></li>
+<li><p><strong>ExpInt</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Exposure interval [ms] as a str.</p></li>
+<li><p><strong>ExpTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Exposure time [ms] as a str.</p></li>
+<li><p><strong>Snapshot_relativeTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- The relativeTime (time from start of timeline) at which the Snapshot is taken.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.Mode130_macro">
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.</code><code class="descname">Mode130_macro</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>pointing_altitude</em>, <em>comment</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Macros.html#Mode130_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.Mode130_macro" title="Permalink to this definition">¶</a></dt>
+<dd><p>Macro that corresponds to Mode130</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pointing_altitude</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- The altitude of the tangential point [m] as a str class.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.Mode131_macro">
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.</code><code class="descname">Mode131_macro</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>pointing_altitude</em>, <em>ExpTimeUV</em>, <em>ExpIntUV</em>, <em>ExpTimeIR</em>, <em>ExpIntIR</em>, <em>comment</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Macros.html#Mode131_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.Mode131_macro" title="Permalink to this definition">¶</a></dt>
+<dd><p>Macro that corresponds to Mode131</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pointing_altitude</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- The altitude of the tangential point [m] as a str class.</p></li>
+<li><p><strong>ExpInt</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Exposure interval [ms] as a str.</p></li>
+<li><p><strong>ExpTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Exposure time [ms] as a str.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.Mode132_macro">
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.</code><code class="descname">Mode132_macro</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>pointing_altitude</em>, <em>ExpTimeUV</em>, <em>ExpIntUV</em>, <em>ExpTimeIR</em>, <em>ExpIntIR</em>, <em>comment</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Macros.html#Mode132_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.Mode132_macro" title="Permalink to this definition">¶</a></dt>
+<dd><p>Macro that corresponds to Mode132</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pointing_altitude</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- The altitude of the tangential point [m] as a str class.</p></li>
+<li><p><strong>ExpInt</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Exposure interval [ms] as a str.</p></li>
+<li><p><strong>ExpTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Exposure time [ms] as a str.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.Mode200_macro">
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.</code><code class="descname">Mode200_macro</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>freezeTime</em>, <em>FreezeDuration</em>, <em>pointing_altitude</em>, <em>comment</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Macros.html#Mode200_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.Mode200_macro" title="Permalink to this definition">¶</a></dt>
+<dd><p>Macro that corresponds to Mode200.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>freezeTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Start time of attitude freeze command in on-board time [s] as a str class.</p></li>
+<li><p><strong>FreezeDuration</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Duration of freeze [s] as a str class.</p></li>
+<li><p><strong>pointing_altitude</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- The altitude of the tangential point [m] as a str class.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.NLC_day">
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.</code><code class="descname">NLC_day</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>pointing_altitude</em>, <em>UV_on</em>, <em>comment</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Macros.html#NLC_day"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.NLC_day" title="Permalink to this definition">¶</a></dt>
+<dd><p>Macro that corresponds to Mode1/3 when exposure on the nadir CCD is disabled during NLC season at LP latitudes polewards of X degrees, where X is specified in OPT_Config_File.Mode_1_2_3_4_settings&quot;</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pointing_altitude</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- The altitude of the tangential point [m].</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.NLC_nadir_on_off">
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.</code><code class="descname">NLC_nadir_on_off</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>nadir_on</em>, <em>comment</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Macros.html#NLC_nadir_on_off"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.NLC_nadir_on_off" title="Permalink to this definition">¶</a></dt>
+<dd><p>Macro that corresponds to effectively turning the nadir imager on/off by setting the TEXPMS. Used by Mode1/3 to avoid having to re-send commands for all CCDs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>nadirTEXPMS</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Either enables or disables exposure on the nadir CCD by setting the TEXPMS to &quot;X&quot;, where X is a number in ms, for enabled or to &quot;0&quot; for disabled.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.NLC_night">
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.</code><code class="descname">NLC_night</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>pointing_altitude</em>, <em>UV_on</em>, <em>comment</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Macros.html#NLC_night"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.NLC_night" title="Permalink to this definition">¶</a></dt>
+<dd><p>Macro that corresponds to Mode1/3 when exposure on the nadir CCD is enabled during NLC season at LP latitudes polewards of X degrees, where X is specified in OPT_Config_File.Mode_1_2_3_4_settings&quot;</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>pointing_altitude</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- The altitude of the tangential point [m].</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.Nadir_functional_test_macro">
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.</code><code class="descname">Nadir_functional_test_macro</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>pointing_altitude</em>, <em>ExpTime</em>, <em>JPEGQ</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Macros.html#Nadir_functional_test_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.Nadir_functional_test_macro" title="Permalink to this definition">¶</a></dt>
+<dd><p>Nadir_functional_test</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pointing_altitude</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- The altitude of the tangential point [m].</p></li>
+<li><p><strong>ExpTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Exposure time in ms</p></li>
+<li><p><strong>JPEGQ</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- The JPEG quality in %</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.PWRTOGGLE_macro">
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.</code><code class="descname">PWRTOGGLE_macro</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>CONST</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Macros.html#PWRTOGGLE_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.PWRTOGGLE_macro" title="Permalink to this definition">¶</a></dt>
+<dd><p>Macro that corresponds to the PWRTOGGLE CMD.</p>
+<p>Switches off all CCDs before PWRTOGGLING</p>
+<blockquote>
+<div><dl class="simple">
+<dt>Arguments:</dt><dd><p>CONST (str): Magical constant.</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
+
+<dl class="function">
+<dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.Photometer_test_1_macro">
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.</code><code class="descname">Photometer_test_1_macro</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>ExpTime</em>, <em>ExpInt</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Macros.html#Photometer_test_1_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros.Photometer_test_1_macro" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ExpTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Exposure time in ms</p></li>
+<li><p><strong>ExpInt</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Exposure interval in ms</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Procedures">
+<span id="operational-planning-tool-xmlgenerator-modes-and-tests-macros-procedures-module"></span><h2>Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Procedures module<a class="headerlink" href="#module-Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Procedures" title="Permalink to this headline">¶</a></h2>
+<p>Contain procedures which represent a sequence of commands often used by macros.</p>
+<dl class="field-list simple">
+<dt class="field-odd">param root</dt>
+<dd class="field-odd"><p></p></dd>
+<dt class="field-even">type root</dt>
+<dd class="field-even"><p>lxml.etree._Element</p>
+</dd>
+<dt class="field-odd">param relativeTime</dt>
+<dd class="field-odd"><p></p></dd>
+<dt class="field-even">type relativeTime</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+<dt class="field-odd">param comment</dt>
+<dd class="field-odd"><p></p></dd>
+<dt class="field-even">type comment</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+<dt class="field-odd">param *Any other optional inputs depending on the procedure which are defined in each procedure function*</dt>
+<dd class="field-odd"><p></p></dd>
+</dl>
+<dl class="simple">
+<dt>Output:</dt><dd><p>relativeTime (str) = Time [s] as a str class equal to the input &quot;relativeTime&quot; with added delay from the scheduling of each command, where the delay between commands is stated in OPT_Config_File.</p>
+</dd>
+</dl>
+<dl class="function">
+<dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Procedures.BinnedCalibration_procedure">
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Procedures.</code><code class="descname">BinnedCalibration_procedure</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>nadirTEXPMS='0'</em>, <em>ExpIntUV='4000'</em>, <em>ExpTimeUV='3000'</em>, <em>ExpIntIR='6000'</em>, <em>ExpTimeIR='5000'</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Procedures.html#BinnedCalibration_procedure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Procedures.BinnedCalibration_procedure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Standard CCD binning with exposure on nadir camera by default is disabled, see module description for more details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nadir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Sets the nadir CCD on or off. Either &quot;1&quot; for on or &quot;0&quot; for off.</p></li>
+<li><p><strong>ExpIntUV</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Exposure interval of UV CCDs in ms</p></li>
+<li><p><strong>ExpTimeUV</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Exposure time of UV CCDs in ms</p></li>
+<li><p><strong>ExpIntIR</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Exposure interval of IR CCDs in ms</p></li>
+<li><p><strong>ExpTimeIR</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Exposure time of IR CCDs in ms</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Procedures.Full_CCD_procedure">
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Procedures.</code><code class="descname">Full_CCD_procedure</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>nadirTEXPMS='0'</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Procedures.html#Full_CCD_procedure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Procedures.Full_CCD_procedure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Full CCD binning with exposure on nadir camera by default is disabled, see module description for more details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>nadir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Sets the nadir CCD on or off. Either &quot;1&quot; for on or &quot;0&quot; for off.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Procedures.High_res_IR_procedure">
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Procedures.</code><code class="descname">High_res_IR_procedure</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>nadirTEXPMS</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Procedures.html#High_res_IR_procedure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Procedures.High_res_IR_procedure" title="Permalink to this definition">¶</a></dt>
+<dd><p>High resolution IR binning, see module description for more details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>nadir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Sets the nadir CCD on or off. Either &quot;1&quot; for on or &quot;0&quot; for off.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Procedures.High_res_UV_procedure">
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Procedures.</code><code class="descname">High_res_UV_procedure</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>nadirTEXPMS</em>, <em>UV_TEXPMS</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Procedures.html#High_res_UV_procedure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Procedures.High_res_UV_procedure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Standard CCD binning, see module description for more details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>nadir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Sets the nadir CCD on or off. Either &quot;1&quot; for on or &quot;0&quot; for off.</p></li>
+<li><p><strong>ExpIntUV</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Exposure interval of UV CCDs in ms</p></li>
+<li><p><strong>ExpTimeUV</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Exposure time of UV CCDs in ms</p></li>
+<li><p><strong>ExpIntIR</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Exposure interval of IR CCDs in ms</p></li>
+<li><p><strong>ExpTimeIR</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Exposure time of IR CCDs in ms</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Procedures.Single_pixel_procedure">
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Procedures.</code><code class="descname">Single_pixel_procedure</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>ExpTimeUV</em>, <em>ExpIntUV</em>, <em>ExpTimeIR</em>, <em>ExpIntIR</em>, <em>nadirTEXPMS='0'</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Procedures.html#Single_pixel_procedure"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Procedures.Single_pixel_procedure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Single Pixel CCD binning with exposure on nadir camera by default is disabled, see module description for more details.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ExpInt</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Exposure interval of UV and IR CCDs in ms</p></li>
+<li><p><strong>ExpTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Exposure time of UV and IR CCDs in ms</p></li>
+<li><p><strong>nadir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Sets the nadir CCD on or off. Either &quot;1&quot; for on or &quot;0&quot; for off.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Operational_Planning_Tool</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="Operational_Planning_Tool.html">Operational_Planning_Tool package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="Operational_Planning_Tool.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="Operational_Planning_Tool._DataPlotter.html">Operational_Planning_Tool._DataPlotter package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Operational_Planning_Tool._TimelineAnalyzer.html">Operational_Planning_Tool._TimelineAnalyzer package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Operational_Planning_Tool._TimelineGenerator.html">Operational_Planning_Tool._TimelineGenerator package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="Operational_Planning_Tool._XMLGenerator.html">Operational_Planning_Tool._XMLGenerator package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="Operational_Planning_Tool._XMLGenerator.html#subpackages">Subpackages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Operational_Planning_Tool._XMLGenerator.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Operational_Planning_Tool._XMLGenerator.html#module-Operational_Planning_Tool._XMLGenerator.Core">Operational_Planning_Tool._XMLGenerator.Core module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool.html#module-Operational_Planning_Tool._Config_File_Original">Operational_Planning_Tool._Config_File_Original module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool.html#module-Operational_Planning_Tool._Globals">Operational_Planning_Tool._Globals module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool.html#module-Operational_Planning_Tool._Library">Operational_Planning_Tool._Library module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool.html#module-Operational_Planning_Tool._MATS_coordinates">Operational_Planning_Tool._MATS_coordinates module</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="Operational_Planning_Tool.html">Operational_Planning_Tool package</a><ul>
+  <li><a href="Operational_Planning_Tool._XMLGenerator.html">Operational_Planning_Tool._XMLGenerator package</a><ul>
+  <li><a href="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.html">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests package</a><ul>
+      <li>Previous: <a href="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.html" title="previous chapter">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests package</a></li>
+      <li>Next: <a href="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.html" title="next chapter">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands package</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, David Skånberg.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

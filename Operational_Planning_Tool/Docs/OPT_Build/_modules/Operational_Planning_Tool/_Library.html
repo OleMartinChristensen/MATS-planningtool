@@ -1,0 +1,302 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="python 3.7">
+  <head>
+    <meta charset="utf-8" />
+    <title>Operational_Planning_Tool._Library &#8212; Operational_Planning_Tool  documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for Operational_Planning_Tool._Library</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*</span>
+<span class="sd">&quot;&quot;&quot;Contains functions used by the Operational Planning Tool .</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">ephem</span><span class="o">,</span> <span class="nn">importlib</span>
+<span class="kn">from</span> <span class="nn">pylab</span> <span class="k">import</span> <span class="n">cos</span><span class="p">,</span> <span class="n">sin</span><span class="p">,</span> <span class="n">sqrt</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">arccos</span><span class="p">,</span> <span class="n">pi</span><span class="p">,</span> <span class="n">floor</span><span class="p">,</span> <span class="n">around</span>
+
+<span class="kn">from</span> <span class="nn">Operational_Planning_Tool</span> <span class="k">import</span> <span class="n">_Globals</span>
+
+<span class="n">OPT_Config_File</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">_Globals</span><span class="o">.</span><span class="n">Config_File</span><span class="p">)</span>
+
+<div class="viewcode-block" id="rot_arbit"><a class="viewcode-back" href="../../Operational_Planning_Tool.html#Operational_Planning_Tool._Library.rot_arbit">[docs]</a><span class="k">def</span> <span class="nf">rot_arbit</span><span class="p">(</span><span class="n">angle</span><span class="p">,</span> <span class="n">u_v</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Takes an angle in radians and a unit vector and outputs a rotation matrix around that vector&quot;</span>
+<span class="sd">    </span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        angle (int): Angle in radians.</span>
+<span class="sd">        u_v (list): Unit vector</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (array): Rotation matrix</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">rot_mat</span> <span class="o">=</span> <span class="n">array</span><span class="p">([(</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span><span class="o">+</span><span class="n">u_v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)),</span> \
+    <span class="n">u_v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">u_v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">))</span><span class="o">-</span><span class="n">u_v</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">),</span> \
+    <span class="n">u_v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">u_v</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">))</span><span class="o">+</span><span class="n">u_v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">)),</span> \
+    \
+    <span class="p">(</span><span class="n">u_v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">u_v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">))</span><span class="o">+</span><span class="n">u_v</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">),</span> \
+    <span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span><span class="o">+</span><span class="n">u_v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)),</span> \
+    <span class="n">u_v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">u_v</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">))</span><span class="o">-</span><span class="n">u_v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">)),</span> \
+    \
+    <span class="p">(</span><span class="n">u_v</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">u_v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">))</span><span class="o">-</span><span class="n">u_v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">),</span> \
+    <span class="n">u_v</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">*</span><span class="n">u_v</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">))</span><span class="o">+</span><span class="n">u_v</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">angle</span><span class="p">),</span> \
+    <span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span><span class="o">+</span><span class="n">u_v</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">-</span><span class="n">cos</span><span class="p">(</span><span class="n">angle</span><span class="p">)))])</span>
+    
+    <span class="k">return</span> <span class="n">rot_mat</span></div>
+
+<div class="viewcode-block" id="deg2HMS"><a class="viewcode-back" href="../../Operational_Planning_Tool.html#Operational_Planning_Tool._Library.deg2HMS">[docs]</a><span class="k">def</span> <span class="nf">deg2HMS</span><span class="p">(</span><span class="n">ra</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">dec</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">roundOf</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Takes a declination or a RAAN angle in degrees and converts it to DMS or HMS format respectively</span>
+<span class="sd">    </span>
+<span class="sd">    Only one (and only one!) of the inputs (ra or dec) shall be provided.</span>
+<span class="sd">    </span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        ra (str): RAAN angle in degrees.</span>
+<span class="sd">        dec (str): Declination angle in degrees.</span>
+<span class="sd">        roundOf (bool): True for rounding of seconds to nearest integer. False for seconds with decimals.</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (str): RAAN or Declination angle in HMS format.</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">RA</span><span class="p">,</span> <span class="n">DEC</span><span class="p">,</span> <span class="n">rs</span><span class="p">,</span> <span class="n">ds</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span>
+    
+    <span class="k">if</span> <span class="n">dec</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">dec</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;-&#39;</span><span class="p">:</span>
+            <span class="n">ds</span><span class="p">,</span> <span class="n">dec</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="nb">abs</span><span class="p">(</span><span class="n">dec</span><span class="p">)</span>
+        <span class="n">deg</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">dec</span><span class="p">)</span>
+        <span class="n">decM</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">int</span><span class="p">((</span><span class="n">dec</span><span class="o">-</span><span class="n">deg</span><span class="p">)</span><span class="o">*</span><span class="mi">60</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">roundOf</span><span class="p">:</span>
+            <span class="n">decS</span> <span class="o">=</span> <span class="nb">int</span><span class="p">((</span><span class="nb">abs</span><span class="p">((</span><span class="n">dec</span><span class="o">-</span><span class="n">deg</span><span class="p">)</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span><span class="o">-</span><span class="n">decM</span><span class="p">)</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">decS</span> <span class="o">=</span> <span class="p">(</span><span class="nb">abs</span><span class="p">((</span><span class="n">dec</span><span class="o">-</span><span class="n">deg</span><span class="p">)</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span><span class="o">-</span><span class="n">decM</span><span class="p">)</span><span class="o">*</span><span class="mi">60</span>
+        <span class="n">DEC</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{0}{1}</span><span class="s1"> </span><span class="si">{2}</span><span class="s1"> </span><span class="si">{3}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ds</span><span class="p">,</span> <span class="n">deg</span><span class="p">,</span> <span class="n">decM</span><span class="p">,</span> <span class="n">decS</span><span class="p">)</span>
+        
+    <span class="k">elif</span> <span class="n">ra</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">ra</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;-&#39;</span><span class="p">:</span>
+            <span class="n">rs</span><span class="p">,</span> <span class="n">ra</span> <span class="o">=</span> <span class="s1">&#39;-&#39;</span><span class="p">,</span> <span class="nb">abs</span><span class="p">(</span><span class="n">ra</span><span class="p">)</span>
+        <span class="n">raH</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">ra</span><span class="o">/</span><span class="mi">15</span><span class="p">)</span>
+        <span class="n">raM</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(((</span><span class="n">ra</span><span class="o">/</span><span class="mi">15</span><span class="p">)</span><span class="o">-</span><span class="n">raH</span><span class="p">)</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">roundOf</span><span class="p">:</span>
+            <span class="n">raS</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(((((</span><span class="n">ra</span><span class="o">/</span><span class="mi">15</span><span class="p">)</span><span class="o">-</span><span class="n">raH</span><span class="p">)</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span><span class="o">-</span><span class="n">raM</span><span class="p">)</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">raS</span> <span class="o">=</span> <span class="p">((((</span><span class="n">ra</span><span class="o">/</span><span class="mi">15</span><span class="p">)</span><span class="o">-</span><span class="n">raH</span><span class="p">)</span><span class="o">*</span><span class="mi">60</span><span class="p">)</span><span class="o">-</span><span class="n">raM</span><span class="p">)</span><span class="o">*</span><span class="mi">60</span>
+        <span class="n">RA</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{0}{1}</span><span class="s1"> </span><span class="si">{2}</span><span class="s1"> </span><span class="si">{3}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rs</span><span class="p">,</span> <span class="n">raH</span><span class="p">,</span> <span class="n">raM</span><span class="p">,</span> <span class="n">raS</span><span class="p">)</span>
+        
+    <span class="k">return</span> <span class="n">RA</span> <span class="ow">or</span> <span class="n">DEC</span></div>
+
+
+<div class="viewcode-block" id="lat_2_R"><a class="viewcode-back" href="../../Operational_Planning_Tool.html#Operational_Planning_Tool._Library.lat_2_R">[docs]</a><span class="k">def</span> <span class="nf">lat_2_R</span><span class="p">(</span> <span class="n">lat</span> <span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Takes a geocentric latitude in radians and puts out the distance from the center of a spheroid Earth to the surface</span>
+<span class="sd">    </span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        lat (float): Latitude angle in radians</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (float): Geocentric distance [km]</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">R_polar</span> <span class="o">=</span> <span class="mf">6356.752314245</span>
+    <span class="n">R_eq</span> <span class="o">=</span> <span class="mf">6378.137</span>
+    
+    <span class="n">R</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span> <span class="p">(</span> <span class="p">(</span><span class="n">R_eq</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">cos</span><span class="p">(</span><span class="n">lat</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">R_polar</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">lat</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span> <span class="p">)</span> <span class="o">/</span> <span class="p">(</span> <span class="p">(</span><span class="n">R_eq</span><span class="o">*</span><span class="n">cos</span><span class="p">(</span><span class="n">lat</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">R_polar</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">lat</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span> <span class="p">)</span> <span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">R</span></div>
+
+<div class="viewcode-block" id="scheduler"><a class="viewcode-back" href="../../Operational_Planning_Tool.html#Operational_Planning_Tool._Library.scheduler">[docs]</a><span class="k">def</span> <span class="nf">scheduler</span><span class="p">(</span><span class="n">Occupied_Timeline</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">endDate</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; Function that checks if the scheduled time is available and postpones it otherwise. </span>
+<span class="sd">    </span>
+<span class="sd">    If scheduled time is occupied, it gets postponed with mode_separation*2 seconds (defined in Config_File.Timeline_settings) until available.</span>
+<span class="sd">    </span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        Occupied_Timeline (dict): A dictionary of all planned Modes (except 1-4) containing lists with their scheduled times ([startDate, endDate]) as ephem.Date class.</span>
+<span class="sd">        date (:obj:`ephem.Date`): The scheduled startdate of the current Mode.</span>
+<span class="sd">        endDate (:obj:`ephem.Date`): The scheduled end-date of the current Mode.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns: </span>
+<span class="sd">        (tuple): tuple containing:</span>
+<span class="sd">        date (ephem.Date): The scheduled startdate (potentially postponed) of the current Mode as a ephem.Date object. \n</span>
+<span class="sd">        endDate (ephem.Date): The scheduled end-date (potentially postponed) of the current Mode as a ephem.Date object. \n</span>
+<span class="sd">        iterations (int): The number of times the scheduled date got postponed. (int)</span>
+<span class="sd">        </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    
+    <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Timeline_settings</span><span class="p">()</span>
+    
+    <span class="n">iterations</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">restart</span> <span class="o">=</span> <span class="kc">True</span>
+    <span class="c1">## Checks if date is available and postpones starting date of mode until available</span>
+    <span class="k">while</span><span class="p">(</span> <span class="n">restart</span> <span class="o">==</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="n">restart</span> <span class="o">=</span> <span class="kc">False</span>
+        
+        <span class="s2">&quot;Extract the start and end dates of scheduled mode&quot;</span>
+        <span class="k">for</span> <span class="n">busy_dates</span> <span class="ow">in</span> <span class="n">Occupied_Timeline</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+            <span class="k">if</span><span class="p">(</span> <span class="n">busy_dates</span> <span class="o">==</span> <span class="p">[]):</span>
+                <span class="k">continue</span>
+            <span class="k">else</span><span class="p">:</span>
+                
+                <span class="s2">&quot;Extract the start and end date of each instance of a scheduled mode&quot;</span>
+                <span class="k">for</span> <span class="n">busy_date</span> <span class="ow">in</span> <span class="n">busy_dates</span><span class="p">:</span>
+                    
+                    <span class="s2">&quot;If the planned date collides with any already scheduled ones -&gt; post-pone and restart loop&quot;</span>
+                    <span class="k">if</span><span class="p">(</span> <span class="n">busy_date</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">date</span> <span class="o">&lt;</span> <span class="n">busy_date</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">or</span> 
+                           <span class="n">busy_date</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">endDate</span> <span class="o">&lt;=</span> <span class="n">busy_date</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">or</span>
+                           <span class="p">(</span><span class="n">date</span> <span class="o">&lt;</span> <span class="n">busy_date</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">endDate</span> <span class="o">&gt;</span> <span class="n">busy_date</span><span class="p">[</span><span class="mi">1</span><span class="p">])):</span>
+                        
+                        <span class="n">date</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">date</span> <span class="o">+</span> <span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;mode_separation&#39;</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span>
+                        <span class="n">endDate</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">endDate</span> <span class="o">+</span> <span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;mode_separation&#39;</span><span class="p">]</span><span class="o">*</span><span class="mi">2</span><span class="p">)</span>
+                        
+                        <span class="n">iterations</span> <span class="o">=</span> <span class="n">iterations</span> <span class="o">+</span> <span class="mi">1</span>
+                        <span class="n">restart</span> <span class="o">=</span> <span class="kc">True</span>
+                        <span class="k">break</span>
+                
+    <span class="k">return</span> <span class="n">date</span><span class="p">,</span> <span class="n">endDate</span><span class="p">,</span> <span class="n">iterations</span></div>
+
+
+<div class="viewcode-block" id="params_checker"><a class="viewcode-back" href="../../Operational_Planning_Tool.html#Operational_Planning_Tool._Library.params_checker">[docs]</a><span class="k">def</span> <span class="nf">params_checker</span><span class="p">(</span><span class="n">dict1</span><span class="p">,</span> <span class="n">dict2</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Function which compares the keys of two dictionaries and outputs a new dictionary. </span>
+<span class="sd">    </span>
+<span class="sd">    A dict_new will be created containing all the keys and values of dict2. Then for any keys that </span>
+<span class="sd">    exist in both dict1 and dict_new, dict_new&#39;s keys will have their values replaced by the ones in dict1.</span>
+<span class="sd">    </span>
+<span class="sd">    WARNING! All keys in dict1 must also exist in dict2.</span>
+<span class="sd">    </span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        dict1 (dict): </span>
+<span class="sd">        dict2 (dict): </span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (dict): </span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    
+    <span class="s2">&quot;Check if optional params were given&quot;</span>
+    <span class="k">if</span><span class="p">(</span> <span class="n">dict1</span> <span class="o">!=</span> <span class="n">dict2</span><span class="p">):</span>
+        <span class="n">dict_new</span> <span class="o">=</span> <span class="n">dict2</span>
+        <span class="s2">&quot;Loop through parameters given and exchange the settings ones&quot;</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">dict1</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">dict_new</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">dict1</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">dict_new</span> <span class="o">=</span> <span class="n">dict1</span>
+        
+    <span class="k">return</span> <span class="n">dict_new</span></div>
+
+<div class="viewcode-block" id="utc_to_onboardTime"><a class="viewcode-back" href="../../Operational_Planning_Tool.html#Operational_Planning_Tool._Library.utc_to_onboardTime">[docs]</a><span class="k">def</span> <span class="nf">utc_to_onboardTime</span><span class="p">(</span><span class="n">utc_date</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Function which converts a date in utc into onboard time in seconds.</span>
+<span class="sd">    </span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        utc_date (:obj:`ephem.Date`): The date as a ephem.Date class.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (int): Onboard Time in seconds</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Timeline_settings</span><span class="p">()</span>
+    
+    <span class="n">GPS_epoch</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;GPS_epoch&#39;</span><span class="p">])</span>
+    <span class="n">leapSeconds</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;leap_seconds&#39;</span><span class="p">]</span>
+    
+    <span class="n">GPS_date</span> <span class="o">=</span> <span class="n">utc_date</span><span class="o">+</span><span class="n">leapSeconds</span><span class="o">-</span><span class="n">GPS_epoch</span>
+    
+    <span class="n">onboardTime</span> <span class="o">=</span> <span class="n">around</span><span class="p">(</span><span class="n">GPS_date</span> <span class="o">/</span> <span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    GPS_week = floor(GPS_date/7)</span>
+<span class="sd">    </span>
+<span class="sd">    onboardTime = around( (GPS_date/7 - GPS_week) / ephem.second, 1 )</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">return</span> <span class="n">onboardTime</span></div>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">Operational_Planning_Tool</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../Operational_Planning_Tool.html">Operational_Planning_Tool package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  <li><a href="../Operational_Planning_Tool.html">Operational_Planning_Tool</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, David Skånberg.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

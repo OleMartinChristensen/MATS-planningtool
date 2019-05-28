@@ -12,21 +12,22 @@ Part of Timeline_generator, as part of OPT.
     
 """
 
-import logging, sys
+import logging, sys, importlib
 import ephem
 
 from Operational_Planning_Tool._Library import scheduler
-from OPT_Config_File import Timeline_settings, Logger_name
+from Operational_Planning_Tool import _Globals
 
-Logger = logging.getLogger(Logger_name())
+OPT_Config_File = importlib.import_module(_Globals.Config_File)
+Logger = logging.getLogger(OPT_Config_File.Logger_name())
 
 
 def PWRTOGGLE(Occupied_Timeline):
     
     Logger.info('Timeline start_time used as initial date')
-    initial_date = ephem.Date(Timeline_settings()['start_date'])
-    duration = Timeline_settings()['CMD_duration']
-    endDate = ephem.Date(initial_date + ephem.second*(Timeline_settings()['mode_separation'] + duration) )
+    initial_date = ephem.Date(OPT_Config_File.Timeline_settings()['start_date'])
+    duration = OPT_Config_File.Timeline_settings()['CMD_duration']
+    endDate = ephem.Date(initial_date + ephem.second*(OPT_Config_File.Timeline_settings()['mode_separation'] + duration) )
     
     ############### Start of availability schedueler ##########################
     
@@ -51,9 +52,9 @@ def PWRTOGGLE(Occupied_Timeline):
 def CCDBadColumn(Occupied_Timeline):
     
     Logger.info('Timeline start_time used as initial date')
-    initial_date = ephem.Date(Timeline_settings()['start_date'])
-    duration = Timeline_settings()['CMD_duration']
-    endDate = ephem.Date(initial_date + ephem.second*(Timeline_settings()['mode_separation'] + duration) )
+    initial_date = ephem.Date(OPT_Config_File.Timeline_settings()['start_date'])
+    duration = OPT_Config_File.Timeline_settings()['CMD_duration']
+    endDate = ephem.Date(initial_date + ephem.second*(OPT_Config_File.Timeline_settings()['mode_separation'] + duration) )
     
     ############### Start of availability schedueler ##########################
     
@@ -73,9 +74,9 @@ def CCDBadColumn(Occupied_Timeline):
 def CCDFlushBadColumns(Occupied_Timeline):
     
     Logger.info('Timeline start_time used as initial date')
-    initial_date = ephem.Date(Timeline_settings()['start_date'])
-    duration = Timeline_settings()['CMD_duration']
-    endDate = ephem.Date(initial_date + ephem.second*(Timeline_settings()['mode_separation'] + duration) )
+    initial_date = ephem.Date(OPT_Config_File.Timeline_settings()['start_date'])
+    duration = OPT_Config_File.Timeline_settings()['CMD_duration']
+    endDate = ephem.Date(initial_date + ephem.second*(OPT_Config_File.Timeline_settings()['mode_separation'] + duration) )
     
     ############### Start of availability schedueler ##########################
     
@@ -96,9 +97,9 @@ def CCDFlushBadColumns(Occupied_Timeline):
 def PM(Occupied_Timeline):
     
     Logger.info('Timeline start_time used as initial date')
-    initial_date = ephem.Date(Timeline_settings()['start_date'])
-    duration = Timeline_settings()['CMD_duration']
-    endDate = ephem.Date(initial_date + ephem.second*(Timeline_settings()['mode_separation'] + duration) )
+    initial_date = ephem.Date(OPT_Config_File.Timeline_settings()['start_date'])
+    duration = OPT_Config_File.Timeline_settings()['CMD_duration']
+    endDate = ephem.Date(initial_date + ephem.second*(OPT_Config_File.Timeline_settings()['mode_separation'] + duration) )
     
     ############### Start of availability schedueler ##########################
     
@@ -119,9 +120,9 @@ def PM(Occupied_Timeline):
 def CCDBIAS(Occupied_Timeline):
     
     Logger.info('Timeline start_time used as initial date')
-    initial_date = ephem.Date(Timeline_settings()['start_date'])
-    duration = Timeline_settings()['CMD_duration']
-    endDate = ephem.Date(initial_date + ephem.second*(Timeline_settings()['mode_separation'] + duration) )
+    initial_date = ephem.Date(OPT_Config_File.Timeline_settings()['start_date'])
+    duration = OPT_Config_File.Timeline_settings()['CMD_duration']
+    endDate = ephem.Date(initial_date + ephem.second*(OPT_Config_File.Timeline_settings()['mode_separation'] + duration) )
     
     ############### Start of availability schedueler ##########################
     
@@ -141,9 +142,9 @@ def CCDBIAS(Occupied_Timeline):
 def HTR(Occupied_Timeline):
     
     Logger.info('Timeline start_time used as initial date')
-    initial_date = ephem.Date(Timeline_settings()['start_date'])
-    duration = Timeline_settings()['CMD_duration']
-    endDate = ephem.Date(initial_date + ephem.second*(Timeline_settings()['mode_separation'] + duration) )
+    initial_date = ephem.Date(OPT_Config_File.Timeline_settings()['start_date'])
+    duration = OPT_Config_File.Timeline_settings()['CMD_duration']
+    endDate = ephem.Date(initial_date + ephem.second*(OPT_Config_File.Timeline_settings()['mode_separation'] + duration) )
     
     ############### Start of availability schedueler ##########################
     

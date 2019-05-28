@@ -39,13 +39,17 @@
 <span class="sd">    </span>
 <span class="sd">    OPT.Create_ConfigFile()</span>
 <span class="sd">    </span>
+<span class="sd">    OPT.Set_ConfigFile(&#39;OPT_Config_File&#39;)</span>
+<span class="sd">    </span>
 <span class="sd">    OPT.Timeline_gen()</span>
 <span class="sd">    </span>
 <span class="sd">    OPT.XML_gen(&#39;Output/Science_Mode_Timeline_Version_Original.json&#39;)</span>
 
-<span class="sd">Settings for the programs are stated in the *OPT_Config_File.py* file located in the working directory of the user call. This file can be created by</span>
-<span class="sd">by calling the *OPT.Create_ConfigFile* function (unless there already is an *OPT_Config_File.py* file inte working directory of the user call). </span>
-<span class="sd">It is an copy of the original *Config_File_Original*, located in the Operational_Planning_Tool directory. </span>
+<span class="sd">Settings for the programs are stated in a .py *Configuration File*, and the *Configuration File* to be used is set</span>
+<span class="sd">by calling *Set_ConfigFile()*. The file must be visible in *sys.path*. A .py *Configuration File* with default values </span>
+<span class="sd">can be created by calling the *Create_ConfigFile* function (unless there already is an *OPT_Config_File.py* file located in the directory of the user call). </span>
+<span class="sd">It is an copy of the original *Config_File_Original*, located in the *Operational_Planning_Tool* directory. </span>
+
 <span class="sd">All settings in the generated *OPT_Config_File.py* can be changed to adjust the operation of the Operational Planning Tool. </span>
 <span class="sd">All generated output files are saved in a folder called &#39;Output&#39; in the working directory.</span>
 <span class="sd">Generated logs are also saved in folders created in the working directory.</span>
@@ -55,25 +59,42 @@
 
 
 <div class="viewcode-block" id="Create_ConfigFile"><a class="viewcode-back" href="../Operational_Planning_Tool.html#Operational_Planning_Tool.Create_ConfigFile">[docs]</a><span class="k">def</span> <span class="nf">Create_ConfigFile</span><span class="p">():</span>
-    <span class="sd">&quot;&quot;&quot;Makes a copy of the original Config file (Config_File_Original, located in Operational_Planning_Tool).</span>
+    <span class="sd">&quot;&quot;&quot;Makes a copy of the original Config file (*Config_File_Original*, located in *Operational_Planning_Tool*).</span>
 <span class="sd">    </span>
-<span class="sd">    The copy is created in the working directory of the user call and can be freely modified. Operational_Planning_Tool will</span>
-<span class="sd">    use whatever file named &quot;OPT_Config_File&quot; that is also located in the working directory of the user call.</span>
+<span class="sd">    The copy is created in the working directory of the user call and can be freely modified. *Operational_Planning_Tool* will</span>
+<span class="sd">    use whatever file named *OPT_Config_File.py* that is located in the working directory of the user call.</span>
 <span class="sd">    </span>
 <span class="sd">    Returns:</span>
 <span class="sd">        None</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">import</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">shutil</span>
+    <span class="kn">import</span> <span class="nn">shutil</span><span class="o">,</span> <span class="nn">os</span>
     
     <span class="k">if</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="s1">&#39;OPT_Config_File.py&#39;</span><span class="p">)</span> <span class="o">==</span> <span class="kc">False</span><span class="p">):</span>
         <span class="n">shutil</span><span class="o">.</span><span class="n">copyfile</span><span class="p">(</span><span class="s1">&#39;Operational_Planning_Tool/_Config_File_Original.py&#39;</span><span class="p">,</span><span class="s1">&#39;OPT_Config_File.py&#39;</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="Set_ConfigFile"><a class="viewcode-back" href="../Operational_Planning_Tool.html#Operational_Planning_Tool.Set_ConfigFile">[docs]</a><span class="k">def</span> <span class="nf">Set_ConfigFile</span><span class="p">(</span><span class="n">Config_File_Name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Sets the name of the .py file that is to be used as a Config File for OPT.</span>
+<span class="sd">    </span>
+<span class="sd">    The file must be visible in sys.path.</span>
+<span class="sd">    </span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        Config_File_Name (str): The name of the Config File to be used (excluding .py).</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">_Globals</span> <span class="k">as</span> <span class="n">Globals</span>
+    
+    <span class="n">Globals</span><span class="o">.</span><span class="n">Config_File</span> <span class="o">=</span> <span class="n">Config_File_Name</span></div>
+
 
 <div class="viewcode-block" id="Timeline_gen"><a class="viewcode-back" href="../Operational_Planning_Tool.html#Operational_Planning_Tool.Timeline_gen">[docs]</a><span class="k">def</span> <span class="nf">Timeline_gen</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;Invokes the Timeline generator part of Operational Planning Tool.</span>
 <span class="sd">    </span>
-<span class="sd">    Predicts and schedueles Science Modes into a list containing dates for each Mode and saves it to a .json file in /Output. \n</span>
+<span class="sd">    Predicts and schedueles Science Modes and some separate payload CMDs into a list containing dates for each Mode and saves it to a .json file in /Output. \n</span>
+<span class="sd">    The Modes and CMDs to be scheduled are listed in *OPT_Config_File.Modes_priority*.</span>
 <span class="sd">    </span>
 <span class="sd">    Settings for the operation of the program are stated in *OPT_Config_File.py*, which is created by running Operational_Planning_Tool.Create_ConfigFile.</span>
 <span class="sd">    </span>
@@ -82,16 +103,17 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">._TimelineGenerator.Core</span> <span class="k">import</span> <span class="n">Timeline_generator</span>
     
+    
     <span class="n">Timeline_generator</span><span class="p">()</span></div>
     
     
 <div class="viewcode-block" id="XML_gen"><a class="viewcode-back" href="../Operational_Planning_Tool.html#Operational_Planning_Tool.XML_gen">[docs]</a><span class="k">def</span> <span class="nf">XML_gen</span><span class="p">(</span><span class="n">science_mode_timeline_path</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Invokes the XML generator program part of Operational Planning Tool for MATS.</span>
 <span class="sd">    </span>
-<span class="sd">    Converts a .json file containing a list of scheduled Science Modes/CMDs into commands and saves them to a .xml command file. </span>
-<span class="sd">    Each Mode/CMD in the Science Mode Timeline may contain or be given specific settings to override the Mode/CMD specific settings given in OPT_Config_File.py file. \n</span>
+<span class="sd">    Converts a .json file containing a list of scheduled Science Modes/CMDs/Tests into commands and saves them as a .xml command file. </span>
+<span class="sd">    Each Mode/CMD/Test in the Science Mode Timeline may contain or be given specific settings to override the Mode/CMD/Test specific settings given in the chosen Config file. \n</span>
 <span class="sd">    </span>
-<span class="sd">    Settings for the operation of the program is stated in *OPT_Config_File.py*, which is created by running Operational_Planning_Tool.Create_ConfigFile.</span>
+<span class="sd">    Settings for the operation of the program is stated in *OPT_Config_File.py*, which is created by running *Operational_Planning_Tool.Create_ConfigFile*.</span>
 <span class="sd">    </span>
 <span class="sd">    Arguments: </span>
 <span class="sd">        science_mode_timeline_path (str): Path to the .json file containing the Science Mode Timeline.</span>
@@ -102,6 +124,7 @@
     
     <span class="kn">from</span> <span class="nn">._XMLGenerator.Core</span> <span class="k">import</span> <span class="n">XML_generator</span>
     <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">_Globals</span> <span class="k">as</span> <span class="n">Globals</span>
+    
     
     <span class="s2">&quot;Initialize current_pointing to None&quot;</span>
     <span class="n">Globals</span><span class="o">.</span><span class="n">current_pointing</span> <span class="o">=</span> <span class="kc">None</span>
@@ -126,16 +149,17 @@
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="kn">from</span> <span class="nn">._TimelineAnalyzer.Core</span> <span class="k">import</span> <span class="n">Timeline_analyzer</span>
     
+    
     <span class="n">Mode</span><span class="p">,</span> <span class="n">Parameters</span> <span class="o">=</span> <span class="n">Timeline_analyzer</span><span class="p">(</span><span class="n">science_mode_timeline_path</span><span class="p">,</span> <span class="n">date</span><span class="p">)</span>
     
     <span class="k">return</span> <span class="n">Mode</span><span class="p">,</span> <span class="n">Parameters</span></div>
 
 <div class="viewcode-block" id="Data_Plotter"><a class="viewcode-back" href="../Operational_Planning_Tool.html#Operational_Planning_Tool.Data_Plotter">[docs]</a><span class="k">def</span> <span class="nf">Data_Plotter</span><span class="p">():</span>
-    <span class="sd">&#39;&#39;&#39;Invokes the Data_Plotter program part of Operational Planning Tool.</span>
+    <span class="sd">&#39;&#39;&#39;Invokes the *Data_Plotter* program part of *Operational_Planning_Tool*.</span>
 <span class="sd">    </span>
 <span class="sd">    Simulates the position and attitude of MATS during normal operation and compares it to </span>
 <span class="sd">    the actual positional and attitude data given in a data set. Plots both the simulated data and given data. \n</span>
-<span class="sd">    Settings for the operation of the program is stated in *OPT_Config_File.py*, which is created by running Operational_Planning_Tool.Create_ConfigFile.</span>
+<span class="sd">    Settings for the operation of the program is stated in *OPT_Config_File.py*, which is created by running *Operational_Planning_Tool.Create_ConfigFile*.</span>
 <span class="sd">    </span>
 <span class="sd">    Arguments:</span>
 <span class="sd">        DataSet_path (str): Path to the .csv file containing the relevant data of analysis.</span>
@@ -144,6 +168,7 @@
 <span class="sd">        None</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="kn">from</span> <span class="nn">._DataPlotter.Core</span> <span class="k">import</span> <span class="n">Data_Plotter</span>
+    
     
     <span class="n">Data_Plotter</span><span class="p">()</span></div>
     

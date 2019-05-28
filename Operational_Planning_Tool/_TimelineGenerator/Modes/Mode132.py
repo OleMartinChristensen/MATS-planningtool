@@ -5,12 +5,13 @@ Part of Timeline_generator, as part of OPT.
 
 """
 
-import ephem, sys, logging
+import ephem, sys, logging, importlib
 
 from Operational_Planning_Tool._Library import scheduler
-from OPT_Config_File import Mode132_settings, Timeline_settings, Logger_name
+from Operational_Planning_Tool import _Globals
 
-Logger = logging.getLogger(Logger_name())
+OPT_Config_File = importlib.import_module(_Globals.Config_File)
+Logger = logging.getLogger(OPT_Config_File.Logger_name())
 
 
 def Mode132(Occupied_Timeline):
@@ -49,12 +50,12 @@ def date_calculator():
     """
     
     
-    if( Mode132_settings()['start_date'] != '0' ):
-        initial_date = ephem.Date(Mode132_settings()['start_date'])
+    if( OPT_Config_File.Mode132_settings()['start_date'] != '0' ):
+        initial_date = ephem.Date(OPT_Config_File.Mode132_settings()['start_date'])
         Logger.info('Mode specific start_date used as initial date')
     else:
         Logger.info('Timeline start_date used as initial date')
-        initial_date = ephem.Date(Timeline_settings()['start_date'])
+        initial_date = ephem.Date(OPT_Config_File.Timeline_settings()['start_date'])
     
     return initial_date
 
@@ -80,12 +81,13 @@ def date_select(Occupied_Timeline, initial_date):
     """
     
     
-    settings = Mode132_settings()
+    settings = OPT_Config_File.Mode132_settings()
+    Timeline_settings = OPT_Config_File.Timeline_settings()
     
     if( len(settings['Exp_Times_and_Intervals_UV']) <= len(settings['Exp_Times_and_Intervals_IR'])):
-        duration = settings['session_duration']*len(settings['Exp_Times_and_Intervals_UV'])+Timeline_settings()['mode_separation']+Timeline_settings()['pointing_stabilization']
+        duration = settings['session_duration']*len(settings['Exp_Times_and_Intervals_UV'])+Timeline_settings['mode_separation']+Timeline_settings['pointing_stabilization']
     elif( len(settings['Exp_Times_and_Intervals_IR']) < len(settings['Exp_Times_and_Intervals_UV']) ):
-        duration = settings['session_duration']*len(settings['Exp_Times_and_Intervals_IR'])+Timeline_settings()['mode_separation']+Timeline_settings()['pointing_stabilization']
+        duration = settings['session_duration']*len(settings['Exp_Times_and_Intervals_IR'])+Timeline_settings['mode_separation']+Timeline_settings['pointing_stabilization']
     
     date = initial_date
     endDate = ephem.Date(initial_date + ephem.second*duration)

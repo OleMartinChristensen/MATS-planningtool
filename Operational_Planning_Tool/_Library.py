@@ -2,11 +2,12 @@
 """Contains functions used by the Operational Planning Tool .
 """
 
-import ephem
+import ephem, importlib
 from pylab import cos, sin, sqrt, array, arccos, pi, floor, around
 
-import OPT_Config_File
+from Operational_Planning_Tool import _Globals
 
+OPT_Config_File = importlib.import_module(_Globals.Config_File)
 
 def rot_arbit(angle, u_v):
     """Takes an angle in radians and a unit vector and outputs a rotation matrix around that vector"

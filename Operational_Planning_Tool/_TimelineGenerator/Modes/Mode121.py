@@ -6,15 +6,16 @@ Part of Timeline_generator, as part of OPT.
 """
 
 
-import logging, sys
+import logging, sys, importlib
 import ephem
 from pylab import array, cos, sin, cross, dot, zeros, sqrt, norm, pi, arccos, floor, arctan
 from astroquery.vizier import Vizier
 
 from Operational_Planning_Tool._Library import rot_arbit, deg2HMS, lat_2_R
-from OPT_Config_File import Timeline_settings, getTLE, Mode121_settings, Logger_name
+from Operational_Planning_Tool import _Globals
 
-Logger = logging.getLogger(Logger_name())
+OPT_Config_File = importlib.import_module(_Globals.Config_File)
+Logger = logging.getLogger(OPT_Config_File.Logger_name())
 
 
 def Mode121(Occupied_Timeline):
@@ -57,7 +58,7 @@ def date_calculator():
     
     """
     
-    Settings = Mode121_settings()
+    Settings = OPT_Config_File.Mode121_settings()
     
     "Simulation length and timestep"
     log_timestep = Settings['log_timestep']
@@ -66,13 +67,13 @@ def date_calculator():
     timestep = Settings['timestep'] #In seconds
     Logger.info('timestep set to: '+str(timestep)+' s')
     
-    duration = Timeline_settings()['duration']
+    duration = OPT_Config_File.Timeline_settings()['duration']
     Logger.info('Duration set to: '+str(duration)+' s')
     
     timesteps = int(floor(duration / timestep))
     Logger.info('Total number of timesteps set to: '+str(timesteps)+' s')
     
-    timeline_start = ephem.Date(Timeline_settings()['start_date'])
+    timeline_start = ephem.Date(OPT_Config_File.Timeline_settings()['start_date'])
     
     initial_time = ephem.Date( timeline_start + ephem.second*Settings['freeze_start'] )
     Logger.info('initial_time set to: '+str(initial_time))
@@ -166,7 +167,7 @@ def date_calculator():
     #wgs84_Re = 6378.137 #Equatorial radius of wgs84 spheroid [km]
     # wgs84_Rp = 6356752.3142 #Polar radius of wgs84 spheroid [km]
     U = 398600.4418 #Earth gravitational parameter
-    LP_altitude = Timeline_settings()['LP_pointing_altitude']/1000  #Altitude at which MATS center of FOV is looking [km]
+    LP_altitude = OPT_Config_File.Timeline_settings()['LP_pointing_altitude']/1000  #Altitude at which MATS center of FOV is looking [km]
     pointing_altitude = Settings['pointing_altitude']/1000 
     #extended_Re = wgs84_Re + LP_altitude #Equatorial radius of extended wgs84 spheroid
     #f_e = (wgs84_Re - wgs84_Rp) / Re_extended #Flattening of extended wgs84 spheroid
@@ -174,7 +175,7 @@ def date_calculator():
     H_FOV = Settings['H_FOV']  #5.67 is actual H_FOV
     
     pitch_offset_angle = 0
-    yaw_correction = Timeline_settings()['yaw_correction']
+    yaw_correction = OPT_Config_File.Timeline_settings()['yaw_correction']
     
     Logger.debug('Earth radius used [km]: '+str(R_mean))
     Logger.debug('LP_altitude set to [km]: '+str(LP_altitude))
@@ -185,8 +186,8 @@ def date_calculator():
     
     
     
-    Logger.debug('TLE used: '+getTLE()[0]+getTLE()[1])
-    MATS = ephem.readtle('MATS',getTLE()[0],getTLE()[1])
+    Logger.debug('TLE used: '+OPT_Config_File.getTLE()[0]+OPT_Config_File.getTLE()[1])
+    MATS = ephem.readtle('MATS',OPT_Config_File.getTLE()[0],OPT_Config_File.getTLE()[1])
     
     "Loop counter"
     t=0
@@ -277,7 +278,7 @@ def date_calculator():
                 if( dot(cross( ascending_node, r_MATS[t,0:3]), normal_orbit[t,0:3]) >= 0 ):
                     arg_of_lat = 360 - arg_of_lat
                     
-                yaw_offset_angle = Timeline_settings()['yaw_amplitude'] * cos( arg_of_lat/180*pi - pitch_LP/180*pi + Timeline_settings()['yaw_phase']/180*pi )
+                yaw_offset_angle = OPT_Config_File.Timeline_settings()['yaw_amplitude'] * cos( arg_of_lat/180*pi - pitch_LP/180*pi + OPT_Config_File.Timeline_settings()['yaw_phase']/180*pi )
                 yaw_offset_angle = yaw_offset_angle[0]
                 
                 if( t*timestep % log_timestep == 0 or t == 1 ):
@@ -476,7 +477,7 @@ def date_select(Occupied_Timeline, date_magnitude_array):
     
     Logger.info('Start of filtering function')
     
-    settings = Mode121_settings()
+    settings = OPT_Config_File.Mode121_settings()
     
     "Get the name of the parent function, which is always defined as the name of the mode"
     Mode_name = sys._getframe(1).f_code.co_name

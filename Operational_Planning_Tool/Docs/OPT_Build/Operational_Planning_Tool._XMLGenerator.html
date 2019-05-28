@@ -1,0 +1,220 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="python 3.7">
+  <head>
+    <meta charset="utf-8" />
+    <title>Operational_Planning_Tool._XMLGenerator package &#8212; Operational_Planning_Tool  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests package" href="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.html" />
+    <link rel="prev" title="Operational_Planning_Tool._TimelineGenerator.Modes package" href="Operational_Planning_Tool._TimelineGenerator.Modes.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-Operational_Planning_Tool._XMLGenerator">
+<span id="operational-planning-tool-xmlgenerator-package"></span><h1>Operational_Planning_Tool._XMLGenerator package<a class="headerlink" href="#module-Operational_Planning_Tool._XMLGenerator" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.html">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.html">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.html">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands package</a><ul>
+<li class="toctree-l6"><a class="reference internal" href="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.html#submodules">Submodules</a></li>
+<li class="toctree-l6"><a class="reference internal" href="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.html#module-Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.html#module-Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Macros module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.html#module-Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Procedures">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Procedures module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.html#module-Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.html#module-Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.SeparateCmds">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.SeparateCmds module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.html#module-Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Tests">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Tests module</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-Operational_Planning_Tool._XMLGenerator.Core">
+<span id="operational-planning-tool-xmlgenerator-core-module"></span><h2>Operational_Planning_Tool._XMLGenerator.Core module<a class="headerlink" href="#module-Operational_Planning_Tool._XMLGenerator.Core" title="Permalink to this headline">¶</a></h2>
+<p>Creates the base of the XML-tree and calculates initial values such as the
+start and end time and also duration of the timeline. Then goes through the
+supplied Science Mode Timeline List chronologically and calls for the corresponding function.</p>
+<p>Mode/Test/CMD specific settings given in the Science Mode Timeline List will overirde the use of the same settings stated in OPT_Config_File.</p>
+<dl class="function">
+<dt id="Operational_Planning_Tool._XMLGenerator.Core.XML_Initial_Basis_Creator">
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Core.</code><code class="descname">XML_Initial_Basis_Creator</code><span class="sig-paren">(</span><em>timeline_start</em>, <em>timeline_duration</em>, <em>SCIMOD_Path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Core.html#XML_Initial_Basis_Creator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Core.XML_Initial_Basis_Creator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Subfunction, Construct Basis of XML document and adds the description container.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>earliestStartingDate</strong> (<em>ephem.Date</em>) -- Earliest Starting date of the Timeline. On the form of the ephem.Date class.</p></li>
+<li><p><strong>latestStartingDate</strong> (<em>ephem.Date</em>) -- Latest Starting date of the Timeline. On the form of the ephem.Date class.</p></li>
+<li><p><strong>timeline_duration</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- Duration of the timeline [s] as a integer class.</p></li>
+<li><p><strong>SCIMOD_Path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- The path as a string to the Science Mode Timeline .json file used in this run.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Operational_Planning_Tool._XMLGenerator.Core.XML_generator">
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Core.</code><code class="descname">XML_generator</code><span class="sig-paren">(</span><em>SCIMOD_Path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Core.html#XML_generator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Core.XML_generator" title="Permalink to this definition">¶</a></dt>
+<dd><p>The core function of the XML_gen program.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>SCIMOD_Path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- A string containing the path to the Science Mode Timeline json file.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Operational_Planning_Tool._XMLGenerator.Core.XML_generator_select">
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Core.</code><code class="descname">XML_generator_select</code><span class="sig-paren">(</span><em>mode</em>, <em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Core.html#XML_generator_select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Core.XML_generator_select" title="Permalink to this definition">¶</a></dt>
+<dd><p>Subfunction, Selects corresponding mode, test or CMD function in the package <em>Modes_and_Tests</em> from the variable <em>mode</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- The name of the of the mode or test as a string. The name in the XML_generator_name function in OPT_XML_generator_MODES</p></li>
+<li><p><strong>root</strong> (<em>lxml.etree.Element</em>) -- XML tree structure. Main container object for the ElementTree API.</p></li>
+<li><p><strong>date</strong> (<em>ephem.Date</em>) -- </p></li>
+<li><p><strong>duration</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- </p></li>
+<li><p><strong>relativeTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- </p></li>
+<li><p><strong>params</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) -- </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Operational_Planning_Tool</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="Operational_Planning_Tool.html">Operational_Planning_Tool package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="Operational_Planning_Tool.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="Operational_Planning_Tool._DataPlotter.html">Operational_Planning_Tool._DataPlotter package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Operational_Planning_Tool._TimelineAnalyzer.html">Operational_Planning_Tool._TimelineAnalyzer package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Operational_Planning_Tool._TimelineGenerator.html">Operational_Planning_Tool._TimelineGenerator package</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Operational_Planning_Tool._XMLGenerator package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-Operational_Planning_Tool._XMLGenerator.Core">Operational_Planning_Tool._XMLGenerator.Core module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool.html#module-Operational_Planning_Tool._Config_File_Original">Operational_Planning_Tool._Config_File_Original module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool.html#module-Operational_Planning_Tool._Globals">Operational_Planning_Tool._Globals module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool.html#module-Operational_Planning_Tool._Library">Operational_Planning_Tool._Library module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool.html#module-Operational_Planning_Tool._MATS_coordinates">Operational_Planning_Tool._MATS_coordinates module</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="Operational_Planning_Tool.html">Operational_Planning_Tool package</a><ul>
+      <li>Previous: <a href="Operational_Planning_Tool._TimelineGenerator.Modes.html" title="previous chapter">Operational_Planning_Tool._TimelineGenerator.Modes package</a></li>
+      <li>Next: <a href="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.html" title="next chapter">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests package</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, David Skånberg.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/Operational_Planning_Tool._XMLGenerator.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -6,13 +6,14 @@ Part of Timeline_generator, as part of OPT.
 """
 
 
-import ephem, sys, logging
+import ephem, sys, logging, importlib
 from pylab import array, cos, sin, cross, dot, zeros, sqrt, norm, pi, arccos
 
 from Operational_Planning_Tool._Library import rot_arbit, lat_2_R, scheduler
-from OPT_Config_File import Timeline_settings, getTLE, Mode200_settings, Logger_name
+from Operational_Planning_Tool import _Globals
 
-Logger = logging.getLogger(Logger_name())
+OPT_Config_File = importlib.import_module(_Globals.Config_File)
+Logger = logging.getLogger(OPT_Config_File.Logger_name())
 
 
 def Mode200(Occupied_Timeline):
@@ -64,40 +65,43 @@ def Mode200_date_calculator():
     
     """
     
-    automatic = Mode200_settings()['automatic']
+    Timeline_settings = OPT_Config_File.Timeline_settings()
+    Mode200_settings = OPT_Config_File.Mode200_settings()
+    
+    automatic = Mode200_settings['automatic']
     Logger.info('automatic = '+str(automatic))
     
-    "To either calculate when Moon is visible and schedule from that data or just schedule at a given time given by Mode200_settings()['start_date']"
+    "To either calculate when Moon is visible and schedule from that data or just schedule at a given time given by Mode200_settings['start_date']"
     if( automatic == False ):
         try:
-            date = ephem.Date(Mode200_settings()['start_date'])
+            date = ephem.Date(Mode200_settings['start_date'])
             return date
         except:
-            Logger.error('Could not get OPT_Config_File.Mode200_settings()["start_date"], exiting...')
+            Logger.error('Could not get OPT_Config_File.Mode200_settings["start_date"], exiting...')
             sys.exit()
         
     elif( automatic == True ):
         
         
         
-        log_timestep = Mode200_settings()['log_timestep']
+        log_timestep = Mode200_settings['log_timestep']
         Logger.debug('log_timestep: '+str(log_timestep))
         
         
         "Simulation length and timestep"
         
-        timestep = Mode200_settings()['timestep'] #In seconds
+        timestep = Mode200_settings['timestep'] #In seconds
         Logger.info('Timestep set to [s]: '+str(timestep))
         
-        duration = Timeline_settings()['duration']
+        duration = Timeline_settings['duration']
         Logger.info('Duration set to [s]: '+str(duration))
         
-        timeline_start = ephem.Date(Timeline_settings()['start_date'])
-        initial_time= ephem.Date( timeline_start + ephem.second*Mode200_settings()['freeze_start'] )
+        timeline_start = ephem.Date(Timeline_settings['start_date'])
+        initial_time= ephem.Date( timeline_start + ephem.second*Mode200_settings['freeze_start'] )
         
         Logger.info('Initial simulation date set to: '+str(initial_time))
         
-        MATS = ephem.readtle('MATS',getTLE()[0],getTLE()[1])
+        MATS = ephem.readtle('MATS',OPT_Config_File.getTLE()[0],OPT_Config_File.getTLE()[1])
         
         Moon = ephem.Moon()
         
@@ -145,13 +149,13 @@ def Mode200_date_calculator():
         AU = 149597871 #km
         R_mean = 6371 #Earth radius
         U = 398600.4418 #Earth gravitational parameter
-        LP_altitude = Timeline_settings()['LP_pointing_altitude']/1000  #Altitude at which MATS center of FOV is looking
-        pointing_altitude = Mode200_settings()['pointing_altitude']/1000 
-        H_offset = Mode200_settings()['H_offset']  #5.67 is actual H_offset
-        V_offset = Mode200_settings()['V_offset'] 
+        LP_altitude = Timeline_settings['LP_pointing_altitude']/1000  #Altitude at which MATS center of FOV is looking
+        pointing_altitude = Mode200_settings['pointing_altitude']/1000 
+        H_offset = Mode200_settings['H_offset']  #5.67 is actual H_offset
+        V_offset = Mode200_settings['V_offset'] 
         Moon_orbital_period = 3600*24*27.32
         celestial_eq_normal = array([[0,0,1]])
-        yaw_correction = Timeline_settings()['yaw_correction']
+        yaw_correction = Timeline_settings['yaw_correction']
         
         Logger.debug('LP_altitude set to [km]: '+str(LP_altitude))
         Logger.debug('H_offset set to [degrees]: '+str(H_offset))
@@ -259,7 +263,7 @@ def Mode200_date_calculator():
                     if( dot(cross( ascending_node, r_MATS[t,0:3]), normal_orbit[t,0:3]) >= 0 ):
                         arg_of_lat = 360 - arg_of_lat
                         
-                    yaw_offset_angle = Timeline_settings()['yaw_amplitude'] * cos( arg_of_lat/180*pi - pitch_LP/180*pi + Timeline_settings()['yaw_phase']/180*pi )
+                    yaw_offset_angle = Timeline_settings['yaw_amplitude'] * cos( arg_of_lat/180*pi - pitch_LP/180*pi + Timeline_settings['yaw_phase']/180*pi )
                     yaw_offset_angle = yaw_offset_angle[0]
                     
                     if( t*timestep % log_timestep == 0 or t == 1 ):
@@ -453,12 +457,14 @@ def Mode200_date_select(Occupied_Timeline, dates):
     
     """
     Logger.info('Start of filtering function')
-    automatic = Mode200_settings()['automatic']
+    
+    Mode200_settings = OPT_Config_File.Mode200_settings()
+    automatic = Mode200_settings['automatic']
     
     "Either schedules a user provided date or filters and schedules calculated dates"
     if( automatic == False ):
         
-        endDate = ephem.Date(dates+ephem.second*Mode200_settings()['mode_duration'])
+        endDate = ephem.Date(dates+ephem.second*Mode200_settings['mode_duration'])
         
         ############### Start of availability schedueler ##########################
         
@@ -517,12 +523,12 @@ def Mode200_date_select(Occupied_Timeline, dates):
             
             Mode200_date = Moon_date[x]
             
-            Mode200_date = ephem.Date(ephem.Date(Mode200_date)-ephem.second*(Mode200_settings()['freeze_start']))
+            Mode200_date = ephem.Date(ephem.Date(Mode200_date)-ephem.second*(Mode200_settings['freeze_start']))
             
-            Mode200_endDate = ephem.Date(Mode200_date+ephem.second*Mode200_settings()['mode_duration'])
+            Mode200_endDate = ephem.Date(Mode200_date+ephem.second*Mode200_settings['mode_duration'])
             
             #Check that the scheduled date is not before the start of the timeline
-            if( Mode200_date < ephem.Date(Timeline_settings()['start_date']) ):
+            if( Mode200_date < ephem.Date(OPT_Config_File.Timeline_settings()['start_date']) ):
                 iterations = iterations + 1
                 restart = True
                 continue

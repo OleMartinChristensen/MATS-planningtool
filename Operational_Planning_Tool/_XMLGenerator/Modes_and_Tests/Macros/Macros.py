@@ -399,6 +399,24 @@ def Mode200_macro(root, relativeTime, freezeTime, FreezeDuration, pointing_altit
     return relativeTime
 
 
+def PWRTOGGLE_macro(root, relativeTime, CONST, comment = ''):
+    ''' Macro that corresponds to the PWRTOGGLE CMD.
+    
+    Switches off all CCDs before PWRTOGGLING
+    
+        Arguments:
+            CONST (str): Magical constant.
+    '''
+    
+    relativeTime = Commands.TC_pafMode(root, relativeTime, mode = "2", comment = comment)
+    
+    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDselect = '127', PWR = '0', ExpInterval = '1500', ExpTime = '1000', comment = comment)
+    
+    Commands.TC_pafPWRToggle(root, relativeTime, CONST = CONST, comment = comment)
+    
+    
+    return relativeTime
+
 
 def Limb_functional_test_macro(root, relativeTime, pointing_altitude, ExpTime, JPEGQ, comment = ''):
     '''Limb_functional_test_macro
