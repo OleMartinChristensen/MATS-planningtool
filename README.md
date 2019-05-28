@@ -57,15 +57,9 @@ of the Spyder project, as that directory is automatically part of the PYTHONPATH
 
 import Operational_Planning_Tool as OPT
 
-print(OPT.Create_ConfigFile.__doc__)
-
 OPT.Create_ConfigFile()
 
-print(OPT.Set_ConfigFile.__doc__)
-
 OPT.Set_ConfigFile('OPT_Config_File')
-
-print(OPT.Timeline_gen.__doc__)
 
 OPT.Timeline_gen()
 
