@@ -12,8 +12,8 @@ Operational_Planning_Tool requires at least Python 3.7.3 and these packages:
     
 It is recommended to install these packages in a conda environment using conda and to use "Spyder" as an editor.
 
-What follows is a basic tutorial for beginners to python3 on how to setup python3 in a conda environment 
-and then installing the required packages.
+What follows is a basic tutorial for beginners to python3 on how to setup python3 inside a conda environment 
+and then install the required packages.
 
 1. Install Anaconda (or Miniconda if prefered) from their website. 
 
@@ -26,11 +26,17 @@ Tool may already be installed (scipy for example). Miniconda comes with no prein
 3. Run these commands in the "Anaconda Prompt" to install the desired packages.
 
 $ conda install -c anaconda ephem
+
 $ conda install -c conda-forge matplotlib 
+
 $ conda install -c anaconda scipy 
+
 $ conda install -c anaconda lxml
+
 $ conda install -c astropy astroquery
+
 $ conda install pip
+
 $ pip install pymap3d
 
 
@@ -52,12 +58,15 @@ of the Spyder project, as that directory is automatically part of the PYTHONPATH
 import Operational_Planning_Tool as OPT
 
 print(OPT.Create_ConfigFile.__doc__)
+
 OPT.Create_ConfigFile()
 
 print(OPT.Set_ConfigFile.__doc__)
+
 OPT.Set_ConfigFile('OPT_Config_File')
 
 print(OPT.Timeline_gen.__doc__)
+
 OPT.Timeline_gen()
 
 See further documentation found under "Docs" in Operational_Planning_Tool to learn how to use the Operational_Planning_Tool package.
