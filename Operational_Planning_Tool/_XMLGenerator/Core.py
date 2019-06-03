@@ -130,11 +130,12 @@ def XML_generator(SCIMOD_Path):
         
     
     ### Rewrite path string to allow it to be in the name of the generated XML command file ###
-    SCIMOD_Path = SCIMOD_Path.replace('Output/','_from_')
+    SCIMOD_Path = SCIMOD_Path.replace('\\','_')
+    SCIMOD_Path = SCIMOD_Path.replace('/','_')
     SCIMOD_Path = SCIMOD_Path.replace('.json','')
     
     ### Write finished XML-tree with all commands to a file #######
-    MATS_COMMANDS = os.path.join('Output','MATS_COMMANDS__ConfigFile_'+_Globals.Config_File+'__'+SCIMOD_Path+'.xml')
+    MATS_COMMANDS = os.path.join('Output','MATS_COMMANDS__ConfigFile_'+_Globals.Config_File+'__TimelineFrom_'+SCIMOD_Path+'.xml')
     Logger.info('Write XML-tree to: '+MATS_COMMANDS)
     f = open(MATS_COMMANDS, 'w')
     f.write(etree.tostring(root, pretty_print=True, encoding = 'unicode'))

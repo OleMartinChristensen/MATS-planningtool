@@ -113,7 +113,7 @@ def Timeline_settings():
         
         'Mode_1_2_3_4minDuration': Minimum amount of time needed (inbetween scheduled Modes) for the scheduling of Modes 1-4 [s]. \n
         'mode_separation': Time in seconds. Is used in Library.scheduler to postpone Modes and also as an extra term in the calculations of the duration of other modes to act as an prolonged buffer.
-        Meaning that whenever mode_duration is calculated it is equal to an calculated estimation of the modes duration plus "mode_separation". (int) \n
+        Meaning that whenever mode_duration is calculated it is equal to an calculated estimation or a set value of the modes/CMD duration plus *mode_separation*. (int) \n
         'CMD_duration': Sets the amount of time scheduled for PayloadCMDs using *Timeline_gen*. (int) \n
         
         'yaw_correction': If yaw correction will be used for the duration of the timeline. Decides if Mode1/2 or Mode3/4 are to be scheduled. Set to True for Mode3/4, set to False for Mode1/2. (bool) \n
@@ -169,7 +169,7 @@ def Mode100_settings():
         (dict): settings
             
     '''
-    settings = {'pointing_altitude_from': 10000, 'pointing_altitude_to': 150000, 
+    settings = {'pointing_altitude_from': 40000, 'pointing_altitude_to': 150000, 
                 'pointing_altitude_interval': 5000, 'pointing_duration': 20, 'Exp_Time_and_Interval_UV': (1000,2000), 'Exp_Time_and_Interval_IR': (1000,2000), 'ExpTime_interval': 1000,  'start_date': '0'}
     return settings
 
@@ -188,7 +188,7 @@ def Mode110_settings():
         (dict): settings
         
     '''
-    settings = {'pointing_altitude_from': 10000, 'pointing_altitude_to': 150000, 'sweep_rate': 500, 'sweep_start': 120, 'start_date': '0'}
+    settings = {'pointing_altitude_from': 40000, 'pointing_altitude_to': 150000, 'sweep_rate': 500, 'sweep_start': 120, 'start_date': '0'}
     return settings
 
 
@@ -375,7 +375,7 @@ def Mode200_settings():
     
     '''
     settings = {'pointing_altitude': 227000, 'V_offset': 0, 'H_offset': 3+2.5, 'timestep': 2, 'log_timestep': 1200, 
-                      'automatic': True, 'date': '2019', 'mode_duration': 0, 'freeze_start': 300, 'freeze_duration': 0}
+                      'automatic': True, 'date': '2019', 'mode_duration': 0, 'freeze_start': 120, 'freeze_duration': 0}
     
     if( settings['freeze_duration'] == 0):
         settings['freeze_duration'] = FreezeDuration_calculator( Timeline_settings()['LP_pointing_altitude'], settings['pointing_altitude'])
@@ -449,13 +449,13 @@ def CCDBadColumn_settings():
     Keys:
         'CCDSEL': CCD select, 1 bit for each CCD (1..127). \n
         'NBC': Number of uint16 in BC as a uint16. Big Endian. Maximum number is 63. \n
-        'BC': Bad Column as a uint16 (4..2047). Several uint16 cam be combined to select multiple columns. 
+        'BC': Bad Columns as a list of uint16 (4..2047).
         
     Returns:
         (dict): parameters
     
     '''
-    parameters = {'CCDSEL': 1, 'NBC': 0, 'BC': 0}
+    parameters = {'CCDSEL': 1, 'NBC': 0, 'BC': []}
     return parameters
 
 def PM_settings():
