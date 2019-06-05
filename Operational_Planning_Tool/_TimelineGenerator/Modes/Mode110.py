@@ -89,7 +89,7 @@ def date_select(Occupied_Timeline, initial_date):
     
     date = initial_date
     
-    duration = round(OPT_Config_File.Timeline_settings()['pointing_stabilization'] + settings['sweep_start'] + round((settings['pointing_altitude_to'] - settings['pointing_altitude_from']) / settings['sweep_rate']) )
+    duration = round(OPT_Config_File.Timeline_settings()['pointing_stabilization'] + round((settings['pointing_altitude_to'] - settings['pointing_altitude_from']) / settings['sweep_rate']) )
     
     endDate = ephem.Date(initial_date + ephem.second * (duration + OPT_Config_File.Timeline_settings()['mode_separation']))
     

@@ -62,44 +62,45 @@ def Mode120_date_calculator():
     
     """
     
-    Mode120_settings = OPT_Config_File.Mode120_settings
+    Timeline_settings = OPT_Config_File.Timeline_settings()
+    Mode120_settings = OPT_Config_File.Mode120_settings()
     
-    automatic = Mode120_settings()['automatic']
+    automatic = Mode120_settings['automatic']
     Logger.info('automatic = '+str(automatic))
     
-    "To either calculate when stars are visible and schedule from that data or just schedule at a given time given by Mode120_settings()['start_date']"
+    "To either calculate when stars are visible and schedule from that data or just schedule at a given time given by Mode120_settings['start_date']"
     if( automatic == False ):
         try:
-            date =ephem.Date(Mode120_settings()['start_date'])
+            date =ephem.Date(Mode120_settings['start_date'])
             return date
         except:
-            Logger.error('Could not get OPT_Config_File.Mode120_settings()["start_date"], exiting...')
+            Logger.error('Could not get OPT_Config_File.Mode120_settings["start_date"], exiting...')
             sys.exit()
         
     elif( automatic == True ):
         
         "Simulation length and timestep"
-        log_timestep = Mode120_settings()['log_timestep']
+        log_timestep = Mode120_settings['log_timestep']
         Logger.debug('log_timestep: '+str(log_timestep))
     
         
-        timestep = Mode120_settings()['timestep'] #In seconds
+        timestep = Mode120_settings['timestep'] #In seconds
         Logger.info('timestep set to: '+str(timestep)+' s')
         
-        duration = OPT_Config_File.Timeline_settings()['duration']
+        duration = Timeline_settings['duration']
         Logger.info('Duration set to: '+str(duration)+' s')
         
         timesteps = int(floor(duration / timestep))
         Logger.info('Total number of timesteps set to: '+str(timesteps)+' s')
         
-        timeline_start = ephem.Date(OPT_Config_File.Timeline_settings()['start_date'])
-        initial_time = ephem.Date( timeline_start + ephem.second*Mode120_settings()['freeze_start'] )
+        timeline_start = ephem.Date(Timeline_settings['start_date'])
+        initial_time = ephem.Date( timeline_start + ephem.second*Mode120_settings['freeze_start'] )
         
         Logger.info('Initial simulation date set to: '+str(initial_time))
         
         
         "Get relevant stars"
-        result = Vizier(columns=['all'], row_limit=200).query_constraints(catalog='I/239/hip_main',Vmag=Mode120_settings()['Vmag'])
+        result = Vizier(columns=['all'], row_limit=200).query_constraints(catalog='I/239/hip_main',Vmag=Mode120_settings['Vmag'])
         star_cat = result[0]
         ROWS = star_cat[0][:].count()
         stars = []
@@ -190,15 +191,15 @@ def Mode120_date_calculator():
         #wgs84_Re = 6378.137 #Equatorial radius of wgs84 spheroid [km]
         # wgs84_Rp = 6356752.3142 #Polar radius of wgs84 spheroid [km]
         U = 398600.4418 #Earth gravitational parameter
-        LP_altitude = OPT_Config_File.Timeline_settings()['LP_pointing_altitude']/1000  #Altitude at which MATS center of FOV is looking [km]
-        pointing_altitude = Mode120_settings()['pointing_altitude']/1000 
+        LP_altitude = Timeline_settings['LP_pointing_altitude']/1000  #Altitude at which MATS center of FOV is looking [km]
+        pointing_altitude = Mode120_settings['pointing_altitude']/1000 
         #extended_Re = wgs84_Re + LP_altitude #Equatorial radius of extended wgs84 spheroid
         #f_e = (wgs84_Re - wgs84_Rp) / Re_extended #Flattening of extended wgs84 spheroid
-        V_offset = Mode120_settings()['V_offset']
-        H_offset = Mode120_settings()['H_offset']  #5.67 is actual H_FOV
+        V_offset = Mode120_settings['V_offset']
+        H_offset = Mode120_settings['H_offset']  #5.67 is actual H_FOV
         
         pitch_offset_angle = 0
-        yaw_correction = OPT_Config_File.Timeline_settings()['yaw_correction']
+        yaw_correction = Timeline_settings['yaw_correction']
         
         Logger.debug('Earth radius used [km]: '+str(R_mean))
         Logger.debug('LP_altitude set to [km]: '+str(LP_altitude))
@@ -299,7 +300,7 @@ def Mode120_date_calculator():
                     if( dot(cross( ascending_node, r_MATS[t,0:3]), normal_orbit[t,0:3]) >= 0 ):
                         arg_of_lat = 360 - arg_of_lat
                         
-                    yaw_offset_angle = OPT_Config_File.Timeline_settings()['yaw_amplitude'] * cos( arg_of_lat/180*pi - pitch_LP/180*pi + OPT_Config_File.Timeline_settings()['yaw_phase']/180*pi )
+                    yaw_offset_angle = Timeline_settings['yaw_amplitude'] * cos( arg_of_lat/180*pi - pitch_LP/180*pi + Timeline_settings['yaw_phase']/180*pi )
                     yaw_offset_angle = yaw_offset_angle[0]
                     
                     if( t*timestep % log_timestep == 0 or t == 1 ):
@@ -446,7 +447,7 @@ def Mode120_date_calculator():
                         
                         "Make exception list for stars not visible during this epoch (relativiely far outside of orbital plane)"
                         if( ( abs(angle_between_orbital_plane_and_star[t][x]) > H_offset+(duration)/(365*24*3600)*360 and yaw_correction == False ) or 
-                           ( abs(angle_between_orbital_plane_and_star[t][x]) > H_offset+3.8+(duration)/(365*24*3600)*360 and yaw_correction == True )):
+                           ( abs(angle_between_orbital_plane_and_star[t][x]) > H_offset + abs(Timeline_settings['yaw_amplitude']) + (duration)/(365*24*3600)*360 and yaw_correction == True )):
                             
                             Logger.debug('Skip star: '+stars[x].name+', with angle_between_orbital_plane_and_star of: '+str(angle_between_orbital_plane_and_star[t][x])+' degrees')
                             skip_star_list.append(stars[x].name)
@@ -494,7 +495,7 @@ def Mode120_date_calculator():
                 ######################### End of star_mapper #############################
             
         
-        Logger.info('End of simulation for Mode200')
+        Logger.info('End of simulation for Mode120')
         
         ########################## Optional plotter ###########################################
         '''
@@ -538,7 +539,7 @@ def Mode120_date_calculator():
                     writer = csv.writer(write_file, dialect='excel-tab')
                     writer.writerows(star_list_excel)
                 Logger.info('Available Stars data saved to: '+file_directory)
-                print('Available Stars data saved to: '+file_directory)
+                #print('Available Stars data saved to: '+file_directory)
                 break
             except PermissionError:
                 Logger.error(file_directory+' cannot be overwritten. Please close it')
@@ -585,16 +586,16 @@ def Mode120_date_select(Occupied_Timeline, dates):
     
     """
     
-    Mode120_settings = OPT_Config_File.Mode120_settings
+    Mode120_settings = OPT_Config_File.Mode120_settings()
     
-    automatic = Mode120_settings()['automatic']
+    automatic = Mode120_settings['automatic']
     
     Logger.info('Start of filtering function')
     
     "Either schedules a user provided date or filters and schedules calculated dates"
     if( automatic == False ):
         
-        endDate = ephem.Date(dates+ephem.second*Mode120_settings()['mode_duration'])
+        endDate = ephem.Date(dates+ephem.second*Mode120_settings['mode_duration'])
         
         ############### Start of availability schedueler ##########################
         
@@ -613,7 +614,6 @@ def Mode120_date_select(Occupied_Timeline, dates):
         
     elif( automatic == True ):
         
-        Logger.info('Start of filtering function')
         
         if( len(dates) == 0):
             Mode120_comment = 'Stars not visible (Empty dates)'
@@ -680,9 +680,9 @@ def Mode120_date_select(Occupied_Timeline, dates):
             
             Mode120_date = star_date[x]
             
-            Mode120_date = ephem.Date(ephem.Date(Mode120_date)-ephem.second*(Mode120_settings()['freeze_start']))
+            Mode120_date = ephem.Date(ephem.Date(Mode120_date)-ephem.second*(Mode120_settings['freeze_start']))
             
-            Mode120_endDate = ephem.Date(Mode120_date+ephem.second*Mode120_settings()['mode_duration'])
+            Mode120_endDate = ephem.Date(Mode120_date+ephem.second*Mode120_settings['mode_duration'])
             
             "Check that the scheduled date is not before the start of the timeline"
             if( Mode120_date < ephem.Date(OPT_Config_File.Timeline_settings()['start_date']) ):

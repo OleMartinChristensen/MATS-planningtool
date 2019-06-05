@@ -4,9 +4,9 @@
 Examples:
     import Operational_Planning_Tool as OPT
     
-    OPT.Create_ConfigFile()
+    OPT.Copy_ConfigFile('OPT_Config_File')
     
-    OPT.Set_ConfigFile('OPT_Config_File')
+    OPT.Set_ConfigFile('OPT_Config_File', '2019/09/05 08:00:00')
     
     OPT.Timeline_gen()
     
@@ -25,28 +25,59 @@ Generated logs are also saved in folders created in the working directory.
 
 
 
-def Create_ConfigFile():
-    """Makes a copy of the original Config file (*Config_File_Original*, located in *Operational_Planning_Tool*).
+def Copy_ConfigFile(Config_File_Name):
+    """Makes a copy of the *_ConfigFile* located in *Operational_Planning_Tool*.
     
-    The copy is created in the working directory of the user call and can be freely modified. *Operational_Planning_Tool* will
-    use whatever file named *OPT_Config_File.py* that is located in the working directory of the user call.
+    The copy is created in the working directory of the user call and can be freely modified.
     
+    Arguments:
+        Config_File_Name (str): The name of the newly created *.py* copy of the *_ConfigFile* (excluding *.py*).
     Returns:
         None
     """
     import shutil, os
     
-    if(os.path.isfile('OPT_Config_File.py') == False):
-        shutil.copyfile('Operational_Planning_Tool/_Config_File_Original.py','OPT_Config_File.py')
+    Original_ConfigFile = os.path.join('Operational_Planning_Tool', '_Config_File_Original', 'Config_File_Original.py')
+    ConfigFile = os.path.join('Operational_Planning_Tool', '_ConfigFile.py')
+    
+    Config_File_Name = Config_File_Name+'.py'
+    
+    #Make copy of the original Config File if no Config File is present.
+    if(os.path.isfile(ConfigFile) == False):
+        shutil.copyfile(Original_ConfigFile, ConfigFile)
+    elif( os.path.isfile(ConfigFile) == True):
+        answer = None
+        while( answer != 'y' and answer != 'n'):
+            answer = input('Overwrite '+ConfigFile+' ? (y/n)\n')
+        if(answer == 'y'):
+            shutil.copyfile(Original_ConfigFile, ConfigFile)
+        elif( answer == 'n'):
+            pass
+    
+    if(os.path.isfile(Config_File_Name) == False):
+        shutil.copyfile(ConfigFile, Config_File_Name)
+    elif( os.path.isfile(Config_File_Name) == True):
+        answer = None
+        while( answer != 'y' and answer != 'n'):
+            answer = input('Overwrite '+Config_File_Name+' ? (y/n)\n')
+        if(answer == 'y'):
+            shutil.copyfile(ConfigFile, Config_File_Name)
+        elif( answer == 'n'):
+            pass
+        
+    
+        
+    
 
 
-def Set_ConfigFile(Config_File_Name):
-    """Sets the name of the .py file that is to be used as a Config File for OPT.
+def Set_ConfigFile(Config_File_Name, Date):
+    """Sets the StartTime for OPT, and the name of the *.py* file that is to be used as a Config File for OPT.
     
     The file must be visible in sys.path.
     
     Arguments:
         Config_File_Name (str): The name of the Config File to be used (excluding .py).
+        Date (str): The start time and date for the Operational Planning Tool (yyyy/mm/dd hh:mm:ss).
         
     Returns:
         None
@@ -55,6 +86,16 @@ def Set_ConfigFile(Config_File_Name):
     from . import _Globals as Globals
     
     Globals.Config_File = Config_File_Name
+    Globals.StartTime = Date
+    
+
+def CheckConfigFile():
+    """Checks the values of the settings in the Configuration File set by *Set_ConfigFile*.
+    
+    """
+    from ._CheckConfigFile.Core import CheckConfigFile
+    
+    CheckConfigFile()
 
 
 def Timeline_gen():
@@ -95,7 +136,7 @@ def XML_gen(science_mode_timeline_path):
     
     "Initialize current_pointing to None"
     Globals.current_pointing = None
-    Globals.science_mode_timeline_path = science_mode_timeline_path
+    #Globals.science_mode_timeline_path = science_mode_timeline_path
     
     XML_generator(science_mode_timeline_path)
 

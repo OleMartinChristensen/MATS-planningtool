@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-"""Schedules the active Mode and saves the result in the Occupied_Timeline dictionary.
-
-Part of Timeline_generator, as part of OPT.
-
 """
+Created on Tue Jun  4 12:24:46 2019
+
+@author: David
+"""
+
 
 import ephem, sys, logging, importlib
 
@@ -80,16 +81,10 @@ def date_select(Occupied_Timeline, initial_date):
     
     """
     
-    settings = OPT_Config_File.Mode131_settings()
-    Timeline_settings = OPT_Config_File.Timeline_settings()
     
-    if( len(settings['Exp_Times_and_Intervals_UV']) <= len(settings['Exp_Times_and_Intervals_IR'])):
-        duration = settings['session_duration']*len(settings['Exp_Times_and_Intervals_UV'])+Timeline_settings['mode_separation']+Timeline_settings['pointing_stabilization']
-    elif( len(settings['Exp_Times_and_Intervals_IR']) < len(settings['Exp_Times_and_Intervals_UV']) ):
-        duration = settings['session_duration']*len(settings['Exp_Times_and_Intervals_IR'])+Timeline_settings['mode_separation']+Timeline_settings['pointing_stabilization']
     
     date = initial_date
-    endDate = ephem.Date(initial_date + ephem.second*duration)
+    endDate = ephem.Date(initial_date + ephem.second*OPT_Config_File.Mode131_settings()['mode_duration'])
     
     
     ############### Start of availability schedueler ##########################

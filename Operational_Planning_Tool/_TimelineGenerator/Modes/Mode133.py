@@ -14,8 +14,8 @@ OPT_Config_File = importlib.import_module(_Globals.Config_File)
 Logger = logging.getLogger(OPT_Config_File.Logger_name())
 
 
-def Mode132(Occupied_Timeline):
-    """Core function for the scheduling of Mode132.
+def Mode133(Occupied_Timeline):
+    """Core function for the scheduling of Mode133.
     
     Arguments:
         Occupied_Timeline (:obj:`dict` of :obj:`list`): Dictionary with keys equal to planned and scheduled Modes with entries equal to their start and end time as a list.
@@ -50,8 +50,8 @@ def date_calculator():
     """
     
     
-    if( OPT_Config_File.Mode132_settings()['start_date'] != '0' ):
-        initial_date = ephem.Date(OPT_Config_File.Mode132_settings()['start_date'])
+    if( OPT_Config_File.Mode133_settings()['start_date'] != '0' ):
+        initial_date = ephem.Date(OPT_Config_File.Mode133_settings()['start_date'])
         Logger.info('Mode specific start_date used as initial date')
     else:
         Logger.info('Timeline start_date used as initial date')
@@ -80,8 +80,7 @@ def date_select(Occupied_Timeline, initial_date):
     
     """
     
-    
-    settings = OPT_Config_File.Mode132_settings()
+    settings = OPT_Config_File.Mode133_settings()
     Timeline_settings = OPT_Config_File.Timeline_settings()
     
     if( len(settings['Exp_Times_and_Intervals_UV']) <= len(settings['Exp_Times_and_Intervals_IR'])):

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-"""Schedules the active Mode and saves the result in the Occupied_Timeline dictionary.
+"""
+Created on Tue Jun  4 11:51:44 2019
 
-Part of Timeline_generator, as part of OPT.
-
+@author: David
 """
 
 import importlib
@@ -12,7 +12,7 @@ from .Mode121_122_123 import date_calculator, date_select
 
 OPT_Config_File = importlib.import_module(_Globals.Config_File)
 
-def Mode121(Occupied_Timeline):
+def Mode123(Occupied_Timeline):
     """Core function for the scheduling of Mode121.
     
     Arguments:
@@ -24,7 +24,7 @@ def Mode121(Occupied_Timeline):
             (str): Comment regarding the result of scheduling of the mode.
     
     """
-    Settings = OPT_Config_File.Mode121_settings()
+    Settings = OPT_Config_File.Mode123_settings()
     
     date_magnitude_array = date_calculator(Settings)
     

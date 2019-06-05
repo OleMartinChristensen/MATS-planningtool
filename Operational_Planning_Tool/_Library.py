@@ -2,7 +2,7 @@
 """Contains functions used by the Operational Planning Tool .
 """
 
-import ephem, importlib
+import ephem, importlib, time, logging, os, sys
 from pylab import cos, sin, sqrt, array, arccos, pi, floor, around
 
 from Operational_Planning_Tool import _Globals
@@ -198,3 +198,38 @@ def utc_to_onboardTime(utc_date):
     onboardTime = around( (GPS_date/7 - GPS_week) / ephem.second, 1 )
     '''
     return onboardTime
+
+def SetupLogger():
+    """
+    
+    """
+    
+    Logger = logging.getLogger(OPT_Config_File.Logger_name())
+    name = sys._getframe(1).f_code.co_name
+    ######## Try to Create a directory for storage of Logs #######
+    try:
+        os.mkdir('Logs_'+name)
+    except:
+        pass
+    
+    "Remove all previous handlers of the logger"
+    for handler in Logger.handlers[:]:
+        Logger.removeHandler(handler)
+    
+    
+    
+    #logging.basicConfig(stream=sys.stdout, level=logging.INFO)
+    timestr = time.strftime("%Y%m%d-%H%M%S")
+    logstring = os.path.join('Logs_'+name, name+'__'+_Globals.Config_File+'__'+timestr+'.log')
+    Handler = logging.FileHandler(logstring, mode='a')
+    formatter = logging.Formatter("%(levelname)6s : %(message)-80s :: %(module)s :: %(funcName)s")
+    Handler.setFormatter(formatter)
+    Logger.addHandler(Handler)
+    Logger.setLevel(logging.DEBUG)
+    
+    streamHandler = logging.StreamHandler()
+    streamHandler.setLevel(logging.INFO)
+    streamHandler.setFormatter(formatter)
+    Logger.addHandler(streamHandler)
+    
+    

@@ -29,7 +29,7 @@ import json, logging, sys, time, os, ephem, importlib
 
 
 from .Modes import Modes_Header
-from Operational_Planning_Tool import _Globals
+from Operational_Planning_Tool import _Globals, _Library
 
 OPT_Config_File = importlib.import_module(_Globals.Config_File)
 Logger = logging.getLogger(OPT_Config_File.Logger_name())
@@ -48,11 +48,7 @@ def Timeline_generator():
         sys.exit()
     """
     
-    "Try to make a directory for logs if none is existing"
-    try:
-        os.mkdir('Logs_'+__name__)
-    except:
-        pass
+    
     
     ######## Try to Create a directory for storage of output files #######
     try:
@@ -60,34 +56,15 @@ def Timeline_generator():
     except:
         pass
     
-    ############# Set up Logger #################################
-    
-    "Remove all previous handlers of the logger"
-    for handler in Logger.handlers[:]:
-        Logger.removeHandler(handler)
-    
-    #logging.basicConfig(stream=sys.stdout, level=logging.INFO)
-    timestr = time.strftime("%Y%m%d-%H%M%S")
-    logstring = os.path.join('Logs_'+__name__, __name__+'_'+OPT_Config_File.Version()+'_'+timestr+'.log')
-    Handler = logging.FileHandler(logstring, mode='a')
-    formatter = logging.Formatter("%(levelname)-6s : %(message)-80s :: %(module)s :: %(funcName)s")
-    Handler.setFormatter(formatter)
-    Logger.addHandler(Handler)
-    Logger.setLevel(logging.DEBUG)
-    
-    
-    streamHandler = logging.StreamHandler()
-    streamHandler.setLevel(logging.INFO)
-    streamHandler.setFormatter(formatter)
-    Logger.addHandler(streamHandler)
     
     
     ############# Set up Logger #################################
+    _Library.SetupLogger()
     
     Logger.info('Start of program')
     
     Version = OPT_Config_File.Version()
-    Logger.info(_Globals.Config_File+' used, Version: '+Version)
+    Logger.info('Configuration File used: '+_Globals.Config_File+', Version: '+Version)
     
     "Get a List of Modes in a prioritized order which are to be scheduled"
     Modes_priority = OPT_Config_File.Modes_priority()
@@ -135,11 +112,11 @@ def Timeline_generator():
         Logger.info('Start of '+scimod)
         Logger.info('')
         
-        "Call the function of the same name as the string in OPT_Config_File.Modes_priority"
+        "Call the function of the same name as the string in Modes_priority"
         try:
             Mode_function = getattr(Modes_Header,scimod)
         except:
-            Logger.error(scimod+' in Modes_priority was not found in OPT_Timeline_generator_Modes_Header')
+            Logger.error(scimod+' in Modes_priority was not found in Modes.Modes_Header')
             sys.exit()
             
         Occupied_Timeline, Mode_comment = Mode_function(Occupied_Timeline)
@@ -300,14 +277,14 @@ def Timeline_generator():
     
     
     
-    Logger.info('Save mode timeline to file version: '+Version)
+    
     
     
     try:
         os.mkdir('Output')
     except:
         pass
-    SCIMOD_NAME = os.path.join('Output', 'Science_Mode_Timeline__ConfigFile_'+_Globals.Config_File+'.json')
+    SCIMOD_NAME = os.path.join('Output', 'Science_Mode_Timeline__'+_Globals.Config_File+'.json')
     Logger.info('Save mode timeline to file: '+SCIMOD_NAME)
     with open(SCIMOD_NAME, "w") as write_file:
         json.dump(SCIMOD_Timeline, write_file, indent = 2)

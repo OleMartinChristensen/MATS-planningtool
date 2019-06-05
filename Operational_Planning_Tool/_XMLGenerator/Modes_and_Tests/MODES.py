@@ -45,465 +45,69 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
             
     '''
     
-    #from OPT_Config_File import Mode1_settings, getTLE
-    #from pylab import zeros, pi, arccos, sin ,cos, norm, cross, sqrt, arctan
+    XML_generator_Mode1_and_3(root, date, duration, relativeTime, params = {})
     
-    zeros = pylab.zeros
-    pi = pylab.pi
-    arccos = pylab.arccos
-    sin = pylab.sin
-    cos = pylab.cos
-    norm = pylab.norm
-    cross = pylab.cross
-    
-    
-    settings = OPT_Config_File.Mode_1_2_3_4_settings()
-    
-    
-    
-    Logger.debug('params from Science Mode List: '+str(params))
-    params = params_checker(params,settings)
-    Logger.debug('params after params_checker function: '+str(params))
-    Logger.info('params used: '+str(params))
-    
-    timestep = params['timestep']
-    
-    log_timestep = params['log_timestep']
-    Logger.debug('log_timestep [s]: '+str(log_timestep))
-    
-    Sun = ephem.Sun(date)
-    MATS = ephem.readtle('MATS', OPT_Config_File.getTLE()[0], OPT_Config_File.getTLE()[1])
-    
-    "Pre-allocate space"
-    lat_MATS = zeros((duration,1))
-    
-    altitude_MATS = zeros((duration,1))
-    g_ra_MATS = zeros((duration,1))
-    g_dec_MATS = zeros((duration,1))
-    x_MATS = zeros((duration,1))
-    y_MATS = zeros((duration,1))
-    z_MATS = zeros((duration,1))
-    r_MATS = zeros((duration,3))
-    r_MATS_ECEF = zeros((duration,3))
-    optical_axis = zeros((duration,3))
-    optical_axis_ECEF = zeros((duration,3))
-    LP_ECEF = zeros((duration,3))
-    lat_LP = zeros((duration,1))
-    long_LP = zeros((duration,1))
-    alt_LP = zeros((duration,1))
-    
-    sun_angle = zeros((duration,1))
-    lat_LP = zeros((duration,1))
-    normal_orbital = zeros((duration,3))
-    orbangle_between_LP_MATS_array = zeros((duration,1))
-    
-    #"Estimated latitude difference between MATS and the LP"
-    #lat_diff_LP_MATS = 20/180*pi
-    
-    R_mean = 6371
-    pointing_altitude = OPT_Config_File.Timeline_settings()['LP_pointing_altitude']
-    lat = params['lat']
-    
-    
-    
-    #Estimation of the angle between the sun and the FOV position when it enters eclipse
-    MATS_nadir_eclipse_angle = arccos(R_mean/(R_mean+90))/pi*180 + 90
-    
-    Logger.debug('MATS_nadir_eclipse_angle : '+str(MATS_nadir_eclipse_angle))
-    Logger.debug('')
-    
-    "Loop and calculate the relevant angle of each star to each direction of MATS's FOV"
-    for t in range(int(duration/timestep)):
-        
-        current_time = ephem.Date(date+ephem.second*timestep*t)
-        
-        MATS.compute(current_time)
-        
-        
-        (lat_MATS[t],altitude_MATS[t],g_ra_MATS[t],g_dec_MATS[t])= (
-        MATS.sublat,MATS.elevation/1000,MATS.g_ra,MATS.g_dec)
-        
-        z_MATS[t] = sin(g_dec_MATS[t])*(altitude_MATS[t]+R_mean)
-        x_MATS[t] = cos(g_dec_MATS[t])*(altitude_MATS[t]+R_mean)* cos(g_ra_MATS[t])
-        y_MATS[t] = cos(g_dec_MATS[t])*(altitude_MATS[t]+R_mean)* sin(g_ra_MATS[t])
-       
-        r_MATS[t,0:3] = [x_MATS[t], y_MATS[t], z_MATS[t]]
-        r_MATS_ECEF[t,0], r_MATS_ECEF[t,1], r_MATS_ECEF[t,2] = pm3d.eci2ecef(
-                r_MATS[t,0]*1000, r_MATS[t,1]*1000, r_MATS[t,2]*1000, ephem.Date(current_time).datetime(), useastropy = True)
-        
-        orbangle_between_LP_MATS_array[t]= arccos((R_mean+pointing_altitude/1000)/(R_mean+altitude_MATS[t]))/pi*180
-        orbangle_between_LP_MATS = orbangle_between_LP_MATS_array[t][0]
-        
-        Sun.compute(current_time)
-        sun_angle[t]= ephem.separation(Sun,MATS)/pi*180
-        
-        if( t % log_timestep == 0 and t != 0 and t != 1):
-            Logger.debug('')
-            Logger.debug('current_time: '+str(current_time))
-            Logger.debug('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
-            Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
-            
-        
-        if( t != 0):
-            
-            "Vector normal to the orbital plane of MATS"
-            normal_orbital[t,0:3] = cross(r_MATS[t],r_MATS[t-1])
-            normal_orbital[t,0:3] = normal_orbital[t,0:3] / norm(normal_orbital[t,0:3])
-            
-            
-            "Rotate 'vector to MATS', to represent pointing direction, (Parallax is negligable)"
-            rot_mat = rot_arbit((orbangle_between_LP_MATS+90)/180*pi, normal_orbital[t,0:3])
-            optical_axis[t,0:3] = rot_mat @ r_MATS[t]
-            optical_axis[t,0:3] = optical_axis[t,0:3] / norm(optical_axis[t,0:3])
-            
-            optical_axis_ECEF[t,0], optical_axis_ECEF[t,1], optical_axis_ECEF[t,2] = pm3d.eci2ecef(
-                optical_axis[t,0]*1000, optical_axis[t,1]*1000, optical_axis[t,2]*1000, ephem.Date(current_time).datetime(), useastropy = True)
-            
-            LP_ECEF[t,0], LP_ECEF[t,1], LP_ECEF[t,2] = _MATS_coordinates.ecef2tanpoint(r_MATS_ECEF[t][0]*1000, r_MATS_ECEF[t][1]*1000, r_MATS_ECEF[t][2]*1000, 
-                                       optical_axis_ECEF[t,0], optical_axis_ECEF[t,1], optical_axis_ECEF[t,2])
-            
-            lat_LP[t], long_LP[t], alt_LP[t]  = pm3d.ecef2geodetic(LP_ECEF[t,0], LP_ECEF[t,1], LP_ECEF[t,2], deg = True)
-            
-            """
-            "Estimate latitude by calculating angle between xy-plane vector and z-vector (ECI)"
-            r_LP__direction_xy = sqrt(optical_axis[t,0]**2+optical_axis[t,1]**2)
-            lat_LP[t] = arctan(optical_axis[t,2]/r_LP__direction_xy)
-            """
-            '''
-            if( abs(lat_MATS[t])-abs(lat_MATS[t-1]) > 0 ):
-                lat_LP[t] = lat_MATS[t] - lat_diff_LP_MATS * sign(lat_MATS[t])
-            elif( abs(lat_MATS[t])-abs(lat_MATS[t-1]) < 0 ):
-                lat_LP[t] = lat_MATS[t] + lat_diff_LP_MATS * sign(lat_MATS[t])
-            '''
-            
-            ############# Initial Mode setup ##########################################
-            
-            if( t == 1 ):
-                
-                Logger.debug('')
-                '''
-                Logger.debug(str(r_MATS[t,0:3]))
-                Logger.debug(str(optical_axis[t,0:3]))
-                Logger.debug(str(orbangle_between_LP_MATS_array[t]))
-                '''
-                Logger.debug('current_time: '+str(current_time))
-                Logger.debug('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
-                Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
-                Logger.debug('lat_LP [degrees]: '+str(lat_LP[t]))
-                Logger.debug('r_MATS_ECEF: '+str(r_MATS_ECEF[t,0]))
-                
-                
-                "Check if night or day"
-                if( sun_angle[t] > MATS_nadir_eclipse_angle ):
-                    
-                    if( abs(lat_LP[t]) < lat):
-                        current_state = "NLC_night_UV_off"
-                        comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                        Macros.NLC_night(root, t*timestep+relativeTime, pointing_altitude, UV_on = False, comment = comment)
-                    elif( abs(lat_LP[t]) > lat):
-                        current_state = "NLC_night_UV_on"
-                        comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                        Macros.NLC_night(root,t*timestep+relativeTime,pointing_altitude, UV_on = True, comment = comment)
-                        
-                elif( sun_angle[t] < MATS_nadir_eclipse_angle ):
-                    
-                    if( abs(lat_LP[t]) < lat):
-                        current_state = "NLC_day_UV_off"
-                        comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                        Macros.NLC_day(root,t*timestep+relativeTime,pointing_altitude, UV_on = False, comment = comment)
-                    elif( abs(lat_LP[t]) > lat):
-                        current_state = "NLC_day_UV_on"
-                        comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                        Macros.NLC_day(root,t*timestep+relativeTime,pointing_altitude, UV_on = True, comment = comment)
-                
-                Logger.debug(current_state)
-            
-            
-            ############# End of Initial Mode setup ###################################
-            
-            
-            
-           
-            if( t != 1):
-                ####################### SCI-mode Operation planner ################
-                
-                
-                
-                
-                
-                #Check if night or day
-                if( sun_angle[t] > MATS_nadir_eclipse_angle ):
-                    
-                    #Check latitude
-                    if( abs(lat_LP[t]) < lat and current_state != "NLC_night_UV_off"):
-                        
-                        #Check dusk/dawn and latitude boundaries
-                        if( sun_angle[t] > MATS_nadir_eclipse_angle and sun_angle[t-1] < MATS_nadir_eclipse_angle):
-                            current_state = "NLC_night_UV_off"
-                            comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                            
-                            Logger.debug('')
-                            Logger.debug(current_state)
-                            Logger.debug('current_time: '+str(current_time))
-                            Logger.debug('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
-                            Logger.debug('lat_LP [degrees]: '+str(lat_LP[t]))
-                            Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
-                            #IR_night(root,str(t+relativeTime),pointing_altitude, comment = comment)
-                            Macros.NLC_nadir_on_off(root, t*timestep+relativeTime, nadir_on = True, comment = comment)
-                            
-                            
-                        elif(abs(lat_LP[t]) < lat and abs(lat_LP[t-1]) > lat):
-                            current_state = "NLC_night_UV_off"
-                            comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                            
-                            Logger.debug('')
-                            Logger.debug(current_state)
-                            Logger.debug('current_time: '+str(current_time))
-                            Logger.debug('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
-                            Logger.debug('lat_LP [degrees]: '+str(lat_LP[t]))
-                            Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
-                            Macros.NLC_night(root,t*timestep+relativeTime,pointing_altitude, UV_on = False, comment = comment)
-                            
-                            
-                            
-                    #Check latitude
-                    elif( abs(lat_LP[t]) > lat and current_state != "NLC_night_UV_on"):
-                        
-                        #Check dusk/dawn and latitude boundaries
-                        if( sun_angle[t] > MATS_nadir_eclipse_angle and sun_angle[t-1] < MATS_nadir_eclipse_angle):
-                            current_state = "NLC_night_UV_on"
-                            comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                            
-                            Logger.debug('')
-                            Logger.debug(current_state)
-                            Logger.debug('current_time: '+str(current_time))
-                            Logger.debug('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
-                            Logger.debug('lat_LP [degrees]: '+str(lat_LP[t]))
-                            Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
-                            #NLC_night(root,str(t+relativeTime),pointing_altitude, comment = comment)
-                            Macros.NLC_nadir_on_off(root, t*timestep+relativeTime, nadir_on = 'True', comment = comment)
-                            
-                            
-                        elif(abs(lat_LP[t]) > lat and abs(lat_LP[t-1]) < lat):
-                            current_state = "NLC_night_UV_on"
-                            comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                            
-                            Logger.debug('')
-                            Logger.debug(current_state)
-                            Logger.debug('current_time: '+str(current_time))
-                            Logger.debug('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
-                            Logger.debug('lat_LP [degrees]: '+str(lat_LP[t]))
-                            Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
-                            Macros.NLC_night(root,t*timestep+relativeTime,pointing_altitude, UV_on = True, comment = comment)
-                            
-                            
-                            
-                #Check if night or day#            
-                if( sun_angle[t] < MATS_nadir_eclipse_angle ):
-                    
-                    #Check latitude
-                    if( abs(lat_LP[t]) < lat and current_state != "NLC_day_UV_off"):
-                        
-                        #Check dusk/dawn and latitude boundaries
-                        if( sun_angle[t] < MATS_nadir_eclipse_angle and sun_angle[t-1] > MATS_nadir_eclipse_angle):
-                            current_state = "NLC_day_UV_off"
-                            comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                            
-                            Logger.debug('')
-                            Logger.debug(current_state)
-                            Logger.debug('current_time: '+str(current_time))
-                            Logger.debug('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
-                            Logger.debug('lat_LP [degrees]: '+str(lat_LP[t]))
-                            Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
-                            #IR_day(root,str(t+relativeTime),pointing_altitude, comment = comment)
-                            Macros.NLC_nadir_on_off(root, t*timestep+relativeTime, nadir_on = False, comment = comment)
-                            
-                            
-                        if(abs(lat_LP[t]) < lat and abs(lat_LP[t-1]) > lat):
-                            current_state = "NLC_day_UV_off"
-                            comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                            
-                            Logger.debug('')
-                            Logger.debug(current_state)
-                            Logger.debug('current_time: '+str(current_time))
-                            Logger.debug('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
-                            Logger.debug('lat_LP [degrees]: '+str(lat_LP[t]))
-                            Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
-                            Macros.NLC_day(root,t*timestep+relativeTime,pointing_altitude, UV_on = False, comment = comment)
-                            
-                            
-                            
-                    #Check latitude
-                    if( abs(lat_LP[t]) > lat and current_state != "NLC_day_UV_on"):
-                        
-                        #Check dusk/dawn and latitude boundaries
-                        if( sun_angle[t] > MATS_nadir_eclipse_angle and sun_angle[t-1] < MATS_nadir_eclipse_angle):
-                            current_state = "NLC_day_UV_on"
-                            comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                            
-                            Logger.debug('')
-                            Logger.debug(current_state)
-                            Logger.debug('current_time: '+str(current_time))
-                            Logger.debug('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
-                            Logger.debug('lat_LP [degrees]: '+str(lat_LP[t]))
-                            Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
-                            #NLC_day(root,str(t+relativeTime),pointing_altitude, comment = comment)
-                            Macros.NLC_nadir_on_off(root, t*timestep+relativeTime, nadir_on = False, comment = comment)
-                            
-                            
-                        if(abs(lat_LP[t]) > lat and abs(lat_LP[t-1]) < lat):
-                            current_state = "NLC_day_UV_on"
-                            comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                            
-                            Logger.debug('')
-                            Logger.debug(current_state)
-                            Logger.debug('current_time: '+str(current_time))
-                            Logger.debug('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
-                            Logger.debug('lat_LP [degrees]: '+str(lat_LP[t]))
-                            Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
-                            Macros.NLC_day(root,t*timestep+relativeTime,pointing_altitude, UV_on = True, comment = comment)
-                            
-                            
-                
-            
-                
-                
-                ############### End of SCI-mode operation planner #################
-                
-    
-    
-    
-    
-    
-
 
 #######################################################################################
 
+def XML_generator_Mode3(root, date, duration, relativeTime, params = {}):
+    '''Simulates MATS and the LP without yaw movement to be able to schedule commands in the XML-file.
+    
+    High resolution UV binning for latitudes +-45 degrees latitude polewards.
+    Disable exposure on UV channels for +-45 degrees latitude equatorwards.
+    Stop/Start Nadir at dusk/dawn.
+            
+    '''
+    
+    XML_generator_Mode1_and_3(root, date, duration, relativeTime, params = {})
+       
 
-
+#######################################################################################
 
 def XML_generator_Mode2(root, date, duration, relativeTime, params = {}):
-    """Simulates MATS and the LP without yaw movement to be able to schedule commands in the XML-file.
+    '''Simulates MATS and the LP without yaw movement to be able to schedule commands in the XML-file.
     
-    High-resolution IR binning. Stop/Start Nadir at dusk/dawn.
-    """
-    
-    settings = OPT_Config_File.Mode_1_2_3_4_settings()
-    zeros = pylab.zeros
-    pi = pylab.pi
-    arccos = pylab.arccos
-    
-    
-    
-    Logger.debug('params from Science Mode List: '+str(params))
-    params = params_checker(params,settings)
-    Logger.debug('params after params_checker function: '+str(params))
-    Logger.info('params used: '+str(params))
-    
-    timestep = params['timestep']
-    
-    log_timestep = params['log_timestep']
-    Logger.debug('log_timestep [s]: '+str(log_timestep))
-    
-    Sun = ephem.Sun(date)
-    MATS = ephem.readtle('MATS', OPT_Config_File.getTLE()[0], OPT_Config_File.getTLE()[1])
-    
-    "Pre-allocate space"
-    sun_angle = zeros((duration,1))
-    
-    
-    R_mean = 6371
-    pointing_altitude = OPT_Config_File.Timeline_settings()['LP_pointing_altitude']
-    
-    #Estimation of the angle between the sun and the FOV position when it enters eclipse
-    MATS_nadir_eclipse_angle = arccos(R_mean/(R_mean+90))/pi*180 + 90
-    Logger.debug('MATS_nadir_eclipse_angle : '+str(MATS_nadir_eclipse_angle))
-    
-    "Loop and calculate the relevant angle of each star to each direction of MATS's FOV"
-    for t in range(int(duration/timestep)):
-        
-        
-        current_time = ephem.Date(date+ephem.second*timestep*t)
-        
-        MATS.compute(current_time)
-        
-        Sun.compute(current_time)
-        sun_angle[t]= ephem.separation(Sun,MATS)/pi*180
-        
-        if( t % log_timestep == 0):
-            Logger.debug('')
-            Logger.debug('current_time: '+str(current_time))
-            Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
-        
-        ############# Initial Mode setup ##########################################
-        
-        if( t == 0 ):
+    High resolution UV binning for latitudes +-45 degrees latitude polewards.
+    Disable exposure on UV channels for +-45 degrees latitude equatorwards.
+    Stop/Start Nadir at dusk/dawn.
             
-            "Check if night or day"
-            if( sun_angle[t] > MATS_nadir_eclipse_angle):
-                current_state = "IR_night"
-                comment = current_state+': '+str(params)
-                Macros.IR_night(root,t*timestep+relativeTime,pointing_altitude, comment = comment)
-                
-                
-            elif( sun_angle[t] < MATS_nadir_eclipse_angle):
-                current_state = "IR_day"
-                comment = current_state+': '+str(params)
-                Macros.IR_day(root,t*timestep+relativeTime,pointing_altitude, comment = comment)
-                
-        
-        ############# End of Initial Mode setup ###################################
-        
-        
-        
-        if(t != 0):
-        ####################### SCI-mode Operation planner ################
-            
-            
-           
-            #Check if night or day
-            if( sun_angle[t] > MATS_nadir_eclipse_angle and current_state != "IR_night"):
-                
-                #Check dusk/dawn boundaries and if NLC is active
-                if( (sun_angle[t] > MATS_nadir_eclipse_angle and sun_angle[t-1] < MATS_nadir_eclipse_angle) ):
-                    current_state = "IR_night"
-                    comment = current_state+': '+str(params)
-                    
-                    Logger.debug('')
-                    Logger.debug('current_time: '+str(current_time))
-                    Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
-                    Macros.IR_nadir_on_off(root, t*timestep+relativeTime, nadir_on = True, comment = comment)
-                    #Macros.IR_night(root,str(t+relativeTime),pointing_altitude, comment = comment)
-                    
-                    
-                    
-            #Check if night or day            
-            if( sun_angle[t] < MATS_nadir_eclipse_angle and current_state != "IR_day"):
-                
-                #Check dusk/dawn boundaries and if NLC is active
-                if( (sun_angle[t] < MATS_nadir_eclipse_angle and sun_angle[t-1] > MATS_nadir_eclipse_angle) ):
-                    current_state = "IR_day"
-                    comment = current_state+': '+str(params)
-                    
-                    Logger.debug('')
-                    Logger.debug('current_time: '+str(current_time))
-                    Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
-                    Macros.IR_nadir_on_off(root, t*timestep+relativeTime, nadir_on = False, comment = comment)
-                    #Macros.IR_day(root,str(t+relativeTime),pointing_altitude, comment = comment)
-                    
-                    
-                    
-                 
-        ############### End of SCI-mode operation planner #################
+    '''
     
+    XML_generator_Mode2_and_4(root, date, duration, relativeTime, params = {})
     
 
+#######################################################################################
 
+def XML_generator_Mode4(root, date, duration, relativeTime, params = {}):
+    '''Simulates MATS and the LP without yaw movement to be able to schedule commands in the XML-file.
+    
+    High resolution UV binning for latitudes +-45 degrees latitude polewards.
+    Disable exposure on UV channels for +-45 degrees latitude equatorwards.
+    Stop/Start Nadir at dusk/dawn.
+            
+    '''
+    
+    XML_generator_Mode2_and_4(root, date, duration, relativeTime, params = {})
 
 
 ############################################################################################
-def XML_generator_Mode3(root, date, duration, relativeTime, params = {}):
-    """Simulates MATS and the LP with yaw movement to be able to schedule commands in the XML-file.
+
+def XML_generator_Mode5(root, date, duration, relativeTime, params = {}):
+    '''Simulates MATS and the LP without yaw movement to be able to schedule commands in the XML-file.
+    
+    High resolution UV binning for latitudes +-45 degrees latitude polewards.
+    Disable exposure on UV channels for +-45 degrees latitude equatorwards.
+    Stop/Start Nadir at dusk/dawn.
+            
+    '''
+    
+    XML_generator_Mode2_and_4(root, date, duration, relativeTime, params = {})
+    
+
+############################################################################################
+    
+def XML_generator_Mode1_and_3(root, date, duration, relativeTime, params = {}):
+    """Simulates MATS and the LP with or without yaw movement to be able to schedule commands in the XML-file.
     
     High resolution UV binning for latitudes +-45 degrees latitude polewards.
     Disable exposure on UV channels for +-45 degrees latitude equatorwards.
@@ -637,8 +241,12 @@ def XML_generator_Mode3(root, date, duration, relativeTime, params = {}):
             if( dot(cross( ascending_node, r_MATS[t,0:3]), normal_orbital[t,0:3]) >= 0 ):
                 arg_of_lat = 360 - arg_of_lat
                 
-            yaw_offset_angle = OPT_Config_File.Timeline_settings()['yaw_amplitude'] * cos( arg_of_lat/180*pi - orbangle_between_LP_MATS/180*pi + OPT_Config_File.Timeline_settings()['yaw_phase']/180*pi )
-            yaw_offset_angle = yaw_offset_angle[0]
+            if( OPT_Config_File.Timeline_settings()['yaw_correction'] == True ):
+                yaw_offset_angle = OPT_Config_File.Timeline_settings()['yaw_amplitude'] * cos( arg_of_lat/180*pi - orbangle_between_LP_MATS/180*pi + OPT_Config_File.Timeline_settings()['yaw_phase']/180*pi )
+                yaw_offset_angle = yaw_offset_angle[0]
+            elif( OPT_Config_File.Timeline_settings()['yaw_correction'] == False  ):
+                yaw_offset_angle = 0
+                yaw_offset_angle = yaw_offset_angle[0]
             
             if( t % log_timestep == 0 or t == 1 ):
                 Logger.debug('ascending_node: '+str(ascending_node))
@@ -865,16 +473,11 @@ def XML_generator_Mode3(root, date, duration, relativeTime, params = {}):
                 ############### End of SCI-mode operation planner #################
                 
     
-    
-    
-    
-    
-
 
 #######################################################################################
 
-def XML_generator_Mode4(root, date, duration, relativeTime, params = {}):
-    """Simulates MATS and the LP with yaw movement to be able to schedule commands in the XML-file.
+def XML_generator_Mode2_and_4(root, date, duration, relativeTime, params = {}):
+    """Simulates MATS and the LP to be able to schedule commands in the XML-file.
     
     High-resolution IR binning. Stop/Start Nadir at dusk/dawn.
     
@@ -1023,7 +626,7 @@ def XML_generator_Mode100(root, date, duration, relativeTime, params = {}):
     ExpIntUV =  params['Exp_Time_and_Interval_UV'][1]
     ExpTimeIR = params['Exp_Time_and_Interval_IR'][0]
     ExpIntIR =  params['Exp_Time_and_Interval_IR'][1]
-    ExpTime_interval = params['ExpTime_interval']
+    ExpTime_step = params['ExpTime_step']
     
     number_of_altitudes = int( (pointing_altitude_to - pointing_altitude_from) / pointing_altitude_interval +1 )
     
@@ -1047,10 +650,10 @@ def XML_generator_Mode100(root, date, duration, relativeTime, params = {}):
                                               ExpIntUV = ExpIntUV, ExpTimeIR = ExpTimeIR, ExpIntIR = ExpIntIR, comment = comment)
         relativeTime = relativeTime + params['pointing_duration']
         
-        ExpTimeUV = ExpTimeUV + ExpTime_interval
-        ExpIntUV = ExpIntUV + ExpTime_interval
-        ExpTimeIR = ExpTimeIR + ExpTime_interval
-        ExpIntIR = ExpIntIR + ExpTime_interval
+        ExpTimeUV = ExpTimeUV + ExpTime_step
+        ExpIntUV = ExpIntUV + ExpTime_step
+        ExpTimeIR = ExpTimeIR + ExpTime_step
+        ExpIntIR = ExpIntIR + ExpTime_step
 
 
 
@@ -1082,15 +685,15 @@ def XML_generator_Mode110(root, date, duration, relativeTime, params = {}):
     pointing_altitude_from = params['pointing_altitude_from']
     pointing_altitude_to = params['pointing_altitude_to']
     sweep_rate = params['sweep_rate']
-    sweep_start = params['sweep_start']
     
-    relativeTime_sweep_start = sweep_start + relativeTime
+    
+    
     
     Mode_macro = getattr(Macros,Mode_name+'_macro')
     
     Mode_macro(root, round(relativeTime,2), pointing_altitude_from = pointing_altitude_from, 
                   pointing_altitude_to = pointing_altitude_to, sweep_rate = sweep_rate, 
-                  relativeTime_sweep_start = relativeTime_sweep_start, comment = comment)
+                  comment = comment)
 
 
 #######################################################################################################
@@ -1144,6 +747,47 @@ def XML_generator_Mode120(root, date, duration, relativeTime,
 ################################################################################################
 
 
+def XML_generator_Mode121(root, date, duration, relativeTime, 
+                       params = {}):
+    """Mode121
+    
+    Stare at a point in inertial reference frame and take a Snapshot using Full CCD readout. Stop Nadir
+    
+    """
+    
+    settings = OPT_Config_File.Mode121_settings()
+    
+    
+    Logger.debug('params from Science Mode List: '+str(params))
+    params = params_checker(params,settings)
+    Logger.debug('params after params_checker function: '+str(params))
+    Logger.info('params used: '+str(params))
+    
+    Mode_name = sys._getframe(0).f_code.co_name.replace('XML_generator_','')
+    comment = Mode_name+' starting date: '+str(date)+', '+str(params)
+    
+    freeze_start_utc = ephem.Date(date+ephem.second*params['freeze_start'])
+    #freezeTime = str(int((freeze_start_utc+leapSeconds-GPS_epoch)*24*3600))
+    
+    Snapshot_relativeTime = relativeTime + params['freeze_start'] + params['SnapshotTime']
+    
+    freezeTime = utc_to_onboardTime(freeze_start_utc)
+    
+    FreezeDuration = params['freeze_duration']
+    
+    pointing_altitude = params['pointing_altitude']
+    
+    
+    Logger.debug('freeze_start_utc: '+str(freeze_start_utc))
+    Logger.debug('freezeTime [GPS]: '+ str(freezeTime))
+    Logger.debug('FreezeDuration: '+str(FreezeDuration))
+    
+    Mode_macro = getattr(Macros,Mode_name+'_macro')
+    
+    Mode_macro(root, round(relativeTime,2), freezeTime=freezeTime, 
+                     FreezeDuration = FreezeDuration, pointing_altitude = pointing_altitude, 
+                     Snapshot_relativeTime = Snapshot_relativeTime, comment = comment)
+
 
 
 ############################################################################################
@@ -1151,14 +795,14 @@ def XML_generator_Mode120(root, date, duration, relativeTime,
 
 
 
-def XML_generator_Mode121(root, date, duration, relativeTime, 
+def XML_generator_Mode122(root, date, duration, relativeTime, 
                        params = {}):
-    """Mode121
+    """Mode122
     
-    Stare at a point in inertial reference frame in the orbital plane using standard binning.
+    Stare at a point in inertial reference frame and take a Snapshot using standard binning.
     """
     
-    settings = OPT_Config_File.Mode121_settings()
+    settings = OPT_Config_File.Mode122_settings()
     
     Logger.debug('params from Science Mode List: '+str(params))
     params = params_checker(params,settings)
@@ -1184,15 +828,16 @@ def XML_generator_Mode121(root, date, duration, relativeTime,
     
     Mode_macro = getattr(Macros,Mode_name+'_macro')
     
-    for (ExpTimeUV,ExpIntUV),(ExpTimeIR,ExpIntIR)  in zip( params['Exp_Times_and_Intervals_UV'], params['Exp_Times_and_Intervals_IR'] ):
-        
-        Mode_macro(root, round(relativeTime,2), freezeTime=freezeTime, 
-                     FreezeDuration = FreezeDuration, pointing_altitude = pointing_altitude, 
-                     ExpIntUV = ExpIntUV, ExpTimeUV = ExpTimeUV, ExpIntIR = ExpIntIR, ExpTimeIR = ExpTimeIR, 
-                     Snapshot_relativeTime = Snapshot_relativeTime, comment = comment)
-
-
-
+    #for (ExpTimeUV,ExpIntUV),(ExpTimeIR,ExpIntIR)  in zip( params['Exp_Times_and_Intervals_UV'], params['Exp_Times_and_Intervals_IR'] ):
+    
+    ExpTimeUV,ExpIntUV = params['Exp_Time_and_Interval_UV']
+    ExpTimeIR,ExpIntIR = params['Exp_Time_and_Interval_IR']
+    
+    relativeTime = Mode_macro(root, round(relativeTime,2), freezeTime=freezeTime, 
+                                  FreezeDuration = FreezeDuration, pointing_altitude = pointing_altitude, 
+                                  ExpIntUV = ExpIntUV, ExpTimeUV = ExpTimeUV, ExpIntIR = ExpIntIR, ExpTimeIR = ExpTimeIR, 
+                                  Snapshot_relativeTime = Snapshot_relativeTime, comment = comment)
+    
 
 ################################################################################################
 
@@ -1201,16 +846,15 @@ def XML_generator_Mode121(root, date, duration, relativeTime,
 
 
 
-def XML_generator_Mode122(root, date, duration, relativeTime, 
+def XML_generator_Mode123(root, date, duration, relativeTime, 
                        params = {}):
-    """Mode122
+    """Mode123
     
-    Stare at a point in inertial reference frame in the orbital plane using one single pixel,
-    for several different exposure times, set in *OPT_Config_File.Mode122_settings*.
+    Stare at a point in inertial reference frame and take a Snapshot using single pixel.
     
     """
     
-    settings = OPT_Config_File.Mode122_settings()
+    settings = OPT_Config_File.Mode123_settings()
     
     Logger.debug('params from Science Mode List: '+str(params))
     params = params_checker(params,settings)
@@ -1236,9 +880,12 @@ def XML_generator_Mode122(root, date, duration, relativeTime,
     
     Mode_macro = getattr(Macros,Mode_name+'_macro')
     
-    for (ExpTimeUV,ExpIntUV),(ExpTimeIR,ExpIntIR)  in zip( params['Exp_Times_and_Intervals_UV'], params['Exp_Times_and_Intervals_IR'] ):
-        
-        relativeTime = Mode_macro(root, round(relativeTime,2), freezeTime=freezeTime, 
+    #for (ExpTimeUV,ExpIntUV),(ExpTimeIR,ExpIntIR)  in zip( params['Exp_Times_and_Intervals_UV'], params['Exp_Times_and_Intervals_IR'] ):
+    
+    ExpTimeUV,ExpIntUV = params['Exp_Times_and_Intervals_UV']
+    ExpTimeIR,ExpIntIR = params['Exp_Times_and_Intervals_IR']
+    
+    relativeTime = Mode_macro(root, round(relativeTime,2), freezeTime=freezeTime, 
                                   FreezeDuration = FreezeDuration, pointing_altitude = pointing_altitude, 
                                   ExpIntUV = ExpIntUV, ExpTimeUV = ExpTimeUV, ExpIntIR = ExpIntIR, ExpTimeIR = ExpTimeIR, 
                                   Snapshot_relativeTime = Snapshot_relativeTime, comment = comment)
@@ -1251,6 +898,54 @@ def XML_generator_Mode122(root, date, duration, relativeTime,
                      ExpInt = str(ExpInt), ExpTime = str(ExpTime), comment = comment)
         relativeTime = round(float(relativeTime) + params['session_duration'], 1)
     """
+
+
+
+
+##############################################################################################
+
+
+def XML_generator_Mode124(root, date, duration, relativeTime, 
+                       params = {}):
+    """Mode123
+    
+    Stare at a point in inertial reference frame using standard binning. Stop Nadir
+    Used for moon calibration.
+    """
+    
+    settings = OPT_Config_File.Mode124_settings()
+    
+    Logger.debug('params from Science Mode List: '+str(params))
+    params = params_checker(params,settings)
+    Logger.debug('params after params_checker function: '+str(params))
+    Logger.info('params used: '+str(params))
+    
+    Mode_name = sys._getframe(0).f_code.co_name.replace('XML_generator_','')
+    comment = Mode_name+' starting date: '+str(date)+', '+str(params)
+    
+    Snapshot_relativeTime = relativeTime + params['freeze_start'] + params['SnapshotTime']
+    
+    
+    freeze_start_utc = ephem.Date(date+ephem.second*params['freeze_start'])
+    freezeTime = utc_to_onboardTime(freeze_start_utc)
+    
+    FreezeDuration = params['freeze_duration']
+    
+    pointing_altitude = params['pointing_altitude']
+    
+    
+    Logger.debug('freeze_start_utc: '+str(freeze_start_utc))
+    Logger.debug('freezeTime [GPS]: '+ str(freezeTime))
+    Logger.debug('FreezeDuration: '+str(FreezeDuration))
+    
+    Mode_macro = getattr(Macros,Mode_name+'_macro')
+    
+    Mode_macro(root, round(relativeTime,2), freezeTime=freezeTime, Snapshot_relativeTime = Snapshot_relativeTime,
+                     FreezeDuration = FreezeDuration, pointing_altitude = pointing_altitude, comment = comment)
+
+
+
+##############################################################################################
 
 
 
@@ -1285,19 +980,42 @@ def XML_generator_Mode130(root, date, duration, relativeTime,
 
 ##############################################################################################
 
+def XML_generator_Mode131(root, date, duration, relativeTime, 
+                       params = {}):
+    """Mode131
+    
+    Look at fixed limb altitude with Full CCD readout.
+    """
+    
+    settings = OPT_Config_File.Mode131_settings()
+    
+    Logger.debug('params from Science Mode List: '+str(params))
+    params = params_checker(params,settings)
+    Logger.debug('params after params_checker function: '+str(params))
+    Logger.info('params used: '+str(params))
+    
+    Mode_name = sys._getframe(0).f_code.co_name.replace('XML_generator_','')
+    comment = Mode_name+' starting date: '+str(date)+', '+str(params)
+    
+    pointing_altitude = params['pointing_altitude']
+    
+    Mode_macro = getattr(Macros,Mode_name+'_macro')
+    
+    Mode_macro(root, round(relativeTime,2), pointing_altitude = pointing_altitude, comment = comment)
+
 
 ################################################################################################
 
 
 
-def XML_generator_Mode131(root, date, duration, relativeTime, 
+def XML_generator_Mode132(root, date, duration, relativeTime, 
                        params = {}):
-    """Mode131
+    """Mode132
     
     Look at fixed limb altitude. Standard Binning.
     """
     
-    settings = OPT_Config_File.Mode131_settings()
+    settings = OPT_Config_File.Mode132_settings()
     
     Logger.debug('params from Science Mode List: '+str(params))
     params = params_checker(params,settings)
@@ -1330,16 +1048,16 @@ def XML_generator_Mode131(root, date, duration, relativeTime,
 
 
 
-def XML_generator_Mode132(root, date, duration, relativeTime, 
+def XML_generator_Mode133(root, date, duration, relativeTime, 
                        params = {}):
-    """Mode132
+    """Mode133
     
-    Look at fixed limb altitude for several different exposure times, set in *OPT_Config_File.Mode132_settings*. 
+    Look at fixed limb altitude for several different exposure times, set in *OPT_Config_File.Mode133_settings*. 
     Bin all pixels to one single pixel.
     
     """
     
-    settings = OPT_Config_File.Mode132_settings()
+    settings = OPT_Config_File.Mode133_settings()
     
     Logger.debug('params from Science Mode List: '+str(params))
     params = params_checker(params,settings)
@@ -1365,44 +1083,6 @@ def XML_generator_Mode132(root, date, duration, relativeTime,
 
 
 ##############################################################################################
-
-
-def XML_generator_Mode200(root, date, duration, relativeTime, 
-                       params = {}):
-    """Mode200
-    
-    Stare at a point in inertial reference frame using standard binning. Stop Nadir
-    Used for moon calibration.
-    """
-    
-    settings = OPT_Config_File.Mode200_settings()
-    
-    Logger.debug('params from Science Mode List: '+str(params))
-    params = params_checker(params,settings)
-    Logger.debug('params after params_checker function: '+str(params))
-    Logger.info('params used: '+str(params))
-    
-    Mode_name = sys._getframe(0).f_code.co_name.replace('XML_generator_','')
-    comment = Mode_name+' starting date: '+str(date)+', '+str(params)
-    
-    
-    freeze_start_utc = ephem.Date(date+ephem.second*params['freeze_start'])
-    freezeTime = utc_to_onboardTime(freeze_start_utc)
-    
-    FreezeDuration = params['freeze_duration']
-    
-    pointing_altitude = params['pointing_altitude']
-    
-    
-    Logger.debug('freeze_start_utc: '+str(freeze_start_utc))
-    Logger.debug('freezeTime [GPS]: '+ str(freezeTime))
-    Logger.debug('FreezeDuration: '+str(FreezeDuration))
-    
-    Mode_macro = getattr(Macros,Mode_name+'_macro')
-    
-    Mode_macro(root, round(relativeTime,2), freezeTime=freezeTime, 
-                     FreezeDuration = FreezeDuration, pointing_altitude = pointing_altitude, comment = comment)
-
 
 
 ##############################################################################################

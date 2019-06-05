@@ -10,7 +10,7 @@ Mode/Test/CMD specific settings given in the Science Mode Timeline List will ove
 from lxml import etree
 import ephem, logging, sys, time, os, json, importlib
 
-from Operational_Planning_Tool import _Globals
+from Operational_Planning_Tool import _Globals, _Library
 OPT_Config_File = importlib.import_module(_Globals.Config_File)
 #from OPT_Config_File import Timeline_settings, initialConditions, Logger_name, Version
 from .Modes_and_Tests import MODES, Tests, SeparateCmds
@@ -34,11 +34,7 @@ def XML_generator(SCIMOD_Path):
         sys.exit()
     """
     
-    ######## Try to Create a directory for storage of Logs #######
-    try:
-        os.mkdir('Logs_'+__name__)
-    except:
-        pass
+    
     
     ######## Try to Create a directory for storage of output files #######
     try:
@@ -46,31 +42,15 @@ def XML_generator(SCIMOD_Path):
     except:
         pass
     
+    
     ############# Set up Logger #################################
-    "Remove all previous handlers of the logger"
-    for handler in Logger.handlers[:]:
-        Logger.removeHandler(handler)
-    
-    #logging.basicConfig(stream=sys.stdout, level=logging.INFO)
-    timestr = time.strftime("%Y%m%d-%H%M%S")
-    logstring = os.path.join('Logs_'+__name__, __name__+'_'+OPT_Config_File.Version()+'_'+timestr+'.log')
-    Handler = logging.FileHandler(logstring, mode='a')
-    formatter = logging.Formatter("%(levelname)6s : %(message)-80s :: %(module)s :: %(funcName)s")
-    Handler.setFormatter(formatter)
-    Logger.addHandler(Handler)
-    Logger.setLevel(logging.DEBUG)
-    
-    streamHandler = logging.StreamHandler()
-    streamHandler.setLevel(logging.INFO)
-    streamHandler.setFormatter(formatter)
-    Logger.addHandler(streamHandler)
-    ############# Set up Logger ##########################
+    _Library.SetupLogger()
     
     
     Logger.info('Start of Program')
     Logger.info('')
     Version = OPT_Config_File.Version()
-    Logger.info(_Globals.Config_File+' used, Version: '+Version)
+    Logger.info('Configuration File used: '+_Globals.Config_File+', Version: '+Version)
     Logger.info('')
     
     
@@ -135,7 +115,7 @@ def XML_generator(SCIMOD_Path):
     SCIMOD_Path = SCIMOD_Path.replace('.json','')
     
     ### Write finished XML-tree with all commands to a file #######
-    MATS_COMMANDS = os.path.join('Output','MATS_COMMANDS__ConfigFile_'+_Globals.Config_File+'__TimelineFrom_'+SCIMOD_Path+'.xml')
+    MATS_COMMANDS = os.path.join('Output','MATS_COMMANDS__'+_Globals.Config_File+'__TimelineFrom_'+SCIMOD_Path+'.xml')
     Logger.info('Write XML-tree to: '+MATS_COMMANDS)
     f = open(MATS_COMMANDS, 'w')
     f.write(etree.tostring(root, pretty_print=True, encoding = 'unicode'))

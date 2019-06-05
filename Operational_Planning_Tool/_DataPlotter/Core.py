@@ -17,7 +17,6 @@ import pymap3d as pm3d
 from Operational_Planning_Tool import _Library, _MATS_coordinates, _Globals
 
 OPT_Config_File = importlib.import_module(_Globals.Config_File)
-Logger = logging.getLogger(OPT_Config_File.Logger_name())
 
 
 def Data_Plotter():
@@ -31,8 +30,12 @@ def Data_Plotter():
         sys.exit()
     """
     
+    ############# Set up Logger #################################
+    _Library.SetupLogger()
+    Logger = logging.getLogger(OPT_Config_File.Logger_name())
+    
     Version = OPT_Config_File.Version()
-    Logger.info(_Globals.Config_File+' used, Version: '+Version)
+    Logger.info('Configuration File used: '+_Globals.Config_File+', Version: '+Version)
     
     #timesteps = 29
     Settings = OPT_Config_File.Timeline_settings()

@@ -12,10 +12,11 @@ from .Mode100 import Mode100
 from .Mode120 import Mode120
 from .Mode121 import Mode121
 from .Mode122 import Mode122
+from .Mode123 import Mode123
 from .Mode130 import Mode130
 from .Mode131 import Mode131
 from .Mode132 import Mode132
-from .Mode200 import Mode200
+from .Mode124 import Mode124
 from .Mode201 import Mode201
 from .Mode203 import Mode203
 from .Mode110 import Mode110
