@@ -10,7 +10,7 @@ Operational_Planning_Tool requires at least Python 3.7.3 and these packages:
     astroquery, Version: >= 0.3.9, astropy
     pymap3d, Version: >= 1.8.0, pypi
     
-It is recommended to install these packages in a conda environment using conda and to use "Spyder" as an editor.
+It is recommended to install these packages in a conda environment using conda and to use "Spyder" as an scientific environment.
 
 What follows is a basic tutorial for beginners to python3 on how to setup python3 inside a conda environment 
 and then install the required packages.
@@ -18,7 +18,7 @@ and then install the required packages.
 1. Install Anaconda (or Miniconda if prefered) from their website. 
 
 One instance of Python3 is installed together with Anaconda (or Miniconda) inside the conda environment.
-Anaconda comes with many preinstalled python packages and some of the ones required by Operational Planning
+Anaconda comes with many preinstalled python packages, and some of the ones required by Operational Planning
 Tool may already be installed (scipy for example). Miniconda comes with no preinstalled packages and also no graphical interface.
 
 2. After installation open the program "Anaconda Prompt".
@@ -55,12 +55,16 @@ of the Spyder project, as that directory is automatically part of the PYTHONPATH
 
 7. Finally try to execute these lines in Spyder (either in the IPython console or as part of a script).
 
-import Operational_Planning_Tool as OPT
-
-OPT.Create_ConfigFile('OPT_Config_File')
-
-OPT.Set_ConfigFile('OPT_Config_File', '2018/09/03 08:00:00')
-
-OPT.Timeline_gen()
+    import Operational_Planning_Tool as OPT
+    
+    OPT.Copy_ConfigFile('OPT_Config_File')
+    
+    OPT.Set_ConfigFile('OPT_Config_File', '2019/09/05 08:00:00')
+    
+    OPT.CheckConfigFile()
+    
+    OPT.Timeline_gen()
+    
+    OPT.XML_gen('Output/Science_Mode_Timeline__OPT_Config_File.json')
 
 See further documentation found under "Docs" in Operational_Planning_Tool to learn how to use the Operational_Planning_Tool package.

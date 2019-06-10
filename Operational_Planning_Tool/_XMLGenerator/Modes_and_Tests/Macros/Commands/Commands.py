@@ -5,12 +5,12 @@ Add commands to the XML-tree as specified in "InnoSat Payload Timeline XML Defin
 
 Arguments:
     root (lxml.etree.Element):  XML tree structure. Main container object for the ElementTree API. \n
-    relativeTime (str): The relative starting relativeTime of the CMD with regard to the start of the timeline [s]. \n
-    *CMD specific parameters* (str): A number of CMD specific parameters as defined in "InnoSat Payload Timeline XML Definition" document for each corresponding command. \n
+    relativeTime (int): The relative starting relativeTime of the CMD with regard to the start of the timeline [s]. \n
+    *CMD specific parameters*: A number of CMD specific parameters as defined in "InnoSat Payload Timeline XML Definition" document for each corresponding command. \n
     comment (str): A comment regarding the CMD.
 
 Returns: 
-    incremented_time (str) = The scheduled relativeTime of the command increased by a number equal to OPT_Config_File.Timeline.settings()['command_separation'], 
+    incremented_time (int) = The scheduled relativeTime of the command increased by a number equal to OPT_Config_File.Timeline.settings()['command_separation'], 
     This to prevent the command buffer on the satellite from overloading. When TC_acfLimbPointingAltitudeOffset is scheduled with Rate = '0', a different relativeTime period is added to let the attitude stabilize.
 
 """
@@ -19,6 +19,7 @@ import logging, importlib
 from lxml import etree
 
 from Operational_Planning_Tool import _Globals
+from Operational_Planning_Tool._Library import calculate_time_per_row
 
 OPT_Config_File = importlib.import_module(_Globals.Config_File)
 #from OPT_Config_File import Timeline_settings, Logger_name, PM_settings
@@ -29,8 +30,8 @@ Logger = logging.getLogger(OPT_Config_File.Logger_name())
 
 def TC_pafMode(root, relativeTime, mode, comment = ''):
     
-    if not( 0 <= relativeTime <= OPT_Config_File.Timeline_settings()['duration']):
-        Logger.error('Invalid argument: negative relativeTime or exceeding timeline duration')
+    if not( 0 <= relativeTime <= OPT_Config_File.Timeline_settings()['duration']) and type(relativeTime) == int:
+        Logger.error('Invalid argument: negative relativeTime, exceeding timeline duration, or not integer')
         raise ValueError
     if not( 1 <= mode <= 2 and type(mode) == int ):
         Logger.error('Invalid argument: Final')
@@ -56,8 +57,8 @@ def TC_pafMode(root, relativeTime, mode, comment = ''):
 def TC_acfLimbPointingAltitudeOffset(root, relativeTime, Initial = 92500, Final = 92500, Rate = 0, comment = ''):
     """Schedules Pointing Command unless the desired attitude is already set and Rate = 0."""
     
-    if not( 0 <= relativeTime <= OPT_Config_File.Timeline_settings()['duration']):
-        Logger.error('Invalid argument: negative relativeTime or exceeding timeline duration')
+    if not( 0 <= relativeTime <= OPT_Config_File.Timeline_settings()['duration']) and type(relativeTime) == int:
+        Logger.error('Invalid argument: negative relativeTime, exceeding timeline duration, or not integer')
         raise ValueError
     if not( 0 <= Initial <= 300000 and type(Initial) == int ):
         Logger.error('Invalid argument: Initial')
@@ -110,8 +111,8 @@ def TC_acfLimbPointingAltitudeOffset(root, relativeTime, Initial = 92500, Final 
     
 def TC_affArgFreezeStart(root, relativeTime, StartTime, comment = ''):
     
-    if not( 0 <= relativeTime <= OPT_Config_File.Timeline_settings()['duration']):
-        Logger.error('Invalid argument: negative relativeTime or exceeding timeline duration')
+    if not( 0 <= relativeTime <= OPT_Config_File.Timeline_settings()['duration']) and type(relativeTime) == int:
+        Logger.error('Invalid argument: negative relativeTime, exceeding timeline duration, or not integer')
         raise ValueError
     "Within the years 2019-2100"
     if not( 1198800018 < StartTime < 3786480018 ):
@@ -136,8 +137,8 @@ def TC_affArgFreezeStart(root, relativeTime, StartTime, comment = ''):
     
 def TC_affArgFreezeDuration(root, relativeTime, FreezeDuration, comment = ''):
     
-    if not( 0 <= relativeTime <= OPT_Config_File.Timeline_settings()['duration']):
-        Logger.error('Invalid argument: negative relativeTime or exceeding timeline duration')
+    if not( 0 <= relativeTime <= OPT_Config_File.Timeline_settings()['duration']) and type(relativeTime) == int:
+        Logger.error('Invalid argument: negative relativeTime, exceeding timeline duration, or not integer')
         raise ValueError
     if not( 0 < FreezeDuration < OPT_Config_File.Timeline_settings()['duration'] ):
         Logger.error('Invalid argument: negative FreezeDuration or exceeding timeline duration')
@@ -161,8 +162,8 @@ def TC_affArgFreezeDuration(root, relativeTime, FreezeDuration, comment = ''):
     
 def TC_pafPWRToggle(root, relativeTime, CONST = 165, comment = ''):
     
-    if not( 0 <= relativeTime <= OPT_Config_File.Timeline_settings()['duration']):
-        Logger.error('Invalid argument: negative relativeTime or exceeding timeline duration')
+    if not( 0 <= relativeTime <= OPT_Config_File.Timeline_settings()['duration']) and type(relativeTime) == int:
+        Logger.error('Invalid argument: negative relativeTime, exceeding timeline duration, or not integer')
         raise ValueError
     if not( CONST == 165 and type(CONST) == int ):
         Logger.error('Invalid argument: CONST')
@@ -187,8 +188,8 @@ def TC_pafPWRToggle(root, relativeTime, CONST = 165, comment = ''):
     
 def TC_pafUpload(root, relativeTime, PINDEX = 0, PTOTAL = 0, WFLASH = 0, NIMG = 0, IMG = [], comment = ''):
     
-    if not( 0 <= relativeTime <= OPT_Config_File.Timeline_settings()['duration']):
-        Logger.error('Invalid argument: negative relativeTime or exceeding timeline duration')
+    if not( 0 <= relativeTime <= OPT_Config_File.Timeline_settings()['duration']) and type(relativeTime) == int:
+        Logger.error('Invalid argument: negative relativeTime, exceeding timeline duration, or not integer')
         raise ValueError
     if not( 0 <= PINDEX and type(PINDEX) == int ):
         Logger.error('Invalid argument: PINDEX')
@@ -243,14 +244,14 @@ def TC_pafUpload(root, relativeTime, PINDEX = 0, PTOTAL = 0, WFLASH = 0, NIMG = 
     
 def TC_pafHTR(root, relativeTime, HTRSEL, SET, P, I, D, comment = ''):
     
-    if not( 0 <= relativeTime <= OPT_Config_File.Timeline_settings()['duration']):
-        Logger.error('Invalid argument: negative relativeTime or exceeding timeline duration')
+    if not( 0 <= relativeTime <= OPT_Config_File.Timeline_settings()['duration']) and type(relativeTime) == int:
+        Logger.error('Invalid argument: negative relativeTime, exceeding timeline duration, or not integer')
         raise ValueError
     if not( (1 <= HTRSEL <= 3 or 64 <= HTRSEL <= 67 or 128 <= HTRSEL <= 131 or 192 <= HTRSEL <= 195)  and type(HTRSEL) == int ):
         Logger.error('Invalid argument: HTRSEL')
         raise ValueError
-    if not( 0 <= SET <= 4095 and type(SET) == int ):
-        Logger.error('Invalid argument: SET')
+    if not( 300 <= SET <= 3000 and type(SET) == int ):
+        Logger.error('Invalid argument: 300 > SET or SET > 3000')
         raise ValueError
     if not( 0 <= P <= 65536 and type(P) == int ):
         Logger.error('Invalid argument: P')
@@ -296,8 +297,8 @@ def TC_pafCCDMain(root, relativeTime, CCDSEL, PWR, ExpInterval, ExpTime, NRSKIP 
                   NCBINFPGA = 0, SIGMODE = 1, GAIN = 0, 
                   NFLUSH = 1023, NCSKIP = 0, comment = ''):
     
-    if not( 0 <= relativeTime <= OPT_Config_File.Timeline_settings()['duration']):
-        Logger.error('Invalid argument: negative relativeTime or exceeding timeline duration')
+    if not( 0 <= relativeTime <= OPT_Config_File.Timeline_settings()['duration']) and type(relativeTime) == int:
+        Logger.error('Invalid argument: negative relativeTime, exceeding timeline duration, or not integer')
         raise ValueError
     if not( 1 <= CCDSEL <= 127 and type(CCDSEL) == int ):
         Logger.error('Invalid argument: CCDSEL')
@@ -345,17 +346,15 @@ def TC_pafCCDMain(root, relativeTime, CCDSEL, PWR, ExpInterval, ExpTime, NRSKIP 
         Logger.error('Invalid argument: NROW * NRBIN + NRSKIP exceeds 511')
         raise ValueError
     if not( (NCOL+1) * NCBIN * 2**NCBINFPGA + NCSKIP <= 2048 ):
-        Logger.error('Invalid argument: (NCOL+1) * NCBIN * 2^NCBINFPGA + NCSKIP exceeds 2047')
+        Logger.error('Invalid argument: (NCOL+1) * NCBIN * 2^NCBINFPGA + NCSKIP exceeds 2048')
         raise ValueError
         
         
-    """
-    if not( ExpTime == 0 and ExpInterval > ExpTime + ReadoutTime(ExpTime, ExpInterval) ):
-        Logger.error('Invalid argument: TEXPMS is less than 500ms larger then TEXPIMS')
-        raise ValueError
-    """
-    if not( 0 <= ExpTime and 100 <= ExpInterval ):
-        Logger.error('Invalid argument: TEXPMS or TEXPIMS are negative')
+    
+    ReadOutTime = calculate_time_per_row(NCOL, NCBIN, NCBINFPGA, NRSKIP, NROW, NRBIN, NFLUSH)*10**-9
+    Logger.debug(ReadOutTime)
+    if not( 0 <= ExpTime and ExpTime + ReadOutTime < ExpInterval ):
+        Logger.error('Invalid argument: TEXPMS is negative or ExpTime + ReadOutTime > ExpInterval')
         raise ValueError
     if not( type(ExpTime) == int and type(ExpInterval) == int ):
         Logger.error('Invalid argument: TEXPMS or TEXPIMS is not an integer')
@@ -428,8 +427,8 @@ def TC_pafCCDMain(root, relativeTime, CCDSEL, PWR, ExpInterval, ExpTime, NRSKIP 
     
 def TC_pafCCDBadColumn(root, relativeTime, CCDSEL, NBC, BC, comment = ''):
     
-    if not( 0 <= relativeTime <= OPT_Config_File.Timeline_settings()['duration']):
-        Logger.error('Invalid argument: negative relativeTime or exceeding timeline duration')
+    if not( 0 <= relativeTime <= OPT_Config_File.Timeline_settings()['duration']) and type(relativeTime) == int:
+        Logger.error('Invalid argument: negative relativeTime, exceeding timeline duration, or not integer')
         raise ValueError
     if not( 1 <= CCDSEL <= 127 and type(CCDSEL) == int ):
         Logger.error('Invalid argument: CCDSEL')
@@ -473,8 +472,8 @@ def TC_pafCCDBadColumn(root, relativeTime, CCDSEL, NBC, BC, comment = ''):
     
 def TC_pafCCDFlushBadColumns(root, relativeTime, CCDSEL, comment = ''):
     
-    if not( 0 <= relativeTime <= OPT_Config_File.Timeline_settings()['duration']):
-        Logger.error('Invalid argument: negative relativeTime or exceeding timeline duration')
+    if not( 0 <= relativeTime <= OPT_Config_File.Timeline_settings()['duration']) and type(relativeTime) == int:
+        Logger.error('Invalid argument: negative relativeTime, exceeding timeline duration, or not integer')
         raise ValueError
     if not( 1 <= CCDSEL <= 127 and type(CCDSEL) == int ):
         Logger.error('Invalid argument: CCDSEL')
@@ -499,13 +498,13 @@ def TC_pafCCDFlushBadColumns(root, relativeTime, CCDSEL, comment = ''):
     
 def TC_pafCCDBIAS(root, relativeTime, CCDSEL, VGATE, VSUBST, VRD, VOD, comment = ''):
     
-    if not( 0 <= relativeTime <= OPT_Config_File.Timeline_settings()['duration']):
-        Logger.error('Invalid argument: negative relativeTime or exceeding timeline duration')
+    if not( 0 <= relativeTime <= OPT_Config_File.Timeline_settings()['duration']) and type(relativeTime) == int:
+        Logger.error('Invalid argument: negative relativeTime, exceeding timeline duration, or not integer')
         raise ValueError
     if not( 1 <= CCDSEL <= 127 and type(CCDSEL) == int ):
         Logger.error('Invalid argument: CCDSEL')
         raise ValueError
-    if not( 0 < VGATE < 255 and 0 < VSUBST < 255 and 0 < VRD < 255 and 0 < VOD < 255 and 
+    if not( 0 <= VGATE <= 255 and 0 <= VSUBST <= 255 and 0 <= VRD <= 255 and 0 <= VOD <= 255 and 
             type(VGATE) == int  and type(VSUBST) == int  and type(VRD) == int  and type(VOD) == int ):
         Logger.error('Invalid argument: CCDBIAS values are not set as integers, or too high or low')
         raise ValueError
@@ -542,8 +541,8 @@ def TC_pafCCDBIAS(root, relativeTime, CCDSEL, VGATE, VSUBST, VRD, VOD, comment =
 def TC_pafCCDSnapshot(root, relativeTime, CCDSEL, comment = ''):
     
     
-    if not( 0 <= relativeTime <= OPT_Config_File.Timeline_settings()['duration']):
-        Logger.error('Invalid argument: negative relativeTime or exceeding timeline duration')
+    if not( 0 <= relativeTime <= OPT_Config_File.Timeline_settings()['duration']) and type(relativeTime) == int:
+        Logger.error('Invalid argument: negative relativeTime, exceeding timeline duration, or not integer')
         raise ValueError
     if not( 1 <= CCDSEL <= 127 and type(CCDSEL) == int ):
         Logger.error('Invalid argument: CCDSEL')
@@ -569,8 +568,8 @@ def TC_pafCCDSnapshot(root, relativeTime, CCDSEL, comment = ''):
 def TC_pafCCDTRANSPARENTCMD(root, relativeTime, CCDSEL, CHAR, comment = ''):
     
     
-    if not( 0 <= relativeTime <= OPT_Config_File.Timeline_settings()['duration']):
-        Logger.error('Invalid argument: negative relativeTime or exceeding timeline duration')
+    if not( 0 <= relativeTime <= OPT_Config_File.Timeline_settings()['duration']) and type(relativeTime) == int:
+        Logger.error('Invalid argument: negative relativeTime, exceeding timeline duration, or not integer')
         raise ValueError
     if not( 1 <= CCDSEL <= 127 and type(CCDSEL) == int ):
         Logger.error('Invalid argument: CCDSEL')
@@ -601,8 +600,8 @@ def TC_pafCCDTRANSPARENTCMD(root, relativeTime, CCDSEL, CHAR, comment = ''):
 
 def TC_pafDbg(root, relativeTime, CCDSEL, comment = ''):
     
-    if not( 0 <= relativeTime <= OPT_Config_File.Timeline_settings()['duration']):
-        Logger.error('Invalid argument: negative relativeTime or exceeding timeline duration')
+    if not( 0 <= relativeTime <= OPT_Config_File.Timeline_settings()['duration']) and type(relativeTime) == int:
+        Logger.error('Invalid argument: negative relativeTime, exceeding timeline duration, or not integer')
         raise ValueError
     if not( 1 <= CCDSEL <= 127 and type(CCDSEL) == int ):
         Logger.error('Invalid argument: CCDSEL')
@@ -627,8 +626,8 @@ def TC_pafDbg(root, relativeTime, CCDSEL, comment = ''):
 
 def TC_pafPM(root, relativeTime, TEXPMS = OPT_Config_File.PM_settings()['TEXPMS'], TEXPIMS = OPT_Config_File.PM_settings()['TEXPIMS'], comment = ''):
     
-    if not( 0 <= relativeTime <= OPT_Config_File.Timeline_settings()['duration']):
-        Logger.error('Invalid argument: negative relativeTime or exceeding timeline duration')
+    if not( 0 <= relativeTime <= OPT_Config_File.Timeline_settings()['duration']) and type(relativeTime) == int:
+        Logger.error('Invalid argument: negative relativeTime, exceeding timeline duration, or not integer')
         raise ValueError
     if not( 0 <= TEXPMS and TEXPIMS >= TEXPMS + 500 ):
         Logger.error('Invalid argument: TEXPMS is negative or TEXPMS is less than 500ms larger then TEXPIMS')

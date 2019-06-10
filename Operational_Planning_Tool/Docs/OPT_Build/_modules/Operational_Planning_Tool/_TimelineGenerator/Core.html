@@ -36,21 +36,22 @@
 <span class="sd">Created on Fri Nov  2 14:57:28 2018</span>
 
 <span class="sd">The *Timeline_generator* part of the *Operational_Planning_Tool* which purpose is to automatically generate a</span>
-<span class="sd">mission timeline from settings defined in the *OPT_Config_File*. The generated timeline consists of</span>
+<span class="sd">mission timeline from settings defined in the *Configuration File*. The generated timeline consists of</span>
 <span class="sd">Science Modes and separate CMDs together with their planned start/end dates, settings, and comments, </span>
 <span class="sd">expressed as a list in chronological order. \n</span>
 
 <span class="sd">Timeline_generator has a setable priority for the scheduling of modes and CMDs, </span>
 <span class="sd">which can be seen in the order of the modes in the list fetched from the </span>
-<span class="sd">function Modes_priority in the OPT_Config_File module. \n</span>
+<span class="sd">function Modes_priority in the *Configuration File*. \n</span>
 
 <span class="sd">For each mode/CMD, one at a time, an appropriate date is calculated, or</span>
-<span class="sd">a predetermined date is already set in the OPT_Config_File. A dictionary (Occupied_Timeline) keeps track of the planned runtime of all Modes, </span>
-<span class="sd">this to prevent colliding scheduling. \n</span>
+<span class="sd">a predetermined date is already set in the *Configuration File*. A dictionary (Occupied_Timeline) </span>
+<span class="sd">keeps track of the planned runtime of all Modes, this to prevent colliding scheduling. \n</span>
 
-<span class="sd">Depending on *Config_File.Timeline_settings()[&#39;yaw_correction&#39;]* is set for the timeline, Mode1/2 or Mode3/4 is chosen.</span>
+<span class="sd">Depending on *Timeline_settings()[&#39;yaw_correction&#39;]* is set for the timeline, Mode1/2 or Mode3/4 is chosen.</span>
+<span class="sd">And depending on *Timeline_settings()[&#39;Custom_Mode&#39;]*, Mode1-4 or Mode5/6 is chosen.</span>
 <span class="sd">These modes will fill out time left available after the scheduling of the rest of the modes, </span>
-<span class="sd">set in Config_File.Modes_priority.</span>
+<span class="sd">set in *Modes_priority*.</span>
 
 <span class="sd">If calculated starting dates for modes are occupied, they will be changed  </span>
 <span class="sd">depending on a specialized filtering process (mode 120, 200...), or postponed until time is available (mode 130, 131...).</span>
@@ -62,7 +63,7 @@
 
 
 <span class="kn">from</span> <span class="nn">.Modes</span> <span class="k">import</span> <span class="n">Modes_Header</span>
-<span class="kn">from</span> <span class="nn">Operational_Planning_Tool</span> <span class="k">import</span> <span class="n">_Globals</span>
+<span class="kn">from</span> <span class="nn">Operational_Planning_Tool</span> <span class="k">import</span> <span class="n">_Globals</span><span class="p">,</span> <span class="n">_Library</span>
 
 <span class="n">OPT_Config_File</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">_Globals</span><span class="o">.</span><span class="n">Config_File</span><span class="p">)</span>
 <span class="n">Logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Logger_name</span><span class="p">())</span>
@@ -75,52 +76,21 @@
 <span class="sd">        </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    if(os.path.isfile(&#39;OPT_Config_File.py&#39;) == False):</span>
-<span class="sd">        print(&#39;No OPT_Config_File.py found. Try running Create_ConfigFile()&#39;)</span>
-<span class="sd">        sys.exit()</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    
-    <span class="s2">&quot;Try to make a directory for logs if none is existing&quot;</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="s1">&#39;Logs_&#39;</span><span class="o">+</span><span class="vm">__name__</span><span class="p">)</span>
-    <span class="k">except</span><span class="p">:</span>
-        <span class="k">pass</span>
-    
     <span class="c1">######## Try to Create a directory for storage of output files #######</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="s1">&#39;Output&#39;</span><span class="p">)</span>
     <span class="k">except</span><span class="p">:</span>
         <span class="k">pass</span>
     
-    <span class="c1">############# Set up Logger #################################</span>
-    
-    <span class="s2">&quot;Remove all previous handlers of the logger&quot;</span>
-    <span class="k">for</span> <span class="n">handler</span> <span class="ow">in</span> <span class="n">Logger</span><span class="o">.</span><span class="n">handlers</span><span class="p">[:]:</span>
-        <span class="n">Logger</span><span class="o">.</span><span class="n">removeHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
-    
-    <span class="c1">#logging.basicConfig(stream=sys.stdout, level=logging.INFO)</span>
-    <span class="n">timestr</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">-%H%M%S&quot;</span><span class="p">)</span>
-    <span class="n">logstring</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;Logs_&#39;</span><span class="o">+</span><span class="vm">__name__</span><span class="p">,</span> <span class="vm">__name__</span><span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Version</span><span class="p">()</span><span class="o">+</span><span class="s1">&#39;_&#39;</span><span class="o">+</span><span class="n">timestr</span><span class="o">+</span><span class="s1">&#39;.log&#39;</span><span class="p">)</span>
-    <span class="n">Handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="n">logstring</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
-    <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%(levelname)-6s</span><span class="s2"> : </span><span class="si">%(message)-80s</span><span class="s2"> :: </span><span class="si">%(module)s</span><span class="s2"> :: </span><span class="si">%(funcName)s</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">Handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
-    <span class="n">Logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">Handler</span><span class="p">)</span>
-    <span class="n">Logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
-    
-    
-    <span class="n">streamHandler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
-    <span class="n">streamHandler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
-    <span class="n">streamHandler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
-    <span class="n">Logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">streamHandler</span><span class="p">)</span>
     
     
     <span class="c1">############# Set up Logger #################################</span>
+    <span class="n">_Library</span><span class="o">.</span><span class="n">SetupLogger</span><span class="p">()</span>
     
     <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Start of program&#39;</span><span class="p">)</span>
     
     <span class="n">Version</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Version</span><span class="p">()</span>
-    <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">_Globals</span><span class="o">.</span><span class="n">Config_File</span><span class="o">+</span><span class="s1">&#39; used, Version: &#39;</span><span class="o">+</span><span class="n">Version</span><span class="p">)</span>
+    <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Configuration File used: &#39;</span><span class="o">+</span><span class="n">_Globals</span><span class="o">.</span><span class="n">Config_File</span><span class="o">+</span><span class="s1">&#39;, Version: &#39;</span><span class="o">+</span><span class="n">Version</span><span class="p">)</span>
     
     <span class="s2">&quot;Get a List of Modes in a prioritized order which are to be scheduled&quot;</span>
     <span class="n">Modes_priority</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Modes_priority</span><span class="p">()</span>
@@ -168,11 +138,11 @@
         <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Start of &#39;</span><span class="o">+</span><span class="n">scimod</span><span class="p">)</span>
         <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
         
-        <span class="s2">&quot;Call the function of the same name as the string in OPT_Config_File.Modes_priority&quot;</span>
+        <span class="s2">&quot;Call the function of the same name as the string in Modes_priority&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">Mode_function</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">Modes_Header</span><span class="p">,</span><span class="n">scimod</span><span class="p">)</span>
         <span class="k">except</span><span class="p">:</span>
-            <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">scimod</span><span class="o">+</span><span class="s1">&#39; in Modes_priority was not found in OPT_Timeline_generator_Modes_Header&#39;</span><span class="p">)</span>
+            <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">scimod</span><span class="o">+</span><span class="s1">&#39; in Modes_priority was not found in Modes.Modes_Header&#39;</span><span class="p">)</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
             
         <span class="n">Occupied_Timeline</span><span class="p">,</span> <span class="n">Mode_comment</span> <span class="o">=</span> <span class="n">Mode_function</span><span class="p">(</span><span class="n">Occupied_Timeline</span><span class="p">)</span>
@@ -217,7 +187,7 @@
     <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;yaw_correction = &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">yaw_correction</span><span class="p">))</span>
     <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
     
-    <span class="n">Mode_1_2_3_4</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">Modes_Header</span><span class="p">,</span><span class="s1">&#39;Mode_1_2_3_4&#39;</span><span class="p">)</span>
+    <span class="n">Mode_1_2_3_4</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">Modes_Header</span><span class="p">,</span><span class="s1">&#39;Mode_1_2_3_4_5_6&#39;</span><span class="p">)</span>
     
     <span class="c1">### Check if it is NLC season ###</span>
     <span class="k">if</span><span class="p">(</span> <span class="n">Timeline_start_date</span><span class="o">.</span><span class="n">tuple</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">11</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">]</span> <span class="ow">or</span> 
@@ -225,7 +195,9 @@
         
         <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;NLC season&#39;</span><span class="p">)</span>
         
-        <span class="k">if</span><span class="p">(</span> <span class="n">yaw_correction</span> <span class="o">==</span> <span class="kc">True</span> <span class="p">):</span>
+        <span class="k">if</span><span class="p">(</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;Custom_Mode&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">True</span> <span class="p">):</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;Mode5&#39;</span>
+        <span class="k">elif</span><span class="p">(</span> <span class="n">yaw_correction</span> <span class="o">==</span> <span class="kc">True</span> <span class="p">):</span>
             <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;Mode3&#39;</span>
         <span class="k">elif</span><span class="p">(</span> <span class="n">yaw_correction</span> <span class="o">==</span> <span class="kc">False</span><span class="p">):</span>
             <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;Mode1&#39;</span> 
@@ -245,7 +217,9 @@
         
         <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Not NLC season&#39;</span><span class="p">)</span>
         
-        <span class="k">if</span><span class="p">(</span> <span class="n">yaw_correction</span> <span class="o">==</span> <span class="kc">True</span> <span class="p">):</span>
+        <span class="k">if</span><span class="p">(</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;Custom_Mode&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">True</span> <span class="p">):</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;Mode6&#39;</span>
+        <span class="k">elif</span><span class="p">(</span> <span class="n">yaw_correction</span> <span class="o">==</span> <span class="kc">True</span> <span class="p">):</span>
             <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;Mode4&#39;</span>
         <span class="k">elif</span><span class="p">(</span> <span class="n">yaw_correction</span> <span class="o">==</span> <span class="kc">False</span><span class="p">):</span>
             <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;Mode2&#39;</span> 
@@ -293,7 +267,7 @@
             <span class="n">Config_File</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">OPT_Config_File</span><span class="p">,</span><span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;_settings&#39;</span><span class="p">)()</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
-                <span class="n">Config_File</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">OPT_Config_File</span><span class="p">,</span><span class="s1">&#39;Mode_1_2_3_4_settings&#39;</span><span class="p">)()</span>
+                <span class="n">Config_File</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">OPT_Config_File</span><span class="p">,</span><span class="s1">&#39;Mode_1_2_3_4_5_6settings&#39;</span><span class="p">)()</span>
             <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
                 <span class="n">Logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;No Config function for &#39;</span><span class="o">+</span><span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
                 <span class="n">Config_File</span> <span class="o">=</span> <span class="p">[]</span>
@@ -310,37 +284,12 @@
     
     
     
-    <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    date1 = &#39;2018/8/23 22:00:00&#39;</span>
-<span class="sd">    date2 = &#39;2018/8/24 10:30:00&#39;</span>
-<span class="sd">    date3 = &#39;2018/8/24 14:30:00&#39;</span>
-<span class="sd">    date4 = &#39;2018/8/24 16:30:00&#39;</span>
-<span class="sd">    date5 = &#39;2018/8/24 18:30:00&#39;</span>
-<span class="sd">    date6 = &#39;2018/8/24 21:30:00&#39;</span>
-<span class="sd">    </span>
-<span class="sd">    </span>
-<span class="sd">    SCIMOD_Timeline.append([&#39;Mode200&#39;,str(Mode200_date),{},Mode200_comment])</span>
-<span class="sd">    SCIMOD_Timeline.append([&#39;Mode120&#39;,str(Mode120_date),{},&#39;Star: &#39;+Mode120_comment[:-1]])</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    #SCIMOD_Timeline.append([&#39;Mode130&#39;,Mode130_date,{}])</span>
-<span class="sd">    SCIMOD_Timeline.append([&#39;Mode1&#39;,date1,date2,{&#39;lat&#39;: 30}])</span>
-<span class="sd">    SCIMOD_Timeline.append([&#39;Mode1&#39;,date2,date3,{}])</span>
-<span class="sd">    SCIMOD_Timeline.append([&#39;Mode2&#39;,date3,date4,{&#39;pointing_altitude&#39;: 93000}])</span>
-<span class="sd">    SCIMOD_Timeline.append([&#39;Mode120&#39;,date4,date5,{&#39;pointing_altitude&#39;: 93000, &#39;freeze_duration&#39;: 500}])</span>
-<span class="sd">    SCIMOD_Timeline.append([&#39;Mode120&#39;,date5,date6,{&#39;freeze_start&#39;: 35}])</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    
-    
-    
-    <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Save mode timeline to file version: &#39;</span><span class="o">+</span><span class="n">Version</span><span class="p">)</span>
-    
     
     <span class="k">try</span><span class="p">:</span>
         <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="s1">&#39;Output&#39;</span><span class="p">)</span>
     <span class="k">except</span><span class="p">:</span>
         <span class="k">pass</span>
-    <span class="n">SCIMOD_NAME</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;Output&#39;</span><span class="p">,</span> <span class="s1">&#39;Science_Mode_Timeline__ConfigFile_&#39;</span><span class="o">+</span><span class="n">_Globals</span><span class="o">.</span><span class="n">Config_File</span><span class="o">+</span><span class="s1">&#39;.json&#39;</span><span class="p">)</span>
+    <span class="n">SCIMOD_NAME</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;Output&#39;</span><span class="p">,</span> <span class="s1">&#39;Science_Mode_Timeline__&#39;</span><span class="o">+</span><span class="n">_Globals</span><span class="o">.</span><span class="n">Config_File</span><span class="o">+</span><span class="s1">&#39;.json&#39;</span><span class="p">)</span>
     <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Save mode timeline to file: &#39;</span><span class="o">+</span><span class="n">SCIMOD_NAME</span><span class="p">)</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">SCIMOD_NAME</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">write_file</span><span class="p">:</span>
         <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">SCIMOD_Timeline</span><span class="p">,</span> <span class="n">write_file</span><span class="p">,</span> <span class="n">indent</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span></div>

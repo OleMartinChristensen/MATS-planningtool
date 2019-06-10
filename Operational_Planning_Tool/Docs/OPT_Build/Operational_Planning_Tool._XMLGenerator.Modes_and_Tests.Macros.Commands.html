@@ -47,103 +47,100 @@
 <dt class="field-even">type root</dt>
 <dd class="field-even"><p>lxml.etree.Element</p>
 </dd>
-<dt class="field-odd">param time</dt>
-<dd class="field-odd"><p>The relative starting time of the CMD with regard to the start of the timeline [s].</p>
+<dt class="field-odd">param relativeTime</dt>
+<dd class="field-odd"><p>The relative starting relativeTime of the CMD with regard to the start of the timeline [s].</p>
 </dd>
-<dt class="field-even">type time</dt>
-<dd class="field-even"><p>str</p>
+<dt class="field-even">type relativeTime</dt>
+<dd class="field-even"><p>int</p>
 </dd>
 <dt class="field-odd">param *CMD specific parameters*</dt>
 <dd class="field-odd"><p>A number of CMD specific parameters as defined in &quot;InnoSat Payload Timeline XML Definition&quot; document for each corresponding command.</p>
 </dd>
-<dt class="field-even">type *CMD specific parameters*</dt>
-<dd class="field-even"><p>str</p>
+<dt class="field-even">param comment</dt>
+<dd class="field-even"><p>A comment regarding the CMD.</p>
 </dd>
-<dt class="field-odd">param comment</dt>
-<dd class="field-odd"><p>A comment regarding the CMD.</p>
+<dt class="field-odd">type comment</dt>
+<dd class="field-odd"><p>str</p>
 </dd>
-<dt class="field-even">type comment</dt>
-<dd class="field-even"><p>str</p>
-</dd>
-<dt class="field-odd">returns</dt>
-<dd class="field-odd"><p>incremented_time (str) = The scheduled time of the command increased by a number equal to OPT_Config_File.Timeline.settings()['command_separation'],
-This to prevent the command buffer on the satellite from overloading. When TC_acfLimbPointingAltitudeOffset is scheduled with Rate = '0', a different time period is added to let the attitude stabilize.</p>
+<dt class="field-even">returns</dt>
+<dd class="field-even"><p>incremented_time (int) = The scheduled relativeTime of the command increased by a number equal to OPT_Config_File.Timeline.settings()['command_separation'],
+This to prevent the command buffer on the satellite from overloading. When TC_acfLimbPointingAltitudeOffset is scheduled with Rate = '0', a different relativeTime period is added to let the attitude stabilize.</p>
 </dd>
 </dl>
 <dl class="function">
 <dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_acfLimbPointingAltitudeOffset">
-<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.</code><code class="descname">TC_acfLimbPointingAltitudeOffset</code><span class="sig-paren">(</span><em>root</em>, <em>time</em>, <em>Initial='92500'</em>, <em>Final='92500'</em>, <em>Rate='0'</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Commands/Commands.html#TC_acfLimbPointingAltitudeOffset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_acfLimbPointingAltitudeOffset" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.</code><code class="descname">TC_acfLimbPointingAltitudeOffset</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>Initial=92500</em>, <em>Final=92500</em>, <em>Rate=0</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Commands/Commands.html#TC_acfLimbPointingAltitudeOffset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_acfLimbPointingAltitudeOffset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Schedules Pointing Command unless the desired attitude is already set and Rate = 0.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_affArgFreezeDuration">
-<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.</code><code class="descname">TC_affArgFreezeDuration</code><span class="sig-paren">(</span><em>root</em>, <em>time</em>, <em>FreezeDuration</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Commands/Commands.html#TC_affArgFreezeDuration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_affArgFreezeDuration" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.</code><code class="descname">TC_affArgFreezeDuration</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>FreezeDuration</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Commands/Commands.html#TC_affArgFreezeDuration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_affArgFreezeDuration" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_affArgFreezeStart">
-<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.</code><code class="descname">TC_affArgFreezeStart</code><span class="sig-paren">(</span><em>root</em>, <em>time</em>, <em>StartTime</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Commands/Commands.html#TC_affArgFreezeStart"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_affArgFreezeStart" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.</code><code class="descname">TC_affArgFreezeStart</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>StartTime</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Commands/Commands.html#TC_affArgFreezeStart"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_affArgFreezeStart" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_pafCCDBIAS">
-<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.</code><code class="descname">TC_pafCCDBIAS</code><span class="sig-paren">(</span><em>root</em>, <em>time</em>, <em>CCDSEL</em>, <em>VGATE</em>, <em>VSUBST</em>, <em>VRD</em>, <em>VOD</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Commands/Commands.html#TC_pafCCDBIAS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_pafCCDBIAS" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.</code><code class="descname">TC_pafCCDBIAS</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>CCDSEL</em>, <em>VGATE</em>, <em>VSUBST</em>, <em>VRD</em>, <em>VOD</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Commands/Commands.html#TC_pafCCDBIAS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_pafCCDBIAS" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_pafCCDBadColumn">
-<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.</code><code class="descname">TC_pafCCDBadColumn</code><span class="sig-paren">(</span><em>root</em>, <em>time</em>, <em>CCDSEL</em>, <em>NBC</em>, <em>BC</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Commands/Commands.html#TC_pafCCDBadColumn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_pafCCDBadColumn" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.</code><code class="descname">TC_pafCCDBadColumn</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>CCDSEL</em>, <em>NBC</em>, <em>BC</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Commands/Commands.html#TC_pafCCDBadColumn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_pafCCDBadColumn" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_pafCCDFlushBadColumns">
-<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.</code><code class="descname">TC_pafCCDFlushBadColumns</code><span class="sig-paren">(</span><em>root</em>, <em>time</em>, <em>CCDSEL</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Commands/Commands.html#TC_pafCCDFlushBadColumns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_pafCCDFlushBadColumns" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.</code><code class="descname">TC_pafCCDFlushBadColumns</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>CCDSEL</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Commands/Commands.html#TC_pafCCDFlushBadColumns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_pafCCDFlushBadColumns" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_pafCCDMain">
-<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.</code><code class="descname">TC_pafCCDMain</code><span class="sig-paren">(</span><em>root</em>, <em>time</em>, <em>CCDselect</em>, <em>PWR</em>, <em>ExpInterval</em>, <em>ExpTime</em>, <em>NRSKIP='0'</em>, <em>NRBIN='1'</em>, <em>NROW='1'</em>, <em>NCBIN='1'</em>, <em>NCOL='1'</em>, <em>WDW='128'</em>, <em>JPEGQ='90'</em>, <em>SYNC='0'</em>, <em>NCBINFPGA='0'</em>, <em>SIGMODE='1'</em>, <em>GAIN='0'</em>, <em>NFLUSH='1023'</em>, <em>NCSKIP='0'</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Commands/Commands.html#TC_pafCCDMain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_pafCCDMain" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.</code><code class="descname">TC_pafCCDMain</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>CCDSEL</em>, <em>PWR</em>, <em>ExpInterval</em>, <em>ExpTime</em>, <em>NRSKIP=0</em>, <em>NRBIN=1</em>, <em>NROW=1</em>, <em>NCBIN=1</em>, <em>NCOL=1</em>, <em>WDW=128</em>, <em>JPEGQ=90</em>, <em>SYNC=0</em>, <em>NCBINFPGA=0</em>, <em>SIGMODE=1</em>, <em>GAIN=0</em>, <em>NFLUSH=1023</em>, <em>NCSKIP=0</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Commands/Commands.html#TC_pafCCDMain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_pafCCDMain" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_pafCCDSnapshot">
-<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.</code><code class="descname">TC_pafCCDSnapshot</code><span class="sig-paren">(</span><em>root</em>, <em>time</em>, <em>CCDSelect</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Commands/Commands.html#TC_pafCCDSnapshot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_pafCCDSnapshot" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.</code><code class="descname">TC_pafCCDSnapshot</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>CCDSEL</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Commands/Commands.html#TC_pafCCDSnapshot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_pafCCDSnapshot" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_pafCCDTRANSPARENTCMD">
-<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.</code><code class="descname">TC_pafCCDTRANSPARENTCMD</code><span class="sig-paren">(</span><em>root</em>, <em>time</em>, <em>CCDSEL</em>, <em>CHAR</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Commands/Commands.html#TC_pafCCDTRANSPARENTCMD"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_pafCCDTRANSPARENTCMD" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.</code><code class="descname">TC_pafCCDTRANSPARENTCMD</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>CCDSEL</em>, <em>CHAR</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Commands/Commands.html#TC_pafCCDTRANSPARENTCMD"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_pafCCDTRANSPARENTCMD" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_pafDbg">
-<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.</code><code class="descname">TC_pafDbg</code><span class="sig-paren">(</span><em>root</em>, <em>time</em>, <em>CCDSEL</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Commands/Commands.html#TC_pafDbg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_pafDbg" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.</code><code class="descname">TC_pafDbg</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>CCDSEL</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Commands/Commands.html#TC_pafDbg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_pafDbg" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_pafHTR">
-<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.</code><code class="descname">TC_pafHTR</code><span class="sig-paren">(</span><em>root</em>, <em>time</em>, <em>HTRSEL</em>, <em>SET</em>, <em>P</em>, <em>I</em>, <em>D</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Commands/Commands.html#TC_pafHTR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_pafHTR" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.</code><code class="descname">TC_pafHTR</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>HTRSEL</em>, <em>SET</em>, <em>P</em>, <em>I</em>, <em>D</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Commands/Commands.html#TC_pafHTR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_pafHTR" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_pafMode">
-<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.</code><code class="descname">TC_pafMode</code><span class="sig-paren">(</span><em>root</em>, <em>time</em>, <em>mode</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Commands/Commands.html#TC_pafMode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_pafMode" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.</code><code class="descname">TC_pafMode</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>mode</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Commands/Commands.html#TC_pafMode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_pafMode" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_pafPM">
-<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.</code><code class="descname">TC_pafPM</code><span class="sig-paren">(</span><em>root</em>, <em>time</em>, <em>TEXPMS='1500'</em>, <em>TEXPIMS='2000'</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Commands/Commands.html#TC_pafPM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_pafPM" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.</code><code class="descname">TC_pafPM</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>TEXPMS=1500</em>, <em>TEXPIMS=2000</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Commands/Commands.html#TC_pafPM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_pafPM" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_pafPWRToggle">
-<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.</code><code class="descname">TC_pafPWRToggle</code><span class="sig-paren">(</span><em>root</em>, <em>time</em>, <em>CONST='165'</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Commands/Commands.html#TC_pafPWRToggle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_pafPWRToggle" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.</code><code class="descname">TC_pafPWRToggle</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>CONST=165</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Commands/Commands.html#TC_pafPWRToggle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_pafPWRToggle" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_pafUpload">
-<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.</code><code class="descname">TC_pafUpload</code><span class="sig-paren">(</span><em>root</em>, <em>time</em>, <em>PINDEX='0'</em>, <em>PTOTAL='0'</em>, <em>WFLASH='0'</em>, <em>NIMG='0'</em>, <em>IMG='0'</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Commands/Commands.html#TC_pafUpload"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_pafUpload" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.</code><code class="descname">TC_pafUpload</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>PINDEX=0</em>, <em>PTOTAL=0</em>, <em>WFLASH=0</em>, <em>NIMG=0</em>, <em>IMG=[]</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/Macros/Commands/Commands.html#TC_pafUpload"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.Macros.Commands.Commands.TC_pafUpload" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -169,6 +166,7 @@ This to prevent the command buffer on the satellite from overloading. When TC_ac
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="Operational_Planning_Tool.html">Operational_Planning_Tool package</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="Operational_Planning_Tool.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="Operational_Planning_Tool._CheckConfigFile.html">Operational_Planning_Tool._CheckConfigFile package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Operational_Planning_Tool._DataPlotter.html">Operational_Planning_Tool._DataPlotter package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Operational_Planning_Tool._TimelineAnalyzer.html">Operational_Planning_Tool._TimelineAnalyzer package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Operational_Planning_Tool._TimelineGenerator.html">Operational_Planning_Tool._TimelineGenerator package</a></li>
@@ -181,7 +179,7 @@ This to prevent the command buffer on the satellite from overloading. When TC_ac
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool.html#module-Operational_Planning_Tool._Config_File_Original">Operational_Planning_Tool._Config_File_Original module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool.html#module-Operational_Planning_Tool._ConfigFile">Operational_Planning_Tool._ConfigFile module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool.html#module-Operational_Planning_Tool._Globals">Operational_Planning_Tool._Globals module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool.html#module-Operational_Planning_Tool._Library">Operational_Planning_Tool._Library module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool.html#module-Operational_Planning_Tool._MATS_coordinates">Operational_Planning_Tool._MATS_coordinates module</a></li>

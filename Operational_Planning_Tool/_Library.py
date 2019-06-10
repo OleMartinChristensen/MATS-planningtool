@@ -200,7 +200,7 @@ def utc_to_onboardTime(utc_date):
     return onboardTime
 
 def SetupLogger():
-    """
+    """Removes previous handlers and sets up a logger with both a file handler and a stream handler.
     
     """
     
@@ -232,4 +232,95 @@ def SetupLogger():
     streamHandler.setFormatter(formatter)
     Logger.addHandler(streamHandler)
     
+
+
+def calculate_time_per_row(NCOL, NCBIN, NCBINFPGA, NRSKIP, NROW, NRBIN, NFLUSH):
+    """This function provides an estimated amount of time for a CCD readout
     
+    Note that minor "transition" states may have been omitted resulting in 
+    somewhat shorter readout times (<0.1%).
+    
+    Default timing setting is:\n
+    ccd_r_timing <= x"A4030206141D"&x"010303090313"
+    
+    All pixel timing setting is the final count of a counter that starts at 0,
+    so the number of clock cycles exceeds the setting by 1
+    
+    Returns:
+        (float): Readout time in ns. 
+    """
+    
+    #image parameters
+    ncol=int(NCOL)+1
+    ncolbinC=int(NCBIN)
+    if ncolbinC == 0:
+        ncolbinC = 1
+    ncolbinF=2**int(NCBINFPGA)
+    
+    nrow=int(NROW)
+    nrowbin=int(NRBIN)
+    if nrowbin == 0:
+        nrowbin = 1
+    nrowskip=int(NRSKIP)
+    
+    n_flush=int(NFLUSH)
+    
+    #timing settings
+    full_timing = 0 #TODO <-- meaning?
+    
+    #full pixel readout timing
+    time0 = 1 + 19 # x13%TODO
+    time1 = 1 +  3 # x03%TODO
+    time2 = 1 +  9 # x09%TODO
+    time3 = 1 +  3 # x03%TODO
+    time4 = 1 +  3 # x03%TODO
+    time_ovl = 1 + 1 # x01%TODO
+    
+    # fast pixel readout timing
+    timefast  = 1 + 2 # x02%TODO
+    timefastr = 1 + 3 # x03%TODO
+    
+    #row shift timing
+    row_step = 1 + 164 # xA4%TODO
+    
+    clock_period = 30.517 #master clock period, ns 32.768 MHz
+    
+    #there is one extra clock cycle, effectively adding to time 0
+    Time_pixel_full = (1+ time0 + time1 + time2 + time3 + time4 + 3*time_ovl)*clock_period
+    
+    # this is the fast timing pixel period
+    Time_pixel_fast = (1+ 4*timefast + 3*time_ovl + timefastr)*clock_period
+    
+    #here we calculate the number of fast and slow pixels
+    #NOTE: the effect of bad pixels is disregarded here
+    
+    if full_timing == 1:
+        n_pixels_full = 2148
+        n_pixels_fast = 0
+    else:
+        if ncolbinC < 2: #no CCD binning
+            n_pixels_full = ncol * ncolbinF
+        else: #there are two "slow" pixels for one superpixel to be read out
+            n_pixels_full = 2*ncol *ncolbinF
+        n_pixels_fast = 2148 - n_pixels_full
+    
+    
+    #time to read out one row
+    T_row_read = n_pixels_full*Time_pixel_full + n_pixels_fast*Time_pixel_fast
+    
+    # shift time of a single row
+    T_row_shift = (64 + row_step *10)*clock_period
+    
+    #time of the exposure start delay from the start_exp signal # n_flush=1023
+    T_delay = T_row_shift * n_flush
+    
+    #total time of the readout
+    T_readout = T_row_read*(nrow+nrowskip+1) + T_row_shift*(1+nrowbin*nrow)
+    
+    
+    #"smearing time"
+    #(this is the time that any pixel collects electrons in a wrong row, during the shifting.)
+    #For smearing correction, this is the "extra exposure time" for each of the rows.
+    T_row_extra = (T_row_read + T_row_shift*nrowbin) / 1e9    
+    
+    return T_readout

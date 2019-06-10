@@ -45,6 +45,9 @@ def Mode124(Occupied_Timeline):
 def date_calculator():
     """Subfunction, Either selects a user provided date, or simulates MATS FOV and stars.
     
+    If 'automatic' in *Mode124_settings* is set to False, the date in *Mode124_settings* will be returned.. \n
+    If 'automatic' in *Mode124_settings* is set to True. A list of dictionaries containing simulated dates is returned. 
+    
     Determines when the Moon is entering the FOV at an vertical offset-angle equal to *#V-offset* and also being 
     located at a horizontal off-set angle equal to less than *#H-offset* when pointing at an LP altitude equal to *#pointing_altitude*. \n
     
@@ -53,7 +56,7 @@ def date_calculator():
     Timeskips equal to the time it takes for the Moon orbital position to change by *#H-offset* degrees are also applied if the Moon is 
     determined to be at an horizontal off-set angle larger then the horizontal FOV of the instrument, equal to *#HFOV*. \n
     
-    (# as defined in OPT_Config_File). \n
+    (# as defined in the *Configuration File*). \n
     
     Saves the date and parameters regarding the spotting of the Moon
     Also saves relevant data to an .csv file located in Output/.
@@ -61,7 +64,7 @@ def date_calculator():
     Arguments:
         
     Returns:
-        dates ((:obj:`list` of :obj:`dict`)): A list containing dictionaries containing parameters for each time the Moon is spotted.
+        dates ((:obj:`list` of :obj:`dict`)) or (str): A list containing dictionaries containing parameters for each time the Moon is spotted. Or just a date depending on 'automatic' in *Mode124_settings*.
     
     """
     
@@ -440,8 +443,8 @@ def date_calculator():
 def date_select(Occupied_Timeline, dates):
     """Subfunction, Either schedules a user provided date or a simulated date.
     
-    If automatic in OPT_Config_File is set to False, the date is user provided. It will be postponed until available. \n
-    If automatic in OPT_Config_File is set to True. A list of dictionaries containing simulated dates is provided. 
+    If automatic in *Mode124_settings* is set to False, the date is user provided. It will be postponed until available. \n
+    If automatic in *Mode124_settings* is set to True. A list of dictionaries containing simulated dates is provided. 
     A date is selected for which the Moon is visible at an minimum amount of H-offset in the FOV.
     If the date is occupied a date will be selected with the 2nd least amount of H-offset and so on.
     

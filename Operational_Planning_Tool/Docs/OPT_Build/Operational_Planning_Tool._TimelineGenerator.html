@@ -44,15 +44,18 @@
 <li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool._TimelineGenerator.Modes.html#module-Operational_Planning_Tool._TimelineGenerator.Modes.Mode110">Operational_Planning_Tool._TimelineGenerator.Modes.Mode110 module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool._TimelineGenerator.Modes.html#module-Operational_Planning_Tool._TimelineGenerator.Modes.Mode120">Operational_Planning_Tool._TimelineGenerator.Modes.Mode120 module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool._TimelineGenerator.Modes.html#module-Operational_Planning_Tool._TimelineGenerator.Modes.Mode121">Operational_Planning_Tool._TimelineGenerator.Modes.Mode121 module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool._TimelineGenerator.Modes.html#module-Operational_Planning_Tool._TimelineGenerator.Modes.Mode121_122_123">Operational_Planning_Tool._TimelineGenerator.Modes.Mode121_122_123 module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool._TimelineGenerator.Modes.html#module-Operational_Planning_Tool._TimelineGenerator.Modes.Mode122">Operational_Planning_Tool._TimelineGenerator.Modes.Mode122 module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool._TimelineGenerator.Modes.html#module-Operational_Planning_Tool._TimelineGenerator.Modes.Mode123">Operational_Planning_Tool._TimelineGenerator.Modes.Mode123 module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool._TimelineGenerator.Modes.html#module-Operational_Planning_Tool._TimelineGenerator.Modes.Mode124">Operational_Planning_Tool._TimelineGenerator.Modes.Mode124 module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool._TimelineGenerator.Modes.html#module-Operational_Planning_Tool._TimelineGenerator.Modes.Mode130">Operational_Planning_Tool._TimelineGenerator.Modes.Mode130 module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool._TimelineGenerator.Modes.html#module-Operational_Planning_Tool._TimelineGenerator.Modes.Mode131">Operational_Planning_Tool._TimelineGenerator.Modes.Mode131 module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool._TimelineGenerator.Modes.html#module-Operational_Planning_Tool._TimelineGenerator.Modes.Mode132">Operational_Planning_Tool._TimelineGenerator.Modes.Mode132 module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool._TimelineGenerator.Modes.html#module-Operational_Planning_Tool._TimelineGenerator.Modes.Mode200">Operational_Planning_Tool._TimelineGenerator.Modes.Mode200 module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool._TimelineGenerator.Modes.html#module-Operational_Planning_Tool._TimelineGenerator.Modes.Mode133">Operational_Planning_Tool._TimelineGenerator.Modes.Mode133 module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool._TimelineGenerator.Modes.html#module-Operational_Planning_Tool._TimelineGenerator.Modes.Mode201">Operational_Planning_Tool._TimelineGenerator.Modes.Mode201 module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool._TimelineGenerator.Modes.html#module-Operational_Planning_Tool._TimelineGenerator.Modes.Mode203">Operational_Planning_Tool._TimelineGenerator.Modes.Mode203 module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool._TimelineGenerator.Modes.html#module-Operational_Planning_Tool._TimelineGenerator.Modes.ModeTemplate">Operational_Planning_Tool._TimelineGenerator.Modes.ModeTemplate module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool._TimelineGenerator.Modes.html#module-Operational_Planning_Tool._TimelineGenerator.Modes.Mode_1_2_3_4">Operational_Planning_Tool._TimelineGenerator.Modes.Mode_1_2_3_4 module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool._TimelineGenerator.Modes.html#module-Operational_Planning_Tool._TimelineGenerator.Modes.Mode_1_2_3_4_5_6">Operational_Planning_Tool._TimelineGenerator.Modes.Mode_1_2_3_4_5_6 module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool._TimelineGenerator.Modes.html#module-Operational_Planning_Tool._TimelineGenerator.Modes.Modes_Header">Operational_Planning_Tool._TimelineGenerator.Modes.Modes_Header module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool._TimelineGenerator.Modes.html#module-Operational_Planning_Tool._TimelineGenerator.Modes.PayloadCmds">Operational_Planning_Tool._TimelineGenerator.Modes.PayloadCmds module</a></li>
 </ul>
@@ -67,18 +70,19 @@
 <span id="operational-planning-tool-timelinegenerator-core-module"></span><h2>Operational_Planning_Tool._TimelineGenerator.Core module<a class="headerlink" href="#module-Operational_Planning_Tool._TimelineGenerator.Core" title="Permalink to this headline">¶</a></h2>
 <p>Created on Fri Nov  2 14:57:28 2018</p>
 <p>The <em>Timeline_generator</em> part of the <em>Operational_Planning_Tool</em> which purpose is to automatically generate a
-mission timeline from settings defined in the <em>OPT_Config_File</em>. The generated timeline consists of
+mission timeline from settings defined in the <em>Configuration File</em>. The generated timeline consists of
 Science Modes and separate CMDs together with their planned start/end dates, settings, and comments,
 expressed as a list in chronological order.</p>
 <p>Timeline_generator has a setable priority for the scheduling of modes and CMDs,
 which can be seen in the order of the modes in the list fetched from the
-function Modes_priority in the OPT_Config_File module.</p>
+function Modes_priority in the <em>Configuration File</em>.</p>
 <p>For each mode/CMD, one at a time, an appropriate date is calculated, or
-a predetermined date is already set in the OPT_Config_File. A dictionary (Occupied_Timeline) keeps track of the planned runtime of all Modes,
-this to prevent colliding scheduling.</p>
-<p>Depending on <em>Config_File.Timeline_settings()['yaw_correction']</em> is set for the timeline, Mode1/2 or Mode3/4 is chosen.
+a predetermined date is already set in the <em>Configuration File</em>. A dictionary (Occupied_Timeline)
+keeps track of the planned runtime of all Modes, this to prevent colliding scheduling.</p>
+<p>Depending on <em>Timeline_settings()['yaw_correction']</em> is set for the timeline, Mode1/2 or Mode3/4 is chosen.
+And depending on <em>Timeline_settings()['Custom_Mode']</em>, Mode1-4 or Mode5/6 is chosen.
 These modes will fill out time left available after the scheduling of the rest of the modes,
-set in Config_File.Modes_priority.</p>
+set in <em>Modes_priority</em>.</p>
 <p>If calculated starting dates for modes are occupied, they will be changed
 depending on a specialized filtering process (mode 120, 200...), or postponed until time is available (mode 130, 131...).</p>
 <p>&#64;author: David</p>
@@ -116,6 +120,7 @@ depending on a specialized filtering process (mode 120, 200...), or postponed un
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="Operational_Planning_Tool.html">Operational_Planning_Tool package</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="Operational_Planning_Tool.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="Operational_Planning_Tool._CheckConfigFile.html">Operational_Planning_Tool._CheckConfigFile package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Operational_Planning_Tool._DataPlotter.html">Operational_Planning_Tool._DataPlotter package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Operational_Planning_Tool._TimelineAnalyzer.html">Operational_Planning_Tool._TimelineAnalyzer package</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">Operational_Planning_Tool._TimelineGenerator package</a><ul>
@@ -128,7 +133,7 @@ depending on a specialized filtering process (mode 120, 200...), or postponed un
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool.html#module-Operational_Planning_Tool._Config_File_Original">Operational_Planning_Tool._Config_File_Original module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool.html#module-Operational_Planning_Tool._ConfigFile">Operational_Planning_Tool._ConfigFile module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool.html#module-Operational_Planning_Tool._Globals">Operational_Planning_Tool._Globals module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool.html#module-Operational_Planning_Tool._Library">Operational_Planning_Tool._Library module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool.html#module-Operational_Planning_Tool._MATS_coordinates">Operational_Planning_Tool._MATS_coordinates module</a></li>

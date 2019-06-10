@@ -22,7 +22,7 @@ def Logger_name():
 
 
 def Version():
-    ''''Contains the version ID of this Config_File.
+    ''''Contains the version ID of this Configuration File.
     
     Returns:
         (str): version_name 
@@ -33,7 +33,7 @@ def Version():
 
 
 def Modes_priority():
-    '''Contain the Modes (except 1-4) and available CMDs planned to be schedueled as a list using the Timeline_gen.
+    '''Contain the Modes (except 1-6) and available CMDs planned to be schedueled as a list using the Timeline_gen.
     
     Available choices are: \n
     
@@ -41,19 +41,21 @@ def Modes_priority():
     'CCDFlushBadColumns',
     'CCDBadColumn',
     'PM',
+    'CCDBIAS',
     'Mode130', 
     'Mode110', 
     'Mode100', 
     'Mode120', 
     'Mode121',
     'Mode122',
+    'Mode123',
     'Mode131',  
     'Mode132',
     'Mode133', 
     'Mode124', 
     
     The order of which the Modes appear is also their priority order (top-down).
-    The name must be equal to the name of the top function in the Timeline_generator.Modes.ModeX module, where X is any mode, or any function in the Timeline_generator.Modes.PayloadCmds module.
+    The name must be a function imported in the *_Timeline_generator.Modes.Modes_Header* module.
     
     Returns:
         (:obj:`list` of :obj:`str`): Modes_priority
@@ -67,6 +69,7 @@ def Modes_priority():
             'Mode130', 
             'Mode124',
             'Mode120',
+            'Mode123',
             'Mode121',
             'Mode110',
             'Mode100',
@@ -112,37 +115,38 @@ def Timeline_settings():
         'leap_seconds': Sets the amount of leap seconds for GPS time to be used. (int) \n
         'GPS_epoch': Sets the epoch of the GPS time as a str, (example: '1980/1/6'). \n
         
-        'Mode_1_2_3_4minDuration': Minimum amount of time needed (inbetween scheduled Modes) for the scheduling of Modes 1-4 [s]. \n
-        'mode_separation': Time in seconds. Is used in Library.scheduler to postpone Modes and also as an extra term in the calculations of the duration of other modes to act as an prolonged buffer.
-        Meaning that whenever *mode_duration* is calculated it is equal to an calculated estimation or a set value of the modes/CMD duration plus *mode_separation*. (int) \n
-        'CMD_duration': Sets the amount of time scheduled for PayloadCMDs using *Timeline_gen*. (int) \n
+        'Mode_1_2_3_4_5_6minDuration': Minimum amount of time needed (inbetween scheduled Modes) for the scheduling of Modes 1-6 [s]. \n
+        'mode_separation': Time in seconds for an added buffer inbetween schedules Modes and PayloadCMDs in the Science Mode Timeline when determining their duration. 
+        Is also used in Library.scheduler to postpone Modes if their scheduled date is occupied. (int) \n
+        'CMD_duration': Sets the amount of time scheduled for separate PayloadCMDs using *Timeline_gen*. (int) \n
         
-        'yaw_correction': If yaw correction will be used for the duration of the timeline. Decides if Mode1/2, Mode3/4, or Mode5/6 are to be scheduled. Set to True for Mode3/4/6, set to False for Mode1/2/5. (bool) \n
+        'yaw_correction': If yaw correction will be used for the duration of the timeline. Decides if Mode1/2, Mode3/4 are to be scheduled. Set to True for Mode3/4, set to False for Mode1/2. (bool) \n
         'yaw_amplitude': Amplitude of the yaw function (float). \n
         'yaw_phase': Phase of the yaw function (float). \n
-        'LP_pointing_altitude': Sets default altitude of LP in meters for the timeline. (int) \n
+        'Custom_Mode': Set to *True* if custom mode 5-6 will be used, set to *False* instead for Mode1-4. (bool)
+        'LP_pointing_altitude': Sets altitude of LP in meters for the timeline. (int) \n
         
         'command_separation': Minimum ammount of time inbetween scheduled commands [s]. (float) \n
-        'pointing_stabilization': Extra time [s] scheduled for fixed pointing commands before new commands are allowed. (int) \n
+        'pointing_stabilization': Extra time [s] scheduled after fixed pointing commands (TC_acfLimbPointingAltitudeOffset) before new commands are allowed. (int) \n
         
         
     Returns:
         (dict): timeline_settings
     '''
     timeline_settings = {'start_date': _Globals.StartTime, 'duration': 1*4*3600, 
-                       'leap_seconds': 18, 'GPS_epoch': '1980/1/6', 'Mode_1_2_3_4minDuration': 300, 'mode_separation': 60,
-                       'CMD_duration': 30, 'yaw_correction': True, 'yaw_amplitude': -3.8, 'yaw_phase': -20, 'LP_pointing_altitude': 92500, 
+                       'leap_seconds': 18, 'GPS_epoch': '1980/1/6', 'Mode_1_2_3_4_5_6minDuration': 300, 'mode_separation': 60,
+                       'CMD_duration': 30, 'yaw_correction': True, 'yaw_amplitude': -3.8, 'yaw_phase': -20, 'Custom_Mode': True, 'LP_pointing_altitude': 92500, 
                        'command_separation': 1, 'pointing_stabilization': 60}
     
     
     return timeline_settings
 
 
-def Mode_1_2_3_4_settings():
-    '''Contain settings related to Mode1-4 as a dict.
+def Mode_1_2_3_4_5_6settings():
+    '''Contain settings related to Mode1-6 as a dict.
     
     Keys:
-        'lat': Sets in degrees the latitude (+ and -) that the LP crosses that causes NLC mode to swith on/off. (int) \n
+        'lat': Sets in degrees the latitude (+ and -) that the LP crosses that causes the UV exposure to swith on/off. (int) \n
         'log_timestep': Sets the frequency of data being logged [s]. (int) \n
         'timestep': Sets the timestep [s] of the XML generator simulation of Mode1-4. (int)
         
@@ -153,12 +157,12 @@ def Mode_1_2_3_4_settings():
     settings = {'lat': 45, 'log_timestep': 800, 'timestep': 5}
     return settings
 
-
+"""
 def Mode_5_6_settings():
     '''Contain settings related to Mode5-6 as a dict.
     
     Keys:
-        'lat': Sets in degrees the latitude (+ and -) that the LP crosses that causes NLC mode to swith on/off. (int) \n
+        'lat': Sets in degrees the latitude (+ and -) that the LP crosses that causes the UV exposure to swith on/off. (int) \n
         'log_timestep': Sets the frequency of data being logged [s]. (int) \n
         'timestep': Sets the timestep [s] of the XML generator simulation of Mode1-4. (int)
         
@@ -166,9 +170,9 @@ def Mode_5_6_settings():
         (dict): settings
     
     '''
-    settings = {'lat': 45, 'log_timestep': 800, 'timestep': 5}
+    settings = {'lat': 45, 'log_timestep': 800, 'timestep': 5, 'UV_Toggle': True}
     return settings
-
+"""
 
 
 def Mode100_settings():
@@ -189,7 +193,8 @@ def Mode100_settings():
             
     '''
     settings = {'pointing_altitude_from': 40000, 'pointing_altitude_to': 150000, 
-                'pointing_altitude_interval': 5000, 'pointing_duration': 20, 'Exp_Time_and_Interval_UV': (1000,2000), 'Exp_Time_and_Interval_IR': (1000,2000), 'ExpTime_step': 1000,  'start_date': '0'}
+                'pointing_altitude_interval': 5000, 'pointing_duration': 20, 'Exp_Time_and_Interval_UV': (1000,2000), 
+                'Exp_Time_and_Interval_IR': (1000,2000), 'ExpTime_step': 500,  'start_date': '0'}
     return settings
 
 
@@ -226,7 +231,9 @@ def Mode120_settings():
         'freeze_start': Sets in seconds the time from start of the Mode to when the attitude freezes. (int) \n
         'freeze_duration': Sets in seconds the duration of the attitude freeze. If set to 0, it will be estimated to a 
         value corresponding to the attitude being frozen until realigned with *LP_pointing_altitude* (Normally around 50 s). (int) \n
-        'SnapshotTime': Sets in seconds the time, from the start of the attitude freeze, to when the Snapshot is taken. (int)
+        'SnapshotTime': Sets in seconds the time, from the start of the attitude freeze, to when the Snapshot is taken. (int) \n
+        'SnapshotSpacing': Sets in seconds the time inbetween sent CMDs for Snapshots with individual CCDs. (int)
+        
     
     Returns:
         (dict): settings
@@ -234,7 +241,7 @@ def Mode120_settings():
     '''
     settings = {'pointing_altitude': 227000, 'V_offset': 0, 'H_offset': 2.5, 'Vmag': '<2', 'timestep': 2,'log_timestep': 3600, 
                       'automatic': True, 'start_date': '2019', 'mode_duration': 0, 'freeze_start': 120, 
-                      'freeze_duration': 0, 'SnapshotTime': 10}
+                      'freeze_duration': 0, 'SnapshotTime': 3, 'SnapshotSpacing': 3}
     
     if( settings['freeze_duration'] == 0):
         settings['freeze_duration'] = FreezeDuration_calculator( Timeline_settings()['LP_pointing_altitude'], settings['pointing_altitude'])
@@ -260,7 +267,8 @@ def Mode121_122_123_settings():
         'freeze_start': Sets in seconds the time from start of the Mode to when the attitude freezes. \n
         'freeze_duration': Sets in seconds the duration of the attitude freeze. If set to 0, it will be estimated to a 
         value corresponding to the attitude being frozen until realigned with *LP_pointing_altitude* (Normally around 50 s). \n
-        'SnapshotTime': Sets in seconds the time, from the start of the attitude freeze, to when the Snapshot is taken. (int)
+        'SnapshotTime': Sets in seconds the time, from the start of the attitude freeze, to when the Snapshot is taken. (int) \n
+        'SnapshotSpacing': Sets in seconds the time inbetween sent CMDs for Snapshots with individual CCDs. (int)
     
     Returns:
         (dict): settings
@@ -268,7 +276,7 @@ def Mode121_122_123_settings():
     '''
     settings = {'pointing_altitude': 227000, 'H_FOV': 5.67, 'V_FOV': 0.91, 'Vmag': '<4', 'timestep': 5, 'TimeSkip': 1, 'log_timestep': 3600, 
                       'automatic': True, 'mode_duration': 0, 'freeze_start': 120, 
-                      'freeze_duration': 0, 'SnapshotTime': 2}
+                      'freeze_duration': 0, 'SnapshotTime': 2, 'SnapshotSpacing': 3}
     
     if( settings['freeze_duration'] == 0):
         settings['freeze_duration'] = FreezeDuration_calculator( Timeline_settings()['LP_pointing_altitude'], settings['pointing_altitude'])
@@ -301,14 +309,14 @@ def Mode122_settings():
     
     Keys:
         'start_date': Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). Note! only applies if automatic is set to False. \n
-        'Exp_Time_and_Interval_IR': Sets exposure and interval times [s] as a duple of integers. \n
-        'Exp_Time_and_Interval_UV': Sets exposure and interval times [s] as a duple of integers. \n
+        'Exp_Time_IR': Sets exposure and interval times [ms] as a duple of integers. \n
+        'Exp_Time_UV': Sets exposure and interval times [ms] as a duple of integers. \n
     
     Returns:
         (dict): settings
     '''
     
-    Settings = {'start_date': '2019', 'Exp_Time_and_Interval_IR': (5000,6000), 'Exp_Time_and_Interval_UV': (3000,4000)}
+    Settings = {'start_date': '2019', 'Exp_Time_IR': 5000, 'Exp_Time_UV': 3000}
     CommonSettings = Mode121_122_123_settings()
     
     settings = {**CommonSettings, **Settings}
@@ -321,14 +329,14 @@ def Mode123_settings():
     
     Keys:
         'start_date': Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). Note! only applies if automatic is set to False. \n
-        'Exp_Time_and_Interval_IR': Sets exposure and interval time [s] as a duple of integers. \n
-        'Exp_Time_and_Interval_UV': Sets exposure and interval time [s] as a duple of integers. \n
+        'Exp_Time_IR': Sets exposure time [ms] of the IR CCDs. (int) \n
+        'Exp_Time_UV': Sets exposure time [ms] of the UV CCDs. (int) \n \n
     
     Returns:
         (dict): settings
     '''
     
-    Settings = {'start_date': '2019', 'Exp_Time_and_Interval_IR': (5000,6000), 'Exp_Time_and_Interval_UV': (3000,4000)}
+    Settings = {'start_date': '2019', 'Exp_Time_IR': 5000, 'Exp_Time_UV': 3000}
     CommonSettings = Mode121_122_123_settings()
     
     settings = {**CommonSettings, **Settings}
@@ -353,13 +361,15 @@ def Mode124_settings():
         'freeze_duration': Sets in seconds the duration of the attitude freeze. If set to 0, it will be estimated to a 
         value corresponding to the attitude being frozen until realigned with LP_pointing_altitude. \n
         'SnapshotTime': Sets in seconds the time, from the start of the attitude freeze, to when the Snapshot is taken. (int)
+        'SnapshotSpacing': Sets in seconds the time inbetween sent CMDs for Snapshots with individual CCDs. (int)
     
     Returns:
         (dict): settings
     
     '''
     settings = {'pointing_altitude': 227000, 'V_offset': 0, 'H_offset': 3+2.5, 'timestep': 2, 'log_timestep': 1200, 
-                      'automatic': True, 'start_date': '2019', 'mode_duration': 0, 'freeze_start': 120, 'freeze_duration': 0, 'SnapshotTime': 2}
+                      'automatic': True, 'start_date': '2019', 'mode_duration': 0, 'freeze_start': 120, 'freeze_duration': 0, 
+                      'SnapshotTime': 2, 'SnapshotSpacing': 3}
     
     if( settings['freeze_duration'] == 0):
         settings['freeze_duration'] = FreezeDuration_calculator( Timeline_settings()['LP_pointing_altitude'], settings['pointing_altitude'])
@@ -407,8 +417,8 @@ def Mode132_settings():
     Keys:
         'pointing_altitude': Sets in meters the altitude of the pointing command. \n
         'start_date': Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). If the date is set to '0', Timeline start_date will be used. \n
-        'Exp_Times_and_Intervals_IR': Sets exposure and interval times [s] as a list of duples of integers. \n
-        'Exp_Times_and_Intervals_UV': Sets exposure and interval times [s] as a list of duples of integers. \n
+        'Exp_Times_and_Intervals_IR': Sets exposure and interval times [ms] as a list of duples of integers. \n
+        'Exp_Times_and_Intervals_UV': Sets exposure and interval times [ms] as a list of duples of integers. \n
         'session_duration': Sets the duration [s] of each session using the different exposure times and intervals in *Exp_Times_and_Intervals*.
     
     Returns:
@@ -426,8 +436,8 @@ def Mode133_settings():
     Keys:
         'pointing_altitude': Sets in meters the altitude of the pointing command. \n
         'start_date': Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). If the date is set to '0', Timeline start_date will be used. \n
-        'Exp_Times_and_Intervals_IR': Sets exposure and interval times [s] as a list of duples of integers. \n
-        'Exp_Times_and_Intervals_UV': Sets exposure and interval times [s] as a list of duples of integers. \n
+        'Exp_Times_and_Intervals_IR': Sets exposure and interval times [ms] as a list of duples of integers. \n
+        'Exp_Times_and_Intervals_UV': Sets exposure and interval times [ms] as a list of duples of integers. \n
         'session_duration': Sets the duration [s] of each session using the different exposure times and intervals in *Exp_Times_and_Intervals*.
     
     Returns:
@@ -519,13 +529,30 @@ def PM_settings():
     
     Keys:
         'TEXPMS': Exposure time [ms] for the photometer (int) \n
-        'TEXPIMS': Exposure intervall time [ms] for the photometer (int)
+        'TEXPIMS': Exposure interval time [ms] for the photometer (int)
         
     Returns:
         (dict): parameters
     
     '''
     parameters = {'TEXPMS': 1500, 'TEXPIMS': 2000}
+    return parameters
+
+def CCDBIAS_settings():
+    '''Returns default parameters related to CCDBIAS as a dict.
+    
+    Keys:
+        'CCDSEL': CCD select, 1 bit for each CCD (1..127). \n
+        'VGATE': 8-bit value representing a Voltage (int) \n
+        'VSUBST': 8-bit value representing a Voltage (int) \n
+        'VRD': 8-bit value representing a Voltage (int) \n
+        'VOD': 8-bit value representing a Voltage (int) \n
+        
+    Returns:
+        (dict): parameters
+    
+    '''
+    parameters = {'CCDSEL': 127, 'VGATE': 127, 'VSUBST': 127, 'VRD': 127, 'VOD': 127}
     return parameters
 
 

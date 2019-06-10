@@ -3,21 +3,22 @@
 Created on Fri Nov  2 14:57:28 2018
 
 The *Timeline_generator* part of the *Operational_Planning_Tool* which purpose is to automatically generate a
-mission timeline from settings defined in the *OPT_Config_File*. The generated timeline consists of
+mission timeline from settings defined in the *Configuration File*. The generated timeline consists of
 Science Modes and separate CMDs together with their planned start/end dates, settings, and comments, 
 expressed as a list in chronological order. \n
 
 Timeline_generator has a setable priority for the scheduling of modes and CMDs, 
 which can be seen in the order of the modes in the list fetched from the 
-function Modes_priority in the OPT_Config_File module. \n
+function Modes_priority in the *Configuration File*. \n
 
 For each mode/CMD, one at a time, an appropriate date is calculated, or
-a predetermined date is already set in the OPT_Config_File. A dictionary (Occupied_Timeline) keeps track of the planned runtime of all Modes, 
-this to prevent colliding scheduling. \n
+a predetermined date is already set in the *Configuration File*. A dictionary (Occupied_Timeline) 
+keeps track of the planned runtime of all Modes, this to prevent colliding scheduling. \n
 
-Depending on *Config_File.Timeline_settings()['yaw_correction']* is set for the timeline, Mode1/2 or Mode3/4 is chosen.
+Depending on *Timeline_settings()['yaw_correction']* is set for the timeline, Mode1/2 or Mode3/4 is chosen.
+And depending on *Timeline_settings()['Custom_Mode']*, Mode1-4 or Mode5/6 is chosen.
 These modes will fill out time left available after the scheduling of the rest of the modes, 
-set in Config_File.Modes_priority.
+set in *Modes_priority*.
 
 If calculated starting dates for modes are occupied, they will be changed  
 depending on a specialized filtering process (mode 120, 200...), or postponed until time is available (mode 130, 131...).
@@ -41,14 +42,6 @@ def Timeline_generator():
         None
         
     """
-    
-    """
-    if(os.path.isfile('OPT_Config_File.py') == False):
-        print('No OPT_Config_File.py found. Try running Create_ConfigFile()')
-        sys.exit()
-    """
-    
-    
     
     ######## Try to Create a directory for storage of output files #######
     try:
@@ -161,7 +154,7 @@ def Timeline_generator():
     Logger.info('yaw_correction = '+str(yaw_correction))
     Logger.info('')
     
-    Mode_1_2_3_4 = getattr(Modes_Header,'Mode_1_2_3_4')
+    Mode_1_2_3_4 = getattr(Modes_Header,'Mode_1_2_3_4_5_6')
     
     ### Check if it is NLC season ###
     if( Timeline_start_date.tuple()[1] in [11,12,1,2,5,6,7,8] or 
@@ -169,7 +162,9 @@ def Timeline_generator():
         
         Logger.info('NLC season')
         
-        if( yaw_correction == True ):
+        if( Timeline_settings['Custom_Mode'] == True ):
+            mode = 'Mode5'
+        elif( yaw_correction == True ):
             mode = 'Mode3'
         elif( yaw_correction == False):
             mode = 'Mode1' 
@@ -189,7 +184,9 @@ def Timeline_generator():
         
         Logger.info('Not NLC season')
         
-        if( yaw_correction == True ):
+        if( Timeline_settings['Custom_Mode'] == True ):
+            mode = 'Mode6'
+        elif( yaw_correction == True ):
             mode = 'Mode4'
         elif( yaw_correction == False):
             mode = 'Mode2' 
@@ -237,7 +234,7 @@ def Timeline_generator():
             Config_File = getattr(OPT_Config_File,x[2]+'_settings')()
         except AttributeError:
             try:
-                Config_File = getattr(OPT_Config_File,'Mode_1_2_3_4_settings')()
+                Config_File = getattr(OPT_Config_File,'Mode_1_2_3_4_5_6settings')()
             except AttributeError:
                 Logger.warning('No Config function for '+x[2])
                 Config_File = []
@@ -251,31 +248,6 @@ def Timeline_generator():
         t= t+1
     
     ###########################################################################################
-    
-    
-    
-    '''
-    date1 = '2018/8/23 22:00:00'
-    date2 = '2018/8/24 10:30:00'
-    date3 = '2018/8/24 14:30:00'
-    date4 = '2018/8/24 16:30:00'
-    date5 = '2018/8/24 18:30:00'
-    date6 = '2018/8/24 21:30:00'
-    
-    
-    SCIMOD_Timeline.append(['Mode200',str(Mode200_date),{},Mode200_comment])
-    SCIMOD_Timeline.append(['Mode120',str(Mode120_date),{},'Star: '+Mode120_comment[:-1]])
-    '''
-    '''
-    #SCIMOD_Timeline.append(['Mode130',Mode130_date,{}])
-    SCIMOD_Timeline.append(['Mode1',date1,date2,{'lat': 30}])
-    SCIMOD_Timeline.append(['Mode1',date2,date3,{}])
-    SCIMOD_Timeline.append(['Mode2',date3,date4,{'pointing_altitude': 93000}])
-    SCIMOD_Timeline.append(['Mode120',date4,date5,{'pointing_altitude': 93000, 'freeze_duration': 500}])
-    SCIMOD_Timeline.append(['Mode120',date5,date6,{'freeze_start': 35}])
-    '''
-    
-    
     
     
     

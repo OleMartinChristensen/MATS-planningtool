@@ -17,10 +17,40 @@ Returns:
 
 
 from . Commands import Commands
-from .Procedures import BinnedCalibration_procedure, Full_CCD_procedure, Single_pixel_procedure, High_res_IR_procedure, High_res_UV_procedure
+from .Procedures import BinnedCalibration_procedure, Full_CCD_procedure, LowPixel_procedure, High_res_IR_procedure, High_res_UV_procedure, CustomBinning_procedure
+
+
+def Mode5_6(root, relativeTime, pointing_altitude, UV_on = True, nadir_on = True, comment = ''):
+    ''' Macro that corresponds to Mode1/3 when exposure on the nadir CCD is enabled during NLC season at LP latitudes polewards of X degrees, where X is specified in OPT_Config_File.Mode_1_2_3_4_5_6settings"
+        
+        Arguments:
+            pointing_altitude (int): The altitude of the tangential point [m].
+    '''
+    
+    
+    relativeTime = Commands.TC_pafMode(root, relativeTime, mode = 2, comment = comment)
+    
+    relativeTime = Commands.TC_pafPM(root, relativeTime, comment = comment)
+    
+    if( UV_on == True and nadir_on == True ):
+        relativeTime = CustomBinning_procedure(root = root, relativeTime = relativeTime, comment = comment)
+    elif( UV_on == False and nadir_on == True):
+        relativeTime = CustomBinning_procedure(root = root, relativeTime = relativeTime, UV_TEXPMS = 0, comment = comment)
+    elif( UV_on == True and nadir_on == False):
+        relativeTime = CustomBinning_procedure(root = root, relativeTime = relativeTime, nadirTEXPMS = 0, comment = comment)
+    elif( UV_on == False and nadir_on == False):
+        relativeTime = CustomBinning_procedure(root = root, relativeTime = relativeTime, UV_TEXPMS = 0, nadirTEXPMS = 0, comment = comment)
+    
+    relativeTime = Commands.TC_acfLimbPointingAltitudeOffset(root, relativeTime, Initial = pointing_altitude, Final = pointing_altitude, comment = comment)
+    
+    relativeTime = Commands.TC_pafMode(root, relativeTime, mode = 1, comment = comment)
+    
+    return relativeTime
+
+
 
 def NLC_night(root, relativeTime, pointing_altitude, UV_on, comment):
-    ''' Macro that corresponds to Mode1/3 when exposure on the nadir CCD is enabled during NLC season at LP latitudes polewards of X degrees, where X is specified in OPT_Config_File.Mode_1_2_3_4_settings"
+    ''' Macro that corresponds to Mode1/3 when exposure on the nadir CCD is enabled during NLC season at LP latitudes polewards of X degrees, where X is specified in OPT_Config_File.Mode_1_2_3_4_5_6settings"
         
         Arguments:
             pointing_altitude (int): The altitude of the tangential point [m].
@@ -32,9 +62,9 @@ def NLC_night(root, relativeTime, pointing_altitude, UV_on, comment):
     relativeTime = Commands.TC_pafPM(root, relativeTime, comment = comment)
     
     if( UV_on == True ):
-        relativeTime = High_res_UV_procedure(root = root, relativeTime = relativeTime, nadirTEXPMS = 1500, UV_TEXPMS = 3000, comment = comment)
+        relativeTime = High_res_UV_procedure(root = root, relativeTime = relativeTime, comment = comment)
     elif( UV_on == False):
-        relativeTime = High_res_UV_procedure(root = root, relativeTime = relativeTime, nadirTEXPMS = 1500, UV_TEXPMS = 0, comment = comment)
+        relativeTime = High_res_UV_procedure(root = root, relativeTime = relativeTime, UV_TEXPMS = 0, comment = comment)
     
     relativeTime = Commands.TC_acfLimbPointingAltitudeOffset(root, relativeTime, Initial = pointing_altitude, Final = pointing_altitude, comment = comment)
     
@@ -44,7 +74,7 @@ def NLC_night(root, relativeTime, pointing_altitude, UV_on, comment):
     
     
 def NLC_day(root, relativeTime, pointing_altitude, UV_on, comment):
-    ''' Macro that corresponds to Mode1/3 when exposure on the nadir CCD is disabled during NLC season at LP latitudes polewards of X degrees, where X is specified in OPT_Config_File.Mode_1_2_3_4_settings"
+    ''' Macro that corresponds to Mode1/3 when exposure on the nadir CCD is disabled during NLC season at LP latitudes polewards of X degrees, where X is specified in OPT_Config_File.Mode_1_2_3_4_5_6settings"
         
         Arguments:
             pointing_altitude (int): The altitude of the tangential point [m].
@@ -56,7 +86,7 @@ def NLC_day(root, relativeTime, pointing_altitude, UV_on, comment):
     relativeTime = Commands.TC_pafPM(root, relativeTime, comment = comment)
     
     if( UV_on == True ):
-        relativeTime = High_res_UV_procedure(root = root, relativeTime = relativeTime, nadirTEXPMS = 0, UV_TEXPMS = 3000, comment = comment)
+        relativeTime = High_res_UV_procedure(root = root, relativeTime = relativeTime, nadirTEXPMS = 0, comment = comment)
     elif( UV_on == False):
         relativeTime = High_res_UV_procedure(root = root, relativeTime = relativeTime, nadirTEXPMS = 0, UV_TEXPMS = 0, comment = comment)
     
@@ -66,7 +96,7 @@ def NLC_day(root, relativeTime, pointing_altitude, UV_on, comment):
     
     return relativeTime
 
-
+"""
 def NLC_nadir_on_off(root, relativeTime, nadir_on, comment):
     ''' Macro that corresponds to effectively turning the nadir imager on/off by setting the TEXPMS. Used by Mode1/3 to avoid having to re-send commands for all CCDs.
         
@@ -86,6 +116,7 @@ def NLC_nadir_on_off(root, relativeTime, nadir_on, comment):
     relativeTime = Commands.TC_pafMode(root, relativeTime, mode = 1, comment = comment)
     
     return relativeTime
+"""
    
     
     
@@ -101,7 +132,7 @@ def IR_night(root, relativeTime, pointing_altitude, comment):
     
     relativeTime = Commands.TC_pafPM(root, relativeTime, comment = comment)
     
-    relativeTime = High_res_IR_procedure(root, relativeTime, nadirTEXPMS = 1500, comment = comment)
+    relativeTime = High_res_IR_procedure(root, relativeTime, comment = comment)
     
     relativeTime = Commands.TC_acfLimbPointingAltitudeOffset(root, relativeTime, Initial = pointing_altitude, Final = pointing_altitude, comment = comment)
     
@@ -130,7 +161,7 @@ def IR_day(root, relativeTime, pointing_altitude, comment):
     
     return relativeTime
 
-
+"""
 def IR_nadir_on_off(root, relativeTime, nadir_on, comment):
     ''' Macro that corresponds to effectively turning the nadir imager on/off by setting the TEXPMS. Used by Mode1-4 to avoid having to re-send commands for all CCDs.
         
@@ -150,7 +181,7 @@ def IR_nadir_on_off(root, relativeTime, nadir_on, comment):
     relativeTime = Commands.TC_pafMode(root, relativeTime, mode = 1, comment = comment)
     
     return relativeTime
- 
+"""
 
 def Mode100_macro(root, relativeTime, pointing_altitude, ExpTimeUV, ExpIntUV, ExpTimeIR, ExpIntIR, comment = ''):
     ''' Macro that corresponds to Mode100.
@@ -183,7 +214,6 @@ def Mode110_macro(root, relativeTime, pointing_altitude_from, pointing_altitude_
             pointing_altitude_from (int): The altitude in meters from which to start the sweep 
             pointing_altitude_from (int): The altitude in meters where the sweep will end
             sweep_rate (int): The rate of the sweep in m/s.
-            relativeTime_sweep (float): The relative starting time of the sweep in seconds with regard to the start of the timeline
             
     '''
     
@@ -202,14 +232,16 @@ def Mode110_macro(root, relativeTime, pointing_altitude_from, pointing_altitude_
     
 
 
-def Mode120_macro(root, relativeTime, freezeTime, FreezeDuration, pointing_altitude, Snapshot_relativeTime, comment):
+def Mode120_macro(root, relativeTime, freezeTime, FreezeDuration, pointing_altitude, 
+                  SnapshotSpacing, Snapshot_relativeTime, comment):
     ''' Macro that corresponds to Mode120.
     
         Arguments:
             freezeTime (float): Start time of attitude freeze command in on-board time [s].
             FreezeDuration (int): Duration of freeze [s].
             pointing_altitude (int): The altitude of the tangential point [m].
-            Snapshot_relativeTime (float): The relativeTime (time from start of timeline) at which the Snapshot is taken.
+            Snapshot_relativeTime (float): The relativeTime (time from start of timeline) at which the first Snapshot is taken.
+            SnapshotSpacing (int): The time in seconds inbetween sent CMDs for snapshots of individual CCDs.
     '''
     
     
@@ -228,6 +260,7 @@ def Mode120_macro(root, relativeTime, freezeTime, FreezeDuration, pointing_altit
     
     for CCDSEL in [1,2,4,8,16,32]:
         relativeTime = Commands.TC_pafCCDSnapshot(root, Snapshot_relativeTime, CCDSEL = CCDSEL, comment = comment)
+        Snapshot_relativeTime = Snapshot_relativeTime + SnapshotSpacing
     
     #relativeTime = Commands.TC_pafMode(root, relativeTime, mode = 1, comment = comment)
     
@@ -235,7 +268,7 @@ def Mode120_macro(root, relativeTime, freezeTime, FreezeDuration, pointing_altit
 
 
 def Mode121_macro(root, relativeTime, freezeTime, FreezeDuration, pointing_altitude, 
-                  Snapshot_relativeTime, comment):
+                  SnapshotSpacing, Snapshot_relativeTime, comment):
     ''' Macro that corresponds to Mode121.
     
         Arguments:
@@ -243,12 +276,12 @@ def Mode121_macro(root, relativeTime, freezeTime, FreezeDuration, pointing_altit
             FreezeDuration (int): Duration of freeze [s].
             pointing_altitude (int): The altitude of the tangential point [m].
             Snapshot_relativeTime (float): The relativeTime (time from start of timeline) at which the Snapshot is taken.
+            SnapshotSpacing (int): The time in seconds inbetween sent CMDs for snapshots of individual CCDs.
     '''
     
     
     
     relativeTime = Commands.TC_pafMode(root, relativeTime, mode = 2, comment = comment)
-    
     
     relativeTime = Commands.TC_acfLimbPointingAltitudeOffset(root, relativeTime, Initial = pointing_altitude, Final = pointing_altitude, Rate = 0, comment = comment)
     
@@ -262,6 +295,7 @@ def Mode121_macro(root, relativeTime, freezeTime, FreezeDuration, pointing_altit
     
     for CCDSEL in [1,2,4,8,16,32]:
         relativeTime = Commands.TC_pafCCDSnapshot(root, Snapshot_relativeTime, CCDSEL = CCDSEL, comment = comment)
+        Snapshot_relativeTime = Snapshot_relativeTime + SnapshotSpacing
     
     #relativeTime = Commands.TC_pafMode(root, relativeTime, mode = 1, comment = comment)
     
@@ -269,7 +303,7 @@ def Mode121_macro(root, relativeTime, freezeTime, FreezeDuration, pointing_altit
 
 
 def Mode122_macro(root, relativeTime, freezeTime, FreezeDuration, pointing_altitude, Snapshot_relativeTime, 
-                  ExpTimeUV, ExpIntUV, ExpTimeIR, ExpIntIR, comment):
+                  SnapshotSpacing, ExpTimeUV, ExpTimeIR, comment):
     ''' Macro that corresponds to Mode121.
     
         Arguments:
@@ -277,6 +311,9 @@ def Mode122_macro(root, relativeTime, freezeTime, FreezeDuration, pointing_altit
             FreezeDuration (int): Duration of freeze [s].
             pointing_altitude (int): The altitude of the tangential point [m].
             Snapshot_relativeTime (float): The relativeTime (time from start of timeline) at which the Snapshot is taken.
+            SnapshotSpacing (int): The time in seconds inbetween sent CMDs for snapshots of individual CCDs.
+            ExpTimeUV (int): Exposure time [ms].
+            ExpTimeIR (int): Exposure time [ms].
     '''
     
     
@@ -293,10 +330,11 @@ def Mode122_macro(root, relativeTime, freezeTime, FreezeDuration, pointing_altit
     relativeTime = Commands.TC_affArgFreezeDuration(root, relativeTime, FreezeDuration = FreezeDuration, comment = comment)
     
     relativeTime = BinnedCalibration_procedure(root = root, relativeTime = relativeTime, ExpTimeUV = ExpTimeUV, 
-                                              ExpIntUV = ExpIntUV, ExpTimeIR = ExpTimeIR, ExpIntIR = ExpIntIR, comment = comment)
+                                              ExpIntUV = ExpTimeUV+2000, ExpTimeIR = ExpTimeIR, ExpIntIR = ExpTimeIR+2000, comment = comment)
     
     for CCDSEL in [1,2,4,8,16,32]:
         relativeTime = Commands.TC_pafCCDSnapshot(root, Snapshot_relativeTime, CCDSEL = CCDSEL, comment = comment)
+        Snapshot_relativeTime = Snapshot_relativeTime + SnapshotSpacing
     
     #relativeTime = Commands.TC_pafMode(root, relativeTime, mode = 1, comment = comment)
     
@@ -304,16 +342,17 @@ def Mode122_macro(root, relativeTime, freezeTime, FreezeDuration, pointing_altit
 
 
 def Mode123_macro(root, relativeTime, freezeTime, FreezeDuration, pointing_altitude, Snapshot_relativeTime, 
-                  ExpTimeUV, ExpIntUV, ExpTimeIR, ExpIntIR, comment):
+                  SnapshotSpacing, ExpTimeUV, ExpTimeIR, comment):
     ''' Macro that corresponds to Mode122.
     
         Arguments:
             freezeTime (float): Start time of attitude freeze command in on-board time [s].
             FreezeDuration (int): Duration of freeze [s].
             pointing_altitude (int): The altitude of the tangential point [m].
-            ExpInt (int): Exposure interval [ms].
-            ExpTime (int): Exposure time [ms].
+            ExpTimeUV (int): Exposure time [ms].
+            ExpTimeIR (int): Exposure time [ms].
             Snapshot_relativeTime (float): The relativeTime (time from start of timeline) at which the Snapshot is taken.
+            SnapshotSpacing (int): The time in seconds inbetween sent CMDs for snapshots of individual CCDs.
     '''
     
     
@@ -330,11 +369,12 @@ def Mode123_macro(root, relativeTime, freezeTime, FreezeDuration, pointing_altit
     relativeTime = Commands.TC_affArgFreezeDuration(root, relativeTime, FreezeDuration = FreezeDuration, comment = comment)
     
     
-    relativeTime = Single_pixel_procedure(root = root, relativeTime = relativeTime, ExpTimeUV = ExpTimeUV, 
-                                              ExpIntUV = ExpIntUV, ExpTimeIR = ExpTimeIR, ExpIntIR = ExpIntIR, comment = comment)
+    relativeTime = LowPixel_procedure(root = root, relativeTime = relativeTime, ExpTimeUV = ExpTimeUV, 
+                                              ExpIntUV = ExpTimeUV+2000, ExpTimeIR = ExpTimeIR, ExpIntIR = ExpTimeIR+2000, comment = comment)
     
     for CCDSEL in [1,2,4,8,16,32]:
         relativeTime = Commands.TC_pafCCDSnapshot(root, Snapshot_relativeTime, CCDSEL = CCDSEL, comment = comment)
+        Snapshot_relativeTime = Snapshot_relativeTime + SnapshotSpacing
     
     #relativeTime = Commands.TC_pafMode(root, relativeTime, mode = 1, comment = comment)
     
@@ -342,7 +382,8 @@ def Mode123_macro(root, relativeTime, freezeTime, FreezeDuration, pointing_altit
 
 
 
-def Mode124_macro(root, relativeTime, freezeTime, FreezeDuration, pointing_altitude, Snapshot_relativeTime, comment):
+def Mode124_macro(root, relativeTime, freezeTime, FreezeDuration, pointing_altitude, 
+                  SnapshotSpacing, Snapshot_relativeTime, comment):
     ''' Macro that corresponds to Mode124.
     
         Arguments:
@@ -350,6 +391,7 @@ def Mode124_macro(root, relativeTime, freezeTime, FreezeDuration, pointing_altit
             FreezeDuration (int): Duration of freeze [s].
             pointing_altitude (int): The altitude of the tangential point [m].
             Snapshot_relativeTime (float): The relativeTime (time from start of timeline) at which the Snapshot is taken.
+            SnapshotSpacing (int): The time in seconds inbetween sent CMDs for snapshots of individual CCDs.
     '''
     
     
@@ -366,6 +408,7 @@ def Mode124_macro(root, relativeTime, freezeTime, FreezeDuration, pointing_altit
     
     for CCDSEL in [1,2,4,8,16,32]:
         relativeTime = Commands.TC_pafCCDSnapshot(root, Snapshot_relativeTime, CCDSEL = CCDSEL, comment = comment)
+        Snapshot_relativeTime = Snapshot_relativeTime + SnapshotSpacing
     
     
     return relativeTime
@@ -447,7 +490,7 @@ def Mode133_macro(root, relativeTime, pointing_altitude, ExpTimeUV, ExpIntUV, Ex
     
     relativeTime = Commands.TC_pafMode(root, relativeTime, mode = 2, comment = comment)
     
-    relativeTime = Single_pixel_procedure(root = root, relativeTime = relativeTime, ExpTimeUV = ExpTimeUV, 
+    relativeTime = LowPixel_procedure(root = root, relativeTime = relativeTime, ExpTimeUV = ExpTimeUV, 
                                               ExpIntUV = ExpIntUV, ExpTimeIR = ExpTimeIR, ExpIntIR = ExpIntIR, comment = comment)
     
     relativeTime = Commands.TC_acfLimbPointingAltitudeOffset(root, relativeTime, Initial = pointing_altitude, Final = pointing_altitude, Rate = 0, comment = comment)
@@ -470,7 +513,7 @@ def PWRTOGGLE_macro(root, relativeTime, CONST, comment = ''):
     
     relativeTime = Commands.TC_pafMode(root, relativeTime, mode = 2, comment = comment)
     
-    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDSEL = 127, PWR = 0, ExpInterval = 1500, ExpTime = 1000, comment = comment)
+    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDSEL = 127, PWR = 0, ExpInterval = 6000, ExpTime = 0, comment = comment)
     
     Commands.TC_pafPWRToggle(root, relativeTime, CONST = CONST, comment = comment)
     

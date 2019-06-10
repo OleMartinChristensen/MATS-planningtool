@@ -79,11 +79,15 @@
 <div class="viewcode-block" id="Mode120_date_calculator"><a class="viewcode-back" href="../../../../Operational_Planning_Tool._TimelineGenerator.Modes.html#Operational_Planning_Tool._TimelineGenerator.Modes.Mode120.Mode120_date_calculator">[docs]</a><span class="k">def</span> <span class="nf">Mode120_date_calculator</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;Subfunction, Either selects a user provided date, or simulates MATS FOV and stars.</span>
 <span class="sd">    </span>
+<span class="sd">    </span>
+<span class="sd">    If &#39;automatic&#39; in *Mode120_settings* is set to False, the date in *Mode120_settings* will be returned.. \n</span>
+<span class="sd">    If &#39;automatic&#39; in *Mode120_settings* is set to True. A list of dictionaries containing simulated dates is returned. </span>
+<span class="sd">    </span>
 <span class="sd">    Determines when stars are entering the FOV at an vertical offset-angle equal to *#V-offset*, and also being </span>
 <span class="sd">    located at a horizontal off-set angle equal to less than *#H-offset*, when pointing at the LP located at an altitude equal to *#pointing_altitude*. </span>
 <span class="sd">    Also determines when the optical axis is pointing towards a LP located at an altitude equal to *#LP_pointing_altitude* during the hypothetical attitude freeze. \n</span>
 <span class="sd">    </span>
-<span class="sd">    (# as defined in OPT_Config_File). \n</span>
+<span class="sd">    (# as defined in the *Configuration File*). \n</span>
 <span class="sd">    </span>
 <span class="sd">    Saves the date and parameters regarding the spotting of a star.</span>
 <span class="sd">    Also saves relevant data to an .csv file located in Output/.</span>
@@ -91,48 +95,49 @@
 <span class="sd">    Arguments:</span>
 <span class="sd">        </span>
 <span class="sd">    Returns:</span>
-<span class="sd">        dates ((:obj:`list` of :obj:`dict`)): A list containing dictionaries containing parameters for each time a star is spotted.</span>
+<span class="sd">        dates ((:obj:`list` of :obj:`dict`)) or (str): A list containing dictionaries containing parameters for each time a star is spotted. Or just a date depending on &#39;automatic&#39; in *Mode124_settings*.</span>
 <span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
-    <span class="n">Mode120_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Mode120_settings</span>
+    <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Timeline_settings</span><span class="p">()</span>
+    <span class="n">Mode120_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Mode120_settings</span><span class="p">()</span>
     
-    <span class="n">automatic</span> <span class="o">=</span> <span class="n">Mode120_settings</span><span class="p">()[</span><span class="s1">&#39;automatic&#39;</span><span class="p">]</span>
+    <span class="n">automatic</span> <span class="o">=</span> <span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;automatic&#39;</span><span class="p">]</span>
     <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;automatic = &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">automatic</span><span class="p">))</span>
     
-    <span class="s2">&quot;To either calculate when stars are visible and schedule from that data or just schedule at a given time given by Mode120_settings()[&#39;start_date&#39;]&quot;</span>
+    <span class="s2">&quot;To either calculate when stars are visible and schedule from that data or just schedule at a given time given by Mode120_settings[&#39;start_date&#39;]&quot;</span>
     <span class="k">if</span><span class="p">(</span> <span class="n">automatic</span> <span class="o">==</span> <span class="kc">False</span> <span class="p">):</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="n">date</span> <span class="o">=</span><span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">Mode120_settings</span><span class="p">()[</span><span class="s1">&#39;start_date&#39;</span><span class="p">])</span>
+            <span class="n">date</span> <span class="o">=</span><span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;start_date&#39;</span><span class="p">])</span>
             <span class="k">return</span> <span class="n">date</span>
         <span class="k">except</span><span class="p">:</span>
-            <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Could not get OPT_Config_File.Mode120_settings()[&quot;start_date&quot;], exiting...&#39;</span><span class="p">)</span>
+            <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Could not get OPT_Config_File.Mode120_settings[&quot;start_date&quot;], exiting...&#39;</span><span class="p">)</span>
             <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
         
     <span class="k">elif</span><span class="p">(</span> <span class="n">automatic</span> <span class="o">==</span> <span class="kc">True</span> <span class="p">):</span>
         
         <span class="s2">&quot;Simulation length and timestep&quot;</span>
-        <span class="n">log_timestep</span> <span class="o">=</span> <span class="n">Mode120_settings</span><span class="p">()[</span><span class="s1">&#39;log_timestep&#39;</span><span class="p">]</span>
+        <span class="n">log_timestep</span> <span class="o">=</span> <span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;log_timestep&#39;</span><span class="p">]</span>
         <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;log_timestep: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">log_timestep</span><span class="p">))</span>
     
         
-        <span class="n">timestep</span> <span class="o">=</span> <span class="n">Mode120_settings</span><span class="p">()[</span><span class="s1">&#39;timestep&#39;</span><span class="p">]</span> <span class="c1">#In seconds</span>
+        <span class="n">timestep</span> <span class="o">=</span> <span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;timestep&#39;</span><span class="p">]</span> <span class="c1">#In seconds</span>
         <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;timestep set to: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">timestep</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; s&#39;</span><span class="p">)</span>
         
-        <span class="n">duration</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Timeline_settings</span><span class="p">()[</span><span class="s1">&#39;duration&#39;</span><span class="p">]</span>
+        <span class="n">duration</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;duration&#39;</span><span class="p">]</span>
         <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Duration set to: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; s&#39;</span><span class="p">)</span>
         
         <span class="n">timesteps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">floor</span><span class="p">(</span><span class="n">duration</span> <span class="o">/</span> <span class="n">timestep</span><span class="p">))</span>
         <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Total number of timesteps set to: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">timesteps</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; s&#39;</span><span class="p">)</span>
         
-        <span class="n">timeline_start</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Timeline_settings</span><span class="p">()[</span><span class="s1">&#39;start_date&#39;</span><span class="p">])</span>
-        <span class="n">initial_time</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span> <span class="n">timeline_start</span> <span class="o">+</span> <span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="n">Mode120_settings</span><span class="p">()[</span><span class="s1">&#39;freeze_start&#39;</span><span class="p">]</span> <span class="p">)</span>
+        <span class="n">timeline_start</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;start_date&#39;</span><span class="p">])</span>
+        <span class="n">initial_time</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span> <span class="n">timeline_start</span> <span class="o">+</span> <span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;freeze_start&#39;</span><span class="p">]</span> <span class="p">)</span>
         
         <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Initial simulation date set to: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">initial_time</span><span class="p">))</span>
         
         
         <span class="s2">&quot;Get relevant stars&quot;</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">Vizier</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;all&#39;</span><span class="p">],</span> <span class="n">row_limit</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span><span class="o">.</span><span class="n">query_constraints</span><span class="p">(</span><span class="n">catalog</span><span class="o">=</span><span class="s1">&#39;I/239/hip_main&#39;</span><span class="p">,</span><span class="n">Vmag</span><span class="o">=</span><span class="n">Mode120_settings</span><span class="p">()[</span><span class="s1">&#39;Vmag&#39;</span><span class="p">])</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">Vizier</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;all&#39;</span><span class="p">],</span> <span class="n">row_limit</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span><span class="o">.</span><span class="n">query_constraints</span><span class="p">(</span><span class="n">catalog</span><span class="o">=</span><span class="s1">&#39;I/239/hip_main&#39;</span><span class="p">,</span><span class="n">Vmag</span><span class="o">=</span><span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;Vmag&#39;</span><span class="p">])</span>
         <span class="n">star_cat</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">ROWS</span> <span class="o">=</span> <span class="n">star_cat</span><span class="p">[</span><span class="mi">0</span><span class="p">][:]</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
         <span class="n">stars</span> <span class="o">=</span> <span class="p">[]</span>
@@ -177,8 +182,8 @@
         <span class="n">star_list_excel</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s1">&#39;Hpscat&#39;</span><span class="p">])</span>
         <span class="n">star_list_excel</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s1">&#39;o_Hpmag&#39;</span><span class="p">])</span>
         <span class="n">star_list_excel</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s1">&#39;Classification&#39;</span><span class="p">])</span>
-        <span class="n">star_list_excel</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s1">&#39;Star Dec (epoch 2000, eq)&#39;</span><span class="p">])</span>
-        <span class="n">star_list_excel</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s1">&#39;Star RA (epoch 2000, eq)&#39;</span><span class="p">])</span>
+        <span class="n">star_list_excel</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s1">&#39;Star Dec (ICRS J2000, eq)&#39;</span><span class="p">])</span>
+        <span class="n">star_list_excel</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s1">&#39;Star RA (ICRS J2000, eq)&#39;</span><span class="p">])</span>
         
         <span class="s2">&quot;Prepare the output&quot;</span>
         <span class="n">star_list</span> <span class="o">=</span> <span class="p">[]</span>
@@ -223,15 +228,15 @@
         <span class="c1">#wgs84_Re = 6378.137 #Equatorial radius of wgs84 spheroid [km]</span>
         <span class="c1"># wgs84_Rp = 6356752.3142 #Polar radius of wgs84 spheroid [km]</span>
         <span class="n">U</span> <span class="o">=</span> <span class="mf">398600.4418</span> <span class="c1">#Earth gravitational parameter</span>
-        <span class="n">LP_altitude</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Timeline_settings</span><span class="p">()[</span><span class="s1">&#39;LP_pointing_altitude&#39;</span><span class="p">]</span><span class="o">/</span><span class="mi">1000</span>  <span class="c1">#Altitude at which MATS center of FOV is looking [km]</span>
-        <span class="n">pointing_altitude</span> <span class="o">=</span> <span class="n">Mode120_settings</span><span class="p">()[</span><span class="s1">&#39;pointing_altitude&#39;</span><span class="p">]</span><span class="o">/</span><span class="mi">1000</span> 
+        <span class="n">LP_altitude</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;LP_pointing_altitude&#39;</span><span class="p">]</span><span class="o">/</span><span class="mi">1000</span>  <span class="c1">#Altitude at which MATS center of FOV is looking [km]</span>
+        <span class="n">pointing_altitude</span> <span class="o">=</span> <span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;pointing_altitude&#39;</span><span class="p">]</span><span class="o">/</span><span class="mi">1000</span> 
         <span class="c1">#extended_Re = wgs84_Re + LP_altitude #Equatorial radius of extended wgs84 spheroid</span>
         <span class="c1">#f_e = (wgs84_Re - wgs84_Rp) / Re_extended #Flattening of extended wgs84 spheroid</span>
-        <span class="n">V_offset</span> <span class="o">=</span> <span class="n">Mode120_settings</span><span class="p">()[</span><span class="s1">&#39;V_offset&#39;</span><span class="p">]</span>
-        <span class="n">H_offset</span> <span class="o">=</span> <span class="n">Mode120_settings</span><span class="p">()[</span><span class="s1">&#39;H_offset&#39;</span><span class="p">]</span>  <span class="c1">#5.67 is actual H_FOV</span>
+        <span class="n">V_offset</span> <span class="o">=</span> <span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;V_offset&#39;</span><span class="p">]</span>
+        <span class="n">H_offset</span> <span class="o">=</span> <span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;H_offset&#39;</span><span class="p">]</span>  <span class="c1">#5.67 is actual H_FOV</span>
         
         <span class="n">pitch_offset_angle</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">yaw_correction</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Timeline_settings</span><span class="p">()[</span><span class="s1">&#39;yaw_correction&#39;</span><span class="p">]</span>
+        <span class="n">yaw_correction</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;yaw_correction&#39;</span><span class="p">]</span>
         
         <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Earth radius used [km]: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">R_mean</span><span class="p">))</span>
         <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;LP_altitude set to [km]: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">LP_altitude</span><span class="p">))</span>
@@ -332,7 +337,7 @@
                     <span class="k">if</span><span class="p">(</span> <span class="n">dot</span><span class="p">(</span><span class="n">cross</span><span class="p">(</span> <span class="n">ascending_node</span><span class="p">,</span> <span class="n">r_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">]),</span> <span class="n">normal_orbit</span><span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="p">):</span>
                         <span class="n">arg_of_lat</span> <span class="o">=</span> <span class="mi">360</span> <span class="o">-</span> <span class="n">arg_of_lat</span>
                         
-                    <span class="n">yaw_offset_angle</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Timeline_settings</span><span class="p">()[</span><span class="s1">&#39;yaw_amplitude&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">cos</span><span class="p">(</span> <span class="n">arg_of_lat</span><span class="o">/</span><span class="mi">180</span><span class="o">*</span><span class="n">pi</span> <span class="o">-</span> <span class="n">pitch_LP</span><span class="o">/</span><span class="mi">180</span><span class="o">*</span><span class="n">pi</span> <span class="o">+</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Timeline_settings</span><span class="p">()[</span><span class="s1">&#39;yaw_phase&#39;</span><span class="p">]</span><span class="o">/</span><span class="mi">180</span><span class="o">*</span><span class="n">pi</span> <span class="p">)</span>
+                    <span class="n">yaw_offset_angle</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;yaw_amplitude&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">cos</span><span class="p">(</span> <span class="n">arg_of_lat</span><span class="o">/</span><span class="mi">180</span><span class="o">*</span><span class="n">pi</span> <span class="o">-</span> <span class="n">pitch_LP</span><span class="o">/</span><span class="mi">180</span><span class="o">*</span><span class="n">pi</span> <span class="o">+</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;yaw_phase&#39;</span><span class="p">]</span><span class="o">/</span><span class="mi">180</span><span class="o">*</span><span class="n">pi</span> <span class="p">)</span>
                     <span class="n">yaw_offset_angle</span> <span class="o">=</span> <span class="n">yaw_offset_angle</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
                     
                     <span class="k">if</span><span class="p">(</span> <span class="n">t</span><span class="o">*</span><span class="n">timestep</span> <span class="o">%</span> <span class="n">log_timestep</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">t</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">):</span>
@@ -479,7 +484,7 @@
                         
                         <span class="s2">&quot;Make exception list for stars not visible during this epoch (relativiely far outside of orbital plane)&quot;</span>
                         <span class="k">if</span><span class="p">(</span> <span class="p">(</span> <span class="nb">abs</span><span class="p">(</span><span class="n">angle_between_orbital_plane_and_star</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">x</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">H_offset</span><span class="o">+</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">365</span><span class="o">*</span><span class="mi">24</span><span class="o">*</span><span class="mi">3600</span><span class="p">)</span><span class="o">*</span><span class="mi">360</span> <span class="ow">and</span> <span class="n">yaw_correction</span> <span class="o">==</span> <span class="kc">False</span> <span class="p">)</span> <span class="ow">or</span> 
-                           <span class="p">(</span> <span class="nb">abs</span><span class="p">(</span><span class="n">angle_between_orbital_plane_and_star</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">x</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">H_offset</span><span class="o">+</span><span class="mf">3.8</span><span class="o">+</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">365</span><span class="o">*</span><span class="mi">24</span><span class="o">*</span><span class="mi">3600</span><span class="p">)</span><span class="o">*</span><span class="mi">360</span> <span class="ow">and</span> <span class="n">yaw_correction</span> <span class="o">==</span> <span class="kc">True</span> <span class="p">)):</span>
+                           <span class="p">(</span> <span class="nb">abs</span><span class="p">(</span><span class="n">angle_between_orbital_plane_and_star</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">x</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">H_offset</span> <span class="o">+</span> <span class="nb">abs</span><span class="p">(</span><span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;yaw_amplitude&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="p">(</span><span class="n">duration</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">365</span><span class="o">*</span><span class="mi">24</span><span class="o">*</span><span class="mi">3600</span><span class="p">)</span><span class="o">*</span><span class="mi">360</span> <span class="ow">and</span> <span class="n">yaw_correction</span> <span class="o">==</span> <span class="kc">True</span> <span class="p">)):</span>
                             
                             <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Skip star: &#39;</span><span class="o">+</span><span class="n">stars</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="o">+</span><span class="s1">&#39;, with angle_between_orbital_plane_and_star of: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">angle_between_orbital_plane_and_star</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">x</span><span class="p">])</span><span class="o">+</span><span class="s1">&#39; degrees&#39;</span><span class="p">)</span>
                             <span class="n">skip_star_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stars</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
@@ -527,7 +532,7 @@
                 <span class="c1">######################### End of star_mapper #############################</span>
             
         
-        <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;End of simulation for Mode200&#39;</span><span class="p">)</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;End of simulation for Mode120&#39;</span><span class="p">)</span>
         
         <span class="c1">########################## Optional plotter ###########################################</span>
         <span class="sd">&#39;&#39;&#39;</span>
@@ -571,7 +576,7 @@
                     <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">write_file</span><span class="p">,</span> <span class="n">dialect</span><span class="o">=</span><span class="s1">&#39;excel-tab&#39;</span><span class="p">)</span>
                     <span class="n">writer</span><span class="o">.</span><span class="n">writerows</span><span class="p">(</span><span class="n">star_list_excel</span><span class="p">)</span>
                 <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Available Stars data saved to: &#39;</span><span class="o">+</span><span class="n">file_directory</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Available Stars data saved to: &#39;</span><span class="o">+</span><span class="n">file_directory</span><span class="p">)</span>
+                <span class="c1">#print(&#39;Available Stars data saved to: &#39;+file_directory)</span>
                 <span class="k">break</span>
             <span class="k">except</span> <span class="ne">PermissionError</span><span class="p">:</span>
                 <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">file_directory</span><span class="o">+</span><span class="s1">&#39; cannot be overwritten. Please close it&#39;</span><span class="p">)</span>
@@ -618,16 +623,16 @@
 <span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
-    <span class="n">Mode120_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Mode120_settings</span>
+    <span class="n">Mode120_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Mode120_settings</span><span class="p">()</span>
     
-    <span class="n">automatic</span> <span class="o">=</span> <span class="n">Mode120_settings</span><span class="p">()[</span><span class="s1">&#39;automatic&#39;</span><span class="p">]</span>
+    <span class="n">automatic</span> <span class="o">=</span> <span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;automatic&#39;</span><span class="p">]</span>
     
     <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Start of filtering function&#39;</span><span class="p">)</span>
     
     <span class="s2">&quot;Either schedules a user provided date or filters and schedules calculated dates&quot;</span>
     <span class="k">if</span><span class="p">(</span> <span class="n">automatic</span> <span class="o">==</span> <span class="kc">False</span> <span class="p">):</span>
         
-        <span class="n">endDate</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">dates</span><span class="o">+</span><span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="n">Mode120_settings</span><span class="p">()[</span><span class="s1">&#39;mode_duration&#39;</span><span class="p">])</span>
+        <span class="n">endDate</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">dates</span><span class="o">+</span><span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;mode_duration&#39;</span><span class="p">])</span>
         
         <span class="c1">############### Start of availability schedueler ##########################</span>
         
@@ -646,7 +651,6 @@
         
     <span class="k">elif</span><span class="p">(</span> <span class="n">automatic</span> <span class="o">==</span> <span class="kc">True</span> <span class="p">):</span>
         
-        <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Start of filtering function&#39;</span><span class="p">)</span>
         
         <span class="k">if</span><span class="p">(</span> <span class="nb">len</span><span class="p">(</span><span class="n">dates</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
             <span class="n">Mode120_comment</span> <span class="o">=</span> <span class="s1">&#39;Stars not visible (Empty dates)&#39;</span>
@@ -713,9 +717,9 @@
             
             <span class="n">Mode120_date</span> <span class="o">=</span> <span class="n">star_date</span><span class="p">[</span><span class="n">x</span><span class="p">]</span>
             
-            <span class="n">Mode120_date</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">Mode120_date</span><span class="p">)</span><span class="o">-</span><span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="p">(</span><span class="n">Mode120_settings</span><span class="p">()[</span><span class="s1">&#39;freeze_start&#39;</span><span class="p">]))</span>
+            <span class="n">Mode120_date</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">Mode120_date</span><span class="p">)</span><span class="o">-</span><span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="p">(</span><span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;freeze_start&#39;</span><span class="p">]))</span>
             
-            <span class="n">Mode120_endDate</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">Mode120_date</span><span class="o">+</span><span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="n">Mode120_settings</span><span class="p">()[</span><span class="s1">&#39;mode_duration&#39;</span><span class="p">])</span>
+            <span class="n">Mode120_endDate</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">Mode120_date</span><span class="o">+</span><span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;mode_duration&#39;</span><span class="p">])</span>
             
             <span class="s2">&quot;Check that the scheduled date is not before the start of the timeline&quot;</span>
             <span class="k">if</span><span class="p">(</span> <span class="n">Mode120_date</span> <span class="o">&lt;</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Timeline_settings</span><span class="p">()[</span><span class="s1">&#39;start_date&#39;</span><span class="p">])</span> <span class="p">):</span>

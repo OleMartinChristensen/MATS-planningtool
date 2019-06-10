@@ -29,6 +29,7 @@ if( __name__ == '__main__'):
     
     OPT.Copy_ConfigFile(ConfigFileName)
     OPT.Set_ConfigFile(ConfigFileName, date)
+    OPT.CheckConfigFile()
     
     #OPT.Create_ConfigFile(date,tlefile,configname)
     #OPT.Set_ConfigFile(configname)

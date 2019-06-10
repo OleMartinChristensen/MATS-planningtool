@@ -46,11 +46,15 @@ def Mode120(Occupied_Timeline):
 def Mode120_date_calculator():
     """Subfunction, Either selects a user provided date, or simulates MATS FOV and stars.
     
+    
+    If 'automatic' in *Mode120_settings* is set to False, the date in *Mode120_settings* will be returned.. \n
+    If 'automatic' in *Mode120_settings* is set to True. A list of dictionaries containing simulated dates is returned. 
+    
     Determines when stars are entering the FOV at an vertical offset-angle equal to *#V-offset*, and also being 
     located at a horizontal off-set angle equal to less than *#H-offset*, when pointing at the LP located at an altitude equal to *#pointing_altitude*. 
     Also determines when the optical axis is pointing towards a LP located at an altitude equal to *#LP_pointing_altitude* during the hypothetical attitude freeze. \n
     
-    (# as defined in OPT_Config_File). \n
+    (# as defined in the *Configuration File*). \n
     
     Saves the date and parameters regarding the spotting of a star.
     Also saves relevant data to an .csv file located in Output/.
@@ -58,7 +62,7 @@ def Mode120_date_calculator():
     Arguments:
         
     Returns:
-        dates ((:obj:`list` of :obj:`dict`)): A list containing dictionaries containing parameters for each time a star is spotted.
+        dates ((:obj:`list` of :obj:`dict`)) or (str): A list containing dictionaries containing parameters for each time a star is spotted. Or just a date depending on 'automatic' in *Mode124_settings*.
     
     """
     
@@ -145,8 +149,8 @@ def Mode120_date_calculator():
         star_list_excel.append(['Hpscat'])
         star_list_excel.append(['o_Hpmag'])
         star_list_excel.append(['Classification'])
-        star_list_excel.append(['Star Dec (epoch 2000, eq)'])
-        star_list_excel.append(['Star RA (epoch 2000, eq)'])
+        star_list_excel.append(['Star Dec (ICRS J2000, eq)'])
+        star_list_excel.append(['Star RA (ICRS J2000, eq)'])
         
         "Prepare the output"
         star_list = []

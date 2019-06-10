@@ -3,7 +3,7 @@
 start and end time and also duration of the timeline. Then goes through the 
 supplied Science Mode Timeline List chronologically and calls for the corresponding function. \n
 
-Mode/Test/CMD specific settings given in the Science Mode Timeline List will overirde the use of the same settings stated in OPT_Config_File.
+Mode/Test/CMD specific settings given in the Science Mode Timeline List will overirde the use of the same settings stated in set *Configuration File*.
 
 """
 
@@ -21,17 +21,14 @@ Logger = logging.getLogger(OPT_Config_File.Logger_name())
 def XML_generator(SCIMOD_Path):
     """The core function of the XML_gen program.
     
+    Takes a Science Mode Timeline and converts it into Commands. If settings are stated for a scheduled mode; 
+    these will overwrite any values set in the set *Configuration File*
+    
     Arguments:
-        SCIMOD_Path (str): A string containing the path to the Science Mode Timeline json file.
+        SCIMOD_Path (str): A string containing the path to the Science Mode Timeline .json file.
     Returns:
         None
         
-    """
-    
-    """
-    if(os.path.isfile('OPT_Config_File.py') == False):
-        print('No OPT_Config_File.py found. Try running Create_ConfigFile()')
-        sys.exit()
     """
     
     
@@ -133,7 +130,7 @@ def XML_Initial_Basis_Creator(timeline_start,timeline_duration, SCIMOD_Path):
     Arguments: 
         earliestStartingDate (ephem.Date): Earliest Starting date of the Timeline. On the form of the ephem.Date class.
         latestStartingDate (ephem.Date): Latest Starting date of the Timeline. On the form of the ephem.Date class.
-        timeline_duration (int): Duration of the timeline [s] as a integer class.
+        timeline_duration (int): Duration of the timeline [s].
         SCIMOD_Path (str): The path as a string to the Science Mode Timeline .json file used in this run.
     '''
     
@@ -184,13 +181,15 @@ def XML_Initial_Basis_Creator(timeline_start,timeline_duration, SCIMOD_Path):
 def XML_generator_select(mode, root, date, duration, relativeTime, params):
     '''Subfunction, Selects corresponding mode, test or CMD function in the package *Modes_and_Tests* from the variable *mode*.
     
+    Calls for any function named *XML_generator_XXX* where XXX is the string in the input *name*.
+    
     Arguments: 
         mode (str): The name of the of the mode or test as a string. The name in the XML_generator_name function in OPT_XML_generator_MODES
         root (lxml.etree.Element): XML tree structure. Main container object for the ElementTree API.
         date (ephem.Date) = Starting date of the Mode. On the form of the ephem.Date class.
         duration (int) = The duration of the mode [s] as an integer class.
         relativeTime (int) = The starting time of the mode with regard to the start of the timeline [s] as an integer class
-        params (dict) = Dictionary containing the parameters of the Mode, CMD, or Test given in the Science_Mode_Timeline.
+        params (dict) = Dictionary containing the parameters of the Mode, CMD, or Test given in the Science_Mode_Timeline. 
     
     Returns:
         None

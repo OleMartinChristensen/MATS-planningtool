@@ -13,6 +13,6 @@ OPT.Set_ConfigFile('OPT_Config_File', '2018/9/3 08:00:40')
 
 OPT.CheckConfigFile()
 
-OPT.Timeline_gen()
+#OPT.Timeline_gen()
 
 OPT.XML_gen('Output\Science_Mode_Timeline__OPT_Config_File.json')

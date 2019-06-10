@@ -8,7 +8,7 @@ StartTime = Contains the starting time and date of OPT as set by *Set_Config_Fil
 
 """
 
-Config_File = None
+Config_File = 'OPT_Config_File'
 current_pointing = None
 #science_mode_timeline_path = None
 StartTime = None

@@ -1,0 +1,2 @@
+sphinx-apidoc -f --force -M --module-first  --tocfile index -P --private -o %CD% "C:\Users\David\Documents\Chalmers Jobb\Python\Test_OPT_New\Operational_Planning_Tool"
+sphinx-build -b html %CD% ../OPT_Build

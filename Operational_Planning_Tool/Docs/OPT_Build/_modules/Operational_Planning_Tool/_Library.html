@@ -35,7 +35,7 @@
 <span class="sd">&quot;&quot;&quot;Contains functions used by the Operational Planning Tool .</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">ephem</span><span class="o">,</span> <span class="nn">importlib</span>
+<span class="kn">import</span> <span class="nn">ephem</span><span class="o">,</span> <span class="nn">importlib</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">pylab</span> <span class="k">import</span> <span class="n">cos</span><span class="p">,</span> <span class="n">sin</span><span class="p">,</span> <span class="n">sqrt</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">arccos</span><span class="p">,</span> <span class="n">pi</span><span class="p">,</span> <span class="n">floor</span><span class="p">,</span> <span class="n">around</span>
 
 <span class="kn">from</span> <span class="nn">Operational_Planning_Tool</span> <span class="k">import</span> <span class="n">_Globals</span>
@@ -231,6 +231,132 @@
 <span class="sd">    onboardTime = around( (GPS_date/7 - GPS_week) / ephem.second, 1 )</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="k">return</span> <span class="n">onboardTime</span></div>
+
+<div class="viewcode-block" id="SetupLogger"><a class="viewcode-back" href="../../Operational_Planning_Tool.html#Operational_Planning_Tool._Library.SetupLogger">[docs]</a><span class="k">def</span> <span class="nf">SetupLogger</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Removes previous handlers and sets up a logger with both a file handler and a stream handler.</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">Logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Logger_name</span><span class="p">())</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>
+    <span class="c1">######## Try to Create a directory for storage of Logs #######</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="s1">&#39;Logs_&#39;</span><span class="o">+</span><span class="n">name</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">pass</span>
+    
+    <span class="s2">&quot;Remove all previous handlers of the logger&quot;</span>
+    <span class="k">for</span> <span class="n">handler</span> <span class="ow">in</span> <span class="n">Logger</span><span class="o">.</span><span class="n">handlers</span><span class="p">[:]:</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">removeHandler</span><span class="p">(</span><span class="n">handler</span><span class="p">)</span>
+    
+    
+    
+    <span class="c1">#logging.basicConfig(stream=sys.stdout, level=logging.INFO)</span>
+    <span class="n">timestr</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">-%H%M%S&quot;</span><span class="p">)</span>
+    <span class="n">logstring</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;Logs_&#39;</span><span class="o">+</span><span class="n">name</span><span class="p">,</span> <span class="n">name</span><span class="o">+</span><span class="s1">&#39;__&#39;</span><span class="o">+</span><span class="n">_Globals</span><span class="o">.</span><span class="n">Config_File</span><span class="o">+</span><span class="s1">&#39;__&#39;</span><span class="o">+</span><span class="n">timestr</span><span class="o">+</span><span class="s1">&#39;.log&#39;</span><span class="p">)</span>
+    <span class="n">Handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="n">logstring</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
+    <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%(levelname)6s</span><span class="s2"> : </span><span class="si">%(message)-80s</span><span class="s2"> :: </span><span class="si">%(module)s</span><span class="s2"> :: </span><span class="si">%(funcName)s</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">Handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+    <span class="n">Logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">Handler</span><span class="p">)</span>
+    <span class="n">Logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+    
+    <span class="n">streamHandler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
+    <span class="n">streamHandler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+    <span class="n">streamHandler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+    <span class="n">Logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">streamHandler</span><span class="p">)</span></div>
+    
+
+
+<div class="viewcode-block" id="calculate_time_per_row"><a class="viewcode-back" href="../../Operational_Planning_Tool.html#Operational_Planning_Tool._Library.calculate_time_per_row">[docs]</a><span class="k">def</span> <span class="nf">calculate_time_per_row</span><span class="p">(</span><span class="n">NCOL</span><span class="p">,</span> <span class="n">NCBIN</span><span class="p">,</span> <span class="n">NCBINFPGA</span><span class="p">,</span> <span class="n">NRSKIP</span><span class="p">,</span> <span class="n">NROW</span><span class="p">,</span> <span class="n">NRBIN</span><span class="p">,</span> <span class="n">NFLUSH</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This function provides an estimated amount of time for a CCD readout</span>
+<span class="sd">    </span>
+<span class="sd">    Note that minor &quot;transition&quot; states may have been omitted resulting in </span>
+<span class="sd">    somewhat shorter readout times (&lt;0.1%).</span>
+<span class="sd">    </span>
+<span class="sd">    Default timing setting is:\n</span>
+<span class="sd">    ccd_r_timing &lt;= x&quot;A4030206141D&quot;&amp;x&quot;010303090313&quot;</span>
+<span class="sd">    </span>
+<span class="sd">    All pixel timing setting is the final count of a counter that starts at 0,</span>
+<span class="sd">    so the number of clock cycles exceeds the setting by 1</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (float): Readout time in ns. </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="c1">#image parameters</span>
+    <span class="n">ncol</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">NCOL</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span>
+    <span class="n">ncolbinC</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">NCBIN</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">ncolbinC</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">ncolbinC</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">ncolbinF</span><span class="o">=</span><span class="mi">2</span><span class="o">**</span><span class="nb">int</span><span class="p">(</span><span class="n">NCBINFPGA</span><span class="p">)</span>
+    
+    <span class="n">nrow</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">NROW</span><span class="p">)</span>
+    <span class="n">nrowbin</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">NRBIN</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">nrowbin</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">nrowbin</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="n">nrowskip</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">NRSKIP</span><span class="p">)</span>
+    
+    <span class="n">n_flush</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">NFLUSH</span><span class="p">)</span>
+    
+    <span class="c1">#timing settings</span>
+    <span class="n">full_timing</span> <span class="o">=</span> <span class="mi">0</span> <span class="c1">#TODO &lt;-- meaning?</span>
+    
+    <span class="c1">#full pixel readout timing</span>
+    <span class="n">time0</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">19</span> <span class="c1"># x13%TODO</span>
+    <span class="n">time1</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span>  <span class="mi">3</span> <span class="c1"># x03%TODO</span>
+    <span class="n">time2</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span>  <span class="mi">9</span> <span class="c1"># x09%TODO</span>
+    <span class="n">time3</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span>  <span class="mi">3</span> <span class="c1"># x03%TODO</span>
+    <span class="n">time4</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span>  <span class="mi">3</span> <span class="c1"># x03%TODO</span>
+    <span class="n">time_ovl</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">1</span> <span class="c1"># x01%TODO</span>
+    
+    <span class="c1"># fast pixel readout timing</span>
+    <span class="n">timefast</span>  <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">2</span> <span class="c1"># x02%TODO</span>
+    <span class="n">timefastr</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">3</span> <span class="c1"># x03%TODO</span>
+    
+    <span class="c1">#row shift timing</span>
+    <span class="n">row_step</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="mi">164</span> <span class="c1"># xA4%TODO</span>
+    
+    <span class="n">clock_period</span> <span class="o">=</span> <span class="mf">30.517</span> <span class="c1">#master clock period, ns 32.768 MHz</span>
+    
+    <span class="c1">#there is one extra clock cycle, effectively adding to time 0</span>
+    <span class="n">Time_pixel_full</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">+</span> <span class="n">time0</span> <span class="o">+</span> <span class="n">time1</span> <span class="o">+</span> <span class="n">time2</span> <span class="o">+</span> <span class="n">time3</span> <span class="o">+</span> <span class="n">time4</span> <span class="o">+</span> <span class="mi">3</span><span class="o">*</span><span class="n">time_ovl</span><span class="p">)</span><span class="o">*</span><span class="n">clock_period</span>
+    
+    <span class="c1"># this is the fast timing pixel period</span>
+    <span class="n">Time_pixel_fast</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="o">+</span> <span class="mi">4</span><span class="o">*</span><span class="n">timefast</span> <span class="o">+</span> <span class="mi">3</span><span class="o">*</span><span class="n">time_ovl</span> <span class="o">+</span> <span class="n">timefastr</span><span class="p">)</span><span class="o">*</span><span class="n">clock_period</span>
+    
+    <span class="c1">#here we calculate the number of fast and slow pixels</span>
+    <span class="c1">#NOTE: the effect of bad pixels is disregarded here</span>
+    
+    <span class="k">if</span> <span class="n">full_timing</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">n_pixels_full</span> <span class="o">=</span> <span class="mi">2148</span>
+        <span class="n">n_pixels_fast</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">ncolbinC</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span> <span class="c1">#no CCD binning</span>
+            <span class="n">n_pixels_full</span> <span class="o">=</span> <span class="n">ncol</span> <span class="o">*</span> <span class="n">ncolbinF</span>
+        <span class="k">else</span><span class="p">:</span> <span class="c1">#there are two &quot;slow&quot; pixels for one superpixel to be read out</span>
+            <span class="n">n_pixels_full</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">ncol</span> <span class="o">*</span><span class="n">ncolbinF</span>
+        <span class="n">n_pixels_fast</span> <span class="o">=</span> <span class="mi">2148</span> <span class="o">-</span> <span class="n">n_pixels_full</span>
+    
+    
+    <span class="c1">#time to read out one row</span>
+    <span class="n">T_row_read</span> <span class="o">=</span> <span class="n">n_pixels_full</span><span class="o">*</span><span class="n">Time_pixel_full</span> <span class="o">+</span> <span class="n">n_pixels_fast</span><span class="o">*</span><span class="n">Time_pixel_fast</span>
+    
+    <span class="c1"># shift time of a single row</span>
+    <span class="n">T_row_shift</span> <span class="o">=</span> <span class="p">(</span><span class="mi">64</span> <span class="o">+</span> <span class="n">row_step</span> <span class="o">*</span><span class="mi">10</span><span class="p">)</span><span class="o">*</span><span class="n">clock_period</span>
+    
+    <span class="c1">#time of the exposure start delay from the start_exp signal # n_flush=1023</span>
+    <span class="n">T_delay</span> <span class="o">=</span> <span class="n">T_row_shift</span> <span class="o">*</span> <span class="n">n_flush</span>
+    
+    <span class="c1">#total time of the readout</span>
+    <span class="n">T_readout</span> <span class="o">=</span> <span class="n">T_row_read</span><span class="o">*</span><span class="p">(</span><span class="n">nrow</span><span class="o">+</span><span class="n">nrowskip</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">T_row_shift</span><span class="o">*</span><span class="p">(</span><span class="mi">1</span><span class="o">+</span><span class="n">nrowbin</span><span class="o">*</span><span class="n">nrow</span><span class="p">)</span>
+    
+    
+    <span class="c1">#&quot;smearing time&quot;</span>
+    <span class="c1">#(this is the time that any pixel collects electrons in a wrong row, during the shifting.)</span>
+    <span class="c1">#For smearing correction, this is the &quot;extra exposure time&quot; for each of the rows.</span>
+    <span class="n">T_row_extra</span> <span class="o">=</span> <span class="p">(</span><span class="n">T_row_read</span> <span class="o">+</span> <span class="n">T_row_shift</span><span class="o">*</span><span class="n">nrowbin</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e9</span>    
+    
+    <span class="k">return</span> <span class="n">T_readout</span></div>
 </pre></div>
 
           </div>

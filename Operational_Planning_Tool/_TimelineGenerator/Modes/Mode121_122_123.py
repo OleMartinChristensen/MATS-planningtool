@@ -16,10 +16,11 @@ from Operational_Planning_Tool import _Globals
 OPT_Config_File = importlib.import_module(_Globals.Config_File)
 Logger = logging.getLogger(OPT_Config_File.Logger_name())
 
+
 def date_calculator(Settings):
     """Simulates MATS FOV and stars.
     
-    Simuates the FOV and visible stars for one orbit then skips ahead for *Timeskip* amount of days (as defined in OPT_Config_File). 
+    Simuates MATS FOV and visible stars for one orbit then skips ahead for *Timeskip* amount of days (as defined in the *Configuration File*). 
     Saves the date, pointing RA and Dec, and the magnitude of the brightest visible star at each timestep.
     
     Arguments:
@@ -442,7 +443,7 @@ def date_select(Occupied_Timeline, date_magnitude_array, settings):
     Returns:
         (tuple): tuple containing:
             (:obj:`dict` of :obj:`list`): Occupied_Timeline (updated with the result from the scheduled Mode). \n
-            (str): Comment regarding the result of scheduling of the mode.
+            (str): Comment regarding the result of the scheduling of the mode.
     
     """
     

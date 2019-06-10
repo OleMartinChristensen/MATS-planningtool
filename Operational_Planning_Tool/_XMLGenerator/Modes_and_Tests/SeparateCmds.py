@@ -1,19 +1,18 @@
 # -*- coding: utf-8 -*-
-"""
+"""Calls for macros, which will generate commands in the XML-file. \n
+
 For PWRTOGGLE, PM, CCDBadColumn, CCDFlushBadColumns: Compares parameters given in the Science Mode Timeline to default parameters 
-given in OPT_Config_File and fills in any parameters missing in the Science Mode Timeline. \n
+given in the set *Configuration File* and fills in any parameters missing in the Science Mode Timeline. \n
 
 For the rest CMDS, each parameter must be given in the Science Mode Timeline. \n
 
-Then calls for macros, which will generate commands in the XML-file. \n
-
 Functions on the form "XML_generator_X", where the last X is any CMD:
     Arguments:
-        root =  XML tree structure. Main container object for the ElementTree API. lxml.etree.Element class \n
-        date = Starting date of the CMD. On the form of the ephem.Date class. \n
-        duration = The duration of the CMD [s] as an integer class. \n
-        relativeTime = The starting time [s] of the CMD with regard to the start of the timeline as an integer class \n
-        params = Dictionary containing the parameters of the CMD given in the Science_Mode_Timeline.
+        root (lxml.etree.Element):  XML tree structure. Main container object for the ElementTree API. lxml.etree.Element class \n
+        date (ephem.Date): Starting date of the CMD. On the form of the ephem.Date class. \n
+        duration (int): The duration of the CMD [s] as an integer class. \n
+        relativeTime (int): The starting time [s] of the CMD with regard to the start of the timeline as an integer class \n
+        params (dict): Dictionary containing the parameters of the CMD given in the Science_Mode_Timeline.
     
     Returns:
         None
@@ -101,8 +100,8 @@ def XML_generator_CCDFlushBadColumns(root, date, duration, relativeTime,
 def XML_generator_CCDBIAS(root, date, duration, relativeTime, 
                        params = {}):
     
-    #params_default = {'CCDSEL': 1, 'VGATE': 0, 'VSUBST': 0, 'VRD': 0, 'VOD': 0}
-    #params = params_checker(params, params_default)
+    params_default = OPT_Config_File.CCDFlushBadColumns_settings()
+    params = params_checker(params, params_default)
     
     
     Commands.TC_pafCCDBIAS(root, relativeTime, CCDSEL = params['CCDSEL'], VGATE = params['VGATE'], 

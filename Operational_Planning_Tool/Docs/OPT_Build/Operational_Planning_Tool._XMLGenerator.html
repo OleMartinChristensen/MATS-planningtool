@@ -73,7 +73,7 @@
 <p>Creates the base of the XML-tree and calculates initial values such as the
 start and end time and also duration of the timeline. Then goes through the
 supplied Science Mode Timeline List chronologically and calls for the corresponding function.</p>
-<p>Mode/Test/CMD specific settings given in the Science Mode Timeline List will overirde the use of the same settings stated in OPT_Config_File.</p>
+<p>Mode/Test/CMD specific settings given in the Science Mode Timeline List will overirde the use of the same settings stated in set <em>Configuration File</em>.</p>
 <dl class="function">
 <dt id="Operational_Planning_Tool._XMLGenerator.Core.XML_Initial_Basis_Creator">
 <code class="descclassname">Operational_Planning_Tool._XMLGenerator.Core.</code><code class="descname">XML_Initial_Basis_Creator</code><span class="sig-paren">(</span><em>timeline_start</em>, <em>timeline_duration</em>, <em>SCIMOD_Path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Core.html#XML_Initial_Basis_Creator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Core.XML_Initial_Basis_Creator" title="Permalink to this definition">¶</a></dt>
@@ -83,7 +83,7 @@ supplied Science Mode Timeline List chronologically and calls for the correspond
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>earliestStartingDate</strong> (<em>ephem.Date</em>) -- Earliest Starting date of the Timeline. On the form of the ephem.Date class.</p></li>
 <li><p><strong>latestStartingDate</strong> (<em>ephem.Date</em>) -- Latest Starting date of the Timeline. On the form of the ephem.Date class.</p></li>
-<li><p><strong>timeline_duration</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- Duration of the timeline [s] as a integer class.</p></li>
+<li><p><strong>timeline_duration</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- Duration of the timeline [s].</p></li>
 <li><p><strong>SCIMOD_Path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- The path as a string to the Science Mode Timeline .json file used in this run.</p></li>
 </ul>
 </dd>
@@ -94,9 +94,11 @@ supplied Science Mode Timeline List chronologically and calls for the correspond
 <dt id="Operational_Planning_Tool._XMLGenerator.Core.XML_generator">
 <code class="descclassname">Operational_Planning_Tool._XMLGenerator.Core.</code><code class="descname">XML_generator</code><span class="sig-paren">(</span><em>SCIMOD_Path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Core.html#XML_generator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Core.XML_generator" title="Permalink to this definition">¶</a></dt>
 <dd><p>The core function of the XML_gen program.</p>
+<p>Takes a Science Mode Timeline and converts it into Commands. If settings are stated for a scheduled mode;
+these will overwrite any values set in the set <em>Configuration File</em></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>SCIMOD_Path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- A string containing the path to the Science Mode Timeline json file.</p>
+<dd class="field-odd"><p><strong>SCIMOD_Path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- A string containing the path to the Science Mode Timeline .json file.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>None</p>
@@ -108,6 +110,7 @@ supplied Science Mode Timeline List chronologically and calls for the correspond
 <dt id="Operational_Planning_Tool._XMLGenerator.Core.XML_generator_select">
 <code class="descclassname">Operational_Planning_Tool._XMLGenerator.Core.</code><code class="descname">XML_generator_select</code><span class="sig-paren">(</span><em>mode</em>, <em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Core.html#XML_generator_select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Core.XML_generator_select" title="Permalink to this definition">¶</a></dt>
 <dd><p>Subfunction, Selects corresponding mode, test or CMD function in the package <em>Modes_and_Tests</em> from the variable <em>mode</em>.</p>
+<p>Calls for any function named <em>XML_generator_XXX</em> where XXX is the string in the input <em>name</em>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -148,6 +151,7 @@ supplied Science Mode Timeline List chronologically and calls for the correspond
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="Operational_Planning_Tool.html">Operational_Planning_Tool package</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="Operational_Planning_Tool.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="Operational_Planning_Tool._CheckConfigFile.html">Operational_Planning_Tool._CheckConfigFile package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Operational_Planning_Tool._DataPlotter.html">Operational_Planning_Tool._DataPlotter package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Operational_Planning_Tool._TimelineAnalyzer.html">Operational_Planning_Tool._TimelineAnalyzer package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Operational_Planning_Tool._TimelineGenerator.html">Operational_Planning_Tool._TimelineGenerator package</a></li>
@@ -160,7 +164,7 @@ supplied Science Mode Timeline List chronologically and calls for the correspond
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool.html#module-Operational_Planning_Tool._Config_File_Original">Operational_Planning_Tool._Config_File_Original module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool.html#module-Operational_Planning_Tool._ConfigFile">Operational_Planning_Tool._ConfigFile module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool.html#module-Operational_Planning_Tool._Globals">Operational_Planning_Tool._Globals module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool.html#module-Operational_Planning_Tool._Library">Operational_Planning_Tool._Library module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool.html#module-Operational_Planning_Tool._MATS_coordinates">Operational_Planning_Tool._MATS_coordinates module</a></li>

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Tue Jun  4 13:37:48 2019
+"""Created on Tue Jun  4 13:37:48 2019
+
+Checks values given in the set Configuration File.
 
 @author: David
 """
@@ -17,7 +18,7 @@ def CheckConfigFile():
     _Library.SetupLogger()
     
     Timeline_settings = OPT_Config_File.Timeline_settings()
-    Mode_1_2_3_4_settings = OPT_Config_File.Mode_1_2_3_4_settings()
+    Mode_1_2_3_4_5_6settings = OPT_Config_File.Mode_1_2_3_4_5_6settings()
     Mode100_settings = OPT_Config_File.Mode100_settings()
     Mode110_settings = OPT_Config_File.Mode110_settings()
     Mode120_settings = OPT_Config_File.Mode120_settings()
@@ -55,28 +56,37 @@ def CheckConfigFile():
     if not( 0 <= Timeline_settings['LP_pointing_altitude'] <= 300000 and type(Timeline_settings['LP_pointing_altitude']) == int ):
         Logger.error("Timeline_settings['LP_pointing_altitude']")
         raise ValueError
-    if not( 0 < Timeline_settings['Mode_1_2_3_4minDuration'] and type(Timeline_settings['Mode_1_2_3_4minDuration']) == int ):
+    if not( 0 < Timeline_settings['Mode_1_2_3_4_5_6minDuration'] and type(Timeline_settings['Mode_1_2_3_4_5_6minDuration']) == int ):
         Logger.error("Timeline_settings['Mode_1_2_3_4minDuration']")
         raise ValueError
     if not( type(Timeline_settings['yaw_correction']) == bool ):
         Logger.error("Timeline_settings['yaw_correction']")
-        raise ValueError
+        raise TypeError
+    if not( type(Timeline_settings['Custom_Mode']) == bool ):
+        Logger.error("Timeline_settings['Custom_Mode']")
+        raise TypeError
     if not( type(Timeline_settings['GPS_epoch']) == str ):
         Logger.error("Timeline_settings['GPS_epoch']")
-        raise ValueError
+        raise TypeError
     if not( 0 < Timeline_settings['leap_seconds'] and type(Timeline_settings['leap_seconds']) == int ):
         Logger.error("Timeline_settings['leap_seconds']")
         raise ValueError
+    if not( 0 <= abs(Timeline_settings['yaw_amplitude']) < 20 and (type(Timeline_settings['yaw_amplitude']) == int or type(Timeline_settings['yaw_amplitude']) == float) ):
+        Logger.error("Timeline_settings['yaw_amplitude']")
+        raise ValueError
+    if not( 0 <= abs(Timeline_settings['yaw_phase']) and (type(Timeline_settings['yaw_phase']) == int or type(Timeline_settings['yaw_phase']) == float) ):
+        Logger.error("Timeline_settings['yaw_phase']")
+        raise ValueError
         
     
-    for key in Mode_1_2_3_4_settings.keys():
+    for key in Mode_1_2_3_4_5_6settings.keys():
         
-        if not( Mode_1_2_3_4_settings[key] > 0 and type(Mode_1_2_3_4_settings[key]) == int ):
-            Logger.error('Mode_1_2_3_4_settings')
+        if not( Mode_1_2_3_4_5_6settings[key] > 0 and type(Mode_1_2_3_4_5_6settings[key]) == int ):
+            Logger.error('Mode_1_2_3_4_5_6settings')
             raise ValueError
         if( key == 'timestep'):
-            if not( Mode_1_2_3_4_settings[key] < 100):
-                Logger.error('Mode_1_2_3_4_settings["timestep"]')
+            if not( Mode_1_2_3_4_5_6settings[key] < 100):
+                Logger.error('Mode_1_2_3_4_5_6settings["timestep"]')
                 raise ValueError
                 
     
@@ -99,6 +109,13 @@ def CheckConfigFile():
     if not( type(Mode100_settings['Exp_Time_and_Interval_IR']) == tuple and type(Mode100_settings['Exp_Time_and_Interval_UV']) == tuple):
         Logger.error("Mode100_settings['Exp_Time_and_Interval_IR'] or Mode100_settings['Exp_Time_and_Interval_UV']")
         raise TypeError
+    numberOfAltitudes = int( abs(Mode100_settings['pointing_altitude_to'] - Mode100_settings['pointing_altitude_from']) / abs(Mode100_settings['pointing_altitude_interval']) +1  )
+    if not( Mode100_settings['Exp_Time_and_Interval_IR'][0] + numberOfAltitudes * Mode100_settings['ExpTime_step'] < Mode100_settings['pointing_duration']*1000):
+        Logger.error("Mode100_settings['pointing_duration']")
+        raise ValueError
+    if not( Mode100_settings['Exp_Time_and_Interval_UV'][0] + numberOfAltitudes * Mode100_settings['ExpTime_step'] < Mode100_settings['pointing_duration']*1000):
+        Logger.error("Mode100_settings['pointing_duration']")
+        raise ValueError
     
     
     
@@ -137,8 +154,12 @@ def CheckConfigFile():
         raise TypeError
     if not( type(Mode120_settings['Vmag']) == str):
         Logger.error("Mode120_settings['Vmag']")
-    if not( 0 < Mode120_settings['SnapshotTime'] < Mode120_settings['freeze_duration']-10 and type(Mode120_settings['SnapshotTime']) == int):
+    if not( 0 < Mode120_settings['SnapshotTime'] and type(Mode120_settings['SnapshotTime']) == int):
         Logger.error("Mode120_settings['SnapshotTime']")
+    if not( 0 <= Mode120_settings['SnapshotSpacing'] and type(Mode120_settings['SnapshotSpacing']) == int):
+        Logger.error("Mode120_settings['SnapshotSpacing']")
+    if not( Mode120_settings['SnapshotSpacing'] * 5 + Mode120_settings['SnapshotTime'] < Mode120_settings['freeze_duration'] ):
+        Logger.error("Mode120_settings['SnapshotSpacing'] * 5 + Mode120_settings['SnapshotTime'] > Mode120_settings['freeze_duration']")
     if not( Timeline_settings['LP_pointing_altitude'] < Mode120_settings['pointing_altitude'] and type(Mode120_settings['pointing_altitude']) == int):
         Logger.error("Mode120_settings['pointing_altitude']")
         
@@ -170,6 +191,10 @@ def CheckConfigFile():
     if not( 0 <= Mode121_122_123_settings['TimeSkip'] <= 3 and type(Mode121_122_123_settings['TimeSkip']) == int or type(Mode121_122_123_settings['TimeSkip']) == float ):
         Logger.error("Mode121_122_123_settings['TimeSkip']")
         raise ValueError
+    if not( 0 <= Mode121_122_123_settings['SnapshotSpacing'] and type(Mode121_122_123_settings['SnapshotSpacing']) == int):
+        Logger.error("Mode121_122_123_settings['SnapshotSpacing']")
+    if not( Mode121_122_123_settings['SnapshotSpacing'] * 5 + Mode121_122_123_settings['SnapshotTime'] < Mode121_122_123_settings['freeze_duration'] ):
+        Logger.error("Mode121_122_123_settings['SnapshotSpacing'] * 5 + Mode121_122_123_settings['SnapshotTime'] > Mode121_122_123_settings['freeze_duration']")
     
     
     
@@ -183,12 +208,18 @@ def CheckConfigFile():
         Logger.error("Mode123_settings['start_date']")
         raise TypeError
         
-    if not( type(Mode122_settings['Exp_Time_and_Interval_IR']) == tuple and type(Mode122_settings['Exp_Time_and_Interval_UV']) == tuple):
-        Logger.error("Mode122_settings['Exp_Time_and_Interval_IR'] or Mode122_settings['Exp_Time_and_Interval_UV']")
-        raise TypeError
-    if not( type(Mode123_settings['Exp_Time_and_Interval_IR']) == tuple and type(Mode123_settings['Exp_Time_and_Interval_UV']) == tuple):
-        Logger.error("Mode123_settings['Exp_Time_and_Interval_IR'] or Mode123_settings['Exp_Time_and_Interval_UV']")
-        raise TypeError
+    if not( 0 <= Mode122_settings['Exp_Time_IR'] and type(Mode122_settings['Exp_Time_IR']) == int):
+        Logger.error("Mode122_settings['Exp_Time_IR']")
+        raise ValueError
+    if not( 0 <= Mode122_settings['Exp_Time_UV'] and type(Mode122_settings['Exp_Time_UV']) == int):
+        Logger.error("Mode122_settings['Exp_Time_UV']")
+        raise ValueError
+    if not( 0 <= Mode123_settings['Exp_Time_IR'] and type(Mode123_settings['Exp_Time_IR']) == int):
+        Logger.error("Mode123_settings['Exp_Time_IR']")
+        raise ValueError
+    if not( 0 <= Mode123_settings['Exp_Time_UV'] and type(Mode123_settings['Exp_Time_UV']) == int):
+        Logger.error("Mode123_settings['Exp_Time_UV']")
+        raise ValueError
     
     
     
@@ -216,7 +247,42 @@ def CheckConfigFile():
         Logger.error("Mode124_settings['SnapshotTime']")
     if not( Timeline_settings['LP_pointing_altitude'] < Mode124_settings['pointing_altitude'] and type(Mode124_settings['pointing_altitude']) == int):
         Logger.error("Mode124_settings['pointing_altitude']")
+    if not( 0 <= Mode124_settings['SnapshotSpacing'] and type(Mode124_settings['SnapshotSpacing']) == int):
+        Logger.error("Mode124_settings['SnapshotSpacing']")
+    if not( Mode124_settings['SnapshotSpacing'] * 5 + Mode124_settings['SnapshotTime'] < Mode124_settings['freeze_duration'] ):
+        Logger.error("Mode124_settings['SnapshotSpacing'] * 5 + Mode124_settings['SnapshotTime'] > Mode124_settings['freeze_duration']")
+    
         
+    
+    
+    
+    
+    if not( Timeline_settings['pointing_stabilization'] < Mode130_settings['mode_duration'] and type(Mode130_settings['mode_duration']) == int):
+        Logger.error("Mode130_settings['mode_duration']")
+        raise TypeError
+    if not( Timeline_settings['pointing_stabilization'] < Mode131_settings['mode_duration'] and type(Mode131_settings['mode_duration']) == int):
+        Logger.error("Mode131_settings['mode_duration']")
+        raise TypeError
+    
+    if not( type(Mode130_settings['start_date']) == str):
+        Logger.error("Mode130_settings['start_date']")
+        raise TypeError
+    if not( type(Mode131_settings['start_date']) == str):
+        Logger.error("Mode131_settings['start_date']")
+        raise TypeError
+    if not( type(Mode132_settings['start_date']) == str):
+        Logger.error("Mode132_settings['start_date']")
+        raise TypeError
+    if not( type(Mode133_settings['start_date']) == str):
+        Logger.error("Mode133_settings['start_date']")
+        raise TypeError
+        
+    if not( type(Mode132_settings['Exp_Times_and_Intervals_IR']) == list and type(Mode132_settings['Exp_Times_and_Intervals_UV']) == list):
+        Logger.error("Mode132_settings['Exp_Times_and_Intervals_IR'] or Mode132_settings['Exp_Times_and_Intervals_UV']")
+        raise TypeError
+    if not( type(Mode133_settings['Exp_Times_and_Intervals_IR']) == list and type(Mode133_settings['Exp_Times_and_Intervals_UV']) == list):
+        Logger.error("Mode133_settings['Exp_Times_and_Intervals_IR'] or Mode133_settings['Exp_Times_and_Intervals_UV']")
+        raise TypeError
     
     
     
