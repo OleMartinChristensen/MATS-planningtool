@@ -43,7 +43,7 @@ def Mode100(Occupied_Timeline):
 
 
 def date_calculator():
-    """Subfunction, Returns the initially requested date (defined in OPT_Config_File.py) for the Mode to be scheduled.
+    """Subfunction, Returns the initially requested date for the Mode to be scheduled.
     
     Returns:
         (ephem.Date): initial_date
@@ -92,16 +92,6 @@ def date_select(Occupied_Timeline, initial_date):
     
     endDate = ephem.Date(initial_date + ephem.second*(OPT_Config_File.Timeline_settings()['mode_separation'] + duration) )
     
-    '''
-    try:
-        Logger.info('Mode specific mode_duration used as initial date')
-        endDate = ephem.Date(initial_date + ephem.second*OPT_Config_File.Timeline_settings()['mode_separation'] +
-                             ephem.second*OPT_Config_File.Mode100_settings()['mode_duration'])
-    except:
-        Logger.info('Timeline mode_duration used as initial date')
-        endDate = ephem.Date(initial_date + ephem.second*OPT_Config_File.Timeline_settings()['mode_separation'] +
-                             ephem.second*OPT_Config_File.Timeline_settings()['mode_duration'])
-    '''
     
     ############### Start of availability schedueler ##########################
     

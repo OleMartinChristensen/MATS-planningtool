@@ -142,7 +142,7 @@ def Timeline_settings():
     return timeline_settings
 
 
-def Mode_1_2_3_4_5_6settings():
+def Mode_1_2_3_4settings():
     '''Contain settings related to Mode1-6 as a dict.
     
     Keys:
@@ -157,22 +157,20 @@ def Mode_1_2_3_4_5_6settings():
     settings = {'lat': 45, 'log_timestep': 800, 'timestep': 5}
     return settings
 
-"""
-def Mode_5_6_settings():
+
+def Mode_5_6settings():
     '''Contain settings related to Mode5-6 as a dict.
     
     Keys:
-        'lat': Sets in degrees the latitude (+ and -) that the LP crosses that causes the UV exposure to swith on/off. (int) \n
-        'log_timestep': Sets the frequency of data being logged [s]. (int) \n
-        'timestep': Sets the timestep [s] of the XML generator simulation of Mode1-4. (int)
+        'pointing_altitude': Sets in meters the altitude of the pointing command. (int) 
         
     Returns:
         (dict): settings
     
     '''
-    settings = {'lat': 45, 'log_timestep': 800, 'timestep': 5, 'UV_Toggle': True}
+    settings = {'pointing_altitude': 92500}
     return settings
-"""
+
 
 
 def Mode100_settings():

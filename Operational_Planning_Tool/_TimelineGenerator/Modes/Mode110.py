@@ -46,7 +46,7 @@ def Mode110(Occupied_Timeline):
 
 
 def date_calculator():
-    """Subfunction, Returns the initially requested date (defined in OPT_Config_File.py) for the Mode to be scheduled.
+    """Subfunction, Returns the initially requested date for the Mode to be scheduled.
     
     Returns:
         (ephem.Date): initial_date

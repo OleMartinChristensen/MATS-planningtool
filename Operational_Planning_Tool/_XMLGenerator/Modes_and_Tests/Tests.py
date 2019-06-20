@@ -78,8 +78,8 @@ def XML_generator_Limb_functional_test(root, date, duration, relativeTime, param
                     lat_LP = zeros((duration,1))
                     sun_angle = zeros((duration,1))
                     altitude_MATS = zeros((duration,1))
-                    g_ra_MATS = zeros((duration,1))
-                    g_dec_MATS = zeros((duration,1))
+                    a_ra_MATS = zeros((duration,1))
+                    a_dec_MATS = zeros((duration,1))
                     x_MATS = zeros((duration,1))
                     y_MATS = zeros((duration,1))
                     z_MATS = zeros((duration,1))
@@ -125,12 +125,12 @@ def XML_generator_Limb_functional_test(root, date, duration, relativeTime, param
                         MATS.compute(current_time)
                         
                         
-                        (lat_MATS[t],altitude_MATS[t],g_ra_MATS[t],g_dec_MATS[t])= (
-                        MATS.sublat,MATS.elevation/1000,MATS.g_ra,MATS.g_dec)
+                        (lat_MATS[t],altitude_MATS[t],a_ra_MATS[t],a_dec_MATS[t])= (
+                        MATS.sublat,MATS.elevation/1000,MATS.a_ra,MATS.a_dec)
                         
-                        z_MATS[t] = sin(g_dec_MATS[t])*(altitude_MATS[t]+R_mean)
-                        x_MATS[t] = cos(g_dec_MATS[t])*(altitude_MATS[t]+R_mean)* cos(g_ra_MATS[t])
-                        y_MATS[t] = cos(g_dec_MATS[t])*(altitude_MATS[t]+R_mean)* sin(g_ra_MATS[t])
+                        z_MATS[t] = sin(a_dec_MATS[t])*(altitude_MATS[t]+R_mean)
+                        x_MATS[t] = cos(a_dec_MATS[t])*(altitude_MATS[t]+R_mean)* cos(a_ra_MATS[t])
+                        y_MATS[t] = cos(a_dec_MATS[t])*(altitude_MATS[t]+R_mean)* sin(a_ra_MATS[t])
                        
                         r_MATS[t,0:3] = [x_MATS[t], y_MATS[t], z_MATS[t]]
                         
@@ -316,8 +316,8 @@ def XML_generator_Nadir_functional_test(root, date, duration, relativeTime, para
                 lat_MATS = zeros((duration,1))
                 sun_angle = zeros((duration,1))
                 altitude_MATS = zeros((duration,1))
-                g_ra_MATS = zeros((duration,1))
-                g_dec_MATS = zeros((duration,1))
+                a_ra_MATS = zeros((duration,1))
+                a_dec_MATS = zeros((duration,1))
                 x_MATS = zeros((duration,1))
                 y_MATS = zeros((duration,1))
                 z_MATS = zeros((duration,1))
@@ -352,12 +352,12 @@ def XML_generator_Nadir_functional_test(root, date, duration, relativeTime, para
                     
                     MATS.compute(current_time)
                     
-                    (lat_MATS[t],altitude_MATS[t],g_ra_MATS[t],g_dec_MATS[t])= (
-                    MATS.sublat,MATS.elevation/1000,MATS.g_ra,MATS.g_dec)
+                    (lat_MATS[t],altitude_MATS[t],a_ra_MATS[t],a_dec_MATS[t])= (
+                    MATS.sublat,MATS.elevation/1000,MATS.a_ra,MATS.a_dec)
                     
-                    z_MATS[t] = sin(g_dec_MATS[t])*(altitude_MATS[t]+R_mean)
-                    x_MATS[t] = cos(g_dec_MATS[t])*(altitude_MATS[t]+R_mean)* cos(g_ra_MATS[t])
-                    y_MATS[t] = cos(g_dec_MATS[t])*(altitude_MATS[t]+R_mean)* sin(g_ra_MATS[t])
+                    z_MATS[t] = sin(a_dec_MATS[t])*(altitude_MATS[t]+R_mean)
+                    x_MATS[t] = cos(a_dec_MATS[t])*(altitude_MATS[t]+R_mean)* cos(a_ra_MATS[t])
+                    y_MATS[t] = cos(a_dec_MATS[t])*(altitude_MATS[t]+R_mean)* sin(a_ra_MATS[t])
                    
                     r_MATS[t,0:3] = [x_MATS[t], y_MATS[t], z_MATS[t]]
                     

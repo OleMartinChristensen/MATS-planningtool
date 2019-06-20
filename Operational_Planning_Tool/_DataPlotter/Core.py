@@ -7,7 +7,7 @@ Created on Thu Apr 18 13:51:48 2019
 
 from scipy.spatial.transform import Rotation as R
 #from numpy import sin, pi, cos, cross, array, arccos, arctan, dot
-from pylab import sin, pi, cos, cross, array, arccos, arctan, dot, norm, transpose, zeros, sqrt, floor, figure, plot, plot_date, datestr2num, xlabel, ylabel, title, legend
+from pylab import sin, pi, cos, cross, array, arccos, arctan, dot, tan, norm, transpose, zeros, sqrt, floor, figure, plot, plot_date, datestr2num, xlabel, ylabel, title, legend
 import ephem, logging, csv, os, sys, importlib
 import pymap3d as pm3d
 
@@ -17,6 +17,21 @@ import pymap3d as pm3d
 from Operational_Planning_Tool import _Library, _MATS_coordinates, _Globals
 
 OPT_Config_File = importlib.import_module(_Globals.Config_File)
+
+def geocentric_2_geodetic(lat_c, alt):
+    """Estimates geodetic latitude from geocentric latitude and altitude
+    """
+    
+    R_polar = 6356.752314245
+    R_eq = 6378.137
+    
+    e = sqrt(1-R_polar**2/R_eq**2)
+    
+    R = R_eq/sqrt(1-e**2*sin(lat_c/180*pi)**2)
+    
+    lat_d = arctan( (1-e**2 * R/(R+alt))**(-1) * tan(lat_c))
+    
+    return lat_d
 
 
 def Data_Plotter():
@@ -56,8 +71,8 @@ def Data_Plotter():
     lat_MATS = zeros((timesteps,1))
     long_MATS = zeros((timesteps,1))
     alt_MATS = zeros((timesteps,1))
-    g_ra_MATS = zeros((timesteps,1))
-    g_dec_MATS = zeros((timesteps,1))
+    a_ra_MATS = zeros((timesteps,1))
+    a_dec_MATS = zeros((timesteps,1))
     x_MATS = zeros((timesteps,1))
     y_MATS = zeros((timesteps,1))
     z_MATS = zeros((timesteps,1))
@@ -100,31 +115,33 @@ def Data_Plotter():
     
     
     LP_altitude = OPT_Config_File.Timeline_settings()['LP_pointing_altitude']/1000  #Altitude of LP at which MATS center of FOV is looking [km]
-    LP_altitude = 227
+    #LP_altitude = 227
     
     TLE1 = OPT_Config_File.getTLE()[0]
     TLE2 = OPT_Config_File.getTLE()[1]
         
     
     MATS = ephem.readtle('MATS',TLE1,TLE2)
-    current_time[0] = date
+    #current_time[0] = date
     
     for t in range(timesteps):
         
-        MATS.compute(current_time[t])
-        try:
-            current_time[t+1] = ephem.Date(current_time[t]+ephem.second*timestep)
-        except IndexError:
-            pass
         
-        (lat_MATS[t],long_MATS[t],alt_MATS[t],g_ra_MATS[t],g_dec_MATS[t])= (
-                MATS.sublat,MATS.sublong,MATS.elevation/1000,MATS.g_ra,MATS.g_dec)
         
+        current_time[t] = ephem.Date(date+ephem.second*timestep*t)
+        
+        MATS.compute(current_time[t], epoch = '2000')
+        
+        (lat_MATS[t],long_MATS[t],alt_MATS[t],a_ra_MATS[t],a_dec_MATS[t])= (
+                MATS.sublat, MATS.sublong, MATS.elevation/1000, MATS.a_ra, MATS.a_dec)
+        
+        ###########################################################
+        #First iteration of determining MATS distance from center of Earth
         R_earth = _Library.lat_2_R(lat_MATS[t]) #WGS84 radius from latitude of MATS
         
-        z_MATS[t] = sin(g_dec_MATS[t])*(alt_MATS[t]+R_earth)
-        x_MATS[t] = cos(g_dec_MATS[t])*(alt_MATS[t]+R_earth)* cos(g_ra_MATS[t])
-        y_MATS[t] = cos(g_dec_MATS[t])*(alt_MATS[t]+R_earth)* sin(g_ra_MATS[t])
+        z_MATS[t] = sin(a_dec_MATS[t])*(alt_MATS[t]+R_earth)
+        x_MATS[t] = cos(a_dec_MATS[t])*(alt_MATS[t]+R_earth)* cos(a_ra_MATS[t])
+        y_MATS[t] = cos(a_dec_MATS[t])*(alt_MATS[t]+R_earth)* sin(a_ra_MATS[t])
         r_MATS[t,0:3] = [x_MATS[t], y_MATS[t], z_MATS[t]]
         
         r_MATS_unit_vector[t,0:3] = r_MATS[t,0:3] / norm(r_MATS[t,0:3])
@@ -132,9 +149,46 @@ def Data_Plotter():
         r_MATS_ECEF[t,0], r_MATS_ECEF[t,1], r_MATS_ECEF[t,2] = pm3d.eci2ecef(
                 r_MATS[t,0], r_MATS[t,1], r_MATS[t,2], ephem.Date(current_time[t][0]).datetime())
         
+        lat_MATS[t], long_MATS[t], alt_MATS[t]  = pm3d.ecef2geodetic(r_MATS_ECEF[t,0]*1000, r_MATS_ECEF[t,1]*1000, r_MATS_ECEF[t,2]*1000)
+        lat_MATS[t] = lat_MATS[t] / 180*pi
+        long_MATS[t] = long_MATS[t] / 180*pi
+        alt_MATS[t] = alt_MATS[t] / 1000
+        ##############################################################
+        
+        #! 1!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        a_ra_MATS[t] = a_ra_MATS[t] - 0.0001087358082449974
+        #######!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!#####
+        
+        
+        ###########################################################
+        #Second iteration of determining MATS distance from center of Earth
+        R_earth = _Library.lat_2_R(lat_MATS[t]) #WGS84 radius from latitude of MATS
+        
+        z_MATS[t] = sin(a_dec_MATS[t])*(alt_MATS[t]+R_earth)
+        x_MATS[t] = cos(a_dec_MATS[t])*(alt_MATS[t]+R_earth)* cos(a_ra_MATS[t])
+        y_MATS[t] = cos(a_dec_MATS[t])*(alt_MATS[t]+R_earth)* sin(a_ra_MATS[t])
+        r_MATS[t,0:3] = [x_MATS[t], y_MATS[t], z_MATS[t]]
+        
+        r_MATS_unit_vector[t,0:3] = r_MATS[t,0:3] / norm(r_MATS[t,0:3])
+        
+        r_MATS_ECEF[t,0], r_MATS_ECEF[t,1], r_MATS_ECEF[t,2] = pm3d.eci2ecef(
+                r_MATS[t,0], r_MATS[t,1], r_MATS[t,2], ephem.Date(current_time[t][0]).datetime())
+        
+        lat_MATS[t], long_MATS[t], alt_MATS[t]  = pm3d.ecef2geodetic(r_MATS_ECEF[t,0]*1000, r_MATS_ECEF[t,1]*1000, r_MATS_ECEF[t,2]*1000)
+        lat_MATS[t] = lat_MATS[t] / 180*pi
+        long_MATS[t] = long_MATS[t] / 180*pi
+        alt_MATS[t] = alt_MATS[t] / 1000
+        ################################################################
+        
+        
+        
+        
+        ################################################################
+        
+        
         #Initial Estimated pitch or elevation angle for MATS pointing using R_mean
         if(t == 0):
-            orbangle_between_LP_MATS_array[t]= arccos((R_mean+LP_altitude/1000)/(R_mean+alt_MATS[t]))/pi*180
+            orbangle_between_LP_MATS_array[t]= arccos((R_mean+LP_altitude)/(R_mean+alt_MATS[t]))/pi*180
             orbangle_between_LP_MATS = orbangle_between_LP_MATS_array[t][0]
             
             
@@ -143,7 +197,7 @@ def Data_Plotter():
                 
         if(t != 0):
             
-            # More accurate estimation of the Earths radius below LP
+            # Estimation of the Earths radius below LP
             if( abs(lat_MATS[t])-abs(lat_MATS[t-1]) > 0 ): #Moving towards poles meaning LP is equatorwards compared to MATS
                 abs_lat_LP[t] = abs(lat_MATS[t])-orbangle_between_LP_MATS/180*pi #absolute value of estimated latitude of LP in radians
                 R_LP = _Library.lat_2_R(abs_lat_LP[t][0]) #Estimated WGS84 radius of LP from latitude
@@ -158,6 +212,12 @@ def Data_Plotter():
             orbangle_between_LP_MATS = orbangle_between_LP_MATS_array[t][0]
             
             pitch_MATS[t] = orbangle_between_LP_MATS + 90
+            
+            #####################!!!!!!!!!!!!!!!!!!!!!!!!!
+            ############!!!!!!!!!!!!!!!!!!!!!!!!
+            #pitch_MATS[t] = 21.66+ 90
+            #####################!!!!!!!!!!!!!!!!!!!!!!!!!
+            ############!!!!!!!!!!!!!!!!!!!!!!!!
             
             ############# Calculations of orbital and pointing vectors ############
             "Vector normal to the orbital plane of MATS"
@@ -179,7 +239,7 @@ def Data_Plotter():
                 
                 
             elif( yaw_correction == False):
-                yaw_offset_angle[t] = 4
+                yaw_offset_angle[t] = 4.02
             
             "Rotate 'vector to MATS', to represent pointing direction, includes vertical offset change (Parallax is negligable)"
             rot_mat = _Library.rot_arbit(pitch_MATS[t][0]/180*pi, normal_orbit[t,0:3])
@@ -210,9 +270,17 @@ def Data_Plotter():
     
     
     "Pre-allocate space"
+    R_EARTH = zeros((timesteps,1))
+    
+    lat_MATS_OHB_FIXED = zeros((timesteps,1))
+    long_MATS_OHB_FIXED = zeros((timesteps,1))
+    alt_MATS_OHB_FIXED = zeros((timesteps,1))
     lat_MATS_OHB = zeros((timesteps,1))
     long_MATS_OHB = zeros((timesteps,1))
     alt_MATS_OHB = zeros((timesteps,1))
+    lat_MATS_STK = zeros((timesteps,1))
+    long_MATS_STK = zeros((timesteps,1))
+    alt_MATS_STK = zeros((timesteps,1))
     
     x_MATS_OHB = zeros((timesteps,1))
     y_MATS_OHB = zeros((timesteps,1))
@@ -222,9 +290,10 @@ def Data_Plotter():
     Vely_MATS_OHB = zeros((timesteps,1))
     Velz_MATS_OHB = zeros((timesteps,1))
     Vel_MATS_OHB = zeros((timesteps,3))
-    x_MATS_OHB_ECEF = zeros((timesteps,1))
-    y_MATS_OHB_ECEF = zeros((timesteps,1))
-    z_MATS_OHB_ECEF = zeros((timesteps,1))
+    x_MATS_OHB_FIXED = zeros((timesteps,1))
+    y_MATS_OHB_FIXED = zeros((timesteps,1))
+    z_MATS_OHB_FIXED = zeros((timesteps,1))
+    r_MATS_OHB_FIXED = zeros((timesteps,3))
     r_MATS_OHB_ECEF = zeros((timesteps,3))
     
     LP_ECEF_OHB = zeros((timesteps,3))
@@ -287,12 +356,12 @@ def Data_Plotter():
                 Vel_MATS_OHB[line_count-1,1] = row[4]
                 Vel_MATS_OHB[line_count-1,2] = row[5]
                 
-                x_MATS_OHB_ECEF[line_count-1] = row[6]
-                y_MATS_OHB_ECEF[line_count-1] = row[7]
-                z_MATS_OHB_ECEF[line_count-1] = row[8]
-                r_MATS_OHB_ECEF[line_count-1,0] = row[6]
-                r_MATS_OHB_ECEF[line_count-1,1] = row[7]
-                r_MATS_OHB_ECEF[line_count-1,2] = row[8]
+                x_MATS_OHB_FIXED[line_count-1] = row[6]
+                y_MATS_OHB_FIXED[line_count-1] = row[7]
+                z_MATS_OHB_FIXED[line_count-1] = row[8]
+                r_MATS_OHB_FIXED[line_count-1,0] = row[6]
+                r_MATS_OHB_FIXED[line_count-1,1] = row[7]
+                r_MATS_OHB_FIXED[line_count-1,2] = row[8]
                 
                 line_count += 1
             
@@ -459,18 +528,28 @@ def Data_Plotter():
         
         
         
-        LP_ECEF_OHB[t,0], LP_ECEF_OHB[t,1], LP_ECEF_OHB[t,2] = _MATS_coordinates.ecef2tanpoint(r_MATS_OHB_ECEF[t][0]*1000, r_MATS_OHB_ECEF[t][1]*1000, r_MATS_OHB_ECEF[t][2]*1000, 
-                                       optical_axis_OHB_ECEF[t,0], optical_axis_OHB_ECEF[t,1], optical_axis_OHB_ECEF[t,2])
-        
-        lat_LP_OHB[t], long_LP_OHB[t], alt_LP_OHB[t]  = pm3d.ecef2geodetic(LP_ECEF_OHB[t,0], LP_ECEF_OHB[t,1], LP_ECEF_OHB[t,2])
+        lat_MATS_OHB_FIXED[t], long_MATS_OHB_FIXED[t], alt_MATS_OHB_FIXED[t]  = pm3d.ecef2geodetic(r_MATS_OHB_FIXED[t,0]*1000, r_MATS_OHB_FIXED[t,1]*1000, r_MATS_OHB_FIXED[t,2]*1000, deg = True)
         
         
-        
+        ######################################################################
         
         r_MATS_OHB_ECEF[t,0], r_MATS_OHB_ECEF[t,1], r_MATS_OHB_ECEF[t,2] = pm3d.eci2ecef(
                 r_MATS_OHB[t,0]*1000, r_MATS_OHB[t,1]*1000, r_MATS_OHB[t,2]*1000, ephem.Date(current_time[t][0]).datetime())
         
         lat_MATS_OHB[t], long_MATS_OHB[t], alt_MATS_OHB[t]  = pm3d.ecef2geodetic(r_MATS_OHB_ECEF[t,0], r_MATS_OHB_ECEF[t,1], r_MATS_OHB_ECEF[t,2], deg = True)
+        
+        LP_ECEF_OHB[t,0], LP_ECEF_OHB[t,1], LP_ECEF_OHB[t,2] = _MATS_coordinates.ecef2tanpoint(r_MATS_OHB_ECEF[t][0], r_MATS_OHB_ECEF[t][1], r_MATS_OHB_ECEF[t][2], 
+                                       optical_axis_OHB_ECEF[t,0], optical_axis_OHB_ECEF[t,1], optical_axis_OHB_ECEF[t,2])
+        
+        lat_LP_OHB[t], long_LP_OHB[t], alt_LP_OHB[t]  = pm3d.ecef2geodetic(LP_ECEF_OHB[t,0], LP_ECEF_OHB[t,1], LP_ECEF_OHB[t,2])
+        
+        
+        #R_EARTH[t] = norm(r_MATS_OHB[t,:]*1000)-alt_MATS_OHB[t]
+        
+        
+        
+        
+        
         
         
     ########################## Plotter ###########################################
@@ -487,7 +566,8 @@ def Data_Plotter():
     #ax.scatter(r_MATS[1:,0], r_MATS[1:,1], r_MATS[1:,2])
     ax.scatter(r_MATS_OHB_ECEF[1:100,0], r_MATS_OHB_ECEF[1:100,1], r_MATS_OHB_ECEF[1:100,2])
     ax.scatter(LP_ECEF[1:100,0], LP_ECEF[1:100,1], LP_ECEF[1:100,2])
-    
+    ax.scatter(r_MATS_ECEF[1:100,0]*1000, r_MATS_ECEF[1:100,1]*1000, r_MATS_ECEF[1:100,2]*1000)
+    #ax.scatter(LP_ECEF[1:100,0], LP_ECEF[1:100,1], LP_ECEF[1:100,2])
     
     figure()
     plot_date(current_time_MPL[1:],yaw_offset_angle[1:], markersize = 1, label = 'Predicted')
@@ -510,25 +590,76 @@ def Data_Plotter():
     ylabel('Roll in degrees [intrinsic z-axis SLOF]')
     legend()
     
+    ###################################
+    
+    figure()
+    plot_date(current_time_MPL[1:],lat_MATS[1:]/pi*180, markersize = 1, label = 'Predicted')
+    plot_date(current_time_MPL[1:], lat_MATS_OHB_FIXED[1:], markersize = 1, label = 'OHB-Data_Fixed')
+    xlabel('Date')
+    ylabel('Geodetic Latitude of MATS (Fixed) in degrees')
+    legend()
+    
+    figure()
+    plot_date(current_time_MPL[1:],abs(lat_MATS_OHB_FIXED[1:]-lat_MATS[1:]/pi*180), markersize = 1, label = 'Abs Error')
+    xlabel('Date')
+    ylabel('Absolute error in Latitude of MATS (Fixed) in degrees')
+    legend()
+    
+    figure()
+    plot_date(current_time_MPL[1:],long_MATS[1:]/pi*180, markersize = 1, label = 'Predicted')
+    plot_date(current_time_MPL[1:], long_MATS_OHB_FIXED[1:], markersize = 1, label = 'OHB-Data_Fixed')
+    xlabel('Date')
+    ylabel('Longitude of MATS (Fixed) in degrees')
+    legend()
+    
+    figure()
+    plot_date(current_time_MPL[1:],abs(long_MATS_OHB_FIXED[1:]-long_MATS[1:]/pi*180), markersize = 1, label = 'Abs Error')
+    xlabel('Date')
+    ylabel('Absolute error in Longitude of MATS (Fixed) in degrees')
+    legend()
+    
+    ####################################
+    
+    #############################################
     figure()
     plot_date(current_time_MPL[1:],lat_MATS[1:]/pi*180, markersize = 1, label = 'Predicted')
     plot_date(current_time_MPL[1:], lat_MATS_OHB[1:], markersize = 1, label = 'OHB-Data')
     xlabel('Date')
-    ylabel('Latitude of MATS in degrees')
+    ylabel('Geodetic Latitude of MATS in degrees [WGS84 (prob)]')
+    legend()
+    
+    figure()
+    plot_date(current_time_MPL[1:],abs(lat_MATS_OHB[1:]-lat_MATS[1:]/pi*180), markersize = 1, label = 'Abs Error')
+    xlabel('Date')
+    ylabel('Absolute error in Latitude of MATS in degrees')
     legend()
     
     figure()
     plot_date(current_time_MPL[1:],long_MATS[1:]/pi*180, markersize = 1, label = 'Predicted')
     plot_date(current_time_MPL[1:], long_MATS_OHB[1:], markersize = 1, label = 'OHB-Data')
     xlabel('Date')
-    ylabel('Longitude of MATS in degrees')
+    ylabel('Longitude of MATS in degrees [WGS84 (prob)]')
     legend()
     
     figure()
+    plot_date(current_time_MPL[1:],abs(long_MATS_OHB[1:]-long_MATS[1:]/pi*180), markersize = 1, label = 'Abs Error')
+    xlabel('Date')
+    ylabel('Absolute error in Longitude of MATS in degrees')
+    legend()
+    ##############################################
+    
+    figure()
     plot_date(current_time_MPL[1:],alt_MATS[1:] *1000, markersize = 1, label = 'Predicted')
-    plot_date(current_time_MPL[1:],alt_MATS_OHB[1:], markersize = 1, label = 'OHB-Data')
+    plot_date(current_time_MPL[1:],alt_MATS_OHB_FIXED[1:], markersize = 1, label = 'OHB-Data')
+    plot_date(current_time_MPL[1:],alt_MATS_OHB[1:], markersize = 1, label = 'OHB-Data_trans')
     xlabel('Date')
     ylabel('Altitude of MATS in degrees')
+    legend()
+    
+    figure()
+    plot_date(current_time_MPL[1:],a_ra_MATS[1:]/pi *180, markersize = 1, label = 'Predicted')
+    xlabel('Date')
+    ylabel('a_ra_MATS of MATS in degrees')
     legend()
     
     figure()
@@ -539,10 +670,22 @@ def Data_Plotter():
     legend()
     
     figure()
+    plot_date(current_time_MPL[1:],abs(lat_LP_OHB[1:]-lat_LP[1:]), markersize = 1, label = 'Abs Error')
+    xlabel('Date')
+    ylabel('Absolute error in Latitude of LP in degrees [J2000]')
+    legend()
+    
+    figure()
     plot_date(current_time_MPL[1:],long_LP[1:], markersize = 1, label = 'Predicted')
     plot_date(current_time_MPL[1:],long_LP_OHB[1:], markersize = 1, label = 'OHB-Data')
     xlabel('Date')
     ylabel('Longitude of LP in degrees')
+    legend()
+    
+    figure()
+    plot_date(current_time_MPL[1:],abs(long_LP_OHB[1:]-long_LP[1:]), markersize = 1, label = 'Abs Error')
+    xlabel('Date')
+    ylabel('Absolute error in Longitude of LP in degrees [J2000]')
     legend()
     
     figure()
@@ -564,7 +707,19 @@ def Data_Plotter():
     figure()
     plot_date(current_time_MPL[1:],abs(Ra_OHB[1:]-Ra[1:]), markersize = 1, label = 'Abs Error')
     xlabel('Date')
-    ylabel('Absolute error in Right Ascension in degrees [J2000] (Parallax assumed negligable)')
+    ylabel('Absolute error in Right Ascension in degrees (OHB vs predicted) [J2000] (Parallax assumed negligable)')
+    legend()
+    
+    figure()
+    plot_date(current_time_MPL[1:],abs(Ra_STK[1:]-Ra[1:]), markersize = 1, label = 'Abs Error')
+    xlabel('Date')
+    ylabel('Absolute error in Right Ascension in degrees, (STK vs predicted) [J2000] (Parallax assumed negligable)')
+    legend()
+    
+    figure()
+    plot_date(current_time_MPL[1:],abs(Ra_STK[1:]-Ra_OHB[1:]), markersize = 1, label = 'Abs Error')
+    xlabel('Date')
+    ylabel('Absolute error in Right Ascension in degrees, (STK vs OHB) [J2000] (Parallax assumed negligable)')
     legend()
     
     figure()
@@ -578,11 +733,23 @@ def Data_Plotter():
     figure()
     plot_date(current_time_MPL[1:],abs(Dec_OHB[1:]-Dec[1:]), markersize = 1, label = 'Abs Error')
     xlabel('Date')
-    ylabel('Absolute error in Declination in degrees [J2000] (Parallax assumed negligable)')
+    ylabel('Absolute error in Declination in degrees (OHB vs predicted) [J2000] (Parallax assumed negligable)')
     legend()
     
     figure()
-    plot_date(current_time_MPL[1:], lat_MATS[1:]/pi*180-lat_LP[1:])
-    plot_date(current_time_MPL[1:], pitch_MATS[1:]-90)
+    plot_date(current_time_MPL[1:],abs(Dec_STK[1:]-Dec[1:]), markersize = 1, label = 'Abs Error')
+    xlabel('Date')
+    ylabel('Absolute error in Declination in degrees (STK vs predicted) [J2000] (Parallax assumed negligable)')
+    legend()
+    
+    figure()
+    plot_date(current_time_MPL[1:],abs(Dec_STK[1:]-Dec_OHB[1:]), markersize = 1, label = 'Abs Error')
+    xlabel('Date')
+    ylabel('Absolute error in Declination in degrees (STK vs OHB) [J2000] (Parallax assumed negligable)')
+    legend()
+    
+    #figure()
+    #plot_date(current_time_MPL[1:], lat_MATS[1:]-lat_LP[1:])
+    #plot_date(current_time_MPL[1:], pitch_MATS[1:]-90)
     #figure()
     #plot_date(current_time_MPL[1:],r_MATS[1:][:])

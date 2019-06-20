@@ -78,7 +78,7 @@ def Mode120_date_calculator():
             date =ephem.Date(Mode120_settings['start_date'])
             return date
         except:
-            Logger.error('Could not get OPT_Config_File.Mode120_settings["start_date"], exiting...')
+            Logger.error('Could not get Mode120_settings["start_date"], exiting...')
             sys.exit()
         
     elif( automatic == True ):
@@ -87,7 +87,6 @@ def Mode120_date_calculator():
         log_timestep = Mode120_settings['log_timestep']
         Logger.debug('log_timestep: '+str(log_timestep))
     
-        
         timestep = Mode120_settings['timestep'] #In seconds
         Logger.info('timestep set to: '+str(timestep)+' s')
         
@@ -159,8 +158,8 @@ def Mode120_date_calculator():
         lat_MATS = zeros((timesteps,1))
         long_MATS = zeros((timesteps,1))
         altitude_MATS = zeros((timesteps,1))
-        g_ra_MATS = zeros((timesteps,1))
-        g_dec_MATS = zeros((timesteps,1))
+        a_ra_MATS = zeros((timesteps,1))
+        a_dec_MATS = zeros((timesteps,1))
         x_MATS = zeros((timesteps,1))
         y_MATS = zeros((timesteps,1))
         z_MATS = zeros((timesteps,1))
@@ -202,7 +201,7 @@ def Mode120_date_calculator():
         V_offset = Mode120_settings['V_offset']
         H_offset = Mode120_settings['H_offset']  #5.67 is actual H_FOV
         
-        pitch_offset_angle = 0
+        
         yaw_correction = Timeline_settings['yaw_correction']
         
         Logger.debug('Earth radius used [km]: '+str(R_mean))
@@ -227,14 +226,14 @@ def Mode120_date_calculator():
             
             MATS.compute(current_time, epoch = '2000')
             
-            (lat_MATS[t],long_MATS[t],altitude_MATS[t],g_ra_MATS[t],g_dec_MATS[t])= (
-            MATS.sublat,MATS.sublong,MATS.elevation/1000,MATS.g_ra,MATS.g_dec)
+            (lat_MATS[t],long_MATS[t],altitude_MATS[t],a_ra_MATS[t],a_dec_MATS[t])= (
+            MATS.sublat,MATS.sublong,MATS.elevation/1000,MATS.a_ra,MATS.a_dec)
             
             R = lat_2_R(lat_MATS[t]) #WGS84 radius from latitude of MATS
             
-            z_MATS[t] = sin(g_dec_MATS[t])*(altitude_MATS[t]+R)
-            x_MATS[t] = cos(g_dec_MATS[t])*(altitude_MATS[t]+R)* cos(g_ra_MATS[t])
-            y_MATS[t] = cos(g_dec_MATS[t])*(altitude_MATS[t]+R)* sin(g_ra_MATS[t])
+            z_MATS[t] = sin(a_dec_MATS[t])*(altitude_MATS[t]+R)
+            x_MATS[t] = cos(a_dec_MATS[t])*(altitude_MATS[t]+R)* cos(a_ra_MATS[t])
+            y_MATS[t] = cos(a_dec_MATS[t])*(altitude_MATS[t]+R)* sin(a_ra_MATS[t])
            
             r_MATS[t,0:3] = [x_MATS[t], y_MATS[t], z_MATS[t]]
             
@@ -270,7 +269,7 @@ def Mode120_date_calculator():
                     
             if(t != 0):
                 
-                # More accurate estimation of the Earths radius below LP
+                # Estimation of the Earths radius below LP
                 if( abs(lat_MATS[t])-abs(lat_MATS[t-1]) > 0 ): #Moving towards poles meaning LP is equatorwards compared to MATS
                     abs_lat_LP = abs(lat_MATS[t])-pitch_LP/180*pi #absolute value of estimated latitude of LP in radians
                     R_LP = lat_2_R(abs_lat_LP) #Estimated WGS84 radius of LP from latitude of MATS
@@ -316,7 +315,7 @@ def Mode120_date_calculator():
                     yaw_offset_angle = 0
                 
                 "Rotate 'vector to MATS', to represent pointing direction, includes vertical offset change (Parallax is negligable)"
-                rot_mat = rot_arbit(pi/2+(pitch_pointing_command+pitch_offset_angle)/180*pi, normal_orbit[t,0:3])
+                rot_mat = rot_arbit(pi/2+(pitch_pointing_command)/180*pi, normal_orbit[t,0:3])
                 r_FOV[t,0:3] = (rot_mat @ r_MATS[t])
                 
                 
@@ -343,7 +342,8 @@ def Mode120_date_calculator():
                 r_H_offset_normal[t,0:3] = (rot_mat @ r_H_offset_normal[t])
                 r_H_offset_normal[t,0:3] = r_H_offset_normal[t,0:3]/norm(r_H_offset_normal[t,0:3])
                 
-                "Rotate orbital plane normal to make it into pointing V-offset plane normal"
+                '''Rotate orbital plane normal to make it into pointing V-offset plane normal 
+                which will be used to project stars onto it which allows the V-offset of stars to be found'''
                 r_V_offset_normal[t,0:3] = (rot_mat @ normal_orbit[t])
                 r_V_offset_normal[t,0:3] = r_V_offset_normal[t,0:3]/norm(r_V_offset_normal[t,0:3])
                 
@@ -354,7 +354,6 @@ def Mode120_date_calculator():
                     Logger.debug('pitch_angle_between_command_and_LP_altitudes [degrees]: '+str(pitch_angle_between_command_and_LP_altitudes))
                     Logger.debug('Absolute value of latitude of LP: '+str(abs_lat_LP/pi*180))
                     Logger.debug('Pointing direction of FOV: '+str(r_FOV_unit_vector[t,0:3]))
-                    #Logger.debug('Pointing direction of FOV2: '+str(r_FOV_unit_vector2[t,0:3]))
                     Logger.debug('Orthogonal direction to H-offset plane: '+str(r_H_offset_normal[t,0:3]))
                     Logger.debug('Orthogonal direction to V-offset plane: '+str(r_V_offset_normal[t,0:3]))
                     Logger.debug('Orthogonal direction to the orbital plane: '+str(normal_orbit[t,0:3]))
@@ -373,11 +372,14 @@ def Mode120_date_calculator():
                     "Check if a star has already been spotted during this orbit."
                     if( stars[x].name in spotted_star_name ):
                         
-                        '''Check if not enough time has passed so that the star has not left FOV''' 
-                        if((current_time - spotted_star_timestamp[spotted_star_name.index(stars[x].name)]) < ephem.second*(pitch_angle_between_command_and_LP_altitudes*2*MATS_P[t]/360)):
+                        #time_until_far_outside_of_FOV = ephem.second*(pitch_angle_between_command_and_LP_altitudes*2*MATS_P[t]/360)
+                        time_until_far_outside_of_FOV = ephem.second*(180*MATS_P[t]/360)
+                        
+                        '''Check if not enough time has passed so that the star is not far outside of FOV''' 
+                        if((current_time - spotted_star_timestamp[spotted_star_name.index(stars[x].name)]) < time_until_far_outside_of_FOV):
                             
                             time_passed_since_spotted = (t-spotted_star_timecounter[spotted_star_name.index(stars[x].name)])*timestep
-                            time_until_in_direction_of_LP = around(MATS_P[t]*(pitch_offset_angle+pitch_angle_between_command_and_LP_altitudes+V_offset)/360)
+                            time_until_in_direction_of_LP = around(MATS_P[t]*(pitch_angle_between_command_and_LP_altitudes+V_offset)/360)
                             
                             #
                             #Logger.debug('Already spotted star name: '+str(stars[x].name))
@@ -414,7 +416,7 @@ def Mode120_date_calculator():
                             continue
                             
                             "If enough time has passed (half an orbit), the star can be removed from the exception list"
-                        elif((current_time - spotted_star_timestamp[spotted_star_name.index(stars[x].name)]) >= ephem.second*(180*MATS_P[t]/360)):
+                        elif((current_time - spotted_star_timestamp[spotted_star_name.index(stars[x].name)]) >= time_until_far_outside_of_FOV):
                             spotted_star_timestamp.pop(spotted_star_name.index(stars[x].name))
                             spotted_star_timecounter.pop(spotted_star_name.index(stars[x].name))
                             spotted_star_name.remove(stars[x].name)
@@ -458,7 +460,7 @@ def Mode120_date_calculator():
                             continue
                     
                     
-                    "Check that the star is at an V-offset angle equal to V_offset"
+                    "Check that the star is entering at V-offset degrees and within the H-offset angle"
                     if( stars_vert_offset[t][x] < V_offset and stars_vert_offset[t-1][x] > V_offset and abs(stars_hori_offset[t][x]) < H_offset):
                         #print('Star number:',stars[x].name,'is visible at',stars_vert_offset[t][x],'degrees VFOV and', \
                              #stars_hori_offset[t][x],'degrees HFOV','during',ephem.Date(current_time))

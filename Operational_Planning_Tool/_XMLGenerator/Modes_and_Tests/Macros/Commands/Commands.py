@@ -60,10 +60,10 @@ def TC_acfLimbPointingAltitudeOffset(root, relativeTime, Initial = 92500, Final 
     if not( 0 <= relativeTime <= OPT_Config_File.Timeline_settings()['duration']) and type(relativeTime) == int:
         Logger.error('Invalid argument: negative relativeTime, exceeding timeline duration, or not integer')
         raise ValueError
-    if not( 0 <= Initial <= 300000 and type(Initial) == int ):
+    if not( 10000 <= Initial <= 300000 and type(Initial) == int ):
         Logger.error('Invalid argument: Initial')
         raise ValueError
-    if not( 0 <= Final <= 300000 and type(Final) == int ):
+    if not( 10000 <= Final <= 300000 and type(Final) == int ):
         Logger.error('Invalid argument: Final')
         raise ValueError
     if not( 0 <= Rate <= 1000 and ( type(Rate) == int or type(Rate) == float) ):
@@ -250,8 +250,8 @@ def TC_pafHTR(root, relativeTime, HTRSEL, SET, P, I, D, comment = ''):
     if not( (1 <= HTRSEL <= 3 or 64 <= HTRSEL <= 67 or 128 <= HTRSEL <= 131 or 192 <= HTRSEL <= 195)  and type(HTRSEL) == int ):
         Logger.error('Invalid argument: HTRSEL')
         raise ValueError
-    if not( 300 <= SET <= 3000 and type(SET) == int ):
-        Logger.error('Invalid argument: 300 > SET or SET > 3000')
+    if not( 86 <= SET <= 2285 and type(SET) == int ):
+        Logger.error('Invalid argument: 86 > SET or SET > 2285')
         raise ValueError
     if not( 0 <= P <= 65536 and type(P) == int ):
         Logger.error('Invalid argument: P')
@@ -321,17 +321,23 @@ def TC_pafCCDMain(root, relativeTime, CCDSEL, PWR, ExpInterval, ExpTime, NRSKIP 
     if not( 1 <= NCBIN <= 255 and type(NCBIN) == int ):
         Logger.error('Invalid argument: NCBIN')
         raise ValueError
-    if not( 1 <= NCOL <= 2048 and type(NCOL) == int ):
+    if not( 1 <= NCOL <= 2047 and type(NCOL) == int ):
         Logger.error('Invalid argument: NCOL')
         raise ValueError
-    if not( 0 <= NCBINFPGA <= 8 and type(NCBINFPGA) == int ):
-        Logger.error('Invalid argument: NCBINFPGA')
+    if not( 0 <= NCBINFPGA <= 7 and type(NCBINFPGA) == int ):
+        Logger.error('Invalid argument: NCBINFPGA, if NCBINFPGA=8 then the CRB may stop working')
         raise ValueError
     if not( 0 <= SIGMODE <= 255 and type(SIGMODE) == int ):
         Logger.error('Invalid argument: SIGMODE')
         raise ValueError
     if not( (0 <= WDW <= 7 or WDW == 128) and type(WDW) == int ):
         Logger.error('Invalid argument: WDW')
+        raise ValueError
+    if( WDW == 7 and JPEGQ <= 100):
+        Logger.error('Invalid argument: WDW == 7, but JPEGQ <= 100')
+        raise ValueError
+    if( 0 <= WDW <= 4 and JPEGQ >= 101):
+        Logger.error('Invalid argument: 0 <= WDW <= 4, but JPEGQ >= 101')
         raise ValueError
     if not( 0 <= JPEGQ <= 255 and type(JPEGQ) == int ):
         Logger.error('Invalid argument: JPEGQ')
@@ -345,14 +351,16 @@ def TC_pafCCDMain(root, relativeTime, CCDSEL, PWR, ExpInterval, ExpTime, NRSKIP 
     if not( NROW * NRBIN + NRSKIP <=  511 ):
         Logger.error('Invalid argument: NROW * NRBIN + NRSKIP exceeds 511')
         raise ValueError
-    if not( (NCOL+1) * NCBIN * 2**NCBINFPGA + NCSKIP <= 2048 ):
-        Logger.error('Invalid argument: (NCOL+1) * NCBIN * 2^NCBINFPGA + NCSKIP exceeds 2048')
+    if not( (NCOL+1) * NCBIN * 2**NCBINFPGA + NCSKIP <= 2047 ):
+        Logger.error('Invalid argument: (NCOL+1) * NCBIN * 2^NCBINFPGA + NCSKIP exceeds 2047')
         raise ValueError
         
         
     
-    ReadOutTime = calculate_time_per_row(NCOL, NCBIN, NCBINFPGA, NRSKIP, NROW, NRBIN, NFLUSH)*10**-9
-    Logger.debug(ReadOutTime)
+    T_readout, T_delay, T_Extra = calculate_time_per_row(NCOL = NCOL, NCBIN = NCBIN, NCBINFPGA = NCBINFPGA, 
+                                                         NRSKIP = NRSKIP, NROW = NROW, NRBIN = NRBIN, NFLUSH = NFLUSH)
+    ReadOutTime = T_readout + T_delay + T_Extra
+    Logger.debug('ReadOutTime = '+str(ReadOutTime))
     if not( 0 <= ExpTime and ExpTime + ReadOutTime < ExpInterval ):
         Logger.error('Invalid argument: TEXPMS is negative or ExpTime + ReadOutTime > ExpInterval')
         raise ValueError

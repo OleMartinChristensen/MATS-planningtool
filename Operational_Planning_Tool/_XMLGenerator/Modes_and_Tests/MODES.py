@@ -36,6 +36,52 @@ from Operational_Planning_Tool import _MATS_coordinates
 Logger = logging.getLogger(OPT_Config_File.Logger_name())
 
 
+def XML_generator_Mode5_6(root, date, duration, relativeTime, params = {}):
+    '''Mode5/6
+    
+    Look at fixed limb altitude in operational mode.
+    Custom binning.
+            
+    '''
+    
+    settings = OPT_Config_File.Mode_5_6settings()
+    
+    Logger.debug('params from Science Mode List: '+str(params))
+    params = params_checker(params,settings)
+    Logger.debug('params after params_checker function: '+str(params))
+    Logger.info('params used: '+str(params))
+    
+    Mode_name = sys._getframe(1).f_code.co_name.replace('XML_generator_','')
+    comment = Mode_name+' starting date: '+str(date)+', '+str(params)
+    
+    pointing_altitude = params['pointing_altitude']
+    
+    Macros.Mode5_6(root,relativeTime, pointing_altitude=pointing_altitude, comment = comment)
+
+
+def XML_generator_Mode5(root, date, duration, relativeTime, params = {}):
+    '''Mode5
+    
+    Custom binning.
+    Calls for XML_generator_Mode5_6
+            
+    '''
+    
+    XML_generator_Mode5_6(root, date, duration, relativeTime, params = {})
+
+
+def XML_generator_Mode6(root, date, duration, relativeTime, params = {}):
+    '''Mode6
+    
+    Custom binning.
+    Calls for XML_generator_Mode5_6
+    
+            
+    '''
+    
+    XML_generator_Mode5_6(root, date, duration, relativeTime, params = {})
+
+
 def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
     '''Simulates MATS and the LP without yaw movement to be able to schedule commands in the XML-file.
     
@@ -45,7 +91,7 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
             
     '''
     
-    XML_generator_Mode1_3_5(root, date, duration, relativeTime, params = {})
+    XML_generator_Mode1_3(root, date, duration, relativeTime, params = {})
     
 
 #######################################################################################
@@ -59,11 +105,11 @@ def XML_generator_Mode3(root, date, duration, relativeTime, params = {}):
             
     '''
     
-    XML_generator_Mode1_3_5(root, date, duration, relativeTime, params = {})
+    XML_generator_Mode1_3(root, date, duration, relativeTime, params = {})
        
 
 #######################################################################################
-
+"""
 def XML_generator_Mode5(root, date, duration, relativeTime, params = {}):
     '''Simulates MATS and the LP with or without yaw movement to be able to schedule commands in the XML-file.
     
@@ -74,7 +120,7 @@ def XML_generator_Mode5(root, date, duration, relativeTime, params = {}):
     '''
     
     XML_generator_Mode1_3_5(root, date, duration, relativeTime, params = {})
-
+"""
 
 
 def XML_generator_Mode2(root, date, duration, relativeTime, params = {}):
@@ -85,7 +131,7 @@ def XML_generator_Mode2(root, date, duration, relativeTime, params = {}):
             
     '''
     
-    XML_generator_Mode2_4_6(root, date, duration, relativeTime, params = {})
+    XML_generator_Mode2_4(root, date, duration, relativeTime, params = {})
     
 
 #######################################################################################
@@ -98,11 +144,11 @@ def XML_generator_Mode4(root, date, duration, relativeTime, params = {}):
             
     '''
     
-    XML_generator_Mode2_4_6(root, date, duration, relativeTime, params = {})
+    XML_generator_Mode2_4(root, date, duration, relativeTime, params = {})
 
 
 ############################################################################################
-
+"""
 def XML_generator_Mode6(root, date, duration, relativeTime, params = {}):
     '''Simulates MATS and the LP with or without yaw movement to be able to schedule commands in the XML-file.
     
@@ -112,11 +158,11 @@ def XML_generator_Mode6(root, date, duration, relativeTime, params = {}):
     '''
     
     XML_generator_Mode2_4_6(root, date, duration, relativeTime, params = {})
-   
+"""
 
 ############################################################################################
     
-def XML_generator_Mode1_3_5(root, date, duration, relativeTime, params = {}):
+def XML_generator_Mode1_3(root, date, duration, relativeTime, params = {}):
     """Simulates MATS and the LP with or without yaw movement to be able to schedule commands in the XML-file.
     
     High resolution UV binning for latitudes +-lat degrees latitude polewards.
@@ -139,7 +185,7 @@ def XML_generator_Mode1_3_5(root, date, duration, relativeTime, params = {}):
     dot = pylab.dot
     array = pylab.array
     
-    settings = OPT_Config_File.Mode_1_2_3_4_5_6settings()
+    settings = OPT_Config_File.Mode_1_2_3_4settings()
     Timeline_settings = OPT_Config_File.Timeline_settings()
     
     
@@ -161,8 +207,8 @@ def XML_generator_Mode1_3_5(root, date, duration, relativeTime, params = {}):
     lat_MATS = zeros((duration,1))
     
     altitude_MATS = zeros((duration,1))
-    g_ra_MATS = zeros((duration,1))
-    g_dec_MATS = zeros((duration,1))
+    a_ra_MATS = zeros((duration,1))
+    a_dec_MATS = zeros((duration,1))
     x_MATS = zeros((duration,1))
     y_MATS = zeros((duration,1))
     z_MATS = zeros((duration,1))
@@ -189,7 +235,7 @@ def XML_generator_Mode1_3_5(root, date, duration, relativeTime, params = {}):
     lat = params['lat']
     Earth_north = array([[0,0,1]])
     
-    
+    #Earth_north = pm3d.ecef2eci(0,0,1,date)
     
     #Estimation of the angle between the sun and the FOV position when it enters eclipse
     MATS_nadir_eclipse_angle = arccos(R_mean/(R_mean+90))/pi*180 + 90
@@ -202,15 +248,15 @@ def XML_generator_Mode1_3_5(root, date, duration, relativeTime, params = {}):
         
         current_time = ephem.Date(date+ephem.second*timestep*t)
         
-        MATS.compute(current_time)
+        MATS.compute(current_time, epoch='2000')
         
         
-        (lat_MATS[t],altitude_MATS[t],g_ra_MATS[t],g_dec_MATS[t])= (
-        MATS.sublat,MATS.elevation/1000,MATS.g_ra,MATS.g_dec)
+        (lat_MATS[t],altitude_MATS[t],a_ra_MATS[t],a_dec_MATS[t])= (
+        MATS.sublat,MATS.elevation/1000,MATS.a_ra,MATS.a_dec)
         
-        z_MATS[t] = sin(g_dec_MATS[t])*(altitude_MATS[t]+R_mean)
-        x_MATS[t] = cos(g_dec_MATS[t])*(altitude_MATS[t]+R_mean)* cos(g_ra_MATS[t])
-        y_MATS[t] = cos(g_dec_MATS[t])*(altitude_MATS[t]+R_mean)* sin(g_ra_MATS[t])
+        z_MATS[t] = sin(a_dec_MATS[t])*(altitude_MATS[t]+R_mean)
+        x_MATS[t] = cos(a_dec_MATS[t])*(altitude_MATS[t]+R_mean)* cos(a_ra_MATS[t])
+        y_MATS[t] = cos(a_dec_MATS[t])*(altitude_MATS[t]+R_mean)* sin(a_ra_MATS[t])
        
         r_MATS[t,0:3] = [x_MATS[t], y_MATS[t], z_MATS[t]]
         r_MATS_ECEF[t,0], r_MATS_ECEF[t,1], r_MATS_ECEF[t,2] = pm3d.eci2ecef(
@@ -221,7 +267,7 @@ def XML_generator_Mode1_3_5(root, date, duration, relativeTime, params = {}):
         orbangle_between_LP_MATS_array[t]= arccos((R_mean+pointing_altitude/1000)/(R_mean+altitude_MATS[t]))/pi*180
         orbangle_between_LP_MATS = orbangle_between_LP_MATS_array[t][0]
         
-        Sun.compute(current_time)
+        Sun.compute(current_time, epoch='2000')
         sun_angle[t]= ephem.separation(Sun,MATS)/pi*180
         
         if( t % log_timestep == 0 and t != 0 and t != 1):
@@ -257,7 +303,7 @@ def XML_generator_Mode1_3_5(root, date, duration, relativeTime, params = {}):
                 yaw_offset_angle = yaw_offset_angle[0]
             elif( Timeline_settings['yaw_correction'] == False  ):
                 yaw_offset_angle = 0
-                yaw_offset_angle = yaw_offset_angle[0]
+                
             
             if( t % log_timestep == 0 or t == 1 ):
                 Logger.debug('ascending_node: '+str(ascending_node))
@@ -311,9 +357,9 @@ def XML_generator_Mode1_3_5(root, date, duration, relativeTime, params = {}):
                     
                     if( abs(lat_LP[t]) < lat):
                         if( Timeline_settings['Custom_Mode'] == True ):
-                            current_state = "Mode5_night_UV_off"
+                            current_state = "Custom_night_UV_off"
                             comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                            Macros.Mode5_6(root,t*timestep+relativeTime, pointing_altitude=pointing_altitude, UV_on = False, comment = comment)
+                            Macros.Mode1_2_3_4_custom(root,t*timestep+relativeTime, pointing_altitude=pointing_altitude, UV_on = False, comment = comment)
                         else:
                             current_state = "NLC_night_UV_off"
                             comment = current_state+': '+str(current_time)+', parameters: '+str(params)
@@ -321,9 +367,9 @@ def XML_generator_Mode1_3_5(root, date, duration, relativeTime, params = {}):
                     
                     elif( abs(lat_LP[t]) > lat):
                         if( Timeline_settings['Custom_Mode'] == True ):
-                            current_state = "Mode5_night_UV_on"
+                            current_state = "Custom_night_UV_on"
                             comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                            Macros.Mode5_6(root,t*timestep+relativeTime, pointing_altitude=pointing_altitude, UV_on = True, comment = comment)
+                            Macros.Mode1_2_3_4_custom(root,t*timestep+relativeTime, pointing_altitude=pointing_altitude, UV_on = True, comment = comment)
                         else:
                             current_state = "NLC_night_UV_on"
                             comment = current_state+': '+str(current_time)+', parameters: '+str(params)
@@ -333,9 +379,9 @@ def XML_generator_Mode1_3_5(root, date, duration, relativeTime, params = {}):
                     
                     if( abs(lat_LP[t]) < lat):
                         if( Timeline_settings['Custom_Mode'] == True ):
-                            current_state = "Mode5_day_UV_off"
+                            current_state = "Custom_day_UV_off"
                             comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                            Macros.Mode5_6(root,t*timestep+relativeTime, pointing_altitude=pointing_altitude, UV_on = False, nadir_on = False, comment = comment)
+                            Macros.Mode1_2_3_4_custom(root,t*timestep+relativeTime, pointing_altitude=pointing_altitude, UV_on = False, nadir_on = False, comment = comment)
                         else:
                             current_state = "NLC_day_UV_off"
                             comment = current_state+': '+str(current_time)+', parameters: '+str(params)
@@ -343,9 +389,9 @@ def XML_generator_Mode1_3_5(root, date, duration, relativeTime, params = {}):
                             
                     elif( abs(lat_LP[t]) > lat):
                         if( Timeline_settings['Custom_Mode'] == True ):
-                            current_state = "Mode5_day_UV_on"
+                            current_state = "Custom_day_UV_on"
                             comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                            Macros.Mode5_6(root,t*timestep+relativeTime, pointing_altitude=pointing_altitude, UV_on = True, nadir_on = False, comment = comment)
+                            Macros.Mode1_2_3_4_custom(root,t*timestep+relativeTime, pointing_altitude=pointing_altitude, UV_on = True, nadir_on = False, comment = comment)
                         else:
                             current_state = "NLC_day_UV_on"
                             comment = current_state+': '+str(current_time)+', parameters: '+str(params)
@@ -371,9 +417,9 @@ def XML_generator_Mode1_3_5(root, date, duration, relativeTime, params = {}):
                            ( abs(lat_LP[t]) < lat and abs(lat_LP[t-1]) > lat ) ):
                             
                             if( Timeline_settings['Custom_Mode'] == True ):
-                                current_state = "Mode5_night_UV_off"
+                                current_state = "Custom_night_UV_off"
                                 comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                                Macros.Mode5_6(root,t*timestep+relativeTime, pointing_altitude=pointing_altitude, UV_on = False, comment = comment)
+                                Macros.Mode1_2_3_4_custom(root,t*timestep+relativeTime, pointing_altitude=pointing_altitude, UV_on = False, comment = comment)
                             else:
                                 current_state = "NLC_night_UV_off"
                                 comment = current_state+': '+str(current_time)+', parameters: '+str(params)
@@ -397,9 +443,9 @@ def XML_generator_Mode1_3_5(root, date, duration, relativeTime, params = {}):
                            ( abs(lat_LP[t]) > lat and abs(lat_LP[t-1]) < lat )):
                             
                             if( Timeline_settings['Custom_Mode'] == True ):
-                                current_state = "Mode5_night_UV_on"
+                                current_state = "Custom_night_UV_on"
                                 comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                                Macros.Mode5_6(root,t*timestep+relativeTime, pointing_altitude=pointing_altitude, UV_on = True, comment = comment)
+                                Macros.Mode1_2_3_4_custom(root,t*timestep+relativeTime, pointing_altitude=pointing_altitude, UV_on = True, comment = comment)
                             else:
                                 current_state = "NLC_night_UV_on"
                                 comment = current_state+': '+str(current_time)+', parameters: '+str(params)
@@ -428,9 +474,9 @@ def XML_generator_Mode1_3_5(root, date, duration, relativeTime, params = {}):
                            (abs(lat_LP[t]) < lat and abs(lat_LP[t-1]) > lat) ):
                             
                             if( Timeline_settings['Custom_Mode'] == True ):
-                                current_state = "Mode5_day_UV_off"
+                                current_state = "Custom_day_UV_off"
                                 comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                                Macros.Mode5_6(root,t*timestep+relativeTime, pointing_altitude=pointing_altitude, UV_on = False, nadir_on = False, comment = comment)
+                                Macros.Mode1_2_3_4_custom(root,t*timestep+relativeTime, pointing_altitude=pointing_altitude, UV_on = False, nadir_on = False, comment = comment)
                             else:
                                 current_state = "NLC_day_UV_off"
                                 comment = current_state+': '+str(current_time)+', parameters: '+str(params)
@@ -455,9 +501,9 @@ def XML_generator_Mode1_3_5(root, date, duration, relativeTime, params = {}):
                            (abs(lat_LP[t]) > lat and abs(lat_LP[t-1]) < lat) ):
                             
                             if( Timeline_settings['Custom_Mode'] == True ):
-                                current_state = "Mode5_day_UV_on"
+                                current_state = "Custom_day_UV_on"
                                 comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                                Macros.Mode5_6(root,t*timestep+relativeTime, pointing_altitude=pointing_altitude, UV_on = True, nadir_on = False, comment = comment)
+                                Macros.Mode1_2_3_4_custom(root,t*timestep+relativeTime, pointing_altitude=pointing_altitude, UV_on = True, nadir_on = False, comment = comment)
                             else:
                                 current_state = "NLC_day_UV_on"
                                 comment = current_state+': '+str(current_time)+', parameters: '+str(params)
@@ -480,14 +526,14 @@ def XML_generator_Mode1_3_5(root, date, duration, relativeTime, params = {}):
 
 #######################################################################################
 
-def XML_generator_Mode2_4_6(root, date, duration, relativeTime, params = {}):
+def XML_generator_Mode2_4(root, date, duration, relativeTime, params = {}):
     """Simulates MATS and the LP to be able to schedule commands in the XML-file.
     
     High-resolution IR binning. Stop/Start Nadir at dusk/dawn.
     
     """
     
-    settings = OPT_Config_File.Mode_1_2_3_4_5_6settings()
+    settings = OPT_Config_File.Mode_1_2_3_4settings()
     Timeline_settings = OPT_Config_File.Timeline_settings()
     zeros = pylab.zeros
     pi = pylab.pi
@@ -525,9 +571,9 @@ def XML_generator_Mode2_4_6(root, date, duration, relativeTime, params = {}):
         
         current_time = ephem.Date(date+ephem.second*timestep*t)
         
-        MATS.compute(current_time)
+        MATS.compute(current_time, epoch = '2000')
         
-        Sun.compute(current_time)
+        Sun.compute(current_time, '2000')
         sun_angle[t]= ephem.separation(Sun,MATS)/pi*180
         
         if( t % log_timestep == 0):
@@ -542,9 +588,9 @@ def XML_generator_Mode2_4_6(root, date, duration, relativeTime, params = {}):
             "Check if night or day"
             if( sun_angle[t] > MATS_nadir_eclipse_angle):
                 if( Timeline_settings['Custom_Mode'] == True ):
-                    current_state = "Mode6_night"
+                    current_state = "Custom_IR_night"
                     comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                    Macros.Mode5_6(root,t*timestep+relativeTime, pointing_altitude=pointing_altitude, comment = comment)
+                    Macros.Mode1_2_3_4_custom(root,t*timestep+relativeTime, pointing_altitude=pointing_altitude, comment = comment)
                 else:
                     current_state = "IR_night"
                     comment = current_state+': '+str(params)
@@ -553,9 +599,9 @@ def XML_generator_Mode2_4_6(root, date, duration, relativeTime, params = {}):
                 
             elif( sun_angle[t] < MATS_nadir_eclipse_angle):
                 if( Timeline_settings['Custom_Mode'] == True ):
-                    current_state = "Mode6_day"
+                    current_state = "Custom_IR_day"
                     comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                    Macros.Mode5_6(root,t*timestep+relativeTime, pointing_altitude=pointing_altitude, nadir_on = False, comment = comment)
+                    Macros.Mode1_2_3_4_custom(root,t*timestep+relativeTime, pointing_altitude=pointing_altitude, nadir_on = False, comment = comment)
                 else:
                     current_state = "IR_day"
                     comment = current_state+': '+str(params)
@@ -578,9 +624,9 @@ def XML_generator_Mode2_4_6(root, date, duration, relativeTime, params = {}):
                 if( (sun_angle[t] > MATS_nadir_eclipse_angle and sun_angle[t-1] < MATS_nadir_eclipse_angle) ):
                     
                     if( Timeline_settings['Custom_Mode'] == True ):
-                        current_state = "Mode6_night"
+                        current_state = "Custom_IR_night"
                         comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                        Macros.Mode5_6(root,t*timestep+relativeTime, pointing_altitude=pointing_altitude, comment = comment)
+                        Macros.Mode1_2_3_4_custom(root,t*timestep+relativeTime, pointing_altitude=pointing_altitude, comment = comment)
                     else:
                         current_state = "IR_night"
                         comment = current_state+': '+str(params)
@@ -601,9 +647,9 @@ def XML_generator_Mode2_4_6(root, date, duration, relativeTime, params = {}):
                 if( (sun_angle[t] < MATS_nadir_eclipse_angle and sun_angle[t-1] > MATS_nadir_eclipse_angle) ):
                     
                     if( Timeline_settings['Custom_Mode'] == True ):
-                        current_state = "Mode6_day"
+                        current_state = "Custom_IR_day"
                         comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                        Macros.Mode5_6(root,t*timestep+relativeTime, pointing_altitude=pointing_altitude, nadir_on = False, comment = comment)
+                        Macros.Mode1_2_3_4_custom(root,t*timestep+relativeTime, pointing_altitude=pointing_altitude, nadir_on = False, comment = comment)
                     else:
                         current_state = "IR_day"
                         comment = current_state+': '+str(params)

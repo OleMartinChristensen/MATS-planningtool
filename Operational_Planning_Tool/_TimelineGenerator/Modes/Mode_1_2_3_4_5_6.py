@@ -98,9 +98,9 @@ def Mode_1_2_3_4_5_6date_select(Occupied_Timeline, Mode_1_2_3_4_5_6initial_date)
     Mode_1_2_3_4_5_6minDuration = ephem.second*settings['Mode_1_2_3_4_5_6minDuration']
     iterations = 0
     
-    ## To fill in mode1/2 inbetween already schedueled modes. The amount of iterations is equal to 
-    ## the number of modes scheduled plus 1 as there is a possibility for mode1/2 to be scheduled 
-    ## before and after the already scheduled modes
+    ## To fill in modes inbetween already schedueled modes. The amount of iterations is equal to 
+    ## the number of modes scheduled plus 1 as there is a possibility for the modes to be scheduled 
+    ## at the start or end of the timeline.
     for x in range(len(Occupied_values)+1):
         
         ## For first iteration; Check if there is spacing between Mode_1_2_3_4_5_6initial_date and the the first mode running
@@ -134,21 +134,26 @@ def Mode_1_2_3_4_5_6date_select(Occupied_Timeline, Mode_1_2_3_4_5_6initial_date)
                 iterations = iterations + 1
                 
             
-    
-    if( ephem.Date(settings['start_date']).tuple()[1] in [11,12,1,2,5,6,7,8] or 
+    if( settings['Custom_Mode'] == True):
+        if( settings['yaw_correction'] == True):
+            Occupied_Timeline['Mode6'] = Mode_1_2_3_4_5_6dates
+        elif( settings['yaw_correction'] == False):
+            Occupied_Timeline['Mode5'] = Mode_1_2_3_4_5_6dates
+            
+    elif( ephem.Date(settings['start_date']).tuple()[1] in [11,12,1,2,5,6,7,8] or 
         ( ephem.Date(settings['start_date']).tuple()[1] in [3,9] and ephem.Date(settings['start_date']).tuple()[2] in range(11) )):
         
-        if( settings['Custom_Mode'] == True):
-            Occupied_Timeline['Mode5'] = Mode_1_2_3_4_5_6dates
-        elif( settings['yaw_correction'] == True):
+        #if( settings['Custom_Mode'] == True):
+        #    Occupied_Timeline['Mode5'] = Mode_1_2_3_4_5_6dates
+        if( settings['yaw_correction'] == True):
             Occupied_Timeline['Mode3'] = Mode_1_2_3_4_5_6dates
         elif(settings['yaw_correction'] == False):
             Occupied_Timeline['Mode1'] = Mode_1_2_3_4_5_6dates
             
     else:
-        if( settings['Custom_Mode'] == True):
-            Occupied_Timeline['Mode6'] = Mode_1_2_3_4_5_6dates
-        elif( settings['yaw_correction'] == True):
+        #if( settings['Custom_Mode'] == True):
+        #    Occupied_Timeline['Mode6'] = Mode_1_2_3_4_5_6dates
+        if( settings['yaw_correction'] == True):
             Occupied_Timeline['Mode4'] = Mode_1_2_3_4_5_6dates
         elif(settings['yaw_correction'] == False):
             Occupied_Timeline['Mode2'] = Mode_1_2_3_4_5_6dates

@@ -108,8 +108,8 @@ def date_calculator(Settings):
     lat_MATS = zeros((timesteps,1))
     long_MATS = zeros((timesteps,1))
     altitude_MATS = zeros((timesteps,1))
-    g_ra_MATS = zeros((timesteps,1))
-    g_dec_MATS = zeros((timesteps,1))
+    a_ra_MATS = zeros((timesteps,1))
+    a_dec_MATS = zeros((timesteps,1))
     x_MATS = zeros((timesteps,1))
     y_MATS = zeros((timesteps,1))
     z_MATS = zeros((timesteps,1))
@@ -169,23 +169,23 @@ def date_calculator(Settings):
     current_time = initial_time
     
     Logger.info('')
-    Logger.info('Start of simulation of MATS for Mode121')
+    Logger.info('Start of simulation of MATS for Mode121/122/123')
     
     
     ################## Start of Simulation ########################################
     "Loop and calculate the relevant angle of each star to each direction of MATS's FOV"
     while(current_time < timeline_start+ephem.second*duration):
         
-        MATS.compute(current_time)
+        MATS.compute(current_time, epoch='2000')
         
-        (lat_MATS[t],long_MATS[t],altitude_MATS[t],g_ra_MATS[t],g_dec_MATS[t])= (
-        MATS.sublat,MATS.sublong,MATS.elevation/1000,MATS.g_ra,MATS.g_dec)
+        (lat_MATS[t],long_MATS[t],altitude_MATS[t],a_ra_MATS[t],a_dec_MATS[t])= (
+        MATS.sublat,MATS.sublong,MATS.elevation/1000,MATS.a_ra,MATS.a_dec)
         
         R = lat_2_R(lat_MATS[t]) #WGS84 radius from latitude of MATS
         
-        z_MATS[t] = sin(g_dec_MATS[t])*(altitude_MATS[t]+R)
-        x_MATS[t] = cos(g_dec_MATS[t])*(altitude_MATS[t]+R)* cos(g_ra_MATS[t])
-        y_MATS[t] = cos(g_dec_MATS[t])*(altitude_MATS[t]+R)* sin(g_ra_MATS[t])
+        z_MATS[t] = sin(a_dec_MATS[t])*(altitude_MATS[t]+R)
+        x_MATS[t] = cos(a_dec_MATS[t])*(altitude_MATS[t]+R)* cos(a_ra_MATS[t])
+        y_MATS[t] = cos(a_dec_MATS[t])*(altitude_MATS[t]+R)* sin(a_ra_MATS[t])
        
         r_MATS[t,0:3] = [x_MATS[t], y_MATS[t], z_MATS[t]]
         

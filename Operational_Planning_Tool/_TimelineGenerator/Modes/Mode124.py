@@ -43,7 +43,7 @@ def Mode124(Occupied_Timeline):
 
 
 def date_calculator():
-    """Subfunction, Either selects a user provided date, or simulates MATS FOV and stars.
+    """Subfunction, Either selects a user provided date, or simulates MATS FOV and the Moon.
     
     If 'automatic' in *Mode124_settings* is set to False, the date in *Mode124_settings* will be returned.. \n
     If 'automatic' in *Mode124_settings* is set to True. A list of dictionaries containing simulated dates is returned. 
@@ -112,8 +112,8 @@ def date_calculator():
         lat_MATS = zeros((duration,1))
         long_MATS = zeros((duration,1))
         altitude_MATS = zeros((duration,1))
-        g_ra_MATS = zeros((duration,1))
-        g_dec_MATS = zeros((duration,1))
+        a_ra_MATS = zeros((duration,1))
+        a_dec_MATS = zeros((duration,1))
         x_MATS = zeros((duration,1))
         y_MATS = zeros((duration,1))
         z_MATS = zeros((duration,1))
@@ -128,8 +128,8 @@ def date_calculator():
         MATS_p = zeros((duration,1))
         MATS_P = zeros((duration,1))
         
-        g_ra_Moon = zeros((duration,1))
-        g_dec_Moon = zeros((duration,1))
+        a_ra_Moon = zeros((duration,1))
+        a_dec_Moon = zeros((duration,1))
         distance_Moon = zeros((duration,1))
         x_Moon = zeros((duration,1))
         y_Moon = zeros((duration,1))
@@ -143,7 +143,7 @@ def date_calculator():
         Moon_vert_offset = zeros((duration,1))
         Moon_hori_offset = zeros((duration,1))
         angle_between_orbital_plane_and_moon = zeros((duration,1))
-        Moon_list = []
+        dates = []
         r_Moon_unit_vector = zeros((duration,3))
         
         
@@ -176,18 +176,18 @@ def date_calculator():
         
         while(current_time < initial_time+ephem.second*duration):
             
-            MATS.compute(current_time)
-            Moon.compute(current_time)
+            MATS.compute(current_time, epoch = '2000')
+            Moon.compute(current_time, epoch = '2000')
             
             
-            (lat_MATS[t],long_MATS[t],altitude_MATS[t],g_ra_MATS[t],g_dec_MATS[t])= (
-            MATS.sublat,MATS.sublong,MATS.elevation/1000,MATS.g_ra,MATS.g_dec)
+            (lat_MATS[t],long_MATS[t],altitude_MATS[t],a_ra_MATS[t],a_dec_MATS[t])= (
+            MATS.sublat,MATS.sublong,MATS.elevation/1000,MATS.a_ra,MATS.a_dec)
             
             R = lat_2_R(lat_MATS[t])
             
-            z_MATS[t] = sin(g_dec_MATS[t])*(altitude_MATS[t]+R)
-            x_MATS[t] = cos(g_dec_MATS[t])*(altitude_MATS[t]+R)* cos(g_ra_MATS[t])
-            y_MATS[t] = cos(g_dec_MATS[t])*(altitude_MATS[t]+R)* sin(g_ra_MATS[t])
+            z_MATS[t] = sin(a_dec_MATS[t])*(altitude_MATS[t]+R)
+            x_MATS[t] = cos(a_dec_MATS[t])*(altitude_MATS[t]+R)* cos(a_ra_MATS[t])
+            y_MATS[t] = cos(a_dec_MATS[t])*(altitude_MATS[t]+R)* sin(a_ra_MATS[t])
            
             r_MATS[t,0:3] = [x_MATS[t], y_MATS[t], z_MATS[t]]
             r_MATS_unit_vector[t] = r_MATS[t]/norm(r_MATS[t])
@@ -204,11 +204,12 @@ def date_calculator():
                 pitch_LP_array[t]= array(arccos((R_mean+LP_altitude)/(R+altitude_MATS[t]))/pi*180)
                 pitch_LP = pitch_LP_array[t][0]
             
-            (g_ra_Moon[t],g_dec_Moon[t],distance_Moon[t])= (Moon.g_ra,Moon.g_dec,Moon.earth_distance*AU)
+            (a_ra_Moon[t], a_dec_Moon[t], distance_Moon[t])= (
+                    Moon.a_ra, Moon.a_dec, Moon.earth_distance*AU)
             
-            z_Moon[t] = sin(g_dec_Moon[t]) * distance_Moon[t]
-            x_Moon[t] = cos(g_dec_Moon[t])*cos(g_ra_Moon[t]) * distance_Moon[t]
-            y_Moon[t] = cos(g_dec_Moon[t])*sin(g_ra_Moon[t]) * distance_Moon[t]
+            z_Moon[t] = sin(a_dec_Moon[t]) * distance_Moon[t]
+            x_Moon[t] = cos(a_dec_Moon[t])*cos(a_ra_Moon[t]) * distance_Moon[t]
+            y_Moon[t] = cos(a_dec_Moon[t])*sin(a_ra_Moon[t]) * distance_Moon[t]
            
             r_Moon[t,0:3] = [x_Moon[t], y_Moon[t], z_Moon[t]]
             r_Moon_unit_vector[t,0:3] = r_Moon[t,0:3]/norm(r_Moon[t,0:3])
@@ -375,8 +376,8 @@ def date_calculator():
                     Logger.debug('')
                     
                     
-                    Moon_list.append({ 'Date': str(current_time), 'V-offset': Moon_vert_offset[t], 'H-offset': Moon_hori_offset[t], 
-                                      'long_MATS': float(long_MATS[t]/pi*180), 'lat_MATS': float(lat_MATS[t]/pi*180), 'Dec': float(g_dec_Moon[t]/pi*180), 'RA': float(g_ra_Moon[t]/pi*180)})
+                    dates.append({ 'Date': str(current_time), 'V-offset': Moon_vert_offset[t], 'H-offset': Moon_hori_offset[t], 
+                                      'long_MATS': float(long_MATS[t]/pi*180), 'lat_MATS': float(lat_MATS[t]/pi*180), 'Dec': float(a_dec_Moon[t]/pi*180), 'RA': float(a_ra_Moon[t]/pi*180)})
                     
                     Logger.debug('Jump ahead half an orbit in time')
                     "Skip ahead half an orbit"
@@ -405,7 +406,7 @@ def date_calculator():
             
             
         Logger.info('End of simulation for Mode124')
-        Logger.debug('Moon_list: '+str(Moon_list))
+        Logger.debug('dates: '+str(dates))
         
         
         ########################## Optional plotter ###########################################
@@ -431,7 +432,7 @@ def date_calculator():
         ########################### END of Optional plotter ########################################
         '''
         
-        return Moon_list
+        return dates
 
 
 

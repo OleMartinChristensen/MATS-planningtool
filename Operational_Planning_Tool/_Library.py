@@ -78,7 +78,9 @@ def deg2HMS(ra='', dec='', roundOf=False):
 
 
 def lat_2_R( lat ):
-    """Takes a geocentric latitude in radians and puts out the distance from the center of a spheroid Earth to the surface
+    """Takes a geocentric or geodetic latitude in radians and puts out the distance from the center of a ellipsoid Earth to the surface
+    
+    If a geocentic latitude is given, an error of up to 70 m will occur.
     
     Arguments:
         lat (float): Latitude angle in radians
@@ -92,6 +94,10 @@ def lat_2_R( lat ):
     R_eq = 6378.137
     
     R = sqrt( ( (R_eq**2*cos(lat))**2 + (R_polar**2*sin(lat))**2 ) / ( (R_eq*cos(lat))**2 + (R_polar*sin(lat))**2 ) )
+
+    #e = sqrt(1-R_polar**2/R_eq**2)
+    #R = R_eq/sqrt(1-e**2*sin(lat/180*pi)**2)
+    #R = sqrt( ( (R_eq**2*cos(lat))**2 + (R_polar**2*sin(lat))**2 ) / ( (R_eq*cos(lat))**2 + (R_polar*sin(lat))**2 ) )
     
     return R
 
@@ -321,6 +327,6 @@ def calculate_time_per_row(NCOL, NCBIN, NCBINFPGA, NRSKIP, NROW, NRBIN, NFLUSH):
     #"smearing time"
     #(this is the time that any pixel collects electrons in a wrong row, during the shifting.)
     #For smearing correction, this is the "extra exposure time" for each of the rows.
-    T_row_extra = (T_row_read + T_row_shift*nrowbin) / 1e9    
+    T_row_extra = (T_row_read + T_row_shift*nrowbin)   
     
-    return T_readout
+    return T_readout/1e9, T_delay/1e9, T_row_extra/1e9

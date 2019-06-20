@@ -20,7 +20,7 @@ from . Commands import Commands
 from .Procedures import BinnedCalibration_procedure, Full_CCD_procedure, LowPixel_procedure, High_res_IR_procedure, High_res_UV_procedure, CustomBinning_procedure
 
 
-def Mode5_6(root, relativeTime, pointing_altitude, UV_on = True, nadir_on = True, comment = ''):
+def Mode1_2_3_4_custom(root, relativeTime, pointing_altitude, UV_on = True, nadir_on = True, comment = ''):
     ''' Macro that corresponds to Mode1/3 when exposure on the nadir CCD is enabled during NLC season at LP latitudes polewards of X degrees, where X is specified in OPT_Config_File.Mode_1_2_3_4_5_6settings"
         
         Arguments:
@@ -48,6 +48,27 @@ def Mode5_6(root, relativeTime, pointing_altitude, UV_on = True, nadir_on = True
     return relativeTime
 
 
+
+def Mode5_6(root, relativeTime, pointing_altitude, comment = ''):
+    ''' Macro that corresponds to Mode5/6
+        
+        Arguments:
+            pointing_altitude (int): The altitude of the tangential point [m].
+    '''
+    
+    
+    relativeTime = Commands.TC_pafMode(root, relativeTime, mode = 2, comment = comment)
+    
+    relativeTime = Commands.TC_pafPM(root, relativeTime, comment = comment)
+    
+    
+    relativeTime = CustomBinning_procedure(root = root, relativeTime = relativeTime, comment = comment)
+    
+    relativeTime = Commands.TC_acfLimbPointingAltitudeOffset(root, relativeTime, Initial = pointing_altitude, Final = pointing_altitude, comment = comment)
+    
+    relativeTime = Commands.TC_pafMode(root, relativeTime, mode = 1, comment = comment)
+    
+    return relativeTime
 
 def NLC_night(root, relativeTime, pointing_altitude, UV_on, comment):
     ''' Macro that corresponds to Mode1/3 when exposure on the nadir CCD is enabled during NLC season at LP latitudes polewards of X degrees, where X is specified in OPT_Config_File.Mode_1_2_3_4_5_6settings"

@@ -154,55 +154,48 @@ def Timeline_generator():
     Logger.info('yaw_correction = '+str(yaw_correction))
     Logger.info('')
     
-    Mode_1_2_3_4 = getattr(Modes_Header,'Mode_1_2_3_4_5_6')
+    Mode_1_2_3_4_5_6 = getattr(Modes_Header,'Mode_1_2_3_4_5_6')
     
+    
+    if( Timeline_settings['Custom_Mode'] == True ):
+        Logger.info('Custom Mode (Mode5/6)')
+        
+        if( yaw_correction == True ):
+            mode = 'Mode6'
+        elif( yaw_correction == False ):
+            mode = 'Mode5'
     ### Check if it is NLC season ###
-    if( Timeline_start_date.tuple()[1] in [11,12,1,2,5,6,7,8] or 
+    elif( Timeline_start_date.tuple()[1] in [11,12,1,2,5,6,7,8] or 
             ( Timeline_start_date.tuple()[1] in [3,9] and Timeline_start_date.tuple()[2] in range(11) )):
         
-        Logger.info('NLC season')
+        Logger.info('NLC season (Mode1/3)')
         
-        if( Timeline_settings['Custom_Mode'] == True ):
-            mode = 'Mode5'
-        elif( yaw_correction == True ):
+        if( yaw_correction == True ):
             mode = 'Mode3'
         elif( yaw_correction == False):
             mode = 'Mode1' 
-        
-        Occupied_Timeline.update({mode: []})
-        
-        Occupied_Timeline, Mode_comment = Mode_1_2_3_4(Occupied_Timeline)
-        Logger.debug('')
-        Logger.debug('Post-'+mode+' Occupied_Timeline: \n'+"{" + "\n".join("        {}: {}".format(k, v) for k, v in Occupied_Timeline.items()) + "}")
-        Logger.debug('')
-        
-        Logger.debug(mode+' getting added to unchronological timeline')
-        for x in range(len(Occupied_Timeline[mode])):
-            Logger.debug('Appended to timeline: '+str((Occupied_Timeline[mode][x][0], Occupied_Timeline[mode][x][1],mode, Mode_comment)))
-            SCIMOD_Timeline_unchronological.append((Occupied_Timeline[mode][x][0], Occupied_Timeline[mode][x][1],mode, Mode_comment))
     else:
         
-        Logger.info('Not NLC season')
+        Logger.info('Not NLC season (Mode2/4)')
         
-        if( Timeline_settings['Custom_Mode'] == True ):
-            mode = 'Mode6'
-        elif( yaw_correction == True ):
+        if( yaw_correction == True ):
             mode = 'Mode4'
         elif( yaw_correction == False):
-            mode = 'Mode2' 
+            mode = 'Mode2'
+            
         
+    Occupied_Timeline.update({mode: []})
+    
+    Occupied_Timeline, Mode_comment = Mode_1_2_3_4_5_6(Occupied_Timeline)
+    Logger.debug('')
+    Logger.debug('Post-'+mode+' Occupied_Timeline: \n'+"{" + "\n".join("        {}: {}".format(k, v) for k, v in Occupied_Timeline.items()) + "}")
+    Logger.debug('')
+    
+    Logger.debug(mode+' getting added to unchronological timeline')
+    for x in range(len(Occupied_Timeline[mode])):
+        Logger.debug('Appended to timeline: '+str((Occupied_Timeline[mode][x][0], Occupied_Timeline[mode][x][1],mode, Mode_comment)))
+        SCIMOD_Timeline_unchronological.append((Occupied_Timeline[mode][x][0], Occupied_Timeline[mode][x][1],mode, Mode_comment))
         
-        Occupied_Timeline.update({mode: []})
-        
-        Occupied_Timeline, Mode_comment = Mode_1_2_3_4(Occupied_Timeline)
-        Logger.debug('')
-        Logger.debug('Post-'+mode+' Occupied_Timeline: \n'+"{" + "\n".join("        {}: {}".format(k, v) for k, v in Occupied_Timeline.items()) + "}")
-        Logger.debug('')
-        
-        Logger.debug(mode+' getting added to unchronological timeline')
-        for x in range(len(Occupied_Timeline[mode])):
-            Logger.debug('Appended to timeline: '+str((Occupied_Timeline[mode][x][0], Occupied_Timeline[mode][x][1],mode, Mode_comment)))
-            SCIMOD_Timeline_unchronological.append((Occupied_Timeline[mode][x][0], Occupied_Timeline[mode][x][1],mode, Mode_comment))
     
     ###########################################################################################
     ###########################################################################################
@@ -233,11 +226,18 @@ def Timeline_generator():
         try:
             Config_File = getattr(OPT_Config_File,x[2]+'_settings')()
         except AttributeError:
-            try:
-                Config_File = getattr(OPT_Config_File,'Mode_1_2_3_4_5_6settings')()
-            except AttributeError:
-                Logger.warning('No Config function for '+x[2])
-                Config_File = []
+            
+            if( Timeline_settings['Custom_Mode'] == False and (x[2] == 'Mode1' or 
+               x[2] == 'Mode2' or x[2] == 'Mode3' or x[2] == 'Mode4') ):
+                
+                Config_File = getattr(OPT_Config_File,'Mode_1_2_3_4settings')()
+                
+            elif( Timeline_settings['Custom_Mode'] == True and (x[2] == 'Mode5' or x[2] == 'Mode6') ):
+                
+                Config_File = getattr(OPT_Config_File,'Mode_5_6settings')()
+            else:
+                    Logger.warning('No Config function for '+x[2])
+                    Config_File = []
             
                 
         #SCIMOD_Timeline.append([ x[2],str(x[0]), str(x[1]),{},x[3] ])
