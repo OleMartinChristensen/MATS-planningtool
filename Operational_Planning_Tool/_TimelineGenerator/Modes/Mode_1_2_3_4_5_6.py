@@ -100,7 +100,7 @@ def Mode_1_2_3_4_5_6date_select(Occupied_Timeline, Mode_1_2_3_4_5_6initial_date)
     
     ## To fill in modes inbetween already schedueled modes. The amount of iterations is equal to 
     ## the number of modes scheduled plus 1 as there is a possibility for the modes to be scheduled 
-    ## at the start or end of the timeline.
+    ## at the start and end of the timeline.
     for x in range(len(Occupied_values)+1):
         
         ## For first iteration; Check if there is spacing between Mode_1_2_3_4_5_6initial_date and the the first mode running
@@ -109,7 +109,6 @@ def Mode_1_2_3_4_5_6date_select(Occupied_Timeline, Mode_1_2_3_4_5_6initial_date)
             if(time_between_modes > Mode_1_2_3_4_5_6minDuration ):
                 Mode_1_2_3_4_5_6date = Mode_1_2_3_4_5_6initial_date
                 
-                #Mode_1_2_3_4_5_6date = Occupied_values[x][1]
                 Mode_1_2_3_4_5_6endDate = ephem.Date(Occupied_values[x][0] - ephem.second*settings['mode_separation'])
                 Mode_1_2_3_4_5_6dates.append( (Mode_1_2_3_4_5_6date, Mode_1_2_3_4_5_6endDate) )
                 iterations = iterations + 1

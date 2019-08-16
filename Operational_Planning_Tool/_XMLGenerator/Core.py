@@ -56,12 +56,26 @@ def XML_generator(SCIMOD_Path):
         SCIMOD= json.load(read_file)
     ################# Read Science Mode Timeline json file ############
     
+    Timeline_settings = OPT_Config_File.Timeline_settings()
+    if( str(SCIMOD[0][0]) == 'Timeline_settings' ):
+        Timeline_settings_from_Timeline = SCIMOD[0][3]
+        Timeline_settings = _Library.params_checker( Timeline_settings_from_Timeline, OPT_Config_File.Timeline_settings())
+        Logger.info('Timeline_settings found in Science Mode Timeline. Using them')
+        TLE_from_Timeline = SCIMOD[0][4]
+        TLE_from_configFile =  OPT_Config_File.getTLE()
+        if( TLE_from_Timeline[0] != TLE_from_configFile[0] or TLE_from_Timeline[1] != TLE_from_configFile[1] ):
+            Logger.error('Mismatch between TLE in Science Mode Timeline and in ConfigFile. Check your chosen ConfigFile and maybe rerun OPT.Timeline_gen. Exiting...')
+            sys.exit()
+    else:
+        Logger.info('Timeline_settings not found in Science Mode Timeline. Using the ones in the chosen ConfigFile')
+        
+    _Globals.Timeline_settings = Timeline_settings
     
     ################ Get settings for Timeline from Config module ############
-    timeline_duration = OPT_Config_File.Timeline_settings()['duration']
+    timeline_duration = Timeline_settings['duration']
     Logger.info('timeline_duration: '+str(timeline_duration))
     
-    timeline_start = ephem.Date(OPT_Config_File.Timeline_settings()['start_date'])
+    timeline_start = ephem.Date(Timeline_settings['start_date'])
     Logger.info('timeline_start: '+str(timeline_start))
     
     
@@ -77,7 +91,7 @@ def XML_generator(SCIMOD_Path):
         Logger.info('')
         Logger.info('Iteration number: '+str(x+1))
         
-        "Skip the first entry if it only contains Timeline_settings used for the creation of the Science Mode Timeline"
+        "Skip the first entry if it only contains Timeline_settings"
         if( str(SCIMOD[x][0]) == 'Timeline_settings' ):
             continue
         
@@ -112,7 +126,7 @@ def XML_generator(SCIMOD_Path):
     SCIMOD_Path = SCIMOD_Path.replace('.json','')
     
     ### Write finished XML-tree with all commands to a file #######
-    MATS_COMMANDS = os.path.join('Output','MATS_COMMANDS__'+_Globals.Config_File+'__TimelineFrom_'+SCIMOD_Path+'.xml')
+    MATS_COMMANDS = os.path.join('Output','MATS_COMMANDS__'+_Globals.Config_File+'__TimelineUSED__'+SCIMOD_Path+'.xml')
     Logger.info('Write XML-tree to: '+MATS_COMMANDS)
     f = open(MATS_COMMANDS, 'w')
     f.write(etree.tostring(root, pretty_print=True, encoding = 'unicode'))

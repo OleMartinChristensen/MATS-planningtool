@@ -5,7 +5,7 @@
 import ephem, importlib, time, logging, os, sys
 from pylab import cos, sin, sqrt, array, arccos, pi, floor, around
 
-from Operational_Planning_Tool import _Globals
+from Operational_Planning_Tool import _Globals, _MATS_coordinates
 
 OPT_Config_File = importlib.import_module(_Globals.Config_File)
 
@@ -90,8 +90,11 @@ def lat_2_R( lat ):
         
     """
     
+    
     R_polar = 6356.752314245
     R_eq = 6378.137
+    
+    
     
     R = sqrt( ( (R_eq**2*cos(lat))**2 + (R_polar**2*sin(lat))**2 ) / ( (R_eq*cos(lat))**2 + (R_polar*sin(lat))**2 ) )
 
@@ -100,6 +103,49 @@ def lat_2_R( lat ):
     #R = sqrt( ( (R_eq**2*cos(lat))**2 + (R_polar**2*sin(lat))**2 ) / ( (R_eq*cos(lat))**2 + (R_polar*sin(lat))**2 ) )
     
     return R
+
+
+
+def lat_MATS_calculator( date ):
+    ''' Function that calculates the latitude of a satellite defined by TLE.
+    
+    Mainly used to approximated the latitude of a LP as the LP is close to being in the same orbital plane.
+    
+    Arguments:
+        date (:obj:`ephem.Date`): The scheduled startdate of the current Mode.
+    
+    Returns: 
+        lat_MATS (float): Latitude given in radians.
+    '''
+    
+    TLE1 = OPT_Config_File.getTLE()[0]
+    TLE2 = OPT_Config_File.getTLE()[1]
+        
+    
+    MATS = ephem.readtle('MATS',TLE1,TLE2)
+    
+    MATS.compute(ephem.Date(date), epoch = '2000/01/01 11:58:55.816')
+    
+    (lat_MATS,long_MATS,alt_MATS,a_ra_MATS,a_dec_MATS)= (
+            MATS.sublat, MATS.sublong, MATS.elevation/1000, MATS.a_ra, MATS.a_dec)
+    
+    R_earth_MATS = lat_2_R(lat_MATS) #WGS84 radius from latitude of MATS
+    
+    z_MATS = sin(a_dec_MATS)*(alt_MATS+R_earth_MATS)
+    x_MATS = cos(a_dec_MATS)*(alt_MATS+R_earth_MATS)* cos(a_ra_MATS)
+    y_MATS = cos(a_dec_MATS)*(alt_MATS+R_earth_MATS)* sin(a_ra_MATS)
+    r_MATS = array((x_MATS, y_MATS, z_MATS))
+    
+    
+    r_MATS_ECEF_x, r_MATS_ECEF_y, r_MATS_ECEF_z = _MATS_coordinates.eci2ecef(
+            r_MATS[0], r_MATS[1], r_MATS[2], ephem.Date(date).datetime())
+    
+    
+    lat_MATS, long_MATS, alt_MATS  = _MATS_coordinates.ECEF2lla(r_MATS_ECEF_x*1000, r_MATS_ECEF_y*1000, r_MATS_ECEF_z*1000)
+    
+    lat_MATS = lat_MATS / 180*pi
+    
+    return lat_MATS
 
 def scheduler(Occupied_Timeline, date, endDate):
     ''' Function that checks if the scheduled time is available and postpones it otherwise. 
@@ -252,8 +298,17 @@ def calculate_time_per_row(NCOL, NCBIN, NCBINFPGA, NRSKIP, NROW, NRBIN, NFLUSH):
     All pixel timing setting is the final count of a counter that starts at 0,
     so the number of clock cycles exceeds the setting by 1
     
+    Arguments:
+        NCOL (int): Number of columns
+        NCBIN (int): Number of columns to bin
+        NCBINFPGA (int): Binning with FPGA
+        NRSKIP (int): Number of rows to skip
+        NROW (int): Number of rows
+        NRBIN (int): Number of rows to bin
+        NFLUSH (int): Number of pre-exposure flushes
+    
     Returns:
-        (float): Readout time in ns. 
+        (float): Readout time in s. 
     """
     
     #image parameters

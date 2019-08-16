@@ -329,19 +329,19 @@ def ecef2eci(x,y,z,dt):
 
     
 
-#This function takes a position in the ECI-J2000 corrdinate system and returns it 
+#This function takes a position in the ECEF corrdinate system and returns it 
 
-#in ECEF.
+#in ECI-J2000.
 
 #
 
 # Input
 
-# x = ECI X-coordinate (m)
+# x = ECEF X-coordinate (m)
 
-# y = ECI Y-coordinate (m)
+# y = ECEF Y-coordinate (m)
 
-# z = ECI Z-coordinate (m)
+# z = ECEF Z-coordinate (m)
 
 # dt = UTC time (datetime object)
 
@@ -358,24 +358,27 @@ def ecef2eci(x,y,z,dt):
     # convert datetime object to astropy time object
 
     tt=time.Time(dt,format='datetime')
-
-
-
-    # Read the coordinates in the Geocentric Celestial Reference System
-
-    itrs = ITRS(CartesianRepresentation(x=x*units.km,y=y*units.km,z=z*units.km), obstime=tt)
-
-
-
-    # Convert it to an Earth-fixed frame
-
+    
+    
+    
+    
+    
+    # Read the coordinates in the Earth-fixed frame
+    
+    itrs = ITRS(CartesianRepresentation(x=x*units.m,y=y*units.m,z=z*units.m) , obstime=tt )
+    
+    
+    
+    # Convert it to  Geocentric Celestial Reference System
+    
+    #gcrs = itrs.transform_to(itrs(obstime=tt))
     gcrs = itrs.transform_to(GCRS(obstime=tt))
-
-    x = gcrs.cartesian.x
-
-    y = gcrs.cartesian.y
-
-    z = gcrs.cartesian.z
+    
+    x = gcrs.cartesian.x.to_value()
+    
+    y = gcrs.cartesian.y.to_value()
+    
+    z = gcrs.cartesian.z.to_value()
 
     
 
@@ -412,33 +415,33 @@ def eci2ecef(x,y,z,dt):
 # Output 
 
 #
-
-        
-
-    # convert datetime object to astropy time object
-
-    tt=time.Time(dt,format='datetime')
-
-
-
-    # Read the coordinates in the Geocentric Celestial Reference System
-
-    gcrs = GCRS(CartesianRepresentation(x=x*units.km,y=y*units.km,z=z*units.km), obstime=tt)
-
-
-
-    # Convert it to an Earth-fixed frame
-
-    itrs = gcrs.transform_to(ITRS(obstime=tt))
-
-    x = itrs.cartesian.x
-
-    y = itrs.cartesian.y
-
-    z = itrs.cartesian.z
-
     
-
+    
+    
+    # convert datetime object to astropy time object
+    
+    tt=time.Time(dt,format='datetime')
+    
+    
+    
+    # Read the coordinates in the Geocentric Celestial Reference System
+    
+    gcrs = GCRS(CartesianRepresentation(x=x, y=y, z=z, unit='m'), obstime=tt)
+    
+    
+    
+    # Convert it to an Earth-fixed frame
+    
+    itrs = gcrs.transform_to(ITRS(obstime=tt))
+    
+    x = itrs.cartesian.x.to_value()
+    
+    y = itrs.cartesian.y.to_value()
+    
+    z = itrs.cartesian.z.to_value()
+    
+    
+    
     return x,y,z
 
 

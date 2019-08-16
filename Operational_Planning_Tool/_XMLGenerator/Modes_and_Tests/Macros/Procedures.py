@@ -46,7 +46,7 @@ def CustomBinning_procedure(root, relativeTime, nadirTEXPMS = 1500, UV_TEXPMS = 
     return relativeTime
 """
 
-def CustomBinning_procedure(root, relativeTime, comment = ''):
+def CustomBinning_procedure(root, relativeTime, UV_TEXPMS = 3000, nadirTEXPMS = 1500, comment = ''):
     '''Custom binning, see module description for more details.
     
     Custom binning procedure used by Mode5-6.
@@ -58,7 +58,7 @@ def CustomBinning_procedure(root, relativeTime, comment = ''):
     '''
     
     
-    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDSEL = 48, PWR = 0, ExpInterval = 4000, ExpTime = 3000, comment = comment, 
+    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDSEL = 48, PWR = 0, ExpInterval = 4000, ExpTime = UV_TEXPMS, comment = comment, 
                   NRSKIP = 0, NRBIN= 2, NROW = 255, NCBIN = 40, NCOL = 50, SIGMODE = 0)
     
     
@@ -70,7 +70,7 @@ def CustomBinning_procedure(root, relativeTime, comment = ''):
                   NRSKIP = 0, NRBIN= 6, NROW = 85, NCBIN = 200, NCOL = 8)
     
     
-    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDSEL = 64, PWR = 1, ExpInterval = 4500, ExpTime = 1500, comment = comment, 
+    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDSEL = 64, PWR = 1, ExpInterval = 4500, ExpTime = nadirTEXPMS, comment = comment, 
                   NRSKIP = 0, NRBIN= 25, NROW = 16, NCBIN = 36, NCOL = 55, JPEGQ = 90)
     
     return relativeTime

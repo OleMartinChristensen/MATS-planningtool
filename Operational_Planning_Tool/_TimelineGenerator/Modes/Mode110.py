@@ -6,8 +6,6 @@ Part of Timeline_generator, as part of OPT.
 """
 
 
-
-
 import ephem, sys, logging, importlib
 
 from Operational_Planning_Tool._Library import scheduler

@@ -10,7 +10,7 @@ import ephem
 from pylab import array, cos, sin, cross, dot, zeros, sqrt, norm, pi, arccos, around, floor
 from astroquery.vizier import Vizier
 
-from Operational_Planning_Tool._Library import rot_arbit, deg2HMS, lat_2_R, scheduler
+from Operational_Planning_Tool._Library import rot_arbit, deg2HMS, lat_2_R, scheduler, lat_MATS_calculator
 from Operational_Planning_Tool import _Globals
 
 OPT_Config_File = importlib.import_module(_Globals.Config_File)
@@ -112,10 +112,10 @@ def Mode120_date_calculator():
         
         "Insert stars into Pyephem"
         for t in range(ROWS):
-            s = "{},f|M|F7,{},{},{},2000"
+            s = "{},f|M|F7,{},{},{},2000/01/01 11:58:55.816"
             s = s.format(star_cat[t]['HIP'], deg2HMS(ra=star_cat[t]['_RA.icrs']), deg2HMS(dec=star_cat[t]['_DE.icrs']), star_cat[t]['Vmag'])
             stars.append(ephem.readdb(s))
-            stars[t].compute(epoch='2000')
+            stars[t].compute(epoch='2000/01/01 11:58:55.816')
             stars_dec[t] = stars[t].dec
             stars_ra[t] = stars[t].ra
         
@@ -191,15 +191,12 @@ def Mode120_date_calculator():
         
         "Constants"
         R_mean = 6371 #Earth radius [km]
-        #wgs84_Re = 6378.137 #Equatorial radius of wgs84 spheroid [km]
-        # wgs84_Rp = 6356752.3142 #Polar radius of wgs84 spheroid [km]
         U = 398600.4418 #Earth gravitational parameter
         LP_altitude = Timeline_settings['LP_pointing_altitude']/1000  #Altitude at which MATS center of FOV is looking [km]
         pointing_altitude = Mode120_settings['pointing_altitude']/1000 
-        #extended_Re = wgs84_Re + LP_altitude #Equatorial radius of extended wgs84 spheroid
-        #f_e = (wgs84_Re - wgs84_Rp) / Re_extended #Flattening of extended wgs84 spheroid
+        
         V_offset = Mode120_settings['V_offset']
-        H_offset = Mode120_settings['H_offset']  #5.67 is actual H_FOV
+        H_offset = Mode120_settings['H_offset']
         
         
         yaw_correction = Timeline_settings['yaw_correction']
@@ -224,7 +221,7 @@ def Mode120_date_calculator():
             
             current_time = ephem.Date(date+ephem.second*timestep*t)
             
-            MATS.compute(current_time, epoch = '2000')
+            MATS.compute(current_time, epoch = '2000/01/01 11:58:55.816')
             
             (lat_MATS[t],long_MATS[t],altitude_MATS[t],a_ra_MATS[t],a_dec_MATS[t])= (
             MATS.sublat,MATS.sublong,MATS.elevation/1000,MATS.a_ra,MATS.a_dec)
@@ -239,6 +236,8 @@ def Mode120_date_calculator():
             
             r_MATS_unit_vector[t,0:3] = r_MATS[t,0:3] / norm(r_MATS[t,0:3])
             
+            
+            
             #Semi-Major axis of MATS, assuming circular orbit
             MATS_p[t] = norm(r_MATS[t,0:3])
             
@@ -248,10 +247,12 @@ def Mode120_date_calculator():
             
             
             
-            #Initial Estimated pitch or elevation angle for MATS pointing using R_mean
+            #Initial Estimated pitch for MATS pointing using R_mean
             if(t == 0):
                 pitch_LP_array[t]= array(arccos((R_mean+LP_altitude)/(R+altitude_MATS[t]))/pi*180)
                 pitch_LP = pitch_LP_array[t][0]
+                time_between_LP_and_MATS = MATS_P[t][0]*pitch_LP/360
+                timesteps_between_LP_and_MATS = int(time_between_LP_and_MATS / timestep)
                 
             
             if( t*timestep % log_timestep == 0 ):
@@ -269,19 +270,20 @@ def Mode120_date_calculator():
                     
             if(t != 0):
                 
-                # Estimation of the Earths radius below LP
-                if( abs(lat_MATS[t])-abs(lat_MATS[t-1]) > 0 ): #Moving towards poles meaning LP is equatorwards compared to MATS
-                    abs_lat_LP = abs(lat_MATS[t])-pitch_LP/180*pi #absolute value of estimated latitude of LP in radians
-                    R_LP = lat_2_R(abs_lat_LP) #Estimated WGS84 radius of LP from latitude of MATS
+                # More accurate estimation of lat of LP using the position of MATS at a previous time
+                if( t >= timesteps_between_LP_and_MATS):
+                    abs_lat_LP = abs(lat_MATS[t-timesteps_between_LP_and_MATS])
+                    R_earth_LP = lat_2_R(abs_lat_LP)
                 else:
-                    abs_lat_LP = abs(lat_MATS[t])+pitch_LP/180*pi #absolute value of estimated latitude of LP in radians
-                    R_LP = lat_2_R(abs_lat_LP) #Estimated WGS84 radius of LP from latitude of MATS
-                    
-                # More accurate estimation of pitch angle of MATS using R_LP instead of R_mean
-                pitch_LP_array[t]= array(arccos((R_LP+LP_altitude)/(R+altitude_MATS[t]))/pi*180)
+                    date_of_MATSlat_is_equal_2_current_LPlat = ephem.Date(current_time - ephem.second * timesteps_between_LP_and_MATS * timestep)
+                    abs_lat_LP = abs( lat_MATS_calculator( date_of_MATSlat_is_equal_2_current_LPlat ) )
+                    R_earth_LP = lat_2_R(abs_lat_LP)
+                
+                # More accurate estimation of pitch angle of MATS using R_earth_LP instead of R_mean
+                pitch_LP_array[t]= array(arccos((R_earth_LP+LP_altitude)/(R+altitude_MATS[t]))/pi*180)
                 pitch_LP = pitch_LP_array[t][0]
                 
-                pitch_pointing_command_array[t] = array(arccos((R_LP+pointing_altitude )/(R+altitude_MATS[t]))/pi*180)
+                pitch_pointing_command_array[t] = array(arccos((R_earth_LP+pointing_altitude )/(R+altitude_MATS[t]))/pi*180)
                 pitch_pointing_command = pitch_pointing_command_array[t][0]
                 
                 pitch_angle_between_command_and_LP_altitudes = pitch_LP - pitch_pointing_command
@@ -319,10 +321,6 @@ def Mode120_date_calculator():
                 r_FOV[t,0:3] = (rot_mat @ r_MATS[t])
                 
                 
-                #rot_mat2 = rot_arbit(pi/2+(pitch_pointing_command+pitch_offset_angle)/180*pi, normal_orbit[t,0:3])
-                #r_FOV2[t,0:3] = (rot_mat2 @ r_MATS[t]) /2
-                #r_FOV_unit_vector2[t,0:3] = r_FOV2[t,0:3]/norm(r_FOV2[t,0:3])
-                
                 
                 
                 "Rotate yaw of pointing direction, meaning to rotate around the vector to MATS"
@@ -348,7 +346,7 @@ def Mode120_date_calculator():
                 r_V_offset_normal[t,0:3] = r_V_offset_normal[t,0:3]/norm(r_V_offset_normal[t,0:3])
                 
                 if( t*timestep % log_timestep == 0 or t == 1 ):
-                    Logger.debug('R_LP [km]: '+str(R_LP))
+                    Logger.debug('R_earth_LP [km]: '+str(R_earth_LP))
                     Logger.debug('pitch_LP [degrees]: '+str(pitch_LP))
                     Logger.debug('pitch_pointing_command [degrees]: '+str(pitch_pointing_command))
                     Logger.debug('pitch_angle_between_command_and_LP_altitudes [degrees]: '+str(pitch_angle_between_command_and_LP_altitudes))
@@ -394,8 +392,8 @@ def Mode120_date_calculator():
                                 "Project 'star vectors' ontop pointing H-offset and V-offset plane"
                                 stars_r_V_offset_plane[x] = stars_r[0][x] - dot(stars_r[0][x],r_V_offset_normal[t,0:3]) * r_V_offset_normal[t,0:3]
                     
-                                stars_r_H_offset_plane[x] = stars_r[0][x] - ((dot(stars_r[0][x],r_H_offset_normal[t]) * r_H_offset_normal[t]) / ((norm(r_H_offset_normal[t]))**2))
-                    
+                                stars_r_H_offset_plane[x] = stars_r[0][x] - dot(stars_r[0][x],r_H_offset_normal[t]) * r_H_offset_normal[t]
+                                
                                 "Dot product to get the Vertical and Horizontal angle offset of the star in the FOV"
                                 stars_vert_offset[t][x] = arccos(dot(r_FOV[t],stars_r_V_offset_plane[x]) / (norm(r_FOV[t]) * norm(stars_r_V_offset_plane[x]))) /pi*180
                                 stars_hori_offset[t][x] = arccos(dot(r_FOV[t],stars_r_H_offset_plane[x]) / (norm(r_FOV[t]) * norm(stars_r_H_offset_plane[x]))) /pi*180
@@ -442,8 +440,6 @@ def Mode120_date_calculator():
                     if( dot(cross(r_FOV[t],stars_r_H_offset_plane[x]),r_H_offset_normal[t]) > 0 ):
                         stars_hori_offset[t][x] = -stars_hori_offset[t][x]
                     
-                    #"To be able to skip stars far outside the orbital plane of MATS"
-                    #angle_between_orbital_plane_and_star[t][x] = arccos( dot(stars_r[0][x], stars_r_V_offset_plane[x]) / norm(stars_r_V_offset_plane[x])) /pi*180
                     
                     
                     "To be able to skip stars far outside the orbital plane of MATS"
@@ -715,7 +711,7 @@ def Mode120_date_select(Occupied_Timeline, dates):
         Occupied_Timeline['Mode120'].append( (Mode120_date, Mode120_endDate) )
         
         Mode120_comment = ('Star name:'+star_name[x]+', V-offset: '+str(star_V_offset[x])+', H-offset: '+str(star_H_offset[x])+', V-mag: '+str(star_mag[x])+', Number of times date changed: '+str(iterations)
-            +', MATS (long,lat) in degrees = ('+str(star_long[x])+', '+str(star_lat[x])+'), star Dec (J2000 ECI): '+str(dates[x]['Dec'])+', star RA (J2000 ECI): '+str(dates[x]['RA']))
+            +', MATS (long,lat) in degrees = ('+str(star_long[x])+', '+str(star_lat[x])+'), star Dec (J2000 ICRS): '+str(dates[x]['Dec'])+', star RA (J2000 ICRS): '+str(dates[x]['RA']))
         
     
     return Occupied_Timeline, Mode120_comment

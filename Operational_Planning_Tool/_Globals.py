@@ -12,4 +12,5 @@ Config_File = 'OPT_Config_File'
 current_pointing = None
 #science_mode_timeline_path = None
 StartTime = None
+Timeline_settings = None
 

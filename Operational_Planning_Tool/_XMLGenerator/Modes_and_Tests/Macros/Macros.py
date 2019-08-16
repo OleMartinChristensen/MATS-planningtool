@@ -254,7 +254,7 @@ def Mode110_macro(root, relativeTime, pointing_altitude_from, pointing_altitude_
 
 
 def Mode120_macro(root, relativeTime, freezeTime, FreezeDuration, pointing_altitude, 
-                  SnapshotSpacing, Snapshot_relativeTime, comment):
+                  LP_pointing_altitude, SnapshotSpacing, Snapshot_relativeTime, comment):
     ''' Macro that corresponds to Mode120.
     
         Arguments:
@@ -283,13 +283,14 @@ def Mode120_macro(root, relativeTime, freezeTime, FreezeDuration, pointing_altit
         relativeTime = Commands.TC_pafCCDSnapshot(root, Snapshot_relativeTime, CCDSEL = CCDSEL, comment = comment)
         Snapshot_relativeTime = Snapshot_relativeTime + SnapshotSpacing
     
+    relativeTime = Commands.TC_acfLimbPointingAltitudeOffset(root, relativeTime, Initial = LP_pointing_altitude, Final = LP_pointing_altitude, Rate = 0, comment = comment)
     #relativeTime = Commands.TC_pafMode(root, relativeTime, mode = 1, comment = comment)
     
     return relativeTime
 
 
 def Mode121_macro(root, relativeTime, freezeTime, FreezeDuration, pointing_altitude, 
-                  SnapshotSpacing, Snapshot_relativeTime, comment):
+                  LP_pointing_altitude, SnapshotSpacing, Snapshot_relativeTime, comment):
     ''' Macro that corresponds to Mode121.
     
         Arguments:
@@ -318,13 +319,15 @@ def Mode121_macro(root, relativeTime, freezeTime, FreezeDuration, pointing_altit
         relativeTime = Commands.TC_pafCCDSnapshot(root, Snapshot_relativeTime, CCDSEL = CCDSEL, comment = comment)
         Snapshot_relativeTime = Snapshot_relativeTime + SnapshotSpacing
     
+    relativeTime = Commands.TC_acfLimbPointingAltitudeOffset(root, relativeTime, Initial = LP_pointing_altitude, Final = LP_pointing_altitude, Rate = 0, comment = comment)
+    
     #relativeTime = Commands.TC_pafMode(root, relativeTime, mode = 1, comment = comment)
     
     return relativeTime
 
 
 def Mode122_macro(root, relativeTime, freezeTime, FreezeDuration, pointing_altitude, Snapshot_relativeTime, 
-                  SnapshotSpacing, ExpTimeUV, ExpTimeIR, comment):
+                  LP_pointing_altitude, SnapshotSpacing, ExpTimeUV, ExpTimeIR, comment):
     ''' Macro that corresponds to Mode121.
     
         Arguments:
@@ -357,13 +360,15 @@ def Mode122_macro(root, relativeTime, freezeTime, FreezeDuration, pointing_altit
         relativeTime = Commands.TC_pafCCDSnapshot(root, Snapshot_relativeTime, CCDSEL = CCDSEL, comment = comment)
         Snapshot_relativeTime = Snapshot_relativeTime + SnapshotSpacing
     
+    relativeTime = Commands.TC_acfLimbPointingAltitudeOffset(root, relativeTime, Initial = LP_pointing_altitude, Final = LP_pointing_altitude, Rate = 0, comment = comment)
+    
     #relativeTime = Commands.TC_pafMode(root, relativeTime, mode = 1, comment = comment)
     
     return relativeTime
 
 
 def Mode123_macro(root, relativeTime, freezeTime, FreezeDuration, pointing_altitude, Snapshot_relativeTime, 
-                  SnapshotSpacing, ExpTimeUV, ExpTimeIR, comment):
+                  LP_pointing_altitude, SnapshotSpacing, ExpTimeUV, ExpTimeIR, comment):
     ''' Macro that corresponds to Mode122.
     
         Arguments:
@@ -397,6 +402,8 @@ def Mode123_macro(root, relativeTime, freezeTime, FreezeDuration, pointing_altit
         relativeTime = Commands.TC_pafCCDSnapshot(root, Snapshot_relativeTime, CCDSEL = CCDSEL, comment = comment)
         Snapshot_relativeTime = Snapshot_relativeTime + SnapshotSpacing
     
+    relativeTime = Commands.TC_acfLimbPointingAltitudeOffset(root, relativeTime, Initial = LP_pointing_altitude, Final = LP_pointing_altitude, Rate = 0, comment = comment)
+    
     #relativeTime = Commands.TC_pafMode(root, relativeTime, mode = 1, comment = comment)
     
     return relativeTime
@@ -404,7 +411,7 @@ def Mode123_macro(root, relativeTime, freezeTime, FreezeDuration, pointing_altit
 
 
 def Mode124_macro(root, relativeTime, freezeTime, FreezeDuration, pointing_altitude, 
-                  SnapshotSpacing, Snapshot_relativeTime, comment):
+                  LP_pointing_altitude, SnapshotSpacing, Snapshot_relativeTime, comment):
     ''' Macro that corresponds to Mode124.
     
         Arguments:
@@ -431,6 +438,7 @@ def Mode124_macro(root, relativeTime, freezeTime, FreezeDuration, pointing_altit
         relativeTime = Commands.TC_pafCCDSnapshot(root, Snapshot_relativeTime, CCDSEL = CCDSEL, comment = comment)
         Snapshot_relativeTime = Snapshot_relativeTime + SnapshotSpacing
     
+    relativeTime = Commands.TC_acfLimbPointingAltitudeOffset(root, relativeTime, Initial = LP_pointing_altitude, Final = LP_pointing_altitude, Rate = 0, comment = comment)
     
     return relativeTime
 
@@ -452,7 +460,7 @@ def Mode130_macro(root, relativeTime, pointing_altitude, comment):
     
     for CCDSEL in [1,2,4,8,16,32]:
         relativeTime = Commands.TC_pafCCDSnapshot(root, relativeTime, CCDSEL = CCDSEL, comment = comment)
-    
+        relativeTime = relativeTime + 1
     #relativeTime = Commands.TC_pafMode(root, relativeTime, mode = 1, comment = comment)
     
     return relativeTime

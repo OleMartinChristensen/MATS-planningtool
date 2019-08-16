@@ -123,7 +123,7 @@ def Timeline_settings():
         'yaw_correction': If yaw correction will be used for the duration of the timeline. Decides if Mode1/2, Mode3/4 are to be scheduled. Set to True for Mode3/4, set to False for Mode1/2. (bool) \n
         'yaw_amplitude': Amplitude of the yaw function (float). \n
         'yaw_phase': Phase of the yaw function (float). \n
-        'Custom_Mode': Set to *True* if custom mode 5-6 will be used, set to *False* instead for Mode1-4. (bool)
+        'Custom_Mode': Set to *True* if custom binning mode 5-6 will be used, set to *False* instead for Mode1-4. (bool)
         'LP_pointing_altitude': Sets altitude of LP in meters for the timeline. (int) \n
         
         'command_separation': Minimum ammount of time inbetween scheduled commands [s]. (float) \n
@@ -168,7 +168,8 @@ def Mode_5_6settings():
         (dict): settings
     
     '''
-    settings = {'pointing_altitude': 92500}
+    settings = {'pointing_altitu
+                de': 92500}
     return settings
 
 

@@ -181,8 +181,8 @@ def Data_Plotter():
     Settings for the operation of the program are stated in the chosen *Configuration File*, set by *Set_ConfigFile*.
     
     Arguments:
-        DataSet_path (str): Path to the .csv file containing the relevant data of analysis.
         
+            
     Returns:
         None
     '''
@@ -191,4 +191,23 @@ def Data_Plotter():
     
     Data_Plotter()
     
+    
+def Timeline_Plotter(Science_Mode_Path, OHB_H5_Path):
+    '''Invokes the *Timeline_Plotter* program part of *Operational_Planning_Tool*.
+    
+    Simulates the position and attitude of MATS from a given Science Mode Timeline and compares it to
+    positional and attitude data given in a data set, OHB_H5_Path. Plots both the simulated data and given data. \n
+    Settings for the operation of the program are stated in the chosen *Configuration File*, set by *Set_ConfigFile*.
+    
+    Arguments:
+        Science_Mode_Path (str): Path to the Science Mode Timeline to be plotted.
+        OHB_H5_Path (str): Path to the .h5 file containing position, time, and attitude data.
+        
+    Returns:
+        None
+    '''
+    from ._Timeline_Plotter.Core import Timeline_Plotter
+    
+    
+    Timeline_Plotter(Science_Mode_Path, OHB_H5_Path)
     

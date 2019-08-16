@@ -90,6 +90,16 @@ def getTLE():
     TLE2= '2 26702 97.61000 65.95030 0000001 0.000001 359.9590 14.97700580100  4'
     #TLE1 = '1 26702U 01007A   09264.68474097 +.00000336 +00000-0 +35288-4 0  9993'
     #TLE2 = '2 26702 097.7067 283.5904 0004656 126.2204 233.9434 14.95755636467886'
+    
+    "OHB TLE"
+    #TLE1 = '1 54321U 19100G   20172.75043981 0.00000000  00000-0  75180-4 0  0014'
+    #TLE2 = '2 54321  97.7044   6.9210 0014595 313.2372  91.8750 14.93194142000010'
+    
+    "OHB TLE timeshifted by 2 sec"
+    TLE1 = '1 54321U 19100G   20172.75041666 0.00000000  00000-0  75180-4 0  0012'
+    TLE2 = '2 54321  97.7044   6.9210 0014595 313.2372  91.8750 14.93194142000010'
+    
+    
     return [TLE1, TLE2]
 
 
@@ -237,7 +247,7 @@ def Mode120_settings():
         (dict): settings
     
     '''
-    settings = {'pointing_altitude': 227000, 'V_offset': 0, 'H_offset': 2.5, 'Vmag': '<2', 'timestep': 2,'log_timestep': 3600, 
+    settings = {'pointing_altitude': 235000, 'V_offset': 0, 'H_offset': 2.5, 'Vmag': '<2', 'timestep': 2,'log_timestep': 3600, 
                       'automatic': True, 'start_date': '2019', 'mode_duration': 0, 'freeze_start': 120, 
                       'freeze_duration': 0, 'SnapshotTime': 3, 'SnapshotSpacing': 3}
     
@@ -272,7 +282,7 @@ def Mode121_122_123_settings():
         (dict): settings
     
     '''
-    settings = {'pointing_altitude': 227000, 'H_FOV': 5.67, 'V_FOV': 0.91, 'Vmag': '<4', 'timestep': 5, 'TimeSkip': 1, 'log_timestep': 3600, 
+    settings = {'pointing_altitude': 235000, 'H_FOV': 5.67, 'V_FOV': 0.91, 'Vmag': '<4', 'timestep': 5, 'TimeSkip': 1, 'log_timestep': 3600, 
                       'automatic': True, 'mode_duration': 0, 'freeze_start': 120, 
                       'freeze_duration': 0, 'SnapshotTime': 2, 'SnapshotSpacing': 3}
     
@@ -365,7 +375,7 @@ def Mode124_settings():
         (dict): settings
     
     '''
-    settings = {'pointing_altitude': 227000, 'V_offset': 0, 'H_offset': 3+2.5, 'timestep': 2, 'log_timestep': 1200, 
+    settings = {'pointing_altitude': 235000, 'V_offset': 0, 'H_offset': 3+2.5, 'timestep': 2, 'log_timestep': 1200, 
                       'automatic': True, 'start_date': '2019', 'mode_duration': 0, 'freeze_start': 120, 'freeze_duration': 0, 
                       'SnapshotTime': 2, 'SnapshotSpacing': 3}
     
@@ -389,7 +399,7 @@ def Mode130_settings():
         (dict): settings
         
     '''
-    settings = {'pointing_altitude': 200000, 'mode_duration': 120, 'start_date': '0'}
+    settings = {'pointing_altitude': 235000, 'mode_duration': 120, 'start_date': '0'}
     return settings
 
 
@@ -405,7 +415,7 @@ def Mode131_settings():
         (dict): settings
         
     '''
-    settings = {'pointing_altitude': 200000, 'mode_duration': 120, 'start_date': '0'}
+    settings = {'pointing_altitude': 235000, 'mode_duration': 120, 'start_date': '0'}
     return settings
 
 
@@ -423,8 +433,8 @@ def Mode132_settings():
         (dict): settings
     
     '''
-    settings = {'pointing_altitude': 200000, 'start_date': '0', 'Exp_Times_and_Intervals_IR': [(4000,5000), (5000,6000), (6000,7000), (6000,7000)],
-                'Exp_Times_and_Intervals_UV': [(2000,3000), (3000,4000), (4000,5000), (5000,6000)], 'session_duration': 120}
+    settings = {'pointing_altitude': 235000, 'start_date': '0', 'Exp_Times_and_Intervals_IR': [(1000,5000), (5000,6000), (10000,7000), (20000,7000)],
+                'Exp_Times_and_Intervals_UV': [(1000,3000), (5000,4000), (10000,5000), (20000,6000)], 'session_duration': 120}
     return settings
 
 
@@ -442,8 +452,8 @@ def Mode133_settings():
         (dict): settings
     
     '''
-    settings = {'pointing_altitude': 200000, 'start_date': '0',  'Exp_Times_and_Intervals_IR': [(4000,5000), (5000,6000), (6000,7000), (6000,7000)],
-                'Exp_Times_and_Intervals_UV': [(2000,5000), (3000,6000), (4000,7000), (5000,8000)], 'session_duration': 120}
+    settings = {'pointing_altitude': 235000, 'start_date': '0',  'Exp_Times_and_Intervals_IR': [(1000,5000), (5000,6000), (10000,7000), (20000,7000)],
+                'Exp_Times_and_Intervals_UV': [(1000,3000), (5000,4000), (10000,5000), (20000,6000)], 'session_duration': 120}
     return settings
 
 
