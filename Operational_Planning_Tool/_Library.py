@@ -395,20 +395,22 @@ def calculate_time_per_row(NCOL, NCBIN, NCBINFPGA, NRSKIP, NROW, NRBIN, NFLUSH):
 def SyncArgCalculator(CCD_settings):
     """Calculates appropriate arguments for the CCD Synchonize CMD.
     
-    The offset calculations depend on the Readout Time, which depends on the binning settings of the CCDs.
-    The Exposure Interval Time depends on the longest Combined Readout Time and ExposureTime aswell as the 
-    leading CCDs Exposure Time (which means it is also the short Exposure Time) to prevent collision between
+    The CCDs are offseted in order of ExposureTime with the CCD with the shortest ExposureTime being the leading CCD. \n
+    CCDs with ExposureTime equal to 0 are skipped. \n
+    The offset calculations depend on the Readout Time, which depends on the binning settings of the CCDs. \n
+    The Exposure Interval Time depends on the longest combined Readout Time and ExposureTime for a CCD aswell as the 
+    leading CCD's Exposure Time (which means it is also the shortest Exposure Time) to prevent collision between
     Readout of the leading CCD and the final CCD.
     
-        Arguments:
-            CCD_settings (dict of dict of int): Dictionary containing settings for the CCDs.
-            
-        Returns:
-            CCDSEL (int): Calculated CCDSEL argument for the CCD Synchronize CMD.
-            NCCD (int): Calculated NCCD argument for the CCD Synchronize CMD.
-            TEXPIOFS (list of int): Calculated TEXPIOFS argument for the CCD Synchronize CMD.
-            TEXPIMS: Calculated minimum Exposure Interval Time.
-    
+    Arguments:
+        CCD_settings (dict of dict of int): Dictionary containing settings for the CCDs.
+        
+    Returns:
+        CCDSEL (int): Calculated CCDSEL argument for the CCD Synchronize CMD.
+        NCCD (int): Calculated NCCD argument for the CCD Synchronize CMD.
+        TEXPIOFS (list of int): Calculated TEXPIOFS argument for the CCD Synchronize CMD.
+        TEXPIMS (int): Calculated minimum Exposure Interval Time [ms].
+        
     """
     
     CCD_48 = CCD_settings['CCD_48']
@@ -443,16 +445,15 @@ def SyncArgCalculator(CCD_settings):
     ReadOutTime.append(int(ReadOutTime_64))
     
     
-    #print('ReadoutTime: '+str(ReadOutTime))
-    
     ExpTimes = [CCD_48['TEXPMS'], CCD_9['TEXPMS'], CCD_6['TEXPMS'], CCD_64['TEXPMS']]
     ExpTimes.sort()
-    #print('ExpTimes: '+str(ExpTimes))
     
+    "Add arbitrary numbers to allow the offset time to be positioned at the right spot" 
     TEXPIOFS = [-1,-1,-1,-1,-1,-1,-1]
+    
     ExpIntervals = []
     x= 0
-    ExtraOffset = 150
+    ExtraOffset = OPT_Config_File.Timeline_settings()['CCDSYNC_ExtraOffset']
     CCDSEL = 0
     
     Flag_48 = False
@@ -462,15 +463,12 @@ def SyncArgCalculator(CCD_settings):
     
     OffsetTime = 0
     
+    "Calculate offset time in order of ExposureTime"
     for ExpTime in ExpTimes:
         if( ExpTime == 0):
             continue
         elif( ExpTime == CCD_48['TEXPMS'] and Flag_48 == False):
             Flag_48 = True
-            #TEXPIOFS.insert(4, (ReadOutTime_max+ExtraOffset)*x)
-            #x += 1
-            #TEXPIOFS.insert(5, (ReadOutTime_max+ExtraOffset)*x)
-            #ExpIntervals.append( (ReadOutTime_max+ExtraOffset)*x + ExpTime_48)
             
             TEXPIOFS.insert(4, int(round(OffsetTime/10,0)*10))
             OffsetTime = OffsetTime + (ReadOutTime_48+ExtraOffset)
@@ -484,10 +482,6 @@ def SyncArgCalculator(CCD_settings):
             
         elif( ExpTime == CCD_9['TEXPMS'] and Flag_9 == False):
             Flag_9 = True
-            #TEXPIOFS.insert(0, (ReadOutTime_max+ExtraOffset)*x)
-            #x += 1
-            #TEXPIOFS.insert(3, (ReadOutTime_max+ExtraOffset)*x)
-            #ExpIntervals.append( (ReadOutTime_max+ExtraOffset)*x + ExpTime_9)
             
             TEXPIOFS.insert(0, int(round(OffsetTime/10,0)*10))
             OffsetTime = OffsetTime + (ReadOutTime_9+ExtraOffset)
@@ -501,10 +495,6 @@ def SyncArgCalculator(CCD_settings):
             
         elif( ExpTime == CCD_6['TEXPMS'] and Flag_6 == False):
             Flag_6 = True
-            #TEXPIOFS.insert(1, (ReadOutTime_max+ExtraOffset)*x)
-            #x += 1
-            #TEXPIOFS.insert(2, (ReadOutTime_max+ExtraOffset)*x)
-            #ExpIntervals.append( (ReadOutTime_max+ExtraOffset)*x + ExpTime_6)
             
             TEXPIOFS.insert(1, int(round(OffsetTime/10,0)*10))
             OffsetTime = OffsetTime + (ReadOutTime_6+ExtraOffset)
@@ -518,8 +508,6 @@ def SyncArgCalculator(CCD_settings):
             
         elif( ExpTime == CCD_64['TEXPMS'] and Flag_64 == False):
             Flag_64 = True
-            #TEXPIOFS.insert(6, (ReadOutTime_max+ExtraOffset)*x)
-            #ExpIntervals.append( (ReadOutTime_max+ExtraOffset)*x + ExpTime_64)
             
             TEXPIOFS.insert(6, int(round(OffsetTime/10,0)*10))
             
@@ -529,15 +517,12 @@ def SyncArgCalculator(CCD_settings):
             CCDSEL += 64
             
         x += 1
-        #print('TEXPIOFS: '+str(TEXPIOFS))
+        
     
-    
-    
+    "Remove arbitrary numbers after TEXPOIFS arguments have been positioned correctly"
     for x in range(TEXPIOFS.count(-1)):
         TEXPIOFS.remove(-1)
         
-    #print('TEXPIOFS: '+str(TEXPIOFS))
-    
     
     ExpIntervals
     ExpInterval = max(ExpIntervals)
@@ -546,16 +531,13 @@ def SyncArgCalculator(CCD_settings):
         if( FirstExpTime != 0 ):
             break
     
+    "Increase the IntervalTime if it is too short, meaning that the Exposure and Readout of the last CCD interferes with the Readout of the leading CCD"
     if( FirstExpTime <= max(TEXPIOFS) ):
         ExpInterval = ExpInterval + (max(TEXPIOFS) - FirstExpTime)
     
     TEXPIMS = int(round(ExpInterval,-2))
-    #ExpInterval = ExpIntervals[len(ExpIntervals)-1] - int(FirstExpTime*3/4)
     
-    
-    #ExpInterval = int(ExpInterval - int(FirstExpTime*3/4))
-    #print('TEXPIMS: '+str(TEXPIMS))
     NCCD = bin(CCDSEL).count('1')
-    #print('NCCD: '+str(NCCD))
+    
     
     return CCDSEL, NCCD, TEXPIOFS, TEXPIMS

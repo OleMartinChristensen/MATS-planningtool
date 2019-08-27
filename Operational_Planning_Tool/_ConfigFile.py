@@ -140,7 +140,7 @@ def Timeline_settings():
         
         'command_separation': Minimum ammount of time inbetween scheduled commands [s]. (float) \n
         'pointing_stabilization': Extra time [s] scheduled after fixed pointing commands (TC_acfLimbPointingAltitudeOffset) before new commands are allowed. (int) \n
-        
+        'CCDSYNC_ExtraOffset': Extra offset time [ms] that is added to an estimated ReadoutTime when calculating arguments for the CCD Synchronize CMD. (int) \n
         
     Returns:
         (:obj:`dict`): timeline_settings
@@ -148,7 +148,7 @@ def Timeline_settings():
     timeline_settings = {'start_date': _Globals.StartTime, 'duration': 1*4*3600, 
                        'leap_seconds': 18, 'GPS_epoch': '1980/1/6', 'Mode1_2_5_minDuration': 300, 'mode_separation': 60,
                        'CMD_duration': 30, 'yaw_correction': True, 'yaw_amplitude': -3.8, 'yaw_phase': -20, 'Schedule_Mode5': False, 'LP_pointing_altitude': 92500, 
-                       'command_separation': 1, 'pointing_stabilization': 60}
+                       'command_separation': 1, 'pointing_stabilization': 60, 'CCDSYNC_ExtraOffset': 150}
     
     
     return timeline_settings
@@ -177,7 +177,7 @@ def Mode5_settings():
         'pointing_altitude': Sets in meters the altitude of the pointing command. If set to 0, Timeline_settings['LP_pointing_altitude'] will be used (int) 
         
     Returns:
-        (dict): settings
+        (:obj:`dict`): settings
     
     '''
     
@@ -201,7 +201,7 @@ def Mode100_settings():
         'start_date': Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). If the date is set to '0', Timeline start_date will be used.
         
     Returns:
-        (dict): settings
+        (:obj:`dict`): settings
             
     '''
     settings = {'pointing_altitude_from': 40000, 'pointing_altitude_to': 150000, 
@@ -220,7 +220,7 @@ def Mode110_settings():
         'start_date': Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). If the date is set to '0', Timeline start_date will be used.
     
     Returns:
-        (dict): settings
+        (:obj:`dict`): settings
         
     '''
     settings = {'pointing_altitude_from': 40000, 'pointing_altitude_to': 150000, 'sweep_rate': 500, 'start_date': '0'}
@@ -248,7 +248,7 @@ def Mode120_settings():
         
     
     Returns:
-        (dict): settings
+        (:obj:`dict`): settings
     
     '''
     settings = {'pointing_altitude': 235000, 'V_offset': 0, 'H_offset': 2.5, 'Vmag': '<2', 'timestep': 2,'log_timestep': 3600, 
@@ -283,7 +283,7 @@ def Mode121_122_123_settings():
         'SnapshotSpacing': Sets in seconds the time inbetween Snapshots with individual CCDs. (int)
     
     Returns:
-        (dict): settings
+        (:obj:`dict`): settings
     
     '''
     settings = {'pointing_altitude': 235000, 'H_FOV': 5.67, 'V_FOV': 0.91, 'Vmag': '<4', 'timestep': 5, 'TimeSkip': 1, 'log_timestep': 3600, 
@@ -305,7 +305,7 @@ def Mode121_settings():
         'start_date': Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). Note! only applies if automatic is set to False. \n
     
     Returns:
-        (dict): settings
+        (:obj:`dict`): settings
     '''
     
     Settings = {'start_date': '2019'}
@@ -325,7 +325,7 @@ def Mode122_settings():
         'Exp_Time_UV': Sets exposure time [ms] of the UV CCDs. (int) \n
     
     Returns:
-        (dict): settings
+        (:obj:`dict`): settings
     '''
     
     Settings = {'start_date': '2019', 'Exp_Time_IR': 5000, 'Exp_Time_UV': 3000}
@@ -345,7 +345,7 @@ def Mode123_settings():
         'Exp_Time_UV': Sets exposure time [ms] of the UV CCDs. (int) \n
     
     Returns:
-        (dict): settings
+        (:obj:`dict`): settings
     '''
     
     Settings = {'start_date': '2019', 'Exp_Time_IR': 5000, 'Exp_Time_UV': 3000}
@@ -376,7 +376,7 @@ def Mode124_settings():
         'SnapshotSpacing': Sets in seconds the time inbetween Snapshots with individual CCDs. (int)
     
     Returns:
-        (dict): settings
+        (:obj:`dict`): settings
     
     '''
     settings = {'pointing_altitude': 235000, 'V_offset': 0, 'H_offset': 3+2.5, 'timestep': 2, 'log_timestep': 1200, 
@@ -400,7 +400,7 @@ def Mode130_settings():
         'start_date': Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). If the date is set to '0', Timeline start_date will be used.
     
     Returns:
-        (dict): settings
+        (:obj:`dict`): settings
         
     '''
     settings = {'pointing_altitude': 235000, 'SnapshotSpacing': 2, 'start_date': '0'}
@@ -417,7 +417,7 @@ def Mode131_settings():
         'start_date': Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). If the date is set to '0', Timeline start_date will be used.
     
     Returns:
-        (dict): settings
+        (:obj:`dict`): settings
         
     '''
     settings = {'pointing_altitude': 235000, 'Exposure_Interval': 60000, 'mode_duration': 120, 'start_date': '0'}
@@ -435,7 +435,7 @@ def Mode132_settings():
         'session_duration': Sets the duration [s] of each session using the different exposure times in *Exp_Times*.
     
     Returns:
-        (dict): settings
+        (:obj:`dict`): settings
     
     '''
     settings = {'pointing_altitude': 235000, 'start_date': '0', 'Exp_Times_IR': [1000, 5000, 10000, 20000],
@@ -454,7 +454,7 @@ def Mode133_settings():
         'session_duration': Sets the duration [s] of each session using the different exposure times in *Exp_Times_UV* and *Exp_Times_IR*.
     
     Returns:
-        (dict): settings
+        (:obj:`dict`): settings
     
     '''
     settings = {'pointing_altitude': 235000, 'start_date': '0',  'Exp_Times_IR': [1000, 5000, 10000, 20000],
@@ -470,7 +470,7 @@ def Mode160_settings():
         'start_date': Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). If the date is set to '0', Timeline start_date will be used.
     
     Returns:
-        (dict): settings
+        (:obj:`dict`): settings
         
     '''
     settings = {'pointing_altitude': 110000, 'mode_duration': 900, 'start_date': '0'}
@@ -489,7 +489,7 @@ def Mode201_settings():
         'start_date': Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). If the date is set to '0', Timeline start_date will be used.
     
     Returns:
-        (dict): settings
+        (:obj:`dict`): settings
     
     '''
     settings = {'pointing_altitude': 70000, 'mode_duration': 600, 'start_date': '0'}
@@ -504,7 +504,7 @@ def Mode203_settings():
         'pitch': Sets the pitch axis maneuver.
         
     Returns:
-        settings (dict)
+        settings (:obj:`dict`)
     
     '''
     settings = {'pitch': 180}
@@ -519,7 +519,7 @@ def PWRTOGGLE_settings():
         'CONST': Magic Constant 
         
     Returns:
-        (dict): parameters
+        (:obj:`dict`): parameters
     
     '''
     parameters = {'CONST': 165}
@@ -532,7 +532,7 @@ def CCDFlushBadColumns_settings():
         'CCDSEL': CCD select, 1 bit for each CCD (1..127).
         
     Returns:
-        (dict): parameters
+        (:obj:`dict`): parameters
     
     '''
     parameters = {'CCDSEL': 1}
@@ -547,7 +547,7 @@ def CCDBadColumn_settings():
         'BC': Bad Columns as a list of uint16 (4..2047).
         
     Returns:
-        (dict): parameters
+        (:obj:`dict`): parameters
     
     '''
     parameters = {'CCDSEL': 1, 'NBC': 0, 'BC': []}
@@ -561,7 +561,7 @@ def PM_settings():
         'TEXPIMS': Exposure interval time [ms] for the photometer (int)
         
     Returns:
-        (dict): parameters
+        (:obj:`dict`): parameters
     
     '''
     parameters = {'TEXPMS': 1500, 'TEXPIMS': 2000}
@@ -578,7 +578,7 @@ def CCDBIAS_settings():
         'VOD': 8-bit value representing a Voltage (int) \n
         
     Returns:
-        (dict): parameters
+        (:obj:`dict`): parameters
     
     '''
     parameters = {'CCDSEL': 127, 'VGATE': 127, 'VSUBST': 127, 'VRD': 127, 'VOD': 127}

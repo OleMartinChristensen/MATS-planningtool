@@ -2,6 +2,7 @@
 """Contains command functions as listed in "InnoSat Payload Timeline XML Definition" document.
 
 Add commands to the XML-tree as specified in "InnoSat Payload Timeline XML Definition" document.
+Also checks if parameters given are valid for the CMDs.
 
 Arguments:
     root (lxml.etree.Element):  XML tree structure. Main container object for the ElementTree API. \n
