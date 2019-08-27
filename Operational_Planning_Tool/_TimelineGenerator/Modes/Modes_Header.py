@@ -20,7 +20,8 @@ from .Mode124 import Mode124
 from .Mode201 import Mode201
 from .Mode203 import Mode203
 from .Mode110 import Mode110
-from .Mode_1_2_3_4_5_6 import Mode_1_2_3_4_5_6
+from .Mode160 import Mode160
+from .Mode1_2_5 import Mode1_2_5
 from .PayloadCmds import PWRTOGGLE, PM, CCDBadColumn, CCDFlushBadColumns, CCDBIAS
 
 

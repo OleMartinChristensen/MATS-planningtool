@@ -61,11 +61,13 @@ def XML_generator(SCIMOD_Path):
         Timeline_settings_from_Timeline = SCIMOD[0][3]
         Timeline_settings = _Library.params_checker( Timeline_settings_from_Timeline, OPT_Config_File.Timeline_settings())
         Logger.info('Timeline_settings found in Science Mode Timeline. Using them')
+        
         TLE_from_Timeline = SCIMOD[0][4]
         TLE_from_configFile =  OPT_Config_File.getTLE()
+        
         if( TLE_from_Timeline[0] != TLE_from_configFile[0] or TLE_from_Timeline[1] != TLE_from_configFile[1] ):
             Logger.error('Mismatch between TLE in Science Mode Timeline and in ConfigFile. Check your chosen ConfigFile and maybe rerun OPT.Timeline_gen. Exiting...')
-            sys.exit()
+            raise ValueError
     else:
         Logger.info('Timeline_settings not found in Science Mode Timeline. Using the ones in the chosen ConfigFile')
         
@@ -106,15 +108,13 @@ def XML_generator(SCIMOD_Path):
         
         if( relativeTime >= timeline_duration ):
             Logger.warning('relativeTime is exceeding timeline_duration!!!')
-            #warning = input('Enter anything to continue or enter 1 to stop\n')
-            #if( warning == '1'):
-            #    sys.exit()
+            raise ValueError
+            
                 
         if( ephem.Date(SCIMOD[x][1]) < timeline_start or mode_duration+relativeTime > timeline_duration):
             Logger.warning(str(SCIMOD[x][0])+', is not scheduled within the boundaries of the timeline!!!')
-            #warning = input('Enter anything to continue or enter 1 to stop\n')
-            #if( warning == '1'):
-            #    sys.exit()
+            raise ValueError
+            
         
         Logger.debug('Call XML_generator_select')
         XML_generator_select(root=root, duration=mode_duration, relativeTime=relativeTime, mode=SCIMOD[x][0], date=ephem.Date(SCIMOD[x][1]), params=SCIMOD[x][3])
@@ -220,7 +220,7 @@ def XML_generator_select(mode, root, date, duration, relativeTime, params):
                 Mode_Test_SeparateCmd_func = getattr(SeparateCmds,'XML_generator_'+mode)
             except AttributeError:
                 Logger.error('No XML-generator is defined for '+mode)
-                sys.exit()
+                raise AttributeError
     
     "Check if no parameters are given"
     if(len(params.keys()) == 0):

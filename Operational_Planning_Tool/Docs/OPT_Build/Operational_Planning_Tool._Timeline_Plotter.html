@@ -1,0 +1,207 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="python 3.7">
+  <head>
+    <meta charset="utf-8" />
+    <title>Operational_Planning_Tool._Timeline_Plotter package &#8212; Operational_Planning_Tool  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Operational_Planning_Tool._XMLGenerator package" href="Operational_Planning_Tool._XMLGenerator.html" />
+    <link rel="prev" title="Operational_Planning_Tool._TimelineGenerator.Modes package" href="Operational_Planning_Tool._TimelineGenerator.Modes.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-Operational_Planning_Tool._Timeline_Plotter">
+<span id="operational-planning-tool-timeline-plotter-package"></span><h1>Operational_Planning_Tool._Timeline_Plotter package<a class="headerlink" href="#module-Operational_Planning_Tool._Timeline_Plotter" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-Operational_Planning_Tool._Timeline_Plotter.Core">
+<span id="operational-planning-tool-timeline-plotter-core-module"></span><h2>Operational_Planning_Tool._Timeline_Plotter.Core module<a class="headerlink" href="#module-Operational_Planning_Tool._Timeline_Plotter.Core" title="Permalink to this headline">¶</a></h2>
+<p>Simulates, one by one, Science Modes from a Science Mode Timeline and saves relevant data such as attitude and position.
+Also reads data from an .h5 file. Plots data from both the simulation and the .h5 file. As part of the Operational Planning Tool.</p>
+<p>&#64;author: David</p>
+<dl class="function">
+<dt id="Operational_Planning_Tool._Timeline_Plotter.Core.Plotter">
+<code class="descclassname">Operational_Planning_Tool._Timeline_Plotter.Core.</code><code class="descname">Plotter</code><span class="sig-paren">(</span><em>Data_MATS</em>, <em>Data_LP</em>, <em>Time</em>, <em>OHB_H5_Path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_Timeline_Plotter/Core.html#Plotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._Timeline_Plotter.Core.Plotter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Subfunction, Plots the position and attitude data of MATS and LP.</p>
+<p>Plots both simulated data in Data_MATS and Data_LP as a function of the
+timestamps in Time but also the data given in the file located at OHB_H5_Path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Data_MATS</strong> (<em>dict of lists</em>) -- Dictionary containing lists of simulated data of MATS.</p></li>
+<li><p><strong>Data_LP</strong> (<em>dict of lists</em>) -- Dictionary containing lists of simulated data of LP.</p></li>
+<li><p><strong>Time</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) -- List containing timestamps of the simulated data in Data_MATS and Data_LP.</p></li>
+<li><p><strong>OHB_H5_Path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Path to the .h5 file containing position, time, and attitude data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Operational_Planning_Tool._Timeline_Plotter.Core.Simulator">
+<code class="descclassname">Operational_Planning_Tool._Timeline_Plotter.Core.</code><code class="descname">Simulator</code><span class="sig-paren">(</span><em>SCIMOD</em>, <em>Timestamp_fraction_of_second</em>, <em>timestep</em>, <em>Timeline_settings</em>, <em>TLE</em>, <em>Data_MATS</em>, <em>Data_LP</em>, <em>Time</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_Timeline_Plotter/Core.html#Simulator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._Timeline_Plotter.Core.Simulator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Subfunction, Simulates the position and attitude of MATS depending on the Mode given in <em>SCIMOD</em>.</p>
+<p>Appends the data during each timestep to Data_MATS, Data_LP, and Time.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>SCIMOD</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) -- List containing the name of the Science Mode, the start_date, the end_date, and settings related to the Science Mode.</p></li>
+<li><p><strong>Timeline_settings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) -- A dictionary containing settings for the Timeline given in the Science Mode Timeline or in the <em>Configuration File</em>.</p></li>
+<li><p><strong>TLE</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) -- A list containing the TLE given in the Science Mode Timeline or in the <em>Configuration File</em>.</p></li>
+<li><p><strong>Data_MATS</strong> (<em>dict of lists</em>) -- Dictionary containing lists of simulated data of MATS.</p></li>
+<li><p><strong>Data_LP</strong> (<em>dict of lists</em>) -- Dictionary containing lists of simulated data of LP.</p></li>
+<li><p><strong>Time</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) -- List containing timestamps of the simulated data in Data_MATS and Data_LP.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl>
+<dt>tuple containing:</dt><dd><p>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>): Data_MATS updated with the new simulated values from the current Science Mode.</p>
+<p>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>): Data_LP updated with the new simulated values from the current Science Mode.</p>
+<p>(list): Time updated with new simulated timestamps from the current Science Mode.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)">tuple</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="Operational_Planning_Tool._Timeline_Plotter.Core.Timeline_Plotter">
+<code class="descclassname">Operational_Planning_Tool._Timeline_Plotter.Core.</code><code class="descname">Timeline_Plotter</code><span class="sig-paren">(</span><em>SCIMOD_Path</em>, <em>OHB_H5_Path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_Timeline_Plotter/Core.html#Timeline_Plotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._Timeline_Plotter.Core.Timeline_Plotter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Core function of the Timeline_Plotter.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Science_Mode_Path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Path to the Science Mode Timeline to be plotted.</p></li>
+<li><p><strong>OHB_H5_Path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Path to the .h5 file containing position, time, and attitude data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Operational_Planning_Tool</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="Operational_Planning_Tool.html">Operational_Planning_Tool package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="Operational_Planning_Tool.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="Operational_Planning_Tool._CheckConfigFile.html">Operational_Planning_Tool._CheckConfigFile package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Operational_Planning_Tool._DataPlotter.html">Operational_Planning_Tool._DataPlotter package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Operational_Planning_Tool._TimelineAnalyzer.html">Operational_Planning_Tool._TimelineAnalyzer package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Operational_Planning_Tool._TimelineGenerator.html">Operational_Planning_Tool._TimelineGenerator package</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">Operational_Planning_Tool._Timeline_Plotter package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-Operational_Planning_Tool._Timeline_Plotter.Core">Operational_Planning_Tool._Timeline_Plotter.Core module</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="Operational_Planning_Tool._XMLGenerator.html">Operational_Planning_Tool._XMLGenerator package</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool.html#module-Operational_Planning_Tool._ConfigFile">Operational_Planning_Tool._ConfigFile module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool.html#module-Operational_Planning_Tool._Globals">Operational_Planning_Tool._Globals module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool.html#module-Operational_Planning_Tool._Library">Operational_Planning_Tool._Library module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Operational_Planning_Tool.html#module-Operational_Planning_Tool._MATS_coordinates">Operational_Planning_Tool._MATS_coordinates module</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="Operational_Planning_Tool.html">Operational_Planning_Tool package</a><ul>
+      <li>Previous: <a href="Operational_Planning_Tool._TimelineGenerator.Modes.html" title="previous chapter">Operational_Planning_Tool._TimelineGenerator.Modes package</a></li>
+      <li>Next: <a href="Operational_Planning_Tool._XMLGenerator.html" title="next chapter">Operational_Planning_Tool._XMLGenerator package</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, David Skånberg.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/Operational_Planning_Tool._Timeline_Plotter.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

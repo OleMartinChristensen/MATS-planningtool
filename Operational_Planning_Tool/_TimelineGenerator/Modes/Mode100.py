@@ -85,9 +85,10 @@ def date_select(Occupied_Timeline, initial_date):
     
     date = initial_date
     
+    number_of_CMDs = 4
     number_of_altitudes = int( (settings['pointing_altitude_to'] - settings['pointing_altitude_from']) / settings['pointing_altitude_interval'] + 1 )
     
-    duration = (settings['pointing_duration'] + OPT_Config_File.Timeline_settings()['pointing_stabilization']) * number_of_altitudes
+    duration = (settings['pointing_duration'] + OPT_Config_File.Timeline_settings()['pointing_stabilization'] + 5) * number_of_altitudes
     
     endDate = ephem.Date(initial_date + ephem.second*(OPT_Config_File.Timeline_settings()['mode_separation'] + duration) )
     

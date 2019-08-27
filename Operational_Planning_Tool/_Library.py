@@ -8,6 +8,7 @@ from pylab import cos, sin, sqrt, array, arccos, pi, floor, around
 from Operational_Planning_Tool import _Globals, _MATS_coordinates
 
 OPT_Config_File = importlib.import_module(_Globals.Config_File)
+Logger = logging.getLogger(OPT_Config_File.Logger_name())
 
 def rot_arbit(angle, u_v):
     """Takes an angle in radians and a unit vector and outputs a rotation matrix around that vector"
@@ -214,6 +215,7 @@ def params_checker(dict1, dict2):
         
     """
     
+    Logger.debug('params from Science Mode List: '+str(dict1))
     
     "Check if optional params were given"
     if( dict1 != dict2):
@@ -223,7 +225,10 @@ def params_checker(dict1, dict2):
             dict_new[key] = dict1[key]
     else:
         dict_new = dict1
-        
+    
+    Logger.debug('params after params_checker function: '+str(dict_new))
+    Logger.info('params used: '+str(dict_new))
+    
     return dict_new
 
 def utc_to_onboardTime(utc_date):
@@ -308,7 +313,7 @@ def calculate_time_per_row(NCOL, NCBIN, NCBINFPGA, NRSKIP, NROW, NRBIN, NFLUSH):
         NFLUSH (int): Number of pre-exposure flushes
     
     Returns:
-        (float): Readout time in s. 
+        (float): Readout time in ms. 
     """
     
     #image parameters
@@ -384,4 +389,173 @@ def calculate_time_per_row(NCOL, NCBIN, NCBINFPGA, NRSKIP, NROW, NRBIN, NFLUSH):
     #For smearing correction, this is the "extra exposure time" for each of the rows.
     T_row_extra = (T_row_read + T_row_shift*nrowbin)   
     
-    return T_readout/1e9, T_delay/1e9, T_row_extra/1e9
+    return T_readout/1e6, T_delay/1e6, T_row_extra/1e6
+
+
+def SyncArgCalculator(CCD_settings):
+    """Calculates appropriate arguments for the CCD Synchonize CMD.
+    
+    The offset calculations depend on the Readout Time, which depends on the binning settings of the CCDs.
+    The Exposure Interval Time depends on the longest Combined Readout Time and ExposureTime aswell as the 
+    leading CCDs Exposure Time (which means it is also the short Exposure Time) to prevent collision between
+    Readout of the leading CCD and the final CCD.
+    
+        Arguments:
+            CCD_settings (dict of dict of int): Dictionary containing settings for the CCDs.
+            
+        Returns:
+            CCDSEL (int): Calculated CCDSEL argument for the CCD Synchronize CMD.
+            NCCD (int): Calculated NCCD argument for the CCD Synchronize CMD.
+            TEXPIOFS (list of int): Calculated TEXPIOFS argument for the CCD Synchronize CMD.
+            TEXPIMS: Calculated minimum Exposure Interval Time.
+    
+    """
+    
+    CCD_48 = CCD_settings['CCD_48']
+    CCD_9 = CCD_settings['CCD_9']
+    CCD_6 = CCD_settings['CCD_6']
+    CCD_64 = CCD_settings['CCD_64']
+    
+    ReadOutTime = []
+    
+    T_readout, T_delay, T_Extra = calculate_time_per_row(NCOL = CCD_48['NCOL'], NCBIN = CCD_48['NCBIN'], NCBINFPGA = CCD_48['NCBINFPGA'], 
+                                                         NRSKIP = CCD_48['NRSKIP'], NROW = CCD_48['NROW'], 
+                                                         NRBIN = CCD_48['NRBIN'], NFLUSH = CCD_48['NFLUSH'])
+    ReadOutTime_48 = T_readout + T_delay + T_Extra
+    ReadOutTime.append(int(ReadOutTime_48))
+    
+    T_readout, T_delay, T_Extra = calculate_time_per_row(NCOL = CCD_9['NCOL'], NCBIN = CCD_9['NCBIN'], NCBINFPGA = CCD_9['NCBINFPGA'], 
+                                                         NRSKIP = CCD_9['NRSKIP'], NROW = CCD_9['NROW'], 
+                                                         NRBIN = CCD_9['NRBIN'], NFLUSH = CCD_9['NFLUSH'])
+    ReadOutTime_9 = T_readout + T_delay + T_Extra
+    ReadOutTime.append(int(ReadOutTime_9))
+    
+    T_readout, T_delay, T_Extra = calculate_time_per_row(NCOL = CCD_6['NCOL'], NCBIN = CCD_6['NCBIN'], NCBINFPGA = CCD_6['NCBINFPGA'], 
+                                                         NRSKIP = CCD_6['NRSKIP'], NROW = CCD_6['NROW'], 
+                                                         NRBIN = CCD_6['NRBIN'], NFLUSH = CCD_6['NFLUSH'])
+    ReadOutTime_6 = T_readout + T_delay + T_Extra
+    ReadOutTime.append(int(ReadOutTime_6))
+    
+    T_readout, T_delay, T_Extra = calculate_time_per_row(NCOL = CCD_64['NCOL'], NCBIN = CCD_64['NCBIN'], NCBINFPGA = CCD_64['NCBINFPGA'], 
+                                                         NRSKIP = CCD_64['NRSKIP'], NROW = CCD_64['NROW'], 
+                                                         NRBIN = CCD_64['NRBIN'], NFLUSH = CCD_64['NFLUSH'])
+    ReadOutTime_64 = T_readout + T_delay + T_Extra
+    ReadOutTime.append(int(ReadOutTime_64))
+    
+    
+    #print('ReadoutTime: '+str(ReadOutTime))
+    
+    ExpTimes = [CCD_48['TEXPMS'], CCD_9['TEXPMS'], CCD_6['TEXPMS'], CCD_64['TEXPMS']]
+    ExpTimes.sort()
+    #print('ExpTimes: '+str(ExpTimes))
+    
+    TEXPIOFS = [-1,-1,-1,-1,-1,-1,-1]
+    ExpIntervals = []
+    x= 0
+    ExtraOffset = 150
+    CCDSEL = 0
+    
+    Flag_48 = False
+    Flag_9 = False
+    Flag_6 = False
+    Flag_64 = False
+    
+    OffsetTime = 0
+    
+    for ExpTime in ExpTimes:
+        if( ExpTime == 0):
+            continue
+        elif( ExpTime == CCD_48['TEXPMS'] and Flag_48 == False):
+            Flag_48 = True
+            #TEXPIOFS.insert(4, (ReadOutTime_max+ExtraOffset)*x)
+            #x += 1
+            #TEXPIOFS.insert(5, (ReadOutTime_max+ExtraOffset)*x)
+            #ExpIntervals.append( (ReadOutTime_max+ExtraOffset)*x + ExpTime_48)
+            
+            TEXPIOFS.insert(4, int(round(OffsetTime/10,0)*10))
+            OffsetTime = OffsetTime + (ReadOutTime_48+ExtraOffset)
+            
+            TEXPIOFS.insert(5, int(round(OffsetTime/10,0)*10))
+            
+            OffsetTime = OffsetTime + (ReadOutTime_48+ExtraOffset)
+            
+            ExpIntervals.append(ReadOutTime_48 + CCD_48['TEXPMS'] + ExtraOffset)
+            CCDSEL += 48
+            
+        elif( ExpTime == CCD_9['TEXPMS'] and Flag_9 == False):
+            Flag_9 = True
+            #TEXPIOFS.insert(0, (ReadOutTime_max+ExtraOffset)*x)
+            #x += 1
+            #TEXPIOFS.insert(3, (ReadOutTime_max+ExtraOffset)*x)
+            #ExpIntervals.append( (ReadOutTime_max+ExtraOffset)*x + ExpTime_9)
+            
+            TEXPIOFS.insert(0, int(round(OffsetTime/10,0)*10))
+            OffsetTime = OffsetTime + (ReadOutTime_9+ExtraOffset)
+            
+            TEXPIOFS.insert(3, int(round(OffsetTime/10,0)*10))
+            
+            OffsetTime = OffsetTime + (ReadOutTime_9+ExtraOffset)
+            
+            ExpIntervals.append(ReadOutTime_9 + CCD_9['TEXPMS'] + ExtraOffset)
+            CCDSEL += 9
+            
+        elif( ExpTime == CCD_6['TEXPMS'] and Flag_6 == False):
+            Flag_6 = True
+            #TEXPIOFS.insert(1, (ReadOutTime_max+ExtraOffset)*x)
+            #x += 1
+            #TEXPIOFS.insert(2, (ReadOutTime_max+ExtraOffset)*x)
+            #ExpIntervals.append( (ReadOutTime_max+ExtraOffset)*x + ExpTime_6)
+            
+            TEXPIOFS.insert(1, int(round(OffsetTime/10,0)*10))
+            OffsetTime = OffsetTime + (ReadOutTime_6+ExtraOffset)
+            
+            TEXPIOFS.insert(2, int(round(OffsetTime/10,0)*10))
+            
+            OffsetTime = OffsetTime + (ReadOutTime_6+ExtraOffset)
+            
+            ExpIntervals.append(ReadOutTime_6 + CCD_6['TEXPMS'] + ExtraOffset)
+            CCDSEL += 6
+            
+        elif( ExpTime == CCD_64['TEXPMS'] and Flag_64 == False):
+            Flag_64 = True
+            #TEXPIOFS.insert(6, (ReadOutTime_max+ExtraOffset)*x)
+            #ExpIntervals.append( (ReadOutTime_max+ExtraOffset)*x + ExpTime_64)
+            
+            TEXPIOFS.insert(6, int(round(OffsetTime/10,0)*10))
+            
+            OffsetTime = OffsetTime + (ReadOutTime_64+ExtraOffset)
+            
+            ExpIntervals.append(ReadOutTime_64 + CCD_64['TEXPMS'] + ExtraOffset)
+            CCDSEL += 64
+            
+        x += 1
+        #print('TEXPIOFS: '+str(TEXPIOFS))
+    
+    
+    
+    for x in range(TEXPIOFS.count(-1)):
+        TEXPIOFS.remove(-1)
+        
+    #print('TEXPIOFS: '+str(TEXPIOFS))
+    
+    
+    ExpIntervals
+    ExpInterval = max(ExpIntervals)
+    
+    for FirstExpTime in ExpTimes:
+        if( FirstExpTime != 0 ):
+            break
+    
+    if( FirstExpTime <= max(TEXPIOFS) ):
+        ExpInterval = ExpInterval + (max(TEXPIOFS) - FirstExpTime)
+    
+    TEXPIMS = int(round(ExpInterval,-2))
+    #ExpInterval = ExpIntervals[len(ExpIntervals)-1] - int(FirstExpTime*3/4)
+    
+    
+    #ExpInterval = int(ExpInterval - int(FirstExpTime*3/4))
+    #print('TEXPIMS: '+str(TEXPIMS))
+    NCCD = bin(CCDSEL).count('1')
+    #print('NCCD: '+str(NCCD))
+    
+    return CCDSEL, NCCD, TEXPIOFS, TEXPIMS

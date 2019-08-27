@@ -45,7 +45,7 @@ def Data_Plotter():
     
     "Simulation length and timestep"
     log_timestep = 3600
-    timestep = 1 #In seconds
+    timestep = 10 #In seconds
     duration = Settings['duration']
     timesteps = int(floor(duration / timestep))+1
     timesteps = 300

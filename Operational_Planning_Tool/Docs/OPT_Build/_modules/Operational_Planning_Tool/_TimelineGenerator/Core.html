@@ -42,16 +42,15 @@
 
 <span class="sd">Timeline_generator has a setable priority for the scheduling of modes and CMDs, </span>
 <span class="sd">which can be seen in the order of the modes in the list fetched from the </span>
-<span class="sd">function Modes_priority in the *Configuration File*. \n</span>
+<span class="sd">function Scheduling_priority in the *Configuration File*. \n</span>
 
 <span class="sd">For each mode/CMD, one at a time, an appropriate date is calculated, or</span>
 <span class="sd">a predetermined date is already set in the *Configuration File*. A dictionary (Occupied_Timeline) </span>
 <span class="sd">keeps track of the planned runtime of all Modes, this to prevent colliding scheduling. \n</span>
 
-<span class="sd">Depending on *Timeline_settings()[&#39;yaw_correction&#39;]* is set for the timeline, Mode1/2 or Mode3/4 is chosen.</span>
-<span class="sd">And depending on *Timeline_settings()[&#39;Custom_Mode&#39;]*, Mode1-4 or Mode5/6 is chosen.</span>
+<span class="sd">Mode1,2,5 are known as Operational Science Modes.</span>
 <span class="sd">These modes will fill out time left available after the scheduling of the rest of the modes, </span>
-<span class="sd">set in *Modes_priority*.</span>
+<span class="sd">set in *Scheduling_priority*.</span>
 
 <span class="sd">If calculated starting dates for modes are occupied, they will be changed  </span>
 <span class="sd">depending on a specialized filtering process (mode 120, 200...), or postponed until time is available (mode 130, 131...).</span>
@@ -92,9 +91,9 @@
     <span class="n">Version</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Version</span><span class="p">()</span>
     <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Configuration File used: &#39;</span><span class="o">+</span><span class="n">_Globals</span><span class="o">.</span><span class="n">Config_File</span><span class="o">+</span><span class="s1">&#39;, Version: &#39;</span><span class="o">+</span><span class="n">Version</span><span class="p">)</span>
     
-    <span class="s2">&quot;Get a List of Modes in a prioritized order which are to be scheduled&quot;</span>
-    <span class="n">Modes_priority</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Modes_priority</span><span class="p">()</span>
-    <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Modes priority list: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">Modes_priority</span><span class="p">))</span>
+    <span class="s2">&quot;Get a List of Modes and CMDs in a prioritized order which are to be scheduled&quot;</span>
+    <span class="n">Scheduling_priority</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Scheduling_priority</span><span class="p">()</span>
+    <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Scheduling priority list: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">Scheduling_priority</span><span class="p">))</span>
     
     <span class="s2">&quot;Get settings for the timeline&quot;</span>
     <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Timeline_settings</span><span class="p">()</span>
@@ -102,18 +101,18 @@
     <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Timeline_settings: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">Timeline_settings</span><span class="p">))</span>
     
     <span class="s2">&quot;Check if yaw_correction setting is set correct&quot;</span>
-    <span class="k">if</span><span class="p">(</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;yaw_correction&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">):</span>
-        <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Yaw correction is on: Mode3/4 will be scheduled&#39;</span><span class="p">)</span>
-    <span class="k">elif</span><span class="p">(</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;yaw_correction&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
-        <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Yaw correction is off: Mode1/2 will be scheduled&#39;</span><span class="p">)</span>
+    <span class="k">if</span><span class="p">(</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;yaw_correction&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">True</span><span class="p">):</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Yaw correction is on&#39;</span><span class="p">)</span>
+    <span class="k">elif</span><span class="p">(</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;yaw_correction&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">False</span><span class="p">):</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Yaw correction is off&#39;</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;OPT_Config_File.Timeline_settings[&quot;yaw_correction&quot;] is set wrong&#39;</span><span class="p">)</span>
-        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span>
         
     <span class="n">SCIMOD_Timeline_unchronological</span> <span class="o">=</span> <span class="p">[]</span>
     
     <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Create &quot;Occupied_Timeline&quot; variable&#39;</span><span class="p">)</span>
-    <span class="n">Occupied_Timeline</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:[]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">Modes_priority</span><span class="p">}</span>
+    <span class="n">Occupied_Timeline</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:[]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">Scheduling_priority</span><span class="p">}</span>
     
     <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
     <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Occupied_Timeline: </span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">+</span><span class="s2">&quot;{&quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;        </span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">Occupied_Timeline</span><span class="o">.</span><span class="n">items</span><span class="p">())</span> <span class="o">+</span> <span class="s2">&quot;}&quot;</span><span class="p">)</span>
@@ -127,23 +126,23 @@
     <span class="c1">################################################################################################################</span>
     
     <span class="s2">&quot;Loop through the Modes to be ran and schedule each one in the priority order of which they appear in the list&quot;</span>
-    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Modes_priority</span><span class="p">)):</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Scheduling_priority</span><span class="p">)):</span>
         
         <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
         <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Iteration &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; in Mode scheduling loop&#39;</span><span class="p">)</span>
         
-        <span class="n">scimod</span> <span class="o">=</span> <span class="n">Modes_priority</span><span class="p">[</span><span class="n">x</span><span class="p">]</span>
+        <span class="n">scimod</span> <span class="o">=</span> <span class="n">Scheduling_priority</span><span class="p">[</span><span class="n">x</span><span class="p">]</span>
         
         
         <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Start of &#39;</span><span class="o">+</span><span class="n">scimod</span><span class="p">)</span>
         <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
         
-        <span class="s2">&quot;Call the function of the same name as the string in Modes_priority&quot;</span>
+        <span class="s2">&quot;Call the function of the same name as the string in Scheduling_priority&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">Mode_function</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">Modes_Header</span><span class="p">,</span><span class="n">scimod</span><span class="p">)</span>
         <span class="k">except</span><span class="p">:</span>
-            <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">scimod</span><span class="o">+</span><span class="s1">&#39; in Modes_priority was not found in Modes.Modes_Header&#39;</span><span class="p">)</span>
-            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+            <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">scimod</span><span class="o">+</span><span class="s1">&#39; in Scheduling_priority was not found in Modes.Modes_Header&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">NameError</span>
             
         <span class="n">Occupied_Timeline</span><span class="p">,</span> <span class="n">Mode_comment</span> <span class="o">=</span> <span class="n">Mode_function</span><span class="p">(</span><span class="n">Occupied_Timeline</span><span class="p">)</span>
         
@@ -180,62 +179,43 @@
     
     
     <span class="c1">##########################################################################################</span>
-    <span class="c1">################################ Scheduling of Mode1-4 ###################################</span>
+    <span class="c1">########## Scheduling of operational science mode (Mode1,2 and possibly 5) ###################################</span>
     
-    <span class="n">yaw_correction</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;yaw_correction&#39;</span><span class="p">]</span>
-    <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Mode 1/2/3/4 started&#39;</span><span class="p">)</span>
-    <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;yaw_correction = &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">yaw_correction</span><span class="p">))</span>
-    <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
     
-    <span class="n">Mode_1_2_3_4</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">Modes_Header</span><span class="p">,</span><span class="s1">&#39;Mode_1_2_3_4_5_6&#39;</span><span class="p">)</span>
+    <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Operational Science Mode scheduling&#39;</span><span class="p">)</span>
     
+    <span class="n">Mode1_2_5</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">Modes_Header</span><span class="p">,</span><span class="s1">&#39;Mode1_2_5&#39;</span><span class="p">)</span>
+    
+    
+    <span class="k">if</span><span class="p">(</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;Schedule_Mode5&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">True</span> <span class="p">):</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Timeline_settings[&#39;Schedule_Mode5&#39;] == True&quot;</span><span class="p">)</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Schedule Mode5 as an operational science mode&#39;</span><span class="p">)</span>
+        
+        <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;Mode5&#39;</span>
     <span class="c1">### Check if it is NLC season ###</span>
-    <span class="k">if</span><span class="p">(</span> <span class="n">Timeline_start_date</span><span class="o">.</span><span class="n">tuple</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">11</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">]</span> <span class="ow">or</span> 
+    <span class="k">elif</span><span class="p">(</span> <span class="n">Timeline_start_date</span><span class="o">.</span><span class="n">tuple</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">11</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">]</span> <span class="ow">or</span> 
             <span class="p">(</span> <span class="n">Timeline_start_date</span><span class="o">.</span><span class="n">tuple</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">9</span><span class="p">]</span> <span class="ow">and</span> <span class="n">Timeline_start_date</span><span class="o">.</span><span class="n">tuple</span><span class="p">()[</span><span class="mi">2</span><span class="p">]</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span> <span class="p">)):</span>
         
-        <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;NLC season&#39;</span><span class="p">)</span>
-        
-        <span class="k">if</span><span class="p">(</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;Custom_Mode&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">True</span> <span class="p">):</span>
-            <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;Mode5&#39;</span>
-        <span class="k">elif</span><span class="p">(</span> <span class="n">yaw_correction</span> <span class="o">==</span> <span class="kc">True</span> <span class="p">):</span>
-            <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;Mode3&#39;</span>
-        <span class="k">elif</span><span class="p">(</span> <span class="n">yaw_correction</span> <span class="o">==</span> <span class="kc">False</span><span class="p">):</span>
-            <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;Mode1&#39;</span> 
-        
-        <span class="n">Occupied_Timeline</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">mode</span><span class="p">:</span> <span class="p">[]})</span>
-        
-        <span class="n">Occupied_Timeline</span><span class="p">,</span> <span class="n">Mode_comment</span> <span class="o">=</span> <span class="n">Mode_1_2_3_4</span><span class="p">(</span><span class="n">Occupied_Timeline</span><span class="p">)</span>
-        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
-        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Post-&#39;</span><span class="o">+</span><span class="n">mode</span><span class="o">+</span><span class="s1">&#39; Occupied_Timeline: </span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">+</span><span class="s2">&quot;{&quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;        </span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">Occupied_Timeline</span><span class="o">.</span><span class="n">items</span><span class="p">())</span> <span class="o">+</span> <span class="s2">&quot;}&quot;</span><span class="p">)</span>
-        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
-        
-        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">mode</span><span class="o">+</span><span class="s1">&#39; getting added to unchronological timeline&#39;</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Occupied_Timeline</span><span class="p">[</span><span class="n">mode</span><span class="p">])):</span>
-            <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Appended to timeline: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">((</span><span class="n">Occupied_Timeline</span><span class="p">[</span><span class="n">mode</span><span class="p">][</span><span class="n">x</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">Occupied_Timeline</span><span class="p">[</span><span class="n">mode</span><span class="p">][</span><span class="n">x</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="n">mode</span><span class="p">,</span> <span class="n">Mode_comment</span><span class="p">)))</span>
-            <span class="n">SCIMOD_Timeline_unchronological</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">Occupied_Timeline</span><span class="p">[</span><span class="n">mode</span><span class="p">][</span><span class="n">x</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">Occupied_Timeline</span><span class="p">[</span><span class="n">mode</span><span class="p">][</span><span class="n">x</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="n">mode</span><span class="p">,</span> <span class="n">Mode_comment</span><span class="p">))</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;NLC season (Mode1)&#39;</span><span class="p">)</span>
+        <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;Mode1&#39;</span> 
     <span class="k">else</span><span class="p">:</span>
         
-        <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Not NLC season&#39;</span><span class="p">)</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Not NLC season (Mode2)&#39;</span><span class="p">)</span>
+        <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;Mode2&#39;</span>
+            
         
-        <span class="k">if</span><span class="p">(</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;Custom_Mode&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">True</span> <span class="p">):</span>
-            <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;Mode6&#39;</span>
-        <span class="k">elif</span><span class="p">(</span> <span class="n">yaw_correction</span> <span class="o">==</span> <span class="kc">True</span> <span class="p">):</span>
-            <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;Mode4&#39;</span>
-        <span class="k">elif</span><span class="p">(</span> <span class="n">yaw_correction</span> <span class="o">==</span> <span class="kc">False</span><span class="p">):</span>
-            <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;Mode2&#39;</span> 
+    <span class="n">Occupied_Timeline</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">mode</span><span class="p">:</span> <span class="p">[]})</span>
+    
+    <span class="n">Occupied_Timeline</span><span class="p">,</span> <span class="n">Mode_comment</span> <span class="o">=</span> <span class="n">Mode1_2_5</span><span class="p">(</span><span class="n">Occupied_Timeline</span><span class="p">)</span>
+    <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Post-&#39;</span><span class="o">+</span><span class="n">mode</span><span class="o">+</span><span class="s1">&#39; Occupied_Timeline: </span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">+</span><span class="s2">&quot;{&quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;        </span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">Occupied_Timeline</span><span class="o">.</span><span class="n">items</span><span class="p">())</span> <span class="o">+</span> <span class="s2">&quot;}&quot;</span><span class="p">)</span>
+    <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    
+    <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">mode</span><span class="o">+</span><span class="s1">&#39; getting added to unchronological timeline&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Occupied_Timeline</span><span class="p">[</span><span class="n">mode</span><span class="p">])):</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Appended to timeline: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">((</span><span class="n">Occupied_Timeline</span><span class="p">[</span><span class="n">mode</span><span class="p">][</span><span class="n">x</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">Occupied_Timeline</span><span class="p">[</span><span class="n">mode</span><span class="p">][</span><span class="n">x</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="n">mode</span><span class="p">,</span> <span class="n">Mode_comment</span><span class="p">)))</span>
+        <span class="n">SCIMOD_Timeline_unchronological</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">Occupied_Timeline</span><span class="p">[</span><span class="n">mode</span><span class="p">][</span><span class="n">x</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">Occupied_Timeline</span><span class="p">[</span><span class="n">mode</span><span class="p">][</span><span class="n">x</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="n">mode</span><span class="p">,</span> <span class="n">Mode_comment</span><span class="p">))</span>
         
-        
-        <span class="n">Occupied_Timeline</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">mode</span><span class="p">:</span> <span class="p">[]})</span>
-        
-        <span class="n">Occupied_Timeline</span><span class="p">,</span> <span class="n">Mode_comment</span> <span class="o">=</span> <span class="n">Mode_1_2_3_4</span><span class="p">(</span><span class="n">Occupied_Timeline</span><span class="p">)</span>
-        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
-        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Post-&#39;</span><span class="o">+</span><span class="n">mode</span><span class="o">+</span><span class="s1">&#39; Occupied_Timeline: </span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">+</span><span class="s2">&quot;{&quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;        </span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">Occupied_Timeline</span><span class="o">.</span><span class="n">items</span><span class="p">())</span> <span class="o">+</span> <span class="s2">&quot;}&quot;</span><span class="p">)</span>
-        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
-        
-        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">mode</span><span class="o">+</span><span class="s1">&#39; getting added to unchronological timeline&#39;</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Occupied_Timeline</span><span class="p">[</span><span class="n">mode</span><span class="p">])):</span>
-            <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Appended to timeline: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">((</span><span class="n">Occupied_Timeline</span><span class="p">[</span><span class="n">mode</span><span class="p">][</span><span class="n">x</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">Occupied_Timeline</span><span class="p">[</span><span class="n">mode</span><span class="p">][</span><span class="n">x</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="n">mode</span><span class="p">,</span> <span class="n">Mode_comment</span><span class="p">)))</span>
-            <span class="n">SCIMOD_Timeline_unchronological</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">Occupied_Timeline</span><span class="p">[</span><span class="n">mode</span><span class="p">][</span><span class="n">x</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">Occupied_Timeline</span><span class="p">[</span><span class="n">mode</span><span class="p">][</span><span class="n">x</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="n">mode</span><span class="p">,</span> <span class="n">Mode_comment</span><span class="p">))</span>
     
     <span class="c1">###########################################################################################</span>
     <span class="c1">###########################################################################################</span>
@@ -251,7 +231,7 @@
     
     <span class="n">SCIMOD_Timeline</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">SCIMOD_Timeline</span><span class="o">.</span><span class="n">append</span><span class="p">([</span> <span class="s1">&#39;Timeline_settings&#39;</span><span class="p">,</span><span class="s1">&#39;This Timeline was created using these settings from &#39;</span><span class="o">+</span><span class="n">_Globals</span><span class="o">.</span><span class="n">Config_File</span><span class="p">,</span>
-                            <span class="s1">&#39;Note: These Timeline_settings are not actually used when generating an XML, the ones in the set Configuration File are&#39;</span><span class="p">,</span> 
+                            <span class="s1">&#39;Note: These Timeline_settings and TLE will be used when converting into a XML&#39;</span><span class="p">,</span> 
                             <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">getTLE</span><span class="p">()])</span>
     
     <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Create a science mode list in chronological order. The list contains Mode name, start date, enddate, params for XML-gen and comment&quot;</span><span class="p">)</span>
@@ -266,11 +246,16 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">Config_File</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">OPT_Config_File</span><span class="p">,</span><span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;_settings&#39;</span><span class="p">)()</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="n">Config_File</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">OPT_Config_File</span><span class="p">,</span><span class="s1">&#39;Mode_1_2_3_4_5_6settings&#39;</span><span class="p">)()</span>
-            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-                <span class="n">Logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;No Config function for &#39;</span><span class="o">+</span><span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
-                <span class="n">Config_File</span> <span class="o">=</span> <span class="p">[]</span>
+            
+            <span class="k">if</span><span class="p">(</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;Schedule_Mode5&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">False</span> <span class="ow">and</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Mode1&#39;</span> <span class="ow">or</span> 
+               <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;Mode2&#39;</span><span class="p">)</span> <span class="p">):</span>
+                
+                <span class="n">Config_File</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">OPT_Config_File</span><span class="p">,</span><span class="s1">&#39;Mode1_2_settings&#39;</span><span class="p">)()</span>
+                
+            <span class="k">else</span><span class="p">:</span>
+                    <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;No Config function for &#39;</span><span class="o">+</span><span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+                    <span class="n">Config_File</span> <span class="o">=</span> <span class="p">[]</span>
+                    <span class="k">raise</span> <span class="ne">NameError</span>
             
                 
         <span class="c1">#SCIMOD_Timeline.append([ x[2],str(x[0]), str(x[1]),{},x[3] ])</span>

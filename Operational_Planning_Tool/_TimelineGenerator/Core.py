@@ -9,16 +9,15 @@ expressed as a list in chronological order. \n
 
 Timeline_generator has a setable priority for the scheduling of modes and CMDs, 
 which can be seen in the order of the modes in the list fetched from the 
-function Modes_priority in the *Configuration File*. \n
+function Scheduling_priority in the *Configuration File*. \n
 
 For each mode/CMD, one at a time, an appropriate date is calculated, or
 a predetermined date is already set in the *Configuration File*. A dictionary (Occupied_Timeline) 
 keeps track of the planned runtime of all Modes, this to prevent colliding scheduling. \n
 
-Depending on *Timeline_settings()['yaw_correction']* is set for the timeline, Mode1/2 or Mode3/4 is chosen.
-And depending on *Timeline_settings()['Custom_Mode']*, Mode1-4 or Mode5/6 is chosen.
+Mode1,2,5 are known as Operational Science Modes.
 These modes will fill out time left available after the scheduling of the rest of the modes, 
-set in *Modes_priority*.
+set in *Scheduling_priority*.
 
 If calculated starting dates for modes are occupied, they will be changed  
 depending on a specialized filtering process (mode 120, 200...), or postponed until time is available (mode 130, 131...).
@@ -59,9 +58,9 @@ def Timeline_generator():
     Version = OPT_Config_File.Version()
     Logger.info('Configuration File used: '+_Globals.Config_File+', Version: '+Version)
     
-    "Get a List of Modes in a prioritized order which are to be scheduled"
-    Modes_priority = OPT_Config_File.Modes_priority()
-    Logger.info('Modes priority list: '+str(Modes_priority))
+    "Get a List of Modes and CMDs in a prioritized order which are to be scheduled"
+    Scheduling_priority = OPT_Config_File.Scheduling_priority()
+    Logger.info('Scheduling priority list: '+str(Scheduling_priority))
     
     "Get settings for the timeline"
     Timeline_settings = OPT_Config_File.Timeline_settings()
@@ -69,18 +68,18 @@ def Timeline_generator():
     Logger.debug('Timeline_settings: '+str(Timeline_settings))
     
     "Check if yaw_correction setting is set correct"
-    if( Timeline_settings['yaw_correction'] == 1):
-        Logger.info('Yaw correction is on: Mode3/4 will be scheduled')
-    elif( Timeline_settings['yaw_correction'] == 0):
-        Logger.info('Yaw correction is off: Mode1/2 will be scheduled')
+    if( Timeline_settings['yaw_correction'] == True):
+        Logger.info('Yaw correction is on')
+    elif( Timeline_settings['yaw_correction'] == False):
+        Logger.info('Yaw correction is off')
     else:
         Logger.error('OPT_Config_File.Timeline_settings["yaw_correction"] is set wrong')
-        sys.exit()
+        raise TypeError
         
     SCIMOD_Timeline_unchronological = []
     
     Logger.debug('Create "Occupied_Timeline" variable')
-    Occupied_Timeline = {key:[] for key in Modes_priority}
+    Occupied_Timeline = {key:[] for key in Scheduling_priority}
     
     Logger.debug('')
     Logger.debug('Occupied_Timeline: \n'+"{" + "\n".join("        {}: {}".format(k, v) for k, v in Occupied_Timeline.items()) + "}")
@@ -94,23 +93,23 @@ def Timeline_generator():
     ################################################################################################################
     
     "Loop through the Modes to be ran and schedule each one in the priority order of which they appear in the list"
-    for x in range(len(Modes_priority)):
+    for x in range(len(Scheduling_priority)):
         
         Logger.info('')
         Logger.info('Iteration '+str(x+1)+' in Mode scheduling loop')
         
-        scimod = Modes_priority[x]
+        scimod = Scheduling_priority[x]
         
         
         Logger.info('Start of '+scimod)
         Logger.info('')
         
-        "Call the function of the same name as the string in Modes_priority"
+        "Call the function of the same name as the string in Scheduling_priority"
         try:
             Mode_function = getattr(Modes_Header,scimod)
         except:
-            Logger.error(scimod+' in Modes_priority was not found in Modes.Modes_Header')
-            sys.exit()
+            Logger.error(scimod+' in Scheduling_priority was not found in Modes.Modes_Header')
+            raise NameError
             
         Occupied_Timeline, Mode_comment = Mode_function(Occupied_Timeline)
         
@@ -147,46 +146,34 @@ def Timeline_generator():
     
     
     ##########################################################################################
-    ################################ Scheduling of Mode1-4 ###################################
-    
-    yaw_correction = Timeline_settings['yaw_correction']
-    Logger.info('Mode 1/2/3/4 started')
-    Logger.info('yaw_correction = '+str(yaw_correction))
-    Logger.info('')
-    
-    Mode_1_2_3_4_5_6 = getattr(Modes_Header,'Mode_1_2_3_4_5_6')
+    ########## Scheduling of operational science mode (Mode1,2 and possibly 5) ###################################
     
     
-    if( Timeline_settings['Custom_Mode'] == True ):
-        Logger.info('Custom Mode (Mode5/6)')
+    Logger.info('Operational Science Mode scheduling')
+    
+    Mode1_2_5 = getattr(Modes_Header,'Mode1_2_5')
+    
+    
+    if( Timeline_settings['Schedule_Mode5'] == True ):
+        Logger.info("Timeline_settings['Schedule_Mode5'] == True")
+        Logger.info('Schedule Mode5 as an operational science mode')
         
-        if( yaw_correction == True ):
-            mode = 'Mode6'
-        elif( yaw_correction == False ):
-            mode = 'Mode5'
+        mode = 'Mode5'
     ### Check if it is NLC season ###
     elif( Timeline_start_date.tuple()[1] in [11,12,1,2,5,6,7,8] or 
             ( Timeline_start_date.tuple()[1] in [3,9] and Timeline_start_date.tuple()[2] in range(11) )):
         
-        Logger.info('NLC season (Mode1/3)')
-        
-        if( yaw_correction == True ):
-            mode = 'Mode3'
-        elif( yaw_correction == False):
-            mode = 'Mode1' 
+        Logger.info('NLC season (Mode1)')
+        mode = 'Mode1' 
     else:
         
-        Logger.info('Not NLC season (Mode2/4)')
-        
-        if( yaw_correction == True ):
-            mode = 'Mode4'
-        elif( yaw_correction == False):
-            mode = 'Mode2'
+        Logger.info('Not NLC season (Mode2)')
+        mode = 'Mode2'
             
         
     Occupied_Timeline.update({mode: []})
     
-    Occupied_Timeline, Mode_comment = Mode_1_2_3_4_5_6(Occupied_Timeline)
+    Occupied_Timeline, Mode_comment = Mode1_2_5(Occupied_Timeline)
     Logger.debug('')
     Logger.debug('Post-'+mode+' Occupied_Timeline: \n'+"{" + "\n".join("        {}: {}".format(k, v) for k, v in Occupied_Timeline.items()) + "}")
     Logger.debug('')
@@ -211,7 +198,7 @@ def Timeline_generator():
     
     SCIMOD_Timeline = []
     SCIMOD_Timeline.append([ 'Timeline_settings','This Timeline was created using these settings from '+_Globals.Config_File,
-                            'Note: These Timeline_settings are not actually used when generating an XML, the ones in the set Configuration File are', 
+                            'Note: These Timeline_settings and TLE will be used when converting into a XML', 
                             Timeline_settings, OPT_Config_File.getTLE()])
     
     Logger.debug("Create a science mode list in chronological order. The list contains Mode name, start date, enddate, params for XML-gen and comment")
@@ -227,17 +214,15 @@ def Timeline_generator():
             Config_File = getattr(OPT_Config_File,x[2]+'_settings')()
         except AttributeError:
             
-            if( Timeline_settings['Custom_Mode'] == False and (x[2] == 'Mode1' or 
-               x[2] == 'Mode2' or x[2] == 'Mode3' or x[2] == 'Mode4') ):
+            if( Timeline_settings['Schedule_Mode5'] == False and (x[2] == 'Mode1' or 
+               x[2] == 'Mode2') ):
                 
-                Config_File = getattr(OPT_Config_File,'Mode_1_2_3_4settings')()
+                Config_File = getattr(OPT_Config_File,'Mode1_2_settings')()
                 
-            elif( Timeline_settings['Custom_Mode'] == True and (x[2] == 'Mode5' or x[2] == 'Mode6') ):
-                
-                Config_File = getattr(OPT_Config_File,'Mode_5_6settings')()
             else:
-                    Logger.warning('No Config function for '+x[2])
+                    Logger.error('No Config function for '+x[2])
                     Config_File = []
+                    raise NameError
             
                 
         #SCIMOD_Timeline.append([ x[2],str(x[0]), str(x[1]),{},x[3] ])

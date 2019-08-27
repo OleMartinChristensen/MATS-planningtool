@@ -18,8 +18,8 @@ def CheckConfigFile():
     _Library.SetupLogger()
     
     Timeline_settings = OPT_Config_File.Timeline_settings()
-    Mode_1_2_3_4settings = OPT_Config_File.Mode_1_2_3_4settings()
-    Mode_5_6settings = OPT_Config_File.Mode_5_6settings()
+    Mode1_2_settings = OPT_Config_File.Mode1_2_settings()
+    Mode5_settings = OPT_Config_File.Mode5_settings()
     Mode100_settings = OPT_Config_File.Mode100_settings()
     Mode110_settings = OPT_Config_File.Mode110_settings()
     Mode120_settings = OPT_Config_File.Mode120_settings()
@@ -32,6 +32,9 @@ def CheckConfigFile():
     Mode131_settings = OPT_Config_File.Mode131_settings()
     Mode132_settings = OPT_Config_File.Mode132_settings()
     Mode133_settings = OPT_Config_File.Mode133_settings()
+    
+    
+    
     
     if not( Timeline_settings['duration'] > 0 and type(Timeline_settings['duration']) == int ):
         Logger.error('Timeline_settings["duration"]')
@@ -57,14 +60,14 @@ def CheckConfigFile():
     if not( 10000 <= Timeline_settings['LP_pointing_altitude'] <= 300000 and type(Timeline_settings['LP_pointing_altitude']) == int ):
         Logger.error("Timeline_settings['LP_pointing_altitude']")
         raise ValueError
-    if not( 0 < Timeline_settings['Mode_1_2_3_4_5_6minDuration'] and type(Timeline_settings['Mode_1_2_3_4_5_6minDuration']) == int ):
-        Logger.error("Timeline_settings['Mode_1_2_3_4minDuration']")
+    if not( 0 < Timeline_settings['Mode1_2_5_minDuration'] and type(Timeline_settings['Mode1_2_5_minDuration']) == int ):
+        Logger.error("Timeline_settings['Mode1_2_5_minDuration']")
         raise ValueError
     if not( type(Timeline_settings['yaw_correction']) == bool ):
         Logger.error("Timeline_settings['yaw_correction']")
         raise TypeError
-    if not( type(Timeline_settings['Custom_Mode']) == bool ):
-        Logger.error("Timeline_settings['Custom_Mode']")
+    if not( type(Timeline_settings['Schedule_Mode5']) == bool ):
+        Logger.error("Timeline_settings['Schedule_Mode5']")
         raise TypeError
     if not( type(Timeline_settings['GPS_epoch']) == str ):
         Logger.error("Timeline_settings['GPS_epoch']")
@@ -80,18 +83,18 @@ def CheckConfigFile():
         raise ValueError
         
     
-    for key in Mode_1_2_3_4settings.keys():
+    for key in Mode1_2_settings.keys():
         
-        if not( Mode_1_2_3_4settings[key] > 0 and type(Mode_1_2_3_4settings[key]) == int ):
-            Logger.error('Mode_1_2_3_4settings')
+        if not( Mode1_2_settings[key] > 0 and type(Mode1_2_settings[key]) == int ):
+            Logger.error('Mode1_2_settings')
             raise ValueError
         if( key == 'timestep'):
-            if not( Mode_1_2_3_4settings[key] < 100):
-                Logger.error('Mode_1_2_3_4settings["timestep"]')
+            if not( Mode1_2_settings[key] < 100):
+                Logger.error('Mode1_2_settings["timestep"]')
                 raise ValueError
                 
-    if not( 10000 <= Mode_5_6settings['pointing_altitude'] <= 300000 and type(Mode_5_6settings['pointing_altitude']) == int ):
-        Logger.error("Mode_5_6settings['pointing_altitude']")
+    if not( 10000 <= Mode5_settings['pointing_altitude'] <= 300000 and type(Mode5_settings['pointing_altitude']) == int ):
+        Logger.error("Mode5_settings['pointing_altitude']")
         raise ValueError
                 
     
@@ -111,14 +114,14 @@ def CheckConfigFile():
     if not( type(Mode100_settings['start_date']) == str):
         Logger.error("Mode100_settings['start_date']")
         raise TypeError
-    if not( type(Mode100_settings['Exp_Time_and_Interval_IR']) == tuple and type(Mode100_settings['Exp_Time_and_Interval_UV']) == tuple):
-        Logger.error("Mode100_settings['Exp_Time_and_Interval_IR'] or Mode100_settings['Exp_Time_and_Interval_UV']")
+    if not( type(Mode100_settings['Exp_Time_IR']) == int and type(Mode100_settings['Exp_Time_UV']) == int):
+        Logger.error("Mode100_settings['Exp_Time_IR'] or Mode100_settings['Exp_Time_UV']")
         raise TypeError
     numberOfAltitudes = int( abs(Mode100_settings['pointing_altitude_to'] - Mode100_settings['pointing_altitude_from']) / abs(Mode100_settings['pointing_altitude_interval']) +1  )
-    if not( Mode100_settings['Exp_Time_and_Interval_IR'][0] + numberOfAltitudes * Mode100_settings['ExpTime_step'] < Mode100_settings['pointing_duration']*1000):
+    if not( Mode100_settings['Exp_Time_IR'] + numberOfAltitudes * Mode100_settings['ExpTime_step'] < Mode100_settings['pointing_duration']*1000):
         Logger.error("Mode100_settings['pointing_duration']")
         raise ValueError
-    if not( Mode100_settings['Exp_Time_and_Interval_UV'][0] + numberOfAltitudes * Mode100_settings['ExpTime_step'] < Mode100_settings['pointing_duration']*1000):
+    if not( Mode100_settings['Exp_Time_UV'] + numberOfAltitudes * Mode100_settings['ExpTime_step'] < Mode100_settings['pointing_duration']*1000):
         Logger.error("Mode100_settings['pointing_duration']")
         raise ValueError
     
@@ -280,7 +283,7 @@ def CheckConfigFile():
     
     
     
-    if not( Timeline_settings['pointing_stabilization'] < Mode130_settings['mode_duration'] and type(Mode130_settings['mode_duration']) == int):
+    if not( Timeline_settings['command_separation'] <= Mode130_settings['SnapshotSpacing'] and type(Mode130_settings['SnapshotSpacing']) == int):
         Logger.error("Mode130_settings['mode_duration']")
         raise TypeError
     if not( Timeline_settings['pointing_stabilization'] < Mode131_settings['mode_duration'] and type(Mode131_settings['mode_duration']) == int):
@@ -313,11 +316,11 @@ def CheckConfigFile():
         Logger.error("Mode133_settings['start_date']")
         raise TypeError
         
-    if not( type(Mode132_settings['Exp_Times_and_Intervals_IR']) == list and type(Mode132_settings['Exp_Times_and_Intervals_UV']) == list):
-        Logger.error("Mode132_settings['Exp_Times_and_Intervals_IR'] or Mode132_settings['Exp_Times_and_Intervals_UV']")
+    if not( type(Mode132_settings['Exp_Times_IR']) == list and type(Mode132_settings['Exp_Times_UV']) == list):
+        Logger.error("Mode132_settings['Exp_Times_IR'] or Mode132_settings['Exp_Times_UV']")
         raise TypeError
-    if not( type(Mode133_settings['Exp_Times_and_Intervals_IR']) == list and type(Mode133_settings['Exp_Times_and_Intervals_UV']) == list):
-        Logger.error("Mode133_settings['Exp_Times_and_Intervals_IR'] or Mode133_settings['Exp_Times_and_Intervals_UV']")
+    if not( type(Mode133_settings['Exp_Times_IR']) == list and type(Mode133_settings['Exp_Times_UV']) == list):
+        Logger.error("Mode133_settings['Exp_Times_IR'] or Mode133_settings['Exp_Times_UV']")
         raise TypeError
     
     

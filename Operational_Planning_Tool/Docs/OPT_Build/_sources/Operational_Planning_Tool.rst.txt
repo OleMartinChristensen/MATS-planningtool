@@ -15,6 +15,7 @@ Subpackages
     Operational_Planning_Tool._DataPlotter
     Operational_Planning_Tool._TimelineAnalyzer
     Operational_Planning_Tool._TimelineGenerator
+    Operational_Planning_Tool._Timeline_Plotter
     Operational_Planning_Tool._XMLGenerator
 
 Submodules

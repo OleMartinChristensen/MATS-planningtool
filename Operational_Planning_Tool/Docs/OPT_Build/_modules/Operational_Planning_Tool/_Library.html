@@ -38,9 +38,10 @@
 <span class="kn">import</span> <span class="nn">ephem</span><span class="o">,</span> <span class="nn">importlib</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">sys</span>
 <span class="kn">from</span> <span class="nn">pylab</span> <span class="k">import</span> <span class="n">cos</span><span class="p">,</span> <span class="n">sin</span><span class="p">,</span> <span class="n">sqrt</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">arccos</span><span class="p">,</span> <span class="n">pi</span><span class="p">,</span> <span class="n">floor</span><span class="p">,</span> <span class="n">around</span>
 
-<span class="kn">from</span> <span class="nn">Operational_Planning_Tool</span> <span class="k">import</span> <span class="n">_Globals</span>
+<span class="kn">from</span> <span class="nn">Operational_Planning_Tool</span> <span class="k">import</span> <span class="n">_Globals</span><span class="p">,</span> <span class="n">_MATS_coordinates</span>
 
 <span class="n">OPT_Config_File</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">_Globals</span><span class="o">.</span><span class="n">Config_File</span><span class="p">)</span>
+<span class="n">Logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Logger_name</span><span class="p">())</span>
 
 <div class="viewcode-block" id="rot_arbit"><a class="viewcode-back" href="../../Operational_Planning_Tool.html#Operational_Planning_Tool._Library.rot_arbit">[docs]</a><span class="k">def</span> <span class="nf">rot_arbit</span><span class="p">(</span><span class="n">angle</span><span class="p">,</span> <span class="n">u_v</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Takes an angle in radians and a unit vector and outputs a rotation matrix around that vector&quot;</span>
@@ -111,7 +112,9 @@
 
 
 <div class="viewcode-block" id="lat_2_R"><a class="viewcode-back" href="../../Operational_Planning_Tool.html#Operational_Planning_Tool._Library.lat_2_R">[docs]</a><span class="k">def</span> <span class="nf">lat_2_R</span><span class="p">(</span> <span class="n">lat</span> <span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Takes a geocentric latitude in radians and puts out the distance from the center of a spheroid Earth to the surface</span>
+    <span class="sd">&quot;&quot;&quot;Takes a geocentric or geodetic latitude in radians and puts out the distance from the center of a ellipsoid Earth to the surface</span>
+<span class="sd">    </span>
+<span class="sd">    If a geocentic latitude is given, an error of up to 70 m will occur.</span>
 <span class="sd">    </span>
 <span class="sd">    Arguments:</span>
 <span class="sd">        lat (float): Latitude angle in radians</span>
@@ -121,12 +124,62 @@
 <span class="sd">        </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
+    
     <span class="n">R_polar</span> <span class="o">=</span> <span class="mf">6356.752314245</span>
     <span class="n">R_eq</span> <span class="o">=</span> <span class="mf">6378.137</span>
     
+    
+    
     <span class="n">R</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span> <span class="p">(</span> <span class="p">(</span><span class="n">R_eq</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">cos</span><span class="p">(</span><span class="n">lat</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">R_polar</span><span class="o">**</span><span class="mi">2</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">lat</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span> <span class="p">)</span> <span class="o">/</span> <span class="p">(</span> <span class="p">(</span><span class="n">R_eq</span><span class="o">*</span><span class="n">cos</span><span class="p">(</span><span class="n">lat</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">R_polar</span><span class="o">*</span><span class="n">sin</span><span class="p">(</span><span class="n">lat</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span> <span class="p">)</span> <span class="p">)</span>
+
+    <span class="c1">#e = sqrt(1-R_polar**2/R_eq**2)</span>
+    <span class="c1">#R = R_eq/sqrt(1-e**2*sin(lat/180*pi)**2)</span>
+    <span class="c1">#R = sqrt( ( (R_eq**2*cos(lat))**2 + (R_polar**2*sin(lat))**2 ) / ( (R_eq*cos(lat))**2 + (R_polar*sin(lat))**2 ) )</span>
     
     <span class="k">return</span> <span class="n">R</span></div>
+
+
+
+<div class="viewcode-block" id="lat_MATS_calculator"><a class="viewcode-back" href="../../Operational_Planning_Tool.html#Operational_Planning_Tool._Library.lat_MATS_calculator">[docs]</a><span class="k">def</span> <span class="nf">lat_MATS_calculator</span><span class="p">(</span> <span class="n">date</span> <span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39; Function that calculates the latitude of a satellite defined by TLE.</span>
+<span class="sd">    </span>
+<span class="sd">    Mainly used to approximated the latitude of a LP as the LP is close to being in the same orbital plane.</span>
+<span class="sd">    </span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        date (:obj:`ephem.Date`): The scheduled startdate of the current Mode.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns: </span>
+<span class="sd">        lat_MATS (float): Latitude given in radians.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    
+    <span class="n">TLE1</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">getTLE</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">TLE2</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">getTLE</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span>
+        
+    
+    <span class="n">MATS</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">readtle</span><span class="p">(</span><span class="s1">&#39;MATS&#39;</span><span class="p">,</span><span class="n">TLE1</span><span class="p">,</span><span class="n">TLE2</span><span class="p">)</span>
+    
+    <span class="n">MATS</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">date</span><span class="p">),</span> <span class="n">epoch</span> <span class="o">=</span> <span class="s1">&#39;2000/01/01 11:58:55.816&#39;</span><span class="p">)</span>
+    
+    <span class="p">(</span><span class="n">lat_MATS</span><span class="p">,</span><span class="n">long_MATS</span><span class="p">,</span><span class="n">alt_MATS</span><span class="p">,</span><span class="n">a_ra_MATS</span><span class="p">,</span><span class="n">a_dec_MATS</span><span class="p">)</span><span class="o">=</span> <span class="p">(</span>
+            <span class="n">MATS</span><span class="o">.</span><span class="n">sublat</span><span class="p">,</span> <span class="n">MATS</span><span class="o">.</span><span class="n">sublong</span><span class="p">,</span> <span class="n">MATS</span><span class="o">.</span><span class="n">elevation</span><span class="o">/</span><span class="mi">1000</span><span class="p">,</span> <span class="n">MATS</span><span class="o">.</span><span class="n">a_ra</span><span class="p">,</span> <span class="n">MATS</span><span class="o">.</span><span class="n">a_dec</span><span class="p">)</span>
+    
+    <span class="n">R_earth_MATS</span> <span class="o">=</span> <span class="n">lat_2_R</span><span class="p">(</span><span class="n">lat_MATS</span><span class="p">)</span> <span class="c1">#WGS84 radius from latitude of MATS</span>
+    
+    <span class="n">z_MATS</span> <span class="o">=</span> <span class="n">sin</span><span class="p">(</span><span class="n">a_dec_MATS</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">alt_MATS</span><span class="o">+</span><span class="n">R_earth_MATS</span><span class="p">)</span>
+    <span class="n">x_MATS</span> <span class="o">=</span> <span class="n">cos</span><span class="p">(</span><span class="n">a_dec_MATS</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">alt_MATS</span><span class="o">+</span><span class="n">R_earth_MATS</span><span class="p">)</span><span class="o">*</span> <span class="n">cos</span><span class="p">(</span><span class="n">a_ra_MATS</span><span class="p">)</span>
+    <span class="n">y_MATS</span> <span class="o">=</span> <span class="n">cos</span><span class="p">(</span><span class="n">a_dec_MATS</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">alt_MATS</span><span class="o">+</span><span class="n">R_earth_MATS</span><span class="p">)</span><span class="o">*</span> <span class="n">sin</span><span class="p">(</span><span class="n">a_ra_MATS</span><span class="p">)</span>
+    <span class="n">r_MATS</span> <span class="o">=</span> <span class="n">array</span><span class="p">((</span><span class="n">x_MATS</span><span class="p">,</span> <span class="n">y_MATS</span><span class="p">,</span> <span class="n">z_MATS</span><span class="p">))</span>
+    
+    
+    <span class="n">r_MATS_ECEF_x</span><span class="p">,</span> <span class="n">r_MATS_ECEF_y</span><span class="p">,</span> <span class="n">r_MATS_ECEF_z</span> <span class="o">=</span> <span class="n">_MATS_coordinates</span><span class="o">.</span><span class="n">eci2ecef</span><span class="p">(</span>
+            <span class="n">r_MATS</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">r_MATS</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">r_MATS</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">date</span><span class="p">)</span><span class="o">.</span><span class="n">datetime</span><span class="p">())</span>
+    
+    
+    <span class="n">lat_MATS</span><span class="p">,</span> <span class="n">long_MATS</span><span class="p">,</span> <span class="n">alt_MATS</span>  <span class="o">=</span> <span class="n">_MATS_coordinates</span><span class="o">.</span><span class="n">ECEF2lla</span><span class="p">(</span><span class="n">r_MATS_ECEF_x</span><span class="o">*</span><span class="mi">1000</span><span class="p">,</span> <span class="n">r_MATS_ECEF_y</span><span class="o">*</span><span class="mi">1000</span><span class="p">,</span> <span class="n">r_MATS_ECEF_z</span><span class="o">*</span><span class="mi">1000</span><span class="p">)</span>
+    
+    <span class="n">lat_MATS</span> <span class="o">=</span> <span class="n">lat_MATS</span> <span class="o">/</span> <span class="mi">180</span><span class="o">*</span><span class="n">pi</span>
+    
+    <span class="k">return</span> <span class="n">lat_MATS</span></div>
 
 <div class="viewcode-block" id="scheduler"><a class="viewcode-back" href="../../Operational_Planning_Tool.html#Operational_Planning_Tool._Library.scheduler">[docs]</a><span class="k">def</span> <span class="nf">scheduler</span><span class="p">(</span><span class="n">Occupied_Timeline</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">endDate</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39; Function that checks if the scheduled time is available and postpones it otherwise. </span>
@@ -195,6 +248,7 @@
 <span class="sd">        </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
+    <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;params from Science Mode List: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">dict1</span><span class="p">))</span>
     
     <span class="s2">&quot;Check if optional params were given&quot;</span>
     <span class="k">if</span><span class="p">(</span> <span class="n">dict1</span> <span class="o">!=</span> <span class="n">dict2</span><span class="p">):</span>
@@ -204,7 +258,10 @@
             <span class="n">dict_new</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">dict1</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">dict_new</span> <span class="o">=</span> <span class="n">dict1</span>
-        
+    
+    <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;params after params_checker function: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">dict_new</span><span class="p">))</span>
+    <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;params used: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">dict_new</span><span class="p">))</span>
+    
     <span class="k">return</span> <span class="n">dict_new</span></div>
 
 <div class="viewcode-block" id="utc_to_onboardTime"><a class="viewcode-back" href="../../Operational_Planning_Tool.html#Operational_Planning_Tool._Library.utc_to_onboardTime">[docs]</a><span class="k">def</span> <span class="nf">utc_to_onboardTime</span><span class="p">(</span><span class="n">utc_date</span><span class="p">):</span>
@@ -279,8 +336,17 @@
 <span class="sd">    All pixel timing setting is the final count of a counter that starts at 0,</span>
 <span class="sd">    so the number of clock cycles exceeds the setting by 1</span>
 <span class="sd">    </span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        NCOL (int): Number of columns</span>
+<span class="sd">        NCBIN (int): Number of columns to bin</span>
+<span class="sd">        NCBINFPGA (int): Binning with FPGA</span>
+<span class="sd">        NRSKIP (int): Number of rows to skip</span>
+<span class="sd">        NROW (int): Number of rows</span>
+<span class="sd">        NRBIN (int): Number of rows to bin</span>
+<span class="sd">        NFLUSH (int): Number of pre-exposure flushes</span>
+<span class="sd">    </span>
 <span class="sd">    Returns:</span>
-<span class="sd">        (float): Readout time in ns. </span>
+<span class="sd">        (float): Readout time in ms. </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
     <span class="c1">#image parameters</span>
@@ -354,9 +420,178 @@
     <span class="c1">#&quot;smearing time&quot;</span>
     <span class="c1">#(this is the time that any pixel collects electrons in a wrong row, during the shifting.)</span>
     <span class="c1">#For smearing correction, this is the &quot;extra exposure time&quot; for each of the rows.</span>
-    <span class="n">T_row_extra</span> <span class="o">=</span> <span class="p">(</span><span class="n">T_row_read</span> <span class="o">+</span> <span class="n">T_row_shift</span><span class="o">*</span><span class="n">nrowbin</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1e9</span>    
+    <span class="n">T_row_extra</span> <span class="o">=</span> <span class="p">(</span><span class="n">T_row_read</span> <span class="o">+</span> <span class="n">T_row_shift</span><span class="o">*</span><span class="n">nrowbin</span><span class="p">)</span>   
     
-    <span class="k">return</span> <span class="n">T_readout</span></div>
+    <span class="k">return</span> <span class="n">T_readout</span><span class="o">/</span><span class="mf">1e6</span><span class="p">,</span> <span class="n">T_delay</span><span class="o">/</span><span class="mf">1e6</span><span class="p">,</span> <span class="n">T_row_extra</span><span class="o">/</span><span class="mf">1e6</span></div>
+
+
+<div class="viewcode-block" id="SyncArgCalculator"><a class="viewcode-back" href="../../Operational_Planning_Tool.html#Operational_Planning_Tool._Library.SyncArgCalculator">[docs]</a><span class="k">def</span> <span class="nf">SyncArgCalculator</span><span class="p">(</span><span class="n">CCD_settings</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculates appropriate arguments for the CCD Synchonize CMD.</span>
+<span class="sd">    </span>
+<span class="sd">    The offset calculations depend on the Readout Time, which depends on the binning settings of the CCDs.</span>
+<span class="sd">    The Exposure Interval Time depends on the longest Combined Readout Time and ExposureTime aswell as the </span>
+<span class="sd">    leading CCDs Exposure Time (which means it is also the short Exposure Time) to prevent collision between</span>
+<span class="sd">    Readout of the leading CCD and the final CCD.</span>
+<span class="sd">    </span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            CCD_settings (dict of dict of int): Dictionary containing settings for the CCDs.</span>
+<span class="sd">            </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            CCDSEL (int): Calculated CCDSEL argument for the CCD Synchronize CMD.</span>
+<span class="sd">            NCCD (int): Calculated NCCD argument for the CCD Synchronize CMD.</span>
+<span class="sd">            TEXPIOFS (list of int): Calculated TEXPIOFS argument for the CCD Synchronize CMD.</span>
+<span class="sd">            TEXPIMS: Calculated minimum Exposure Interval Time.</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">CCD_48</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCD_48&#39;</span><span class="p">]</span>
+    <span class="n">CCD_9</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCD_9&#39;</span><span class="p">]</span>
+    <span class="n">CCD_6</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCD_6&#39;</span><span class="p">]</span>
+    <span class="n">CCD_64</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCD_64&#39;</span><span class="p">]</span>
+    
+    <span class="n">ReadOutTime</span> <span class="o">=</span> <span class="p">[]</span>
+    
+    <span class="n">T_readout</span><span class="p">,</span> <span class="n">T_delay</span><span class="p">,</span> <span class="n">T_Extra</span> <span class="o">=</span> <span class="n">calculate_time_per_row</span><span class="p">(</span><span class="n">NCOL</span> <span class="o">=</span> <span class="n">CCD_48</span><span class="p">[</span><span class="s1">&#39;NCOL&#39;</span><span class="p">],</span> <span class="n">NCBIN</span> <span class="o">=</span> <span class="n">CCD_48</span><span class="p">[</span><span class="s1">&#39;NCBIN&#39;</span><span class="p">],</span> <span class="n">NCBINFPGA</span> <span class="o">=</span> <span class="n">CCD_48</span><span class="p">[</span><span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">],</span> 
+                                                         <span class="n">NRSKIP</span> <span class="o">=</span> <span class="n">CCD_48</span><span class="p">[</span><span class="s1">&#39;NRSKIP&#39;</span><span class="p">],</span> <span class="n">NROW</span> <span class="o">=</span> <span class="n">CCD_48</span><span class="p">[</span><span class="s1">&#39;NROW&#39;</span><span class="p">],</span> 
+                                                         <span class="n">NRBIN</span> <span class="o">=</span> <span class="n">CCD_48</span><span class="p">[</span><span class="s1">&#39;NRBIN&#39;</span><span class="p">],</span> <span class="n">NFLUSH</span> <span class="o">=</span> <span class="n">CCD_48</span><span class="p">[</span><span class="s1">&#39;NFLUSH&#39;</span><span class="p">])</span>
+    <span class="n">ReadOutTime_48</span> <span class="o">=</span> <span class="n">T_readout</span> <span class="o">+</span> <span class="n">T_delay</span> <span class="o">+</span> <span class="n">T_Extra</span>
+    <span class="n">ReadOutTime</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">ReadOutTime_48</span><span class="p">))</span>
+    
+    <span class="n">T_readout</span><span class="p">,</span> <span class="n">T_delay</span><span class="p">,</span> <span class="n">T_Extra</span> <span class="o">=</span> <span class="n">calculate_time_per_row</span><span class="p">(</span><span class="n">NCOL</span> <span class="o">=</span> <span class="n">CCD_9</span><span class="p">[</span><span class="s1">&#39;NCOL&#39;</span><span class="p">],</span> <span class="n">NCBIN</span> <span class="o">=</span> <span class="n">CCD_9</span><span class="p">[</span><span class="s1">&#39;NCBIN&#39;</span><span class="p">],</span> <span class="n">NCBINFPGA</span> <span class="o">=</span> <span class="n">CCD_9</span><span class="p">[</span><span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">],</span> 
+                                                         <span class="n">NRSKIP</span> <span class="o">=</span> <span class="n">CCD_9</span><span class="p">[</span><span class="s1">&#39;NRSKIP&#39;</span><span class="p">],</span> <span class="n">NROW</span> <span class="o">=</span> <span class="n">CCD_9</span><span class="p">[</span><span class="s1">&#39;NROW&#39;</span><span class="p">],</span> 
+                                                         <span class="n">NRBIN</span> <span class="o">=</span> <span class="n">CCD_9</span><span class="p">[</span><span class="s1">&#39;NRBIN&#39;</span><span class="p">],</span> <span class="n">NFLUSH</span> <span class="o">=</span> <span class="n">CCD_9</span><span class="p">[</span><span class="s1">&#39;NFLUSH&#39;</span><span class="p">])</span>
+    <span class="n">ReadOutTime_9</span> <span class="o">=</span> <span class="n">T_readout</span> <span class="o">+</span> <span class="n">T_delay</span> <span class="o">+</span> <span class="n">T_Extra</span>
+    <span class="n">ReadOutTime</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">ReadOutTime_9</span><span class="p">))</span>
+    
+    <span class="n">T_readout</span><span class="p">,</span> <span class="n">T_delay</span><span class="p">,</span> <span class="n">T_Extra</span> <span class="o">=</span> <span class="n">calculate_time_per_row</span><span class="p">(</span><span class="n">NCOL</span> <span class="o">=</span> <span class="n">CCD_6</span><span class="p">[</span><span class="s1">&#39;NCOL&#39;</span><span class="p">],</span> <span class="n">NCBIN</span> <span class="o">=</span> <span class="n">CCD_6</span><span class="p">[</span><span class="s1">&#39;NCBIN&#39;</span><span class="p">],</span> <span class="n">NCBINFPGA</span> <span class="o">=</span> <span class="n">CCD_6</span><span class="p">[</span><span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">],</span> 
+                                                         <span class="n">NRSKIP</span> <span class="o">=</span> <span class="n">CCD_6</span><span class="p">[</span><span class="s1">&#39;NRSKIP&#39;</span><span class="p">],</span> <span class="n">NROW</span> <span class="o">=</span> <span class="n">CCD_6</span><span class="p">[</span><span class="s1">&#39;NROW&#39;</span><span class="p">],</span> 
+                                                         <span class="n">NRBIN</span> <span class="o">=</span> <span class="n">CCD_6</span><span class="p">[</span><span class="s1">&#39;NRBIN&#39;</span><span class="p">],</span> <span class="n">NFLUSH</span> <span class="o">=</span> <span class="n">CCD_6</span><span class="p">[</span><span class="s1">&#39;NFLUSH&#39;</span><span class="p">])</span>
+    <span class="n">ReadOutTime_6</span> <span class="o">=</span> <span class="n">T_readout</span> <span class="o">+</span> <span class="n">T_delay</span> <span class="o">+</span> <span class="n">T_Extra</span>
+    <span class="n">ReadOutTime</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">ReadOutTime_6</span><span class="p">))</span>
+    
+    <span class="n">T_readout</span><span class="p">,</span> <span class="n">T_delay</span><span class="p">,</span> <span class="n">T_Extra</span> <span class="o">=</span> <span class="n">calculate_time_per_row</span><span class="p">(</span><span class="n">NCOL</span> <span class="o">=</span> <span class="n">CCD_64</span><span class="p">[</span><span class="s1">&#39;NCOL&#39;</span><span class="p">],</span> <span class="n">NCBIN</span> <span class="o">=</span> <span class="n">CCD_64</span><span class="p">[</span><span class="s1">&#39;NCBIN&#39;</span><span class="p">],</span> <span class="n">NCBINFPGA</span> <span class="o">=</span> <span class="n">CCD_64</span><span class="p">[</span><span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">],</span> 
+                                                         <span class="n">NRSKIP</span> <span class="o">=</span> <span class="n">CCD_64</span><span class="p">[</span><span class="s1">&#39;NRSKIP&#39;</span><span class="p">],</span> <span class="n">NROW</span> <span class="o">=</span> <span class="n">CCD_64</span><span class="p">[</span><span class="s1">&#39;NROW&#39;</span><span class="p">],</span> 
+                                                         <span class="n">NRBIN</span> <span class="o">=</span> <span class="n">CCD_64</span><span class="p">[</span><span class="s1">&#39;NRBIN&#39;</span><span class="p">],</span> <span class="n">NFLUSH</span> <span class="o">=</span> <span class="n">CCD_64</span><span class="p">[</span><span class="s1">&#39;NFLUSH&#39;</span><span class="p">])</span>
+    <span class="n">ReadOutTime_64</span> <span class="o">=</span> <span class="n">T_readout</span> <span class="o">+</span> <span class="n">T_delay</span> <span class="o">+</span> <span class="n">T_Extra</span>
+    <span class="n">ReadOutTime</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">ReadOutTime_64</span><span class="p">))</span>
+    
+    
+    <span class="c1">#print(&#39;ReadoutTime: &#39;+str(ReadOutTime))</span>
+    
+    <span class="n">ExpTimes</span> <span class="o">=</span> <span class="p">[</span><span class="n">CCD_48</span><span class="p">[</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">],</span> <span class="n">CCD_9</span><span class="p">[</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">],</span> <span class="n">CCD_6</span><span class="p">[</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">],</span> <span class="n">CCD_64</span><span class="p">[</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]]</span>
+    <span class="n">ExpTimes</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+    <span class="c1">#print(&#39;ExpTimes: &#39;+str(ExpTimes))</span>
+    
+    <span class="n">TEXPIOFS</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">ExpIntervals</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">x</span><span class="o">=</span> <span class="mi">0</span>
+    <span class="n">ExtraOffset</span> <span class="o">=</span> <span class="mi">150</span>
+    <span class="n">CCDSEL</span> <span class="o">=</span> <span class="mi">0</span>
+    
+    <span class="n">Flag_48</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">Flag_9</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">Flag_6</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="n">Flag_64</span> <span class="o">=</span> <span class="kc">False</span>
+    
+    <span class="n">OffsetTime</span> <span class="o">=</span> <span class="mi">0</span>
+    
+    <span class="k">for</span> <span class="n">ExpTime</span> <span class="ow">in</span> <span class="n">ExpTimes</span><span class="p">:</span>
+        <span class="k">if</span><span class="p">(</span> <span class="n">ExpTime</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="k">continue</span>
+        <span class="k">elif</span><span class="p">(</span> <span class="n">ExpTime</span> <span class="o">==</span> <span class="n">CCD_48</span><span class="p">[</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">Flag_48</span> <span class="o">==</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="n">Flag_48</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="c1">#TEXPIOFS.insert(4, (ReadOutTime_max+ExtraOffset)*x)</span>
+            <span class="c1">#x += 1</span>
+            <span class="c1">#TEXPIOFS.insert(5, (ReadOutTime_max+ExtraOffset)*x)</span>
+            <span class="c1">#ExpIntervals.append( (ReadOutTime_max+ExtraOffset)*x + ExpTime_48)</span>
+            
+            <span class="n">TEXPIOFS</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">OffsetTime</span><span class="o">/</span><span class="mi">10</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span><span class="o">*</span><span class="mi">10</span><span class="p">))</span>
+            <span class="n">OffsetTime</span> <span class="o">=</span> <span class="n">OffsetTime</span> <span class="o">+</span> <span class="p">(</span><span class="n">ReadOutTime_48</span><span class="o">+</span><span class="n">ExtraOffset</span><span class="p">)</span>
+            
+            <span class="n">TEXPIOFS</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">OffsetTime</span><span class="o">/</span><span class="mi">10</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span><span class="o">*</span><span class="mi">10</span><span class="p">))</span>
+            
+            <span class="n">OffsetTime</span> <span class="o">=</span> <span class="n">OffsetTime</span> <span class="o">+</span> <span class="p">(</span><span class="n">ReadOutTime_48</span><span class="o">+</span><span class="n">ExtraOffset</span><span class="p">)</span>
+            
+            <span class="n">ExpIntervals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ReadOutTime_48</span> <span class="o">+</span> <span class="n">CCD_48</span><span class="p">[</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">ExtraOffset</span><span class="p">)</span>
+            <span class="n">CCDSEL</span> <span class="o">+=</span> <span class="mi">48</span>
+            
+        <span class="k">elif</span><span class="p">(</span> <span class="n">ExpTime</span> <span class="o">==</span> <span class="n">CCD_9</span><span class="p">[</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">Flag_9</span> <span class="o">==</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="n">Flag_9</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="c1">#TEXPIOFS.insert(0, (ReadOutTime_max+ExtraOffset)*x)</span>
+            <span class="c1">#x += 1</span>
+            <span class="c1">#TEXPIOFS.insert(3, (ReadOutTime_max+ExtraOffset)*x)</span>
+            <span class="c1">#ExpIntervals.append( (ReadOutTime_max+ExtraOffset)*x + ExpTime_9)</span>
+            
+            <span class="n">TEXPIOFS</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">OffsetTime</span><span class="o">/</span><span class="mi">10</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span><span class="o">*</span><span class="mi">10</span><span class="p">))</span>
+            <span class="n">OffsetTime</span> <span class="o">=</span> <span class="n">OffsetTime</span> <span class="o">+</span> <span class="p">(</span><span class="n">ReadOutTime_9</span><span class="o">+</span><span class="n">ExtraOffset</span><span class="p">)</span>
+            
+            <span class="n">TEXPIOFS</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">OffsetTime</span><span class="o">/</span><span class="mi">10</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span><span class="o">*</span><span class="mi">10</span><span class="p">))</span>
+            
+            <span class="n">OffsetTime</span> <span class="o">=</span> <span class="n">OffsetTime</span> <span class="o">+</span> <span class="p">(</span><span class="n">ReadOutTime_9</span><span class="o">+</span><span class="n">ExtraOffset</span><span class="p">)</span>
+            
+            <span class="n">ExpIntervals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ReadOutTime_9</span> <span class="o">+</span> <span class="n">CCD_9</span><span class="p">[</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">ExtraOffset</span><span class="p">)</span>
+            <span class="n">CCDSEL</span> <span class="o">+=</span> <span class="mi">9</span>
+            
+        <span class="k">elif</span><span class="p">(</span> <span class="n">ExpTime</span> <span class="o">==</span> <span class="n">CCD_6</span><span class="p">[</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">Flag_6</span> <span class="o">==</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="n">Flag_6</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="c1">#TEXPIOFS.insert(1, (ReadOutTime_max+ExtraOffset)*x)</span>
+            <span class="c1">#x += 1</span>
+            <span class="c1">#TEXPIOFS.insert(2, (ReadOutTime_max+ExtraOffset)*x)</span>
+            <span class="c1">#ExpIntervals.append( (ReadOutTime_max+ExtraOffset)*x + ExpTime_6)</span>
+            
+            <span class="n">TEXPIOFS</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">OffsetTime</span><span class="o">/</span><span class="mi">10</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span><span class="o">*</span><span class="mi">10</span><span class="p">))</span>
+            <span class="n">OffsetTime</span> <span class="o">=</span> <span class="n">OffsetTime</span> <span class="o">+</span> <span class="p">(</span><span class="n">ReadOutTime_6</span><span class="o">+</span><span class="n">ExtraOffset</span><span class="p">)</span>
+            
+            <span class="n">TEXPIOFS</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">OffsetTime</span><span class="o">/</span><span class="mi">10</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span><span class="o">*</span><span class="mi">10</span><span class="p">))</span>
+            
+            <span class="n">OffsetTime</span> <span class="o">=</span> <span class="n">OffsetTime</span> <span class="o">+</span> <span class="p">(</span><span class="n">ReadOutTime_6</span><span class="o">+</span><span class="n">ExtraOffset</span><span class="p">)</span>
+            
+            <span class="n">ExpIntervals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ReadOutTime_6</span> <span class="o">+</span> <span class="n">CCD_6</span><span class="p">[</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">ExtraOffset</span><span class="p">)</span>
+            <span class="n">CCDSEL</span> <span class="o">+=</span> <span class="mi">6</span>
+            
+        <span class="k">elif</span><span class="p">(</span> <span class="n">ExpTime</span> <span class="o">==</span> <span class="n">CCD_64</span><span class="p">[</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">Flag_64</span> <span class="o">==</span> <span class="kc">False</span><span class="p">):</span>
+            <span class="n">Flag_64</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="c1">#TEXPIOFS.insert(6, (ReadOutTime_max+ExtraOffset)*x)</span>
+            <span class="c1">#ExpIntervals.append( (ReadOutTime_max+ExtraOffset)*x + ExpTime_64)</span>
+            
+            <span class="n">TEXPIOFS</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">OffsetTime</span><span class="o">/</span><span class="mi">10</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span><span class="o">*</span><span class="mi">10</span><span class="p">))</span>
+            
+            <span class="n">OffsetTime</span> <span class="o">=</span> <span class="n">OffsetTime</span> <span class="o">+</span> <span class="p">(</span><span class="n">ReadOutTime_64</span><span class="o">+</span><span class="n">ExtraOffset</span><span class="p">)</span>
+            
+            <span class="n">ExpIntervals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ReadOutTime_64</span> <span class="o">+</span> <span class="n">CCD_64</span><span class="p">[</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">ExtraOffset</span><span class="p">)</span>
+            <span class="n">CCDSEL</span> <span class="o">+=</span> <span class="mi">64</span>
+            
+        <span class="n">x</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="c1">#print(&#39;TEXPIOFS: &#39;+str(TEXPIOFS))</span>
+    
+    
+    
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">TEXPIOFS</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)):</span>
+        <span class="n">TEXPIOFS</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        
+    <span class="c1">#print(&#39;TEXPIOFS: &#39;+str(TEXPIOFS))</span>
+    
+    
+    <span class="n">ExpIntervals</span>
+    <span class="n">ExpInterval</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">ExpIntervals</span><span class="p">)</span>
+    
+    <span class="k">for</span> <span class="n">FirstExpTime</span> <span class="ow">in</span> <span class="n">ExpTimes</span><span class="p">:</span>
+        <span class="k">if</span><span class="p">(</span> <span class="n">FirstExpTime</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">):</span>
+            <span class="k">break</span>
+    
+    <span class="k">if</span><span class="p">(</span> <span class="n">FirstExpTime</span> <span class="o">&lt;=</span> <span class="nb">max</span><span class="p">(</span><span class="n">TEXPIOFS</span><span class="p">)</span> <span class="p">):</span>
+        <span class="n">ExpInterval</span> <span class="o">=</span> <span class="n">ExpInterval</span> <span class="o">+</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">TEXPIOFS</span><span class="p">)</span> <span class="o">-</span> <span class="n">FirstExpTime</span><span class="p">)</span>
+    
+    <span class="n">TEXPIMS</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">ExpInterval</span><span class="p">,</span><span class="o">-</span><span class="mi">2</span><span class="p">))</span>
+    <span class="c1">#ExpInterval = ExpIntervals[len(ExpIntervals)-1] - int(FirstExpTime*3/4)</span>
+    
+    
+    <span class="c1">#ExpInterval = int(ExpInterval - int(FirstExpTime*3/4))</span>
+    <span class="c1">#print(&#39;TEXPIMS: &#39;+str(TEXPIMS))</span>
+    <span class="n">NCCD</span> <span class="o">=</span> <span class="nb">bin</span><span class="p">(</span><span class="n">CCDSEL</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">)</span>
+    <span class="c1">#print(&#39;NCCD: &#39;+str(NCCD))</span>
+    
+    <span class="k">return</span> <span class="n">CCDSEL</span><span class="p">,</span> <span class="n">NCCD</span><span class="p">,</span> <span class="n">TEXPIOFS</span><span class="p">,</span> <span class="n">TEXPIMS</span></div>
 </pre></div>
 
           </div>

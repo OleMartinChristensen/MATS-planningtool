@@ -84,10 +84,10 @@ def date_select(Occupied_Timeline, initial_date):
     settings = OPT_Config_File.Mode132_settings()
     Timeline_settings = OPT_Config_File.Timeline_settings()
     
-    if( len(settings['Exp_Times_and_Intervals_UV']) <= len(settings['Exp_Times_and_Intervals_IR'])):
-        duration = settings['session_duration']*len(settings['Exp_Times_and_Intervals_UV'])+Timeline_settings['mode_separation']+Timeline_settings['pointing_stabilization']
-    elif( len(settings['Exp_Times_and_Intervals_IR']) < len(settings['Exp_Times_and_Intervals_UV']) ):
-        duration = settings['session_duration']*len(settings['Exp_Times_and_Intervals_IR'])+Timeline_settings['mode_separation']+Timeline_settings['pointing_stabilization']
+    if( len(settings['Exp_Times_UV']) <= len(settings['Exp_Times_IR'])):
+        duration = settings['session_duration']*len(settings['Exp_Times_UV'])+Timeline_settings['mode_separation']+Timeline_settings['pointing_stabilization']
+    elif( len(settings['Exp_Times_IR']) < len(settings['Exp_Times_UV']) ):
+        duration = settings['session_duration']*len(settings['Exp_Times_IR'])+Timeline_settings['mode_separation']+Timeline_settings['pointing_stabilization']
     
     date = initial_date
     endDate = ephem.Date(initial_date + ephem.second*duration)

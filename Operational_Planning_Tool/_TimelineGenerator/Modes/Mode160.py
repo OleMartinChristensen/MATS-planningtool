@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-"""Schedules the active Mode and saves the result in the Occupied_Timeline dictionary.
-
-Part of Timeline_generator, as part of OPT.
-
 """
+Created on Mon Aug 19 11:37:08 2019
+
+@author: David
+"""
+
 
 import ephem, sys, logging, importlib
 
@@ -14,8 +15,8 @@ OPT_Config_File = importlib.import_module(_Globals.Config_File)
 Logger = logging.getLogger(OPT_Config_File.Logger_name())
 
 
-def Mode130(Occupied_Timeline):
-    """Core function for the scheduling of Mode130.
+def Mode160(Occupied_Timeline):
+    """Core function for the scheduling of Mode160.
     
     Arguments:
         Occupied_Timeline (:obj:`dict` of :obj:`list`): Dictionary with keys equal to planned and scheduled Modes with entries equal to their start and end time as a list.
@@ -50,8 +51,8 @@ def date_calculator():
     """
     
     
-    if( OPT_Config_File.Mode130_settings()['start_date'] != '0' ):
-        initial_date = ephem.Date(OPT_Config_File.Mode130_settings()['start_date'])
+    if( OPT_Config_File.Mode160_settings()['start_date'] != '0' ):
+        initial_date = ephem.Date(OPT_Config_File.Mode160_settings()['start_date'])
         Logger.info('Mode specific start_date used as initial date')
     else:
         Logger.info('Timeline start_date used as initial date')
@@ -80,10 +81,10 @@ def date_select(Occupied_Timeline, initial_date):
     
     """
     
-    Timeline_settings = OPT_Config_File.Timeline_settings()
+    
+    
     date = initial_date
-    endDate = ephem.Date(initial_date + ephem.second* (OPT_Config_File.Mode130_settings()['SnapshotSpacing'] * 7 + 
-                         Timeline_settings['pointing_stabilization'] + Timeline_settings['mode_separation'] ) )
+    endDate = ephem.Date(initial_date + ephem.second*OPT_Config_File.Mode160_settings()['mode_duration'])
     
     
     ############### Start of availability schedueler ##########################
@@ -98,7 +99,6 @@ def date_select(Occupied_Timeline, initial_date):
     Mode_name = sys._getframe(1).f_code.co_name
     
     Occupied_Timeline[Mode_name].append((date,endDate))
-    
     
     return Occupied_Timeline, comment
 

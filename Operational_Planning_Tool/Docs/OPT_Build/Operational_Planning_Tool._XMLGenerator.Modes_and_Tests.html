@@ -60,20 +60,42 @@
 </div>
 <div class="section" id="module-Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES">
 <span id="operational-planning-tool-xmlgenerator-modes-and-tests-modes-module"></span><h2>Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES module<a class="headerlink" href="#module-Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES" title="Permalink to this headline">¶</a></h2>
-<p>Created on Wed Nov 28 11:35:08 2018</p>
 <p>Generates and calculates parameters for each mode,
 then calls for macros, which will generate commands in the XML-file.</p>
-<dl>
-<dt>Functions on the form &quot;XML_generator_X&quot;, where the last X is any Mode:</dt><dd><dl>
-<dt>Arguments:</dt><dd><p>root (lxml.etree.Element):  XML tree structure. Main container object for the ElementTree API.</p>
-<p>date (ephem.Date): Starting date of the Mode. On the form of the ephem.Date class.</p>
-<p>duration (int): The duration of the mode [s].</p>
-<p>relativeTime (int): The starting time of the mode with regard to the start of the timeline [s].</p>
-<p>params (dict): Dictionary containing the parameters of the Mode given in the Science_Mode_Timeline.</p>
+<p>Functions on the form &quot;XML_generator_X&quot;, where the last X is any Mode:</p>
+<dl class="field-list simple">
+<dt class="field-odd">param root</dt>
+<dd class="field-odd"><p>XML tree structure. Main container object for the ElementTree API.</p>
 </dd>
-<dt>Returns:</dt><dd><p>None</p>
+<dt class="field-even">type root</dt>
+<dd class="field-even"><p>lxml.etree.Element</p>
 </dd>
-</dl>
+<dt class="field-odd">param date</dt>
+<dd class="field-odd"><p>Starting date of the Mode. On the form of the ephem.Date class.</p>
+</dd>
+<dt class="field-even">type date</dt>
+<dd class="field-even"><p>ephem.Date</p>
+</dd>
+<dt class="field-odd">param duration</dt>
+<dd class="field-odd"><p>The duration of the mode [s].</p>
+</dd>
+<dt class="field-even">type duration</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+<dt class="field-odd">param relativeTime</dt>
+<dd class="field-odd"><p>The starting time of the mode with regard to the start of the timeline [s].</p>
+</dd>
+<dt class="field-even">type relativeTime</dt>
+<dd class="field-even"><p>int</p>
+</dd>
+<dt class="field-odd">param params</dt>
+<dd class="field-odd"><p>Dictionary containing the parameters of the Mode given in the Science_Mode_Timeline.</p>
+</dd>
+<dt class="field-even">type params</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+<dt class="field-odd">returns</dt>
+<dd class="field-odd"><p>None</p>
 </dd>
 </dl>
 <p>When creating new Mode functions it is crucial that the function name is
@@ -82,152 +104,154 @@ XML_generator_Mode_name, where Mode_name is the same as the string used in the S
 <dl class="function">
 <dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode1">
 <code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">XML_generator_Mode1</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/MODES.html#XML_generator_Mode1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode1" title="Permalink to this definition">¶</a></dt>
-<dd><p>Simulates MATS and the LP without yaw movement to be able to schedule commands in the XML-file.</p>
-<p>High resolution UV binning.
-Disable exposure on UV channels for +-<em>lat</em> degrees latitude equatorwards.
-Stop/Start Nadir at dusk/dawn.</p>
+<dd><p>Mode1, Operational_Limb_Pointing_macro</p>
+<p>Simulates MATS and the LP with or without yaw movement to be able to predict and schedule commands in the XML-file.
+Look at fixed limb altitude in operational mode.
+High resolution UV binning for latitudes +-lat degrees latitude polewards.
+Disable exposure on UV channels for +-lat degrees latitude equatorwards.
+Stop/Start Nadir at dusk/dawn below MATS.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode100">
 <code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">XML_generator_Mode100</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/MODES.html#XML_generator_Mode100"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode100" title="Permalink to this definition">¶</a></dt>
-<dd><p>Mode100</p>
-<p>Successively point at altitudes from X-Y in Z intervals with steadily increasing Exposure Times.
+<dd><p>Mode100, Operational_Limb_Pointing_macro</p>
+<p>Successively point at altitudes from X-Y in Operational Mode in intervals of Z with increasing Exposure Times.
 Where X is <em>pointing_altitude_from</em>, Y is <em>pointing_altitude_to, and Z is *pointing_altitude_interval</em>.
-All defined in OPT_Config_File.Mode100_settings. Standard binning, stop Nadir.</p>
+All defined in OPT_Config_File.Mode100_settings.
+BinnedCalibration.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode110">
 <code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">XML_generator_Mode110</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/MODES.html#XML_generator_Mode110"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode110" title="Permalink to this definition">¶</a></dt>
-<dd><p>Mode110</p>
+<dd><p>Mode110, Operational_Sweep_macro</p>
 <p>Scan atmosphere from X to Y altitudes with a rate of Z.
 Where X, Y, Z is defined in OPT_Config_File.Mode110_settings.
-Standard binning, Stop Nadir.</p>
+BinnedCalibration.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode120">
 <code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">XML_generator_Mode120</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/MODES.html#XML_generator_Mode120"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode120" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mode120</p>
-<p>Stare at a point in inertial reference frame and take a Snapshot using Full CCD readout. Stop Nadir
-Used for star calibration.</p>
+<p>Snapshot_Inertial_macro
+Stare at a point in inertial reference frame and take a Snapshot with each CCD except nadir.
+Used for star calibration.
+Full CCD readout.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode121">
 <code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">XML_generator_Mode121</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/MODES.html#XML_generator_Mode121"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode121" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mode121</p>
-<p>Stare at a point in inertial reference frame and take a Snapshot using Full CCD readout. Stop Nadir</p>
+<p>Snapshot_Inertial_macro
+Stare at a point in inertial reference frame and take a Snapshot with each CCD except nadir.
+Full CCD readout.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode122">
 <code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">XML_generator_Mode122</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/MODES.html#XML_generator_Mode122"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode122" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mode122</p>
-<p>Stare at a point in inertial reference frame and take a Snapshot using standard binning.</p>
+<p>Snapshot_Inertial_macro
+Stare at a point in inertial reference frame and take a Snapshot with each CCD except nadir.
+BinnedCalibration.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode123">
 <code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">XML_generator_Mode123</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/MODES.html#XML_generator_Mode123"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode123" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mode123</p>
-<p>Stare at a point in inertial reference frame and take a Snapshot using Low pixel binning.</p>
+<p>Snapshot_Inertial_macro
+Stare at a point in inertial reference frame and take one Snapshot with each CCD except nadir.
+Low pixel binning.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode124">
 <code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">XML_generator_Mode124</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/MODES.html#XML_generator_Mode124"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode124" title="Permalink to this definition">¶</a></dt>
-<dd><p>Mode123</p>
-<p>Stare at a point in inertial reference frame using standard binning. Stop Nadir
-Used for moon calibration.</p>
+<dd><p>Mode124</p>
+<p>Snapshot_Inertial_macro
+Stare at a point in inertial reference frame and take one Snapshot with each CCD except Nadir.
+Used for moon calibration.
+FullReadout</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode12X">
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">XML_generator_Mode12X</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params</em>, <em>CCD_settings</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/MODES.html#XML_generator_Mode12X"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode12X" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mode12X, where X is 1,2,3....</p>
+<p>Snapshot_Inertial_macro
+Stare at a point in inertial reference frame and take a Snapshot with each CCD except nadir.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode130">
 <code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">XML_generator_Mode130</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/MODES.html#XML_generator_Mode130"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode130" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mode130</p>
-<p>Look at fixed limb altitude and take Snapshots with all CCD except nadir with Full CCD readout.</p>
+<p>Snapshot_Limb_Pointing_macro
+Look at fixed limb altitude and take Snapshots with all CCD except nadir.
+Full CCD readout.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode131">
 <code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">XML_generator_Mode131</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/MODES.html#XML_generator_Mode131"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode131" title="Permalink to this definition">¶</a></dt>
-<dd><p>Mode131</p>
-<p>Look at fixed limb altitude with Full CCD readout.</p>
+<dd><p>Mode131, FullReadout_Operational_Limb_Pointing_macro</p>
+<p>Look at fixed limb altitude in operational mode.
+Full CCD readout.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode132">
 <code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">XML_generator_Mode132</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/MODES.html#XML_generator_Mode132"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode132" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mode132</p>
-<p>Look at fixed limb altitude. Standard Binning.</p>
+<p>Operational_Limb_Pointing_macro
+Look at fixed limb altitude in operational mode with changing exposure times.
+BinnedCalibration.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode132_133">
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">XML_generator_Mode132_133</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params</em>, <em>CCD_settings</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/MODES.html#XML_generator_Mode132_133"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode132_133" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mode132, Mode133</p>
+<p>Operational_Limb_Pointing_macro
+Look at fixed limb altitude in operational mode with changing exposure times.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode133">
 <code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">XML_generator_Mode133</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/MODES.html#XML_generator_Mode133"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode133" title="Permalink to this definition">¶</a></dt>
-<dd><p>Mode133</p>
-<p>Look at fixed limb altitude for several different exposure times, set in <em>OPT_Config_File.Mode133_settings</em>.
+<dd><p>Mode133, Operational_Limb_Pointing_macro</p>
+<p>Look at fixed limb altitude in operational mode with changing exposure times.
 Low pixel binning.</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode1_3_5">
-<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">XML_generator_Mode1_3_5</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/MODES.html#XML_generator_Mode1_3_5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode1_3_5" title="Permalink to this definition">¶</a></dt>
-<dd><p>Simulates MATS and the LP with or without yaw movement to be able to schedule commands in the XML-file.</p>
-<p>High resolution UV binning for latitudes +-lat degrees latitude polewards.
-Disable exposure on UV channels for +-lat degrees latitude equatorwards.
-Stop/Start Nadir at dusk/dawn.</p>
+<dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode160">
+<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">XML_generator_Mode160</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/MODES.html#XML_generator_Mode160"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode160" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mode160, Operational_Limb_Pointing_macro</p>
+<p>Look at fixed limb altitude in Operational Mode.
+CustomBinning.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode2">
 <code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">XML_generator_Mode2</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/MODES.html#XML_generator_Mode2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode2" title="Permalink to this definition">¶</a></dt>
-<dd><p>Simulates MATS and the LP without yaw movement to be able to schedule commands in the XML-file.</p>
-<p>High resolution IR binning.
-Stop/Start Nadir at dusk/dawn.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode2_4_6">
-<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">XML_generator_Mode2_4_6</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/MODES.html#XML_generator_Mode2_4_6"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode2_4_6" title="Permalink to this definition">¶</a></dt>
-<dd><p>Simulates MATS and the LP to be able to schedule commands in the XML-file.</p>
-<p>High-resolution IR binning. Stop/Start Nadir at dusk/dawn.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode3">
-<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">XML_generator_Mode3</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/MODES.html#XML_generator_Mode3"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode3" title="Permalink to this definition">¶</a></dt>
-<dd><p>Simulates MATS and the LP without yaw movement to be able to schedule commands in the XML-file.</p>
-<p>High resolution UV binning.
-Disable exposure on UV channels for +-<em>lat</em> degrees latitude equatorwards.
-Stop/Start Nadir at dusk/dawn.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode4">
-<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">XML_generator_Mode4</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/MODES.html#XML_generator_Mode4"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode4" title="Permalink to this definition">¶</a></dt>
-<dd><p>Simulates MATS and the LP without yaw movement to be able to schedule commands in the XML-file.</p>
-<p>High resolution IR binning.
-Stop/Start Nadir at dusk/dawn.</p>
+<dd><p>Mode2, Operational_Limb_Pointing_macro</p>
+<p>Simulates MATS to be able to schedule commands in the XML-file.
+Look at fixed limb altitude in operational mode.
+High-resolution IR binning.
+Stop/Start Nadir at dusk/dawn below MATS.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode5">
 <code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">XML_generator_Mode5</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/MODES.html#XML_generator_Mode5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode5" title="Permalink to this definition">¶</a></dt>
-<dd><p>Simulates MATS and the LP with or without yaw movement to be able to schedule commands in the XML-file.</p>
-<p>Custom binning.
-Disable exposure on UV channels for +-<em>lat</em> degrees latitude equatorwards.
-Stop/Start Nadir at dusk/dawn.</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode6">
-<code class="descclassname">Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">XML_generator_Mode6</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Operational_Planning_Tool/_XMLGenerator/Modes_and_Tests/MODES.html#XML_generator_Mode6"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Operational_Planning_Tool._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode6" title="Permalink to this definition">¶</a></dt>
-<dd><p>Simulates MATS and the LP with or without yaw movement to be able to schedule commands in the XML-file.</p>
-<p>Custom binning.
-Stop/Start Nadir at dusk/dawn.</p>
+<dd><p>Mode5, Operational_Limb_Pointing_macro</p>
+<p>Look at fixed limb altitude in operational mode.
+CustomBinning.</p>
 </dd></dl>
 
 </div>
@@ -395,6 +419,7 @@ Scheduling of all daylight and nighttime commands are separated timewise and all
 <li class="toctree-l3"><a class="reference internal" href="Operational_Planning_Tool._DataPlotter.html">Operational_Planning_Tool._DataPlotter package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Operational_Planning_Tool._TimelineAnalyzer.html">Operational_Planning_Tool._TimelineAnalyzer package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="Operational_Planning_Tool._TimelineGenerator.html">Operational_Planning_Tool._TimelineGenerator package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Operational_Planning_Tool._Timeline_Plotter.html">Operational_Planning_Tool._Timeline_Plotter package</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="Operational_Planning_Tool._XMLGenerator.html">Operational_Planning_Tool._XMLGenerator package</a><ul class="current">
 <li class="toctree-l4 current"><a class="reference internal" href="Operational_Planning_Tool._XMLGenerator.html#subpackages">Subpackages</a></li>
 <li class="toctree-l4"><a class="reference internal" href="Operational_Planning_Tool._XMLGenerator.html#submodules">Submodules</a></li>

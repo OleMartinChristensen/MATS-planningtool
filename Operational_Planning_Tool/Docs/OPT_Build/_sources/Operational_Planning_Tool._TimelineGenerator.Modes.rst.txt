@@ -105,6 +105,22 @@ Operational\_Planning\_Tool.\_TimelineGenerator.Modes.Mode133 module
     :undoc-members:
     :show-inheritance:
 
+Operational\_Planning\_Tool.\_TimelineGenerator.Modes.Mode160 module
+--------------------------------------------------------------------
+
+.. automodule:: Operational_Planning_Tool._TimelineGenerator.Modes.Mode160
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+Operational\_Planning\_Tool.\_TimelineGenerator.Modes.Mode1\_2\_5 module
+------------------------------------------------------------------------
+
+.. automodule:: Operational_Planning_Tool._TimelineGenerator.Modes.Mode1_2_5
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 Operational\_Planning\_Tool.\_TimelineGenerator.Modes.Mode201 module
 --------------------------------------------------------------------
 
@@ -125,14 +141,6 @@ Operational\_Planning\_Tool.\_TimelineGenerator.Modes.ModeTemplate module
 -------------------------------------------------------------------------
 
 .. automodule:: Operational_Planning_Tool._TimelineGenerator.Modes.ModeTemplate
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
-Operational\_Planning\_Tool.\_TimelineGenerator.Modes.Mode\_1\_2\_3\_4\_5\_6 module
------------------------------------------------------------------------------------
-
-.. automodule:: Operational_Planning_Tool._TimelineGenerator.Modes.Mode_1_2_3_4_5_6
     :members:
     :undoc-members:
     :show-inheritance:

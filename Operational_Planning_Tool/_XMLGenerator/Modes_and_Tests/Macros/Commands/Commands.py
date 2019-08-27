@@ -306,7 +306,7 @@ def TC_pafCCDMain(root, relativeTime, CCDSEL, PWR, ExpInterval, ExpTime, NRSKIP 
     if not( 0 <= PWR <= 255 and type(PWR) == int ):
         Logger.error('Invalid argument: PWR')
         raise ValueError
-    if not( 0 <= NRSKIP <= 511 and type(NRSKIP) == int ):
+    if not( 0 <= NRSKIP <= 510 and type(NRSKIP) == int ):
         Logger.error('Invalid argument: NRSKIP')
         raise ValueError
     if not( 1 <= NRBIN <= 63 and type(NRBIN) == int ):
@@ -315,7 +315,7 @@ def TC_pafCCDMain(root, relativeTime, CCDSEL, PWR, ExpInterval, ExpTime, NRSKIP 
     if not( 1 <= NROW <= 511 and type(NROW) == int ):
         Logger.error('Invalid argument: NROW')
         raise ValueError
-    if not( 0 <= NCSKIP <= 2047 and type(NCSKIP) == int ):
+    if not( 0 <= NCSKIP <= 2046 and type(NCSKIP) == int ):
         Logger.error('Invalid argument: NCSKIP')
         raise ValueError
     if not( 1 <= NCBIN <= 255 and type(NCBIN) == int ):
@@ -432,6 +432,60 @@ def TC_pafCCDMain(root, relativeTime, CCDSEL, PWR, ExpInterval, ExpTime, NRSKIP 
     
     return incremented_time
     
+
+def TC_pafCCDSynchronize( root, relativeTime, CCDSEL, NCCD, TEXPIOFS, comment = '' ):
+    
+    if not( 0 <= relativeTime <= _Globals.Timeline_settings['duration']) and type(relativeTime) == int:
+        Logger.error('Invalid argument: negative relativeTime, exceeding timeline duration, or not integer')
+        raise ValueError
+    if not( 3 <= CCDSEL <= 127 and CCDSEL not in [4,8,16,32,64]  and type(CCDSEL) == int ):
+        Logger.error('Invalid argument: CCDSEL')
+        raise ValueError
+    if not( 2 <= NCCD <= 7 and NCCD == bin(CCDSEL).count('1') and type(NCCD) == int ):
+        Logger.error('Invalid argument: More than 7 CCDs chosen (or less than 2) or NCCD does not coincide with CCDSEL')
+        raise ValueError
+    if not( len(TEXPIOFS) == NCCD ):
+        Logger.error('Invalid argument: Number of CCDs (NCCD) does not coincide with the number of time-offsets (TEXPIOFS).')
+        raise ValueError
+    
+    
+    etree.SubElement(root[1], 'command', mnemonic = "TC_pafCCDSynchronize")
+    
+    etree.SubElement(root[1][len(root[1])-1], 'relativeTime')
+    root[1][len(root[1])-1][0].text = str(relativeTime)
+    
+    etree.SubElement(root[1][len(root[1])-1], 'comment')
+    root[1][len(root[1])-1][1].text = comment
+    
+    etree.SubElement(root[1][len(root[1])-1], 'tcArguments')
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "CCDSEL")
+    root[1][len(root[1])-1][2][0].text = str(CCDSEL)
+    
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "NCCD")
+    root[1][len(root[1])-1][2][1].text = str(NCCD)
+    
+    Leading_CCD_selected = False
+    x = 2
+    for TimeOffset in TEXPIOFS:
+        
+        if not( 0 <= TimeOffset <= 12000 and TimeOffset/10 == round(TimeOffset/10,0) and type(TimeOffset) == int ):
+             Logger.error('Invalid argument: TEXPIOFS')
+             raise ValueError
+        if( TimeOffset == 0):
+            Leading_CCD_selected = True
+            
+        etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "TEXPIOFS")
+        root[1][len(root[1])-1][2][x].text = str(TimeOffset)
+        x = x + 1
+        
+    if not( Leading_CCD_selected == True ):
+        Logger.error('Invalid argument: Any TEXPIOFS not set to 0 -> No leading CCD selected')
+        raise ValueError
+        
+    incremented_time = relativeTime+_Globals.Timeline_settings['command_separation']
+    
+    return incremented_time
+
     
 def TC_pafCCDBadColumn(root, relativeTime, CCDSEL, NBC, BC, comment = ''):
     
