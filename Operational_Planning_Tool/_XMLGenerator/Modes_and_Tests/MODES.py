@@ -26,7 +26,7 @@ import ephem, logging, sys, pylab, importlib, skyfield.api
 from Operational_Planning_Tool import _Globals
 
 OPT_Config_File = importlib.import_module(_Globals.Config_File)
-from Operational_Planning_Tool._Library import lat_MATS_calculator, rot_arbit, params_checker, utc_to_onboardTime, lat_2_R
+from Operational_Planning_Tool._Library import lat_calculator, rot_arbit, params_checker, utc_to_onboardTime, lat_2_R
 from .Macros import Macros
 from Operational_Planning_Tool import _MATS_coordinates
 
@@ -99,8 +99,9 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
     log_timestep = params['log_timestep']
     Logger.debug('log_timestep [s]: '+str(log_timestep))
     
-    Sun = ephem.Sun(date)
-    MATS = ephem.readtle('MATS', OPT_Config_File.getTLE()[0], OPT_Config_File.getTLE()[1])
+    TLE = OPT_Config_File.getTLE()
+    Sun = ephem.Sun()
+    MATS = ephem.readtle('MATS', TLE[0], TLE[1])
     
     "Pre-allocate space"
     lat_MATS = zeros((duration,1))
@@ -145,7 +146,7 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
     Logger.debug('')
     
     ts = skyfield.api.load.timescale()
-    MATS_skyfield = skyfield.api.EarthSatellite(OPT_Config_File.getTLE()[0], OPT_Config_File.getTLE()[1])
+    MATS_skyfield = skyfield.api.EarthSatellite(TLE[0], TLE[1])
     
     "Loop and calculate the relevant angle of each star to each direction of MATS's FOV"
     for t in range(int(duration/timestep)):
@@ -180,9 +181,10 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
         
         R_earth_MATS = lat_2_R(lat_MATS[t])
         
-        z_MATS[t] = sin(a_dec_MATS[t])*(altitude_MATS[t]+R_earth_MATS)
-        x_MATS[t] = cos(a_dec_MATS[t])*(altitude_MATS[t]+R_earth_MATS)* cos(a_ra_MATS[t])
-        y_MATS[t] = cos(a_dec_MATS[t])*(altitude_MATS[t]+R_earth_MATS)* sin(a_ra_MATS[t])
+        MATS_distance = R_earth_MATS + altitude_MATS[t]
+        z_MATS[t] = sin(a_dec_MATS[t])*(MATS_distance)
+        x_MATS[t] = cos(a_dec_MATS[t])*(MATS_distance)* cos(a_ra_MATS[t])
+        y_MATS[t] = cos(a_dec_MATS[t])*(MATS_distance)* sin(a_ra_MATS[t])
         
         r_MATS[t,0:3] = [x_MATS[t], y_MATS[t], z_MATS[t]]
         
@@ -199,7 +201,7 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
         MATS_P[t] = 2*pi*sqrt(MATS_p[t]**3/U)
         
         if( t == 0):
-            orbangle_between_LP_MATS_array[t]= arccos((R_mean+pointing_altitude/1000)/(R_earth_MATS+altitude_MATS[t]))/pi*180
+            orbangle_between_LP_MATS_array[t]= arccos((R_mean+pointing_altitude/1000)/(MATS_distance))/pi*180
             orbangle_between_LP_MATS = orbangle_between_LP_MATS_array[t][0]
         
         
@@ -227,11 +229,12 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
                 lat_LP[t] = lat_MATS[t-timesteps_between_LP_and_MATS]/pi*180
                 R_earth_LP = lat_2_R(lat_LP[t] /180*pi)
             else:
-                date_of_MATSlat_is_equal_2_current_LPlat = ephem.Date(current_time - ephem.second * timesteps_between_LP_and_MATS * timestep)
-                lat_LP[t] = lat_MATS_calculator( date_of_MATSlat_is_equal_2_current_LPlat )/pi*180
+                date_of_MATSlat_is_equal_2_current_LPlat = ephem.Date(current_time - ephem.second * timesteps_between_LP_and_MATS * timestep).datetime()
+                lat_LP[t] = lat_calculator( MATS_skyfield, date_of_MATSlat_is_equal_2_current_LPlat )/pi*180
                 R_earth_LP = lat_2_R(lat_LP[t]/180*pi)
                 
-            orbangle_between_LP_MATS_array[t]= arccos((R_earth_LP+pointing_altitude/1000)/(R_earth_MATS+altitude_MATS[t]))/pi*180
+            '''
+            orbangle_between_LP_MATS_array[t]= arccos((R_earth_LP+pointing_altitude/1000)/(MATS_distance))/pi*180
             pitch_LP = orbangle_between_LP_MATS_array[t][0] + 90
             
             
@@ -293,13 +296,13 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
             r_LP__direction_xy = sqrt(optical_axis[t,0]**2+optical_axis[t,1]**2)
             lat_LP[t] = arctan(optical_axis[t,2]/r_LP__direction_xy)
             """
-            '''
+            
             if( abs(lat_MATS[t])-abs(lat_MATS[t-1]) > 0 ):
                 lat_LP[t] = lat_MATS[t] - lat_diff_LP_MATS * sign(lat_MATS[t])
             elif( abs(lat_MATS[t])-abs(lat_MATS[t-1]) < 0 ):
                 lat_LP[t] = lat_MATS[t] + lat_diff_LP_MATS * sign(lat_MATS[t])
-            '''
             
+            '''
             ############# Initial Mode setup ##########################################
             
             if( t == 1 ):
@@ -517,8 +520,10 @@ def XML_generator_Mode2(root, date, duration, relativeTime, params = {}):
     log_timestep = params['log_timestep']
     Logger.debug('log_timestep [s]: '+str(log_timestep))
     
-    Sun = ephem.Sun(date)
-    MATS = ephem.readtle('MATS', OPT_Config_File.getTLE()[0], OPT_Config_File.getTLE()[1])
+    Sun = ephem.Sun()
+    TLE = OPT_Config_File.getTLE()
+    MATS = ephem.readtle('MATS', TLE[0], TLE[1])
+    
     
     "Pre-allocate space"
     sun_angle = zeros((duration,1))
@@ -741,7 +746,7 @@ def XML_generator_Mode12X(root, date, duration, relativeTime,
     
     Snapshot_relativeTime = relativeTime + params['freeze_start'] + params['SnapshotTime']
     
-    FreezeTime = utc_to_onboardTime(freeze_start_utc)
+    FreezeTime = utc_to_onboardTime(freeze_start_utc, Timeline_settings)
     
     FreezeDuration = params['freeze_duration']
     

@@ -24,7 +24,7 @@ Tool may already be installed (scipy for example). Miniconda comes with no prein
 
 2. After installation open the program "Anaconda Prompt".
 
-3. Run these commands in the "Anaconda Prompt" to install the desired packages.
+3. Run these commands in the "Anaconda Prompt" to install the desired packages. Alternatively run the CMD_file.bat in the "Anaconda Prompt".
 
 $ conda install -c anaconda ephem
 
@@ -34,11 +34,13 @@ $ conda install -c anaconda scipy
 
 $ conda install -c anaconda lxml
 
+$ conda install astropy
+
 $ conda install -c astropy astroquery
 
 $ conda install pip
 
-$ pip install pymap3d
+$ pip install skyfield
 
 
 4. Run the following command to list all currently installed packages and their version number.

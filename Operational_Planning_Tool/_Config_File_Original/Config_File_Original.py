@@ -141,6 +141,7 @@ def Timeline_settings():
         'command_separation': Minimum ammount of time inbetween scheduled commands [s]. (float) \n
         'pointing_stabilization': Extra time [s] scheduled after fixed pointing commands (TC_acfLimbPointingAltitudeOffset) before new commands are allowed. (int) \n
         'CCDSYNC_ExtraOffset': Extra offset time [ms] that is added to an estimated ReadoutTime when calculating arguments for the CCD Synchronize CMD. (int) \n
+        'CCDSYNC_ExtraIntervalTime': Extra time [ms] that is added to the calculated Exposure Interval Time when calculating arguments for the CCD Synchronize CMD. (int) \n
         
     Returns:
         (:obj:`dict`): timeline_settings
@@ -148,7 +149,7 @@ def Timeline_settings():
     timeline_settings = {'start_date': _Globals.StartTime, 'duration': 1*4*3600, 
                        'leap_seconds': 18, 'GPS_epoch': '1980/1/6', 'Mode1_2_5_minDuration': 300, 'mode_separation': 60,
                        'CMD_duration': 30, 'yaw_correction': True, 'yaw_amplitude': -3.8, 'yaw_phase': -20, 'Schedule_Mode5': False, 'LP_pointing_altitude': 92500, 
-                       'command_separation': 1, 'pointing_stabilization': 60, 'CCDSYNC_ExtraOffset': 150}
+                       'command_separation': 1, 'pointing_stabilization': 60, 'CCDSYNC_ExtraOffset': 50, 'CCDSYNC_ExtraIntervalTime': 200}
     
     
     return timeline_settings

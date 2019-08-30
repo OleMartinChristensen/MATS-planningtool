@@ -35,7 +35,7 @@ def Operational_Limb_Pointing_macro(root, relativeTime, CCD_settings, pointing_a
         relativeTime (float): Time in seconds equal to the input "relativeTime" with added delay from the scheduling of commands.
     '''
     
-    CCDSEL, NCCD, TEXPIOFS, TEXPIMS = _Library.SyncArgCalculator(CCD_settings)
+    CCDSEL, NCCD, TEXPIOFS, TEXPIMS = _Library.SyncArgCalculator(CCD_settings, _Globals.Timeline_settings)
     
     
     relativeTime = Commands.TC_pafMode(root, relativeTime, mode = 2, comment = comment)
@@ -81,7 +81,7 @@ def FullReadout_Operational_Limb_Pointing_macro(root, relativeTime, CCD_settings
     '''
     
     
-    CCDSEL, NCCD, TEXPIOFS, Disregarded = _Library.SyncArgCalculator(CCD_settings)
+    CCDSEL, NCCD, TEXPIOFS, Disregarded = _Library.SyncArgCalculator(CCD_settings, _Globals.Timeline_settings)
     
     relativeTime = Commands.TC_pafMode(root, relativeTime, mode = 2, comment = comment)
     
@@ -125,7 +125,7 @@ def Operational_Sweep_macro(root, relativeTime, CCD_settings, pointing_altitude_
     
     
     
-    CCDSEL, NCCD, TEXPIOFS, TEXPIMS = _Library.SyncArgCalculator(CCD_settings)
+    CCDSEL, NCCD, TEXPIOFS, TEXPIMS = _Library.SyncArgCalculator(CCD_settings, _Globals.Timeline_settings)
     
     
     relativeTime = Commands.TC_pafMode(root, relativeTime, mode = 2, comment = comment)

@@ -55,7 +55,7 @@ def Data_Plotter():
     date = ephem.Date(Settings['start_date'])
     
     yaw_correction = Settings['yaw_correction']
-    yaw_correction = True
+    
     
     ephemDate2MatplotDate = datestr2num('1899/12/31 12:00:00')
     
@@ -73,7 +73,7 @@ def Data_Plotter():
     r_MATS_ECEF = zeros((timesteps,3))
     normal_orbit = zeros((timesteps,3))
     normal_orbit_ECEF = zeros((timesteps,3))
-    abs_lat_LP = zeros((timesteps,1))
+    lat_LP_estimated = zeros((timesteps,1))
     
     optical_axis = zeros((timesteps,3))
     optical_axis_ECEF = zeros((timesteps,3))
@@ -140,7 +140,7 @@ def Data_Plotter():
         current_time[t] = ephem.Date(date+ephem.second*(timestep*t+start_from))
         
         
-        """
+        
         ################### Skyfield ##############################
         current_time[t] = ephem.Date(date+ephem.second*(timestep*t+start_from))
         current_time_datetime = ephem.Date(date+ephem.second*(timestep*t+start_from)).datetime()
@@ -160,9 +160,9 @@ def Data_Plotter():
         lat_MATS[t] = MATS_subpoint.latitude.radians
         long_MATS[t] = MATS_subpoint.longitude.radians
         alt_MATS[t] = MATS_subpoint.elevation.km
+        
+        
         """
-        
-        
         MATS.compute(current_time[t], epoch = '2000/01/01 11:58:55.816')
         
         
@@ -180,7 +180,7 @@ def Data_Plotter():
         x_MATS[t] = cos(a_dec_MATS[t])*(alt_MATS[t]+R_earth_MATS[t])* cos(a_ra_MATS[t])
         y_MATS[t] = cos(a_dec_MATS[t])*(alt_MATS[t]+R_earth_MATS[t])* sin(a_ra_MATS[t])
         r_MATS[t,0:3] = [x_MATS[t], y_MATS[t], z_MATS[t]]
-        
+        """
         
         r_MATS_unit_vector[t,0:3] = r_MATS[t,0:3] / norm(r_MATS[t,0:3])
         
@@ -188,18 +188,18 @@ def Data_Plotter():
         r_MATS_ECEF[t,0], r_MATS_ECEF[t,1], r_MATS_ECEF[t,2] = _MATS_coordinates.eci2ecef(
                 r_MATS[t,0], r_MATS[t,1], r_MATS[t,2], ephem.Date(current_time[t][0]).datetime())
         
-        
+        """
         lat_MATS[t], long_MATS[t], alt_MATS[t]  = _MATS_coordinates.ECEF2lla(r_MATS_ECEF[t,0]*1000, r_MATS_ECEF[t,1]*1000, r_MATS_ECEF[t,2]*1000)
         
         lat_MATS[t] = lat_MATS[t] / 180*pi
         long_MATS[t] = long_MATS[t] / 180*pi
         alt_MATS[t] = alt_MATS[t] / 1000
-        
+        """
         ##############################################################
         
         
         
-        
+        """
         ###########################################################
         #Second iteration of determining MATS distance from center of Earth
         R_earth_MATS[t] = _Library.lat_2_R(lat_MATS[t]) #WGS84 radius from latitude of MATS
@@ -211,18 +211,18 @@ def Data_Plotter():
         
         r_MATS_unit_vector[t,0:3] = r_MATS[t,0:3] / norm(r_MATS[t,0:3])
         
-        
+        """
         r_MATS_ECEF[t,0], r_MATS_ECEF[t,1], r_MATS_ECEF[t,2] = _MATS_coordinates.eci2ecef(
                 r_MATS[t,0], r_MATS[t,1], r_MATS[t,2], ephem.Date(current_time[t][0]).datetime())
         
-        
+        """
         lat_MATS[t], long_MATS[t], alt_MATS[t]  = _MATS_coordinates.ECEF2lla(r_MATS_ECEF[t,0]*1000, r_MATS_ECEF[t,1]*1000, r_MATS_ECEF[t,2]*1000)
         
         lat_MATS[t] = lat_MATS[t] / 180*pi
         long_MATS[t] = long_MATS[t] / 180*pi
         alt_MATS[t] = alt_MATS[t] / 1000
         ################################################################
-        
+        """
         
         #Semi-Major axis of MATS, assuming circular orbit
         MATS_p[t] = norm(r_MATS[t,0:3])
@@ -235,7 +235,7 @@ def Data_Plotter():
         
         #Initial Estimated pitch or elevation angle for MATS pointing using R_mean
         if(t == 0):
-            orbangle_between_LP_MATS_array[t]= arccos((R_mean+LP_altitude)/(R_earth_MATS[t]+alt_MATS[t]))/pi*180
+            orbangle_between_LP_MATS_array[t]= arccos((R_mean+LP_altitude)/(MATS_distance))/pi*180
             #orbangle_between_LP_MATS_array[t]= arccos((R_mean+LP_altitude)/(MATS_distance))/pi*180
             orbangle_between_LP_MATS = orbangle_between_LP_MATS_array[t][0]
             time_between_LP_and_MATS = MATS_P[t][0]*orbangle_between_LP_MATS/360
@@ -245,12 +245,12 @@ def Data_Plotter():
                 
         if(t != 0):
             if( t >= timesteps_between_LP_and_MATS):
-                abs_lat_LP[t] = abs(lat_MATS[t-timesteps_between_LP_and_MATS])
-                R_earth_LP = _Library.lat_2_R(abs_lat_LP[t][0])
+                lat_LP_estimated[t] = lat_MATS[t-timesteps_between_LP_and_MATS]
+                R_earth_LP = _Library.lat_2_R(lat_LP_estimated[t][0])
             else:
-                date_of_MATSlat_is_equal_2_current_LPlat = ephem.Date(current_time[t] - ephem.second * timesteps_between_LP_and_MATS * timestep)
-                abs_lat_LP[t] = abs( _Library.lat_MATS_calculator( date_of_MATSlat_is_equal_2_current_LPlat ) )
-                R_earth_LP = _Library.lat_2_R(abs_lat_LP[t][0])
+                date_of_MATSlat_is_equal_2_current_LPlat = ephem.Date(current_time[t] - ephem.second * timesteps_between_LP_and_MATS * timestep).datetime()
+                lat_LP_estimated[t] = _Library.lat_calculator( MATS_skyfield,date_of_MATSlat_is_equal_2_current_LPlat )
+                R_earth_LP = _Library.lat_2_R(lat_LP_estimated[t][0])
             
             "Vector normal to the orbital plane of MATS"
             normal_orbit[t,0:3] = cross(r_MATS[t],r_MATS[t-1])
@@ -261,7 +261,7 @@ def Data_Plotter():
         
             
             # More accurate estimation of pitch angle of MATS using R_earth_LP instead of R_mean
-            orbangle_between_LP_MATS_array[t] = array(arccos((R_earth_LP+LP_altitude)/(R_earth_MATS[t]+alt_MATS[t]))/pi*180)
+            orbangle_between_LP_MATS_array[t] = array(arccos((R_earth_LP+LP_altitude)/(MATS_distance))/pi*180)
             #orbangle_between_LP_MATS_array[t] = array(arccos((R_mean+LP_altitude)/(R_mean+alt_MATS[t]))/pi*180)
             orbangle_between_LP_MATS = orbangle_between_LP_MATS_array[t][0]
             
@@ -1164,7 +1164,7 @@ def Data_Plotter():
     plot_date(current_time_MPL[1:], lat_LP[1:], markersize = 1, label = 'Predicted')
     plot_date(current_time_MPL[1:], lat_LP_STK[1:], markersize = 1, label = 'STK-Data')
     plot_date(current_time_MPL_OHB[1:], lat_LP_OHB[1:], markersize = 1, label = 'OHB-Data')
-    plot_date(current_time_MPL[1:], -abs_lat_LP[1:]/pi*180, markersize = 1, label = 'Predicted from orbangle and lat_MATS')
+    plot_date(current_time_MPL[1:], lat_LP_estimated[1:]/pi*180, markersize = 1, label = 'Predicted from orbangle and lat_MATS')
     xlabel('Date')
     ylabel('Latitude of LP in degrees')
     legend()

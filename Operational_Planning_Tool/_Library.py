@@ -3,10 +3,12 @@
 """
 
 import ephem, importlib, time, logging, os, sys
-from pylab import cos, sin, sqrt, array, arccos, pi, floor, around
+from pylab import cos, sin, cross, dot, arctan, sqrt, array, arccos, pi, floor, around, norm
+import skyfield.api
 
 from Operational_Planning_Tool import _Globals, _MATS_coordinates
 
+timescale_skyfield = skyfield.api.load.timescale()
 OPT_Config_File = importlib.import_module(_Globals.Config_File)
 Logger = logging.getLogger(OPT_Config_File.Logger_name())
 
@@ -107,46 +109,33 @@ def lat_2_R( lat ):
 
 
 
-def lat_MATS_calculator( date ):
-    ''' Function that calculates the latitude of a satellite defined by TLE.
+def lat_calculator( satellite, date ):
+    ''' Function that calculates the latitude of a skyfield object
     
-    Mainly used to approximated the latitude of a LP as the LP is close to being in the same orbital plane.
+    Mainly used to approximate the latitude of a LP as the LP is close to being in the same orbital plane.
     
     Arguments:
-        date (:obj:`ephem.Date`): The scheduled startdate of the current Mode.
+        date (:obj:datetime.datetime): The scheduled startdate of the current Mode.
     
     Returns: 
         lat_MATS (float): Latitude given in radians.
     '''
     
-    TLE1 = OPT_Config_File.getTLE()[0]
-    TLE2 = OPT_Config_File.getTLE()[1]
-        
+    year = date.year
+    month = date.month
+    day = date.day
+    hour = date.hour
+    minute = date.minute
+    second = date.second + date.microsecond/1000000
     
-    MATS = ephem.readtle('MATS',TLE1,TLE2)
+    date_skyfield = timescale_skyfield.utc(year, month, day, hour, minute, second)
     
-    MATS.compute(ephem.Date(date), epoch = '2000/01/01 11:58:55.816')
-    
-    (lat_MATS,long_MATS,alt_MATS,a_ra_MATS,a_dec_MATS)= (
-            MATS.sublat, MATS.sublong, MATS.elevation/1000, MATS.a_ra, MATS.a_dec)
-    
-    R_earth_MATS = lat_2_R(lat_MATS) #WGS84 radius from latitude of MATS
-    
-    z_MATS = sin(a_dec_MATS)*(alt_MATS+R_earth_MATS)
-    x_MATS = cos(a_dec_MATS)*(alt_MATS+R_earth_MATS)* cos(a_ra_MATS)
-    y_MATS = cos(a_dec_MATS)*(alt_MATS+R_earth_MATS)* sin(a_ra_MATS)
-    r_MATS = array((x_MATS, y_MATS, z_MATS))
+    satellite_geo = satellite.at(date_skyfield)
+    satellite_subpoint = satellite_geo.subpoint()
+    latitude = satellite_subpoint.latitude.radians
     
     
-    r_MATS_ECEF_x, r_MATS_ECEF_y, r_MATS_ECEF_z = _MATS_coordinates.eci2ecef(
-            r_MATS[0], r_MATS[1], r_MATS[2], ephem.Date(date).datetime())
-    
-    
-    lat_MATS, long_MATS, alt_MATS  = _MATS_coordinates.ECEF2lla(r_MATS_ECEF_x*1000, r_MATS_ECEF_y*1000, r_MATS_ECEF_z*1000)
-    
-    lat_MATS = lat_MATS / 180*pi
-    
-    return lat_MATS
+    return latitude
 
 def scheduler(Occupied_Timeline, date, endDate):
     ''' Function that checks if the scheduled time is available and postpones it otherwise. 
@@ -166,6 +155,7 @@ def scheduler(Occupied_Timeline, date, endDate):
         
     '''
     
+    #Timeline_settings = _Globals.Timeline_settings
     Timeline_settings = OPT_Config_File.Timeline_settings()
     
     iterations = 0
@@ -231,7 +221,7 @@ def params_checker(dict1, dict2):
     
     return dict_new
 
-def utc_to_onboardTime(utc_date):
+def utc_to_onboardTime(utc_date, Timeline_settings):
     """Function which converts a date in utc into onboard time in seconds.
     
     Arguments:
@@ -241,7 +231,7 @@ def utc_to_onboardTime(utc_date):
         (int): Onboard Time in seconds
         
     """
-    Timeline_settings = OPT_Config_File.Timeline_settings()
+    #Timeline_settings = _Globals.Timeline_settings
     
     GPS_epoch = ephem.Date(Timeline_settings['GPS_epoch'])
     leapSeconds = ephem.second*Timeline_settings['leap_seconds']
@@ -392,7 +382,7 @@ def calculate_time_per_row(NCOL, NCBIN, NCBINFPGA, NRSKIP, NROW, NRBIN, NFLUSH):
     return T_readout/1e6, T_delay/1e6, T_row_extra/1e6
 
 
-def SyncArgCalculator(CCD_settings):
+def SyncArgCalculator(CCD_settings, Timeline_settings):
     """Calculates appropriate arguments for the CCD Synchonize CMD.
     
     The CCDs are offseted in order of ExposureTime with the CCD with the shortest ExposureTime being the leading CCD. \n
@@ -444,7 +434,6 @@ def SyncArgCalculator(CCD_settings):
     ReadOutTime_64 = T_readout + T_delay + T_Extra
     ReadOutTime.append(int(ReadOutTime_64))
     
-    
     ExpTimes = [CCD_48['TEXPMS'], CCD_9['TEXPMS'], CCD_6['TEXPMS'], CCD_64['TEXPMS']]
     ExpTimes.sort()
     
@@ -453,7 +442,8 @@ def SyncArgCalculator(CCD_settings):
     
     ExpIntervals = []
     x= 0
-    ExtraOffset = OPT_Config_File.Timeline_settings()['CCDSYNC_ExtraOffset']
+    ExtraOffset = Timeline_settings['CCDSYNC_ExtraOffset']
+    ExtraIntervalTime = Timeline_settings['CCDSYNC_ExtraIntervalTime']
     CCDSEL = 0
     
     Flag_48 = False
@@ -462,9 +452,16 @@ def SyncArgCalculator(CCD_settings):
     Flag_64 = False
     
     OffsetTime = 0
+    previous_ExpTime = 0
     
     "Calculate offset time in order of ExposureTime"
     for ExpTime in ExpTimes:
+        
+        ExpTimeIncrease = ExpTime - previous_ExpTime
+        OffsetTime = OffsetTime - ExpTimeIncrease
+        if( OffsetTime < 0 ):
+            OffsetTime = 0
+        
         if( ExpTime == 0):
             continue
         elif( ExpTime == CCD_48['TEXPMS'] and Flag_48 == False):
@@ -477,7 +474,7 @@ def SyncArgCalculator(CCD_settings):
             
             OffsetTime = OffsetTime + (ReadOutTime_48+ExtraOffset)
             
-            ExpIntervals.append(ReadOutTime_48 + CCD_48['TEXPMS'] + ExtraOffset)
+            ExpIntervals.append(ReadOutTime_48 + CCD_48['TEXPMS'] + ExtraIntervalTime)
             CCDSEL += 48
             
         elif( ExpTime == CCD_9['TEXPMS'] and Flag_9 == False):
@@ -490,7 +487,7 @@ def SyncArgCalculator(CCD_settings):
             
             OffsetTime = OffsetTime + (ReadOutTime_9+ExtraOffset)
             
-            ExpIntervals.append(ReadOutTime_9 + CCD_9['TEXPMS'] + ExtraOffset)
+            ExpIntervals.append(ReadOutTime_9 + CCD_9['TEXPMS'] + ExtraIntervalTime)
             CCDSEL += 9
             
         elif( ExpTime == CCD_6['TEXPMS'] and Flag_6 == False):
@@ -503,7 +500,7 @@ def SyncArgCalculator(CCD_settings):
             
             OffsetTime = OffsetTime + (ReadOutTime_6+ExtraOffset)
             
-            ExpIntervals.append(ReadOutTime_6 + CCD_6['TEXPMS'] + ExtraOffset)
+            ExpIntervals.append(ReadOutTime_6 + CCD_6['TEXPMS'] + ExtraIntervalTime)
             CCDSEL += 6
             
         elif( ExpTime == CCD_64['TEXPMS'] and Flag_64 == False):
@@ -513,9 +510,10 @@ def SyncArgCalculator(CCD_settings):
             
             OffsetTime = OffsetTime + (ReadOutTime_64+ExtraOffset)
             
-            ExpIntervals.append(ReadOutTime_64 + CCD_64['TEXPMS'] + ExtraOffset)
+            ExpIntervals.append(ReadOutTime_64 + CCD_64['TEXPMS'] + ExtraIntervalTime)
             CCDSEL += 64
             
+        previous_ExpTime = ExpTime
         x += 1
         
     
@@ -541,3 +539,179 @@ def SyncArgCalculator(CCD_settings):
     
     
     return CCDSEL, NCCD, TEXPIOFS, TEXPIMS
+
+
+def Satellite_Simulator( MATS_skyfield, SimulationTime, Timeline_settings, pointing_altitude, timestep, t, log_timestep ):
+    
+    """
+    (lat_MATS,long_MATS,altitude_MATS,a_ra_MATS,a_dec_MATS)= (
+    MATS.sublat,MATS.sublong,MATS.elevation/1000,MATS.a_ra,MATS.a_dec)
+    
+    R = lat_2_R(lat_MATS) #WGS84 radius from latitude of MATS
+    MATS_distance = R + altitude_MATS
+    
+    z_MATS = sin(a_dec_MATS)*(MATS_distance)
+    x_MATS = cos(a_dec_MATS)*(MATS_distance)* cos(a_ra_MATS)
+    y_MATS = cos(a_dec_MATS)*(MATS_distance)* sin(a_ra_MATS)
+       
+    r_MATS = [x_MATS, y_MATS, z_MATS]
+    """
+    
+    U = 398600.4418 #Earth gravitational parameter
+    R_mean = 6371
+    celestial_eq = [0,0,1]
+    
+    yaw_correction = Timeline_settings['yaw_correction']
+    #LP_altitude = Timeline_settings['LP_pointing_altitude']
+    
+    current_time_datetime = ephem.Date(SimulationTime).datetime()
+    year = current_time_datetime.year
+    month = current_time_datetime.month
+    day = current_time_datetime.day
+    hour = current_time_datetime.hour
+    minute = current_time_datetime.minute
+    second = current_time_datetime.second + current_time_datetime.microsecond/1000000
+    
+    current_time_skyfield = timescale_skyfield.utc(year, month, day, hour, minute, second)
+    
+    MATS_geo = MATS_skyfield.at(current_time_skyfield)
+    v_MATS = MATS_geo.velocity.km_per_s
+    r_MATS = MATS_geo.position.km
+    MATS_distance = MATS_geo.distance().km
+    MATS_subpoint = MATS_geo.subpoint()
+    lat_MATS = MATS_subpoint.latitude.radians
+    long_MATS = MATS_subpoint.longitude.radians
+    alt_MATS = MATS_subpoint.elevation.km
+    
+    r_MATS_unit_vector = r_MATS / norm(r_MATS)
+    
+    #Semi-Major axis of MATS, assuming circular orbit
+    MATS_p = norm(r_MATS)
+    
+    #Orbital Period of MATS
+    orbital_period = 2*pi*sqrt(MATS_p**3/U)
+    
+    
+    
+    
+    
+    #Initial Estimated pitch or elevation angle for MATS pointing
+    pitch_sensor= array(arccos((R_mean+pointing_altitude)/(MATS_distance))/pi*180)
+    #pitch_sensor_array= array(arccos((R_mean+pointing_altitude)/(MATS_distance))/pi*180)
+    #pitch_sensor = pitch_sensor_array[0]
+    time_between_LP_and_MATS = orbital_period*pitch_sensor/360
+    timesteps_between_LP_and_MATS = int(time_between_LP_and_MATS / timestep)
+    
+    
+        
+    # More accurate estimation of lat of LP using the position of MATS at a previous time
+    date_of_MATSlat_is_equal_2_current_LPlat = ephem.Date(SimulationTime - ephem.second * timesteps_between_LP_and_MATS * timestep).datetime()
+    lat_LP = lat_calculator( MATS_skyfield, date_of_MATSlat_is_equal_2_current_LPlat )
+    R_earth_LP = lat_2_R(lat_LP)
+    
+    """
+    # More accurate estimation of pitch angle of MATS using R_earth_LP instead of R_mean
+    pitch_LP_array= array(arccos((R_earth_LP+LP_altitude)/(MATS_distance))/pi*180)
+    pitch_LP = pitch_LP_array[0]
+    """
+    
+    pitch_sensor= array(arccos((R_earth_LP+pointing_altitude)/(MATS_distance))/pi*180)
+    #pitch_sensor_array= array(arccos((R_earth_LP+pointing_altitude)/(MATS_distance))/pi*180)
+    #pitch_sensor = pitch_sensor_array[0]
+    
+    
+    ############# Calculations of orbital and pointing vectors ############
+    "Vector normal to the orbital plane of MATS"
+    normal_orbit = cross(v_MATS,r_MATS)
+    normal_orbit = normal_orbit / norm(normal_orbit)
+    
+    if( yaw_correction == True):
+        "Calculate intersection between the orbital plane and the equator"
+        ascending_node = cross(normal_orbit, celestial_eq)
+        
+        arg_of_lat = arccos( dot(ascending_node, r_MATS) / norm(r_MATS) / norm(ascending_node) ) /pi*180
+        
+        "To determine if MATS is moving towards the ascending node"
+        if( dot(cross( ascending_node, r_MATS), normal_orbit) >= 0 ):
+            arg_of_lat = 360 - arg_of_lat
+            
+        yaw_offset_angle = Timeline_settings['yaw_amplitude'] * cos( arg_of_lat/180*pi - pitch_sensor/180*pi + Timeline_settings['yaw_phase']/180*pi )
+        #yaw_offset_angle = yaw_offset_angle[0]
+        """
+        if( t*timestep % log_timestep == 0 or t == 1 ):
+            Logger.debug('ascending_node: '+str(ascending_node))
+            Logger.debug('arg_of_lat [degrees]: '+str(arg_of_lat))
+            Logger.debug('yaw_offset_angle [degrees]: '+str(yaw_offset_angle))
+        """
+        
+    elif( yaw_correction == False):
+        yaw_offset_angle = 0
+    
+    
+    "Rotate 'vector to MATS', to represent pointing direction, includes vertical offset change (Parallax is negligable)"
+    rot_mat = rot_arbit(pitch_sensor/180*pi, normal_orbit)
+    optical_axis = (rot_mat @ (-v_MATS) )
+    
+    
+    "Rotate yaw of pointing direction, meaning to rotate around the vector to MATS"
+    rot_mat = rot_arbit(-yaw_offset_angle/180*pi, r_MATS_unit_vector)
+    optical_axis = (rot_mat @ optical_axis )
+    optical_axis_unit_vector = optical_axis/norm(optical_axis)
+    
+    
+    '''Rotate 'vector to MATS', to represent vector normal to satellite H-offset plane,
+    which will be used to project stars onto it which allows the H-offset of stars to be found'''
+    rot_mat = rot_arbit((-90)/180*pi, normal_orbit)
+    r_H_offset_normal = ( rot_mat @ optical_axis )
+    r_H_offset_normal = r_H_offset_normal / norm(r_H_offset_normal)
+    
+    "If pointing direction has a Yaw defined, Rotate yaw of normal to pointing direction H-offset plane, meaning to rotate around the vector to MATS"
+    rot_mat = rot_arbit(-yaw_offset_angle/180*pi, r_MATS_unit_vector)
+    r_H_offset_normal = (rot_mat @ r_H_offset_normal)
+    r_H_offset_normal = r_H_offset_normal/norm(r_H_offset_normal)
+    
+    "Rotate orbital plane normal to make it into pointing V-offset plane normal"
+    r_V_offset_normal = (rot_mat @ normal_orbit)
+    r_V_offset_normal = r_V_offset_normal/norm(r_V_offset_normal)
+    
+    "Calculate Dec and RA of optical axis (disregarding parallax)"
+    Dec_optical_axis = arctan(  optical_axis[2] / sqrt(optical_axis[0]**2 + optical_axis[1]**2) ) /pi * 180
+    RA_optical_axis = arccos( dot( [1,0,0], [optical_axis[0],optical_axis[1],0] ) / norm([optical_axis[0],optical_axis[1],0]) ) / pi * 180
+    if( optical_axis[1] < 0 ):
+        RA_optical_axis = 360-RA_optical_axis
+    
+    if( t*timestep % log_timestep == 0):
+        Logger.debug('')
+        
+        Logger.debug('t (loop iteration number): '+str(t))
+        Logger.debug('SimulationTime time: '+str(SimulationTime))
+        Logger.debug('Semimajor axis in km: '+str(MATS_p))
+        Logger.debug('Orbital Period in s: '+str(orbital_period))
+        Logger.debug('Vector to MATS [km]: '+str(r_MATS))
+        Logger.debug('Latitude in degrees: '+str(lat_MATS/pi*180))
+        Logger.debug('Longitude in degrees: '+str(long_MATS/pi*180))
+        Logger.debug('Altitude in km: '+str(alt_MATS))
+        Logger.debug('MATS_distance [km]: '+str(MATS_distance))
+    
+        Logger.debug('R_earth_LP [km]: '+str(R_earth_LP))
+        
+        Logger.debug('Pitch [degrees]: '+str(pitch_sensor))
+        Logger.debug('Yaw [degrees]: '+str(yaw_offset_angle))
+        Logger.debug('ArgOfLat [degrees]: '+str(arg_of_lat))
+        Logger.debug('Latitude of LP: '+str(lat_LP/pi*180))
+        Logger.debug('Optical Axis: '+str(optical_axis_unit_vector))
+        #Logger.debug('Pointing direction of FOV2: '+str(optical_axis_unit_vector2))
+        Logger.debug('Orthogonal direction to H-offset plane: '+str(r_H_offset_normal))
+        Logger.debug('Orthogonal direction to V-offset plane: '+str(r_V_offset_normal))
+        Logger.debug('Orthogonal direction to the orbital plane: '+str(normal_orbit))
+        Logger.debug('')
+        
+    Satellite_dict = {'Position': r_MATS, 'Velocity': v_MATS, 'OrbitNormal': normal_orbit, 'OrbitalPeriod': orbital_period,
+                 'Latitude': lat_MATS, 'Longitude': long_MATS, 'Altitude': alt_MATS, 
+                 'AscendingNode': ascending_node, 'ArgOfLat': arg_of_lat, 'Yaw': yaw_offset_angle, 
+                 'OpticalAxis': optical_axis_unit_vector, 'Dec_OpticalAxis': Dec_optical_axis, 'RA_OpticalAxis': RA_optical_axis, 
+                 'Normal2H_offset': r_H_offset_normal, 'Normal2V_offset': r_V_offset_normal, 
+                 }
+    
+    #return r_MATS, lat_MATS, long_MATS, alt_MATS, optical_axis_unit_vector, Dec_optical_axis, RA_optical_axis, r_H_offset_normal, r_V_offset_normal, orbital_period 
+    return Satellite_dict

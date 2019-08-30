@@ -6,10 +6,10 @@ Part of Timeline_generator, as part of OPT.
 """
 
 
-import ephem, sys, logging, importlib
-from pylab import array, cos, sin, cross, dot, zeros, sqrt, norm, pi, arccos, arctan
+import ephem, sys, logging, importlib, skyfield.api
+from pylab import cross, dot, zeros, sqrt, norm, pi, arccos, arctan
 
-from Operational_Planning_Tool._Library import rot_arbit, lat_2_R, scheduler, lat_MATS_calculator
+from Operational_Planning_Tool._Library import Satellite_Simulator, scheduler
 from Operational_Planning_Tool import _Globals
 
 OPT_Config_File = importlib.import_module(_Globals.Config_File)
@@ -104,36 +104,17 @@ def date_calculator():
         
         Logger.info('Initial simulation date set to: '+str(initial_time))
         
-        MATS = ephem.readtle('MATS',OPT_Config_File.getTLE()[0],OPT_Config_File.getTLE()[1])
-        
-        Moon = ephem.Moon()
         
         "Pre-allocate space"
+        r_MATS = zeros((duration,3))
         lat_MATS = zeros((duration,1))
         long_MATS = zeros((duration,1))
-        altitude_MATS = zeros((duration,1))
-        a_ra_MATS = zeros((duration,1))
-        a_dec_MATS = zeros((duration,1))
-        x_MATS = zeros((duration,1))
-        y_MATS = zeros((duration,1))
-        z_MATS = zeros((duration,1))
-        r_MATS = zeros((duration,3))
-        r_MATS_unit_vector = zeros((duration,3))
-        r_FOV = zeros((duration,3))
+        optical_axis = zeros((duration,3))
         normal_orbit = zeros((duration,3))
         r_H_offset_normal = zeros((duration,3))
         r_V_offset_normal = zeros((duration,3))
-        pitch_LP_array = zeros((duration,1))
-        pitch_pointing_command_array = zeros((duration,1))
-        MATS_p = zeros((duration,1))
         MATS_P = zeros((duration,1))
         
-        a_ra_Moon = zeros((duration,1))
-        a_dec_Moon = zeros((duration,1))
-        distance_Moon = zeros((duration,1))
-        x_Moon = zeros((duration,1))
-        y_Moon = zeros((duration,1))
-        z_Moon = zeros((duration,1))
         r_Moon = zeros((duration,3))
         r_MATS_2_Moon = zeros((duration,3))
         r_MATS_2_Moon_norm = zeros((duration,3))
@@ -146,25 +127,33 @@ def date_calculator():
         dates = []
         r_Moon_unit_vector = zeros((duration,3))
         
-        
+        Dec_optical_axis = zeros((duration,1))
+        RA_optical_axis = zeros((duration,1))
         
         "Constants"
-        AU = 149597871 #km
-        R_mean = 6371 #Earth radius
-        U = 398600.4418 #Earth gravitational parameter
-        LP_altitude = Timeline_settings['LP_pointing_altitude']/1000  #Altitude at which MATS center of FOV is looking
         pointing_altitude = Mode124_settings['pointing_altitude']/1000 
         H_offset = Mode124_settings['H_offset']  #5.67 is actual H_offset
         V_offset = Mode124_settings['V_offset'] 
         Moon_orbital_period = 3600*24*27.32
-        celestial_eq_normal = array([[0,0,1]])
         yaw_correction = Timeline_settings['yaw_correction']
         
-        Logger.debug('LP_altitude set to [km]: '+str(LP_altitude))
         Logger.debug('H_offset set to [degrees]: '+str(H_offset))
         Logger.debug('V_offset set to [degrees]: '+str(V_offset))
         Logger.debug('Moon_orbital_period [s]: '+str(Moon_orbital_period))
         Logger.debug('yaw_correction set to: '+str(yaw_correction))
+        
+        TLE = OPT_Config_File.getTLE()
+        Logger.debug('TLE used: '+TLE[0]+TLE[1])
+        
+        MATS = ephem.readtle('MATS',TLE[0],TLE[1])
+        Moon = ephem.Moon()
+        
+        ts = skyfield.api.load.timescale()
+        MATS_skyfield = skyfield.api.EarthSatellite(TLE[0], TLE[1])
+        
+        planets = skyfield.api.load('de421.bsp')
+        Moon = planets['Moon']
+        Earth = planets['Earth']
         
         t=0
         
@@ -176,35 +165,42 @@ def date_calculator():
         
         while(current_time < initial_time+ephem.second*duration):
             
+            Satellite_dict = Satellite_Simulator( 
+                    MATS_skyfield, current_time, Timeline_settings, pointing_altitude, timestep, t, log_timestep )
+            
+            r_MATS[t] = Satellite_dict['Position']
+            MATS_P[t] = Satellite_dict['OrbitalPeriod']
+            lat_MATS[t] =  Satellite_dict['Latitude']
+            long_MATS[t] =  Satellite_dict['Longitude']
+            
+            optical_axis[t] = Satellite_dict['OpticalAxis']
+            Dec_optical_axis[t] = Satellite_dict['Dec_OpticalAxis']
+            RA_optical_axis[t] = Satellite_dict['RA_OpticalAxis']
+            
+            ascending_node = Satellite_dict['AscendingNode']
+            yaw_offset_angle = Satellite_dict['Yaw']
+            arg_of_lat = Satellite_dict['ArgOfLat']
+            
+            normal_orbit[t] = Satellite_dict['OrbitNormal']
+            r_H_offset_normal[t] = Satellite_dict['Normal2H_offset']
+            r_V_offset_normal[t] = Satellite_dict['Normal2V_offset']
+            
+            
+            """
             MATS.compute(current_time, epoch = '2000/01/01 11:58:55.816')
             Moon.compute(current_time, epoch = '2000/01/01 11:58:55.816')
-            
             
             (lat_MATS[t],long_MATS[t],altitude_MATS[t],a_ra_MATS[t],a_dec_MATS[t])= (
             MATS.sublat,MATS.sublong,MATS.elevation/1000,MATS.a_ra,MATS.a_dec)
             
             R = lat_2_R(lat_MATS[t])
+            MATS_distance = R + altitude_MATS[t]
             
-            z_MATS[t] = sin(a_dec_MATS[t])*(altitude_MATS[t]+R)
-            x_MATS[t] = cos(a_dec_MATS[t])*(altitude_MATS[t]+R)* cos(a_ra_MATS[t])
-            y_MATS[t] = cos(a_dec_MATS[t])*(altitude_MATS[t]+R)* sin(a_ra_MATS[t])
+            z_MATS[t] = sin(a_dec_MATS[t])*(MATS_distance)
+            x_MATS[t] = cos(a_dec_MATS[t])*(MATS_distance)* cos(a_ra_MATS[t])
+            y_MATS[t] = cos(a_dec_MATS[t])*(MATS_distance)* sin(a_ra_MATS[t])
            
             r_MATS[t,0:3] = [x_MATS[t], y_MATS[t], z_MATS[t]]
-            r_MATS_unit_vector[t] = r_MATS[t]/norm(r_MATS[t])
-            
-            
-            #Semi-Major axis of MATS, assuming circular orbit
-            MATS_p[t] = norm(r_MATS[t,0:3])
-            
-            #Orbital Period of MATS
-            MATS_P[t] = 2*pi*sqrt(MATS_p[t]**3/U)
-            
-            #Initial Estimated pitch or elevation angle for MATS pointing
-            if(t == 0):
-                pitch_LP_array[t]= array(arccos((R_mean+LP_altitude)/(R+altitude_MATS[t]))/pi*180)
-                pitch_LP = pitch_LP_array[t][0]
-                time_between_LP_and_MATS = MATS_P[t][0]*pitch_LP/360
-                timesteps_between_LP_and_MATS = int(time_between_LP_and_MATS / timestep)
             
             (a_ra_Moon[t], a_dec_Moon[t], distance_Moon[t])= (
                     Moon.a_ra, Moon.a_dec, Moon.earth_distance*AU)
@@ -214,10 +210,44 @@ def date_calculator():
             y_Moon[t] = cos(a_dec_Moon[t])*sin(a_ra_Moon[t]) * distance_Moon[t]
            
             r_Moon[t,0:3] = [x_Moon[t], y_Moon[t], z_Moon[t]]
-            r_Moon_unit_vector[t,0:3] = r_Moon[t,0:3]/norm(r_Moon[t,0:3])
             
-            r_MATS_2_Moon[t] = r_Moon[t]-r_MATS[t]
-            r_MATS_2_Moon_norm[t] = r_MATS_2_Moon[t]/norm(r_MATS_2_Moon[t])
+            """
+            
+            """
+            current_time_datetime = ephem.Date(current_time).datetime()
+            year = current_time_datetime.year
+            month = current_time_datetime.month
+            day = current_time_datetime.day
+            hour = current_time_datetime.hour
+            minute = current_time_datetime.minute
+            second = current_time_datetime.second + current_time_datetime.microsecond/1000000
+            
+            current_time_skyfield = ts.utc(year, month, day, hour, minute, second)
+            
+            MATS_geo = MATS_skyfield.at(current_time_skyfield)
+            r_MATS[t] = MATS_geo.position.km
+            MATS_distance = MATS_geo.distance().km
+            MATS_subpoint = MATS_geo.subpoint()
+            lat_MATS[t] = MATS_subpoint.latitude.radians
+            long_MATS[t] = MATS_subpoint.longitude.radians
+            altitude_MATS[t] = MATS_subpoint.elevation.km
+            
+            
+            
+            r_MATS_unit_vector[t] = r_MATS[t]/norm(r_MATS[t])
+            
+            #Semi-Major axis of MATS, assuming circular orbit
+            MATS_p[t] = norm(r_MATS[t,0:3])
+            
+            #Orbital Period of MATS
+            MATS_P[t] = 2*pi*sqrt(MATS_p[t]**3/U)
+            
+            #Initial Estimated pitch or elevation angle for MATS pointing
+            if(t == 0):
+                pitch_LP_array[t]= array(arccos((R_mean+LP_altitude)/(MATS_distance))/pi*180)
+                pitch_LP = pitch_LP_array[t][0]
+                time_between_LP_and_MATS = MATS_P[t][0]*pitch_LP/360
+                timesteps_between_LP_and_MATS = int(time_between_LP_and_MATS / timestep)
             
             
             
@@ -237,28 +267,19 @@ def date_calculator():
             if(t != 0):
                 # More accurate estimation of lat of LP using the position of MATS at a previous time
                 if( t >= timesteps_between_LP_and_MATS):
-                    abs_lat_LP = abs(lat_MATS[t-timesteps_between_LP_and_MATS])
-                    R_earth_LP = lat_2_R(abs_lat_LP)
+                    lat_LP = lat_MATS[t-timesteps_between_LP_and_MATS]
+                    R_earth_LP = lat_2_R(lat_LP)
                 else:
-                    date_of_MATSlat_is_equal_2_current_LPlat = ephem.Date(current_time - ephem.second * timesteps_between_LP_and_MATS * timestep)
-                    abs_lat_LP = abs( lat_MATS_calculator( date_of_MATSlat_is_equal_2_current_LPlat ) )
-                    R_earth_LP = lat_2_R(abs_lat_LP)
+                    date_of_MATSlat_is_equal_2_current_LPlat = ephem.Date(current_time - ephem.second * timesteps_between_LP_and_MATS * timestep).datetime()
+                    lat_LP = lat_calculator( MATS_skyfield, date_of_MATSlat_is_equal_2_current_LPlat )
+                    R_earth_LP = lat_2_R(lat_LP)
                     
-                """
-                # More accurate estimation of the Earths radius below LP
-                if( abs(lat_MATS[t])-abs(lat_MATS[t-1]) > 0 ): #Moving towards poles meaning LP is equatorwards compared to MATS
-                    abs_lat_LP = abs(lat_MATS[t])-pitch_LP/180*pi #absolute value of estimated latitude of LP in radians
-                    R_earth_LP = lat_2_R(abs_lat_LP) #Estimated WGS84 radius of LP from latitude of MATS
-                else:
-                    abs_lat_LP = abs(lat_MATS[t])+pitch_LP/180*pi #absolute value of estimated latitude of LP in radians
-                    R_earth_LP = lat_2_R(abs_lat_LP) #Estimated WGS84 radius of LP from latitude of MATS
-                """
                 
                 # More accurate estimation of pitch angle of MATS using R_earth_LP instead of R_mean
-                pitch_LP_array[t]= array(arccos((R_earth_LP+LP_altitude)/(R+altitude_MATS[t]))/pi*180)
+                pitch_LP_array[t]= array(arccos((R_earth_LP+LP_altitude)/(MATS_distance))/pi*180)
                 pitch_LP = pitch_LP_array[t][0]
                 
-                pitch_pointing_command_array[t] = array(arccos((R_earth_LP+pointing_altitude )/(R+altitude_MATS[t]))/pi*180)
+                pitch_pointing_command_array[t] = array(arccos((R_earth_LP+pointing_altitude )/(MATS_distance))/pi*180)
                 pitch_pointing_command = pitch_pointing_command_array[t][0]
                 
                 pitch_angle_between_command_and_LP_altitudes = pitch_LP - pitch_pointing_command
@@ -295,30 +316,21 @@ def date_calculator():
                 
                 "Rotate 'vector to MATS', to represent pointing direction, includes vertical offset change"
                 rot_mat = rot_arbit(pi/2+(pitch_pointing_command)/180*pi, normal_orbit[t,0:3])
-                r_FOV[t,0:3] = (rot_mat @ r_MATS[t])
+                optical_axis[t,0:3] = (rot_mat @ r_MATS[t])
                 
                 "Rotate yaw of pointing direction, meaning to rotate around the vector to MATS"
                 rot_mat = rot_arbit( (-yaw_offset_angle)/180*pi, r_MATS_unit_vector[t,0:3])
-                r_FOV[t,0:3] =  rot_mat @ r_FOV[t,0:3]
-                r_FOV[t,0:3] = r_FOV[t,0:3] / norm(r_FOV[t,0:3])
+                optical_axis[t,0:3] =  rot_mat @ optical_axis[t,0:3]
+                optical_axis[t,0:3] = optical_axis[t,0:3] / norm(optical_axis[t,0:3])
                 
                 "Calculate Dec and RA of optical axis (disregarding parallax)"
-                optical_axis = r_FOV[t,0:3]
-                Dec_optical_axis = arctan(  optical_axis[2] / sqrt(optical_axis[0]**2 + optical_axis[1]**2) ) /pi * 180
-                Ra_optical_axis = arccos( dot( [1,0,0], [optical_axis[0],optical_axis[1],0] ) / norm([optical_axis[0],optical_axis[1],0]) ) / pi * 180
+                Dec_optical_axis = arctan(  optical_axis[t,2] / sqrt(optical_axis[t,0]**2 + optical_axis[t,1]**2) ) /pi * 180
+                Ra_optical_axis = arccos( dot( [1,0,0], [optical_axis[t,0],optical_axis[t,1],0] ) / norm([optical_axis[t,0],optical_axis[t,1],0]) ) / pi * 180
                 
-                
-                if( optical_axis[1] < 0 ):
+                if( optical_axis[t,1] < 0 ):
                     Ra_optical_axis = 360-Ra_optical_axis
                     
-                "Calculate Dec and RA of optical axis (disregarding parallax)"
-                optical_axis = r_MATS_2_Moon_norm[t,0:3]
-                Dec = arctan(  optical_axis[2] / sqrt(optical_axis[0]**2 + optical_axis[1]**2) ) /pi * 180
-                Ra = arccos( dot( [1,0,0], [optical_axis[0],optical_axis[1],0] ) / norm([optical_axis[0],optical_axis[1],0]) ) / pi * 180
                 
-                
-                if( optical_axis[1] < 0 ):
-                    Ra = 360-Ra
                 
                 "Rotate 'vector to MATS', to represent a vector normal to the H-offset pointing plane, includes vertical offset change (Parallax is negligable)"
                 rot_mat = rot_arbit((pitch_pointing_command)/180*pi, normal_orbit[t,0:3])
@@ -332,49 +344,69 @@ def date_calculator():
                 "Rotate orbital plane normal to make it into pointing V-offset plane normal"
                 r_V_offset_normal[t,0:3] = (rot_mat @ normal_orbit[t])
                 r_V_offset_normal[t,0:3] = r_V_offset_normal[t,0:3]/norm(r_V_offset_normal[t,0:3])
+                """
+            
+            ############# End of Calculations of orbital and pointing vectors #####
+            
+            current_time_datetime = ephem.Date(current_time).datetime()
+            year = current_time_datetime.year
+            month = current_time_datetime.month
+            day = current_time_datetime.day
+            hour = current_time_datetime.hour
+            minute = current_time_datetime.minute
+            second = current_time_datetime.second + current_time_datetime.microsecond/1000000
+            
+            current_time_skyfield = ts.utc(year, month, day, hour, minute, second)
+            
+            Moon_apparent_from_Earth = Earth.at(current_time_skyfield).observe(Moon).apparent()
+            r_Moon[t,0:3] = Moon_apparent_from_Earth.position.km
+            
+            r_Moon_unit_vector[t,0:3] = r_Moon[t,0:3]/norm(r_Moon[t,0:3])
+            
+            r_MATS_2_Moon[t] = r_Moon[t]-r_MATS[t]
+            r_MATS_2_Moon_norm[t] = r_MATS_2_Moon[t]/norm(r_MATS_2_Moon[t])
+            
+            "Calculate Dec and RA of moon (disregarding parallax)"
+            Dec_Moon = arctan(  r_Moon[t,2] / sqrt(r_Moon[t,0]**2 + r_Moon[t,1]**2) ) /pi * 180
+            RA_Moon = arccos( dot( [1,0,0], [r_Moon[t,0],r_Moon[t,1],0] ) / norm([r_Moon[t,0],r_Moon[t,1],0]) ) / pi * 180
+            
+            
+            if( r_Moon[t,1] < 0 ):
+                RA_Moon = 360-RA_Moon
+            
+            "Project 'r_MATS_2_Moon' ontop of orbital plane"
+            Moon_r_orbital_plane[t] = r_MATS_2_Moon_norm[t] - dot(r_MATS_2_Moon_norm[t],normal_orbit[t]) * normal_orbit[t]
+            
+            "Project 'r_MATS_2_Moon' ontop pointing H-offset and V-offset plane"
+            Moon_r_V_offset_plane[t] = r_MATS_2_Moon_norm[t] - dot(r_MATS_2_Moon_norm[t],r_V_offset_normal[t]) * r_V_offset_normal[t]
+            Moon_r_H_offset_plane[t] = r_MATS_2_Moon_norm[t] - dot(r_MATS_2_Moon_norm[t],r_H_offset_normal[t]) * r_H_offset_normal[t]
+            
+            
+            "Dot product to get the Vertical and Horizontal angle offset of the Moon"
+            Moon_vert_offset[t] = arccos(dot(optical_axis[t],Moon_r_V_offset_plane[t]) / (norm(optical_axis[t])*norm(Moon_r_V_offset_plane[t]))) /pi*180
+            Moon_hori_offset[t] = arccos(dot(optical_axis[t],Moon_r_H_offset_plane[t]) / (norm(optical_axis[t])*norm(Moon_r_H_offset_plane[t]))) /pi*180
+            
+            "Get the offset angle sign correct"
+            if( dot(cross(optical_axis[t],Moon_r_V_offset_plane[t]),normal_orbit[t,0:3]) > 0 ):
+                Moon_vert_offset[t] = -Moon_vert_offset[t]
+            if( dot(cross(optical_axis[t],Moon_r_H_offset_plane[t]),r_H_offset_normal[t]) > 0 ):
+                Moon_hori_offset[t] = -Moon_hori_offset[t]
+            
+            
+            "Angle between orbital plane and moon"
+            angle_between_orbital_plane_and_moon[t] = arccos( dot(r_MATS_2_Moon_norm[t], Moon_r_orbital_plane[t]) / norm(Moon_r_orbital_plane[t])) /pi*180
+            
+            
+            if( t*timestep % log_timestep == 0 or t == 1 ):
+                Logger.debug('angle_between_orbital_plane_and_moon [degrees]: '+str(angle_between_orbital_plane_and_moon[t]))
+                Logger.debug('Moon_vert_offset [degrees]: '+str(Moon_vert_offset[t]))
+                Logger.debug('Moon_hori_offset [degrees]: '+str(Moon_hori_offset[t]))
                 
                 
-                ############# End of Calculations of orbital and pointing vectors #####
-                
-                "Project 'r_MATS_2_Moon' ontop of orbital plane"
-                Moon_r_orbital_plane[t] = r_MATS_2_Moon_norm[t] - dot(r_MATS_2_Moon_norm[t],normal_orbit[t]) * normal_orbit[t]
-                
-                "Project 'r_MATS_2_Moon' ontop pointing H-offset and V-offset plane"
-                Moon_r_V_offset_plane[t] = r_MATS_2_Moon_norm[t] - dot(r_MATS_2_Moon_norm[t],r_V_offset_normal[t]) * r_V_offset_normal[t]
-                Moon_r_H_offset_plane[t] = r_MATS_2_Moon_norm[t] - dot(r_MATS_2_Moon_norm[t],r_H_offset_normal[t]) * r_H_offset_normal[t]
-                
-                
-                "Dot product to get the Vertical and Horizontal angle offset of the Moon"
-                Moon_vert_offset[t] = arccos(dot(r_FOV[t],Moon_r_V_offset_plane[t]) / (norm(r_FOV[t])*norm(Moon_r_V_offset_plane[t]))) /pi*180
-                Moon_hori_offset[t] = arccos(dot(r_FOV[t],Moon_r_H_offset_plane[t]) / (norm(r_FOV[t])*norm(Moon_r_H_offset_plane[t]))) /pi*180
-                
-                "Get the offset angle sign correct"
-                if( dot(cross(r_FOV[t],Moon_r_V_offset_plane[t]),normal_orbit[t,0:3]) > 0 ):
-                    Moon_vert_offset[t] = -Moon_vert_offset[t]
-                if( dot(cross(r_FOV[t],Moon_r_H_offset_plane[t]),r_H_offset_normal[t]) > 0 ):
-                    Moon_hori_offset[t] = -Moon_hori_offset[t]
-                
-                
-                "Angle between orbital plane and moon"
-                angle_between_orbital_plane_and_moon[t] = arccos( dot(r_MATS_2_Moon_norm[t], Moon_r_orbital_plane[t]) / norm(Moon_r_orbital_plane[t])) /pi*180
-                
-                
-                if( t*timestep % log_timestep == 0 or t == 1 ):
-                    Logger.debug('pitch_LP in degrees: '+str(pitch_LP))
-                    Logger.debug('pitch_pointing_command in degrees: '+str(pitch_pointing_command))
-                    Logger.debug('pitch_angle_between_command_and_LP_altitudes [degrees]: '+str(pitch_angle_between_command_and_LP_altitudes))
-                    Logger.debug('Absolute value of latitude of LP: '+str(abs_lat_LP/pi*180))
-                    Logger.debug('angle_between_orbital_plane_and_moon [degrees]: '+str(angle_between_orbital_plane_and_moon[t]))
-                    Logger.debug('Moon_vert_offset [degrees]: '+str(Moon_vert_offset[t]))
-                    Logger.debug('Moon_hori_offset [degrees]: '+str(Moon_hori_offset[t]))
-                    Logger.debug('normal_orbit: '+str(normal_orbit[t,0:3]))
-                    Logger.debug('r_H_offset_normal: '+str(r_H_offset_normal[t,0:3]))
-                    Logger.debug('r_FOV [km]: '+str(r_FOV[t,0:3]))
-                    Logger.debug('')
-                    
-                
-                #print('angle_between_orbital_plane_and_moon = ' + str(angle_between_orbital_plane_and_moon[t]))
-                
+            
+            #print('angle_between_orbital_plane_and_moon = ' + str(angle_between_orbital_plane_and_moon[t]))
+            
+            if(t != 0):
                 "Check that the Moon is entering V-offset degrees and within the H-offset angle"
                 if( Moon_vert_offset[t] <= V_offset and Moon_vert_offset[t-1] > V_offset and abs(Moon_hori_offset[t]) < H_offset):
                     
@@ -382,35 +414,32 @@ def date_calculator():
                     Logger.debug('!!!!!!!!Moon available!!!!!!!!!!')
                     Logger.debug('t (loop iteration number): '+str(t))
                     Logger.debug('Current time: '+str(current_time))
-                    Logger.debug('Semimajor axis in km: '+str(MATS_p[t]))
                     Logger.debug('Orbital Period in s: '+str(MATS_P[t]))
                     Logger.debug('Vector to MATS [km]: '+str(r_MATS[t,0:3]))
                     Logger.debug('Latitude in radians: '+str(lat_MATS[t]))
                     Logger.debug('Longitude in radians: '+str(long_MATS[t]))
-                    Logger.debug('Altitude in km: '+str(altitude_MATS[t]))
                     
                     if( yaw_correction == True):
                         Logger.debug('ascending_node: '+str(ascending_node))
                         Logger.debug('arg_of_lat [degrees]: '+str(arg_of_lat))
                         Logger.debug('yaw_offset_angle [degrees]: '+str(yaw_offset_angle))
                     
-                    Logger.debug('pitch_LP in degrees: '+str(pitch_LP))
-                    Logger.debug('pitch_pointing_command in degrees: '+str(pitch_pointing_command))
-                    Logger.debug('pitch_angle_between_command_and_LP_altitudes [degrees]: '+str(pitch_angle_between_command_and_LP_altitudes))
-                    Logger.debug('Absolute value of latitude of LP: '+str(abs_lat_LP/pi*180))
+                    
+                    
                     Logger.debug('angle_between_orbital_plane_and_moon [degrees]: '+str(angle_between_orbital_plane_and_moon[t]))
                     Logger.debug('Moon_vert_offset [degrees]: '+str(Moon_vert_offset[t]))
                     Logger.debug('Moon_hori_offset [degrees]: '+str(Moon_hori_offset[t]))
                     Logger.debug('normal_orbit: '+str(normal_orbit[t,0:3]))
+                    Logger.debug('r_V_offset_normal: '+str(r_V_offset_normal[t,0:3]))
                     Logger.debug('r_H_offset_normal: '+str(r_H_offset_normal[t,0:3]))
-                    Logger.debug('r_FOV: '+str(r_FOV[t,0:3]))
+                    Logger.debug('optical_axis: '+str(optical_axis[t,0:3]))
                     
                     Logger.debug('')
                     
                     
                     dates.append({ 'Date': str(current_time), 'V-offset': Moon_vert_offset[t], 'H-offset': Moon_hori_offset[t], 
-                                      'long_MATS': float(long_MATS[t]/pi*180), 'lat_MATS': float(lat_MATS[t]/pi*180), 'Dec': Dec, 'RA': Ra,
-                                       'Dec FOV': Dec_optical_axis, 'RA FOV': Ra_optical_axis})
+                                      'long_MATS': float(long_MATS[t]/pi*180), 'lat_MATS': float(lat_MATS[t]/pi*180), 'Dec': Dec_Moon, 'RA': RA_Moon,
+                                       'Dec FOV': Dec_optical_axis, 'RA FOV': RA_optical_axis})
                     
                     Logger.debug('Jump ahead half an orbit in time')
                     "Skip ahead half an orbit"

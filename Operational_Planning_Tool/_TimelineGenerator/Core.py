@@ -64,6 +64,7 @@ def Timeline_generator():
     
     "Get settings for the timeline"
     Timeline_settings = OPT_Config_File.Timeline_settings()
+    _Globals.Timeline_settings = Timeline_settings
     Timeline_start_date = ephem.Date(Timeline_settings['start_date'])
     Logger.debug('Timeline_settings: '+str(Timeline_settings))
     

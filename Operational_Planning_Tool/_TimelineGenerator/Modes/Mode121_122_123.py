@@ -6,11 +6,11 @@ Created on Tue Jun  4 11:52:12 2019
 """
 
 import logging, sys, importlib
-import ephem
-from pylab import array, cos, sin, cross, dot, zeros, sqrt, norm, pi, arccos, floor, arctan
+import ephem, skyfield.api
+from pylab import array, cos, sin, dot, zeros, norm, pi, arccos, floor
 from astroquery.vizier import Vizier
 
-from Operational_Planning_Tool._Library import rot_arbit, deg2HMS, lat_2_R, lat_MATS_calculator
+from Operational_Planning_Tool._Library import Satellite_Simulator, deg2HMS
 from Operational_Planning_Tool import _Globals, _MATS_coordinates
 
 OPT_Config_File = importlib.import_module(_Globals.Config_File)
@@ -30,7 +30,7 @@ def date_calculator(Settings):
     
     """
     
-    
+    Timeline_settings = OPT_Config_File.Timeline_settings()
     
     "Simulation length and timestep"
     log_timestep = Settings['log_timestep']
@@ -39,13 +39,13 @@ def date_calculator(Settings):
     timestep = Settings['timestep'] #In seconds
     Logger.info('timestep set to: '+str(timestep)+' s')
     
-    duration = OPT_Config_File.Timeline_settings()['duration']
+    duration = Timeline_settings['duration']
     Logger.info('Duration set to: '+str(duration)+' s')
     
     timesteps = int(floor(duration / timestep))
     Logger.info('Total number of timesteps set to: '+str(timesteps)+' s')
     
-    timeline_start = ephem.Date(OPT_Config_File.Timeline_settings()['start_date'])
+    timeline_start = ephem.Date(Timeline_settings['start_date'])
     
     initial_time = ephem.Date( timeline_start + ephem.second*Settings['freeze_start'] )
     Logger.info('initial_time set to: '+str(initial_time))
@@ -79,24 +79,6 @@ def date_calculator(Settings):
     stars_r = array([stars_x,stars_y,stars_z])
     stars_r = stars_r.transpose()
     
-    "Prepare the excel file output"
-    star_list_excel = []
-    star_list_excel.append(['Name;'])
-    star_list_excel.append(['t1;'])
-    star_list_excel.append(['t2;'])
-    star_list_excel.append(['long1;'])
-    star_list_excel.append(['lat1;'])
-    star_list_excel.append(['long2;'])
-    star_list_excel.append(['lat2;'])
-    star_list_excel.append(['mag;'])
-    star_list_excel.append(['H_offset;'])
-    star_list_excel.append(['V_offset;'])
-    star_list_excel.append(['H_offset2;'])
-    star_list_excel.append(['V_offset2;'])
-    star_list_excel.append(['e_Hpmag;'])
-    star_list_excel.append(['Hpscat;'])
-    star_list_excel.append(['o_Hpmag;'])
-    star_list_excel.append(['Classification;'])
     
     "Prepare the output"
     "Array containing date in first column and brightest magnitude visible in the second. Contains current Dec and RA in 3rd and 4th column"
@@ -107,60 +89,39 @@ def date_calculator(Settings):
     "Pre-allocate space"
     lat_MATS = zeros((timesteps,1))
     long_MATS = zeros((timesteps,1))
-    altitude_MATS = zeros((timesteps,1))
-    a_ra_MATS = zeros((timesteps,1))
-    a_dec_MATS = zeros((timesteps,1))
-    x_MATS = zeros((timesteps,1))
-    y_MATS = zeros((timesteps,1))
-    z_MATS = zeros((timesteps,1))
-    r_MATS = zeros((timesteps,3))
-    r_MATS_ECEF = zeros((timesteps,3))
-    r_FOV = zeros((timesteps,3))
-    r_FOV_unit_vector = zeros((timesteps,3))
+    optical_axis = zeros((timesteps,3))
     stars_r_V_offset_plane = zeros((ROWS,3))
     stars_r_H_offset_plane = zeros((ROWS,3))
     stars_vert_offset = zeros((timesteps,ROWS))
     stars_hori_offset = zeros((timesteps,ROWS))
-    normal_orbit = zeros((timesteps,3))
     r_V_offset_normal = zeros((timesteps,3))
     r_H_offset_normal = zeros((timesteps,3))
-    pitch_sensor_array = zeros((timesteps,1))
-    pitch_LP_array = zeros((timesteps,1))
     star_counter = 0
     skip_star_list = []
-    MATS_p = zeros((timesteps,1))
     MATS_P = zeros((timesteps,1))
-    
+    Dec_optical_axis = zeros((timesteps,1))
+    RA_optical_axis = zeros((timesteps,1))
     
     angle_between_orbital_plane_and_star = zeros((timesteps,ROWS))
     
     "Constants"
-    celestial_eq_normal = array([[0,0,1]])
-    R_mean = 6371 #Earth radius [km]
-    #wgs84_Re = 6378.137 #Equatorial radius of wgs84 spheroid [km]
-    # wgs84_Rp = 6356752.3142 #Polar radius of wgs84 spheroid [km]
-    U = 398600.4418 #Earth gravitational parameter
-    LP_altitude = OPT_Config_File.Timeline_settings()['LP_pointing_altitude']/1000  #Altitude at which MATS center of FOV is looking [km]
     pointing_altitude = Settings['pointing_altitude']/1000 
-    #extended_Re = wgs84_Re + LP_altitude #Equatorial radius of extended wgs84 spheroid
-    #f_e = (wgs84_Re - wgs84_Rp) / Re_extended #Flattening of extended wgs84 spheroid
     V_FOV = Settings['V_FOV']
     H_FOV = Settings['H_FOV']  #5.67 is actual H_FOV
     
-    pitch_offset_angle = 0
-    yaw_correction = OPT_Config_File.Timeline_settings()['yaw_correction']
     
-    Logger.debug('Earth radius used [km]: '+str(R_mean))
-    Logger.debug('LP_altitude set to [km]: '+str(LP_altitude))
+    yaw_correction = Timeline_settings['yaw_correction']
+    
     Logger.debug('H_FOV set to [degrees]: '+str(H_FOV))
     Logger.debug('V_FOV set to [degrees]: '+str(V_FOV))
     Logger.debug('yaw_correction set to: '+str(yaw_correction))
     
     
+    TLE = OPT_Config_File.getTLE()
+    Logger.debug('TLE used: '+TLE[0]+TLE[1])
     
-    
-    Logger.debug('TLE used: '+OPT_Config_File.getTLE()[0]+OPT_Config_File.getTLE()[1])
-    MATS = ephem.readtle('MATS',OPT_Config_File.getTLE()[0],OPT_Config_File.getTLE()[1])
+    MATS_skyfield = skyfield.api.EarthSatellite(TLE[0], TLE[1])
+    MATS = ephem.readtle('MATS',TLE[0],TLE[1])
     
     "Loop counter"
     t=0
@@ -177,19 +138,56 @@ def date_calculator(Settings):
     "Loop and calculate the relevant angle of each star to each direction of MATS's FOV"
     while(current_time < timeline_start+ephem.second*duration):
         
+    
+        Satellite_dict = Satellite_Simulator( 
+                    MATS_skyfield, current_time, Timeline_settings, pointing_altitude, timestep, t, log_timestep )
+        
+        MATS_P[t] = Satellite_dict['OrbitalPeriod']
+        lat_MATS[t] =  Satellite_dict['Latitude']
+        long_MATS[t] =  Satellite_dict['Longitude']
+        optical_axis[t] = Satellite_dict['OpticalAxis']
+        Dec_optical_axis[t] = Satellite_dict['Dec_OpticalAxis']
+        RA_optical_axis[t] = Satellite_dict['RA_OpticalAxis']
+        r_H_offset_normal[t] = Satellite_dict['Normal2H_offset']
+        r_V_offset_normal[t] = Satellite_dict['Normal2V_offset']
+        
+        
+        """
         MATS.compute(current_time, epoch='2000/01/01 11:58:55.816')
+        
+        
         
         (lat_MATS[t],long_MATS[t],altitude_MATS[t],a_ra_MATS[t],a_dec_MATS[t])= (
         MATS.sublat,MATS.sublong,MATS.elevation/1000,MATS.a_ra,MATS.a_dec)
         
         R = lat_2_R(lat_MATS[t]) #WGS84 radius from latitude of MATS
+        MATS_distance = R + altitude_MATS[t]
         
-        z_MATS[t] = sin(a_dec_MATS[t])*(altitude_MATS[t]+R)
-        x_MATS[t] = cos(a_dec_MATS[t])*(altitude_MATS[t]+R)* cos(a_ra_MATS[t])
-        y_MATS[t] = cos(a_dec_MATS[t])*(altitude_MATS[t]+R)* sin(a_ra_MATS[t])
+        z_MATS[t] = sin(a_dec_MATS[t])*(MATS_distance)
+        x_MATS[t] = cos(a_dec_MATS[t])*(MATS_distance)* cos(a_ra_MATS[t])
+        y_MATS[t] = cos(a_dec_MATS[t])*(MATS_distance)* sin(a_ra_MATS[t])
        
         r_MATS[t,0:3] = [x_MATS[t], y_MATS[t], z_MATS[t]]
+        """
         
+        """
+        current_time_datetime = ephem.Date(current_time).datetime()
+        year = current_time_datetime.year
+        month = current_time_datetime.month
+        day = current_time_datetime.day
+        hour = current_time_datetime.hour
+        minute = current_time_datetime.minute
+        second = current_time_datetime.second + current_time_datetime.microsecond/1000000
+        
+        current_time_skyfield = ts.utc(year, month, day, hour, minute, second)
+        
+        MATS_geo = MATS_skyfield.at(current_time_skyfield)
+        r_MATS[t] = MATS_geo.position.km
+        MATS_distance = MATS_geo.distance().km
+        MATS_subpoint = MATS_geo.subpoint()
+        lat_MATS[t] = MATS_subpoint.latitude.radians
+        long_MATS[t] = MATS_subpoint.longitude.radians
+        altitude_MATS[t] = MATS_subpoint.elevation.km
         
         #Semi-Major axis of MATS, assuming circular orbit
         MATS_p[t] = norm(r_MATS[t,0:3])
@@ -197,13 +195,13 @@ def date_calculator(Settings):
         #Orbital Period of MATS
         MATS_P[t] = 2*pi*sqrt(MATS_p[t]**3/U)
         
-        
+        r_MATS_unit_vector[t] = r_MATS[t] / MATS_p[t]
             
         
         
         #Initial Estimated pitch or elevation angle for MATS pointing
         if(t == 0):
-            pitch_sensor_array[t]= array(arccos((R_mean+pointing_altitude)/(R+altitude_MATS[t]))/pi*180)
+            pitch_sensor_array[t]= array(arccos((R_mean+pointing_altitude)/(MATS_distance))/pi*180)
             pitch_sensor = pitch_sensor_array[t][0]
             time_between_LP_and_MATS = MATS_P[t][0]*pitch_sensor/360
             timesteps_between_LP_and_MATS = int(time_between_LP_and_MATS / timestep)
@@ -219,40 +217,40 @@ def date_calculator(Settings):
             Logger.debug('Latitude in degrees: '+str(lat_MATS[t]/pi*180))
             Logger.debug('Longitude in degrees: '+str(long_MATS[t]/pi*180))
             Logger.debug('Altitude in km: '+str(altitude_MATS[t]))
-            Logger.debug('R (WGS84 Earth radius for MATS) [km]: '+str(R))
+            Logger.debug('MATS_distance [km]: '+str(MATS_distance))
                 
         if(t != 0):
             
             # More accurate estimation of lat of LP using the position of MATS at a previous time
             if( t >= timesteps_between_LP_and_MATS):
-                abs_lat_LP = abs(lat_MATS[t-timesteps_between_LP_and_MATS])
-                R_earth_LP = lat_2_R(abs_lat_LP)
+                lat_LP = lat_MATS[t-timesteps_between_LP_and_MATS]
+                R_earth_LP = lat_2_R(lat_LP)
             else:
-                date_of_MATSlat_is_equal_2_current_LPlat = ephem.Date(current_time - ephem.second * timesteps_between_LP_and_MATS * timestep)
-                abs_lat_LP = abs( lat_MATS_calculator( date_of_MATSlat_is_equal_2_current_LPlat ) )
-                R_earth_LP = lat_2_R(abs_lat_LP)
-            """
+                date_of_MATSlat_is_equal_2_current_LPlat = ephem.Date(current_time - ephem.second * timesteps_between_LP_and_MATS * timestep).datetime()
+                lat_LP = lat_calculator( MATS_skyfield, date_of_MATSlat_is_equal_2_current_LPlat )
+                R_earth_LP = lat_2_R(lat_LP)
+            '''
             if( t >= timesteps_between_pitch_and_MATS):
                 abs_lat_pitchPoint = abs(lat_MATS[t-timesteps_between_pitch_and_MATS])
                 R_earth_pitchPoint = lat_2_R(abs_lat_pitchPoint)
             else:
                 date_of_MATSlat_is_equal_2_current_pitchPointlat = ephem.Date(current_time - ephem.second * timesteps_between_LP_and_MATS * timestep)
-                abs_lat_LP = abs( lat_MATS_calculator( date_of_MATSlat_is_equal_2_current_LPlat ) )
-                R_earth_LP = lat_2_R(abs_lat_LP)
-            """
-            """
+                lat_LP = abs( lat_MATS_calculator( date_of_MATSlat_is_equal_2_current_LPlat ) )
+                R_earth_LP = lat_2_R(lat_LP)
+            '''
+            '''
             if( abs(lat_MATS[t])-abs(lat_MATS[t-1]) > 0 ): #Moving towards poles meaning LP is equatorwards compared to MATS
-                abs_lat_LP = abs(lat_MATS[t])-pitch_sensor/180*pi #absolute value of estimated latitude of LP in radians
-                R_earth_LP = lat_2_R(abs_lat_LP) #Estimated WGS84 radius of LP from latitude of MATS
+                lat_LP = abs(lat_MATS[t])-pitch_sensor/180*pi #absolute value of estimated latitude of LP in radians
+                R_earth_LP = lat_2_R(lat_LP) #Estimated WGS84 radius of LP from latitude of MATS
             else:
-                abs_lat_LP = abs(lat_MATS[t])+pitch_sensor/180*pi #absolute value of estimated latitude of LP in radians
-                R_earth_LP = lat_2_R(abs_lat_LP) #Estimated WGS84 radius of LP from latitude of MATS
-            """
+                lat_LP = abs(lat_MATS[t])+pitch_sensor/180*pi #absolute value of estimated latitude of LP in radians
+                R_earth_LP = lat_2_R(lat_LP) #Estimated WGS84 radius of LP from latitude of MATS
+            '''
             # More accurate estimation of pitch angle of MATS using R_earth_LP instead of R_mean
-            pitch_LP_array[t]= array(arccos((R_earth_LP+LP_altitude)/(R+altitude_MATS[t]))/pi*180)
+            pitch_LP_array[t]= array(arccos((R_earth_LP+LP_altitude)/(MATS_distance))/pi*180)
             pitch_LP = pitch_LP_array[t][0]
             
-            pitch_sensor_array[t]= array(arccos((R_earth_LP+pointing_altitude)/(R+altitude_MATS[t]))/pi*180)
+            pitch_sensor_array[t]= array(arccos((R_earth_LP+pointing_altitude)/(MATS_distance))/pi*180)
             pitch_sensor = pitch_sensor_array[t][0]
             
             
@@ -271,7 +269,7 @@ def date_calculator(Settings):
                 if( dot(cross( ascending_node, r_MATS[t,0:3]), normal_orbit[t,0:3]) >= 0 ):
                     arg_of_lat = 360 - arg_of_lat
                     
-                yaw_offset_angle = OPT_Config_File.Timeline_settings()['yaw_amplitude'] * cos( arg_of_lat/180*pi - pitch_LP/180*pi + OPT_Config_File.Timeline_settings()['yaw_phase']/180*pi )
+                yaw_offset_angle = Timeline_settings['yaw_amplitude'] * cos( arg_of_lat/180*pi - pitch_LP/180*pi + Timeline_settings['yaw_phase']/180*pi )
                 yaw_offset_angle = yaw_offset_angle[0]
                 
                 if( t*timestep % log_timestep == 0 or t == 1 ):
@@ -284,18 +282,14 @@ def date_calculator(Settings):
             
             
             "Rotate 'vector to MATS', to represent pointing direction, includes vertical offset change (Parallax is negligable)"
-            rot_mat = rot_arbit(pi/2+(pitch_sensor+pitch_offset_angle)/180*pi, normal_orbit[t,0:3])
-            r_FOV[t,0:3] = (rot_mat @ r_MATS[t] )
+            rot_mat = rot_arbit(pi/2+(pitch_sensor)/180*pi, normal_orbit[t,0:3])
+            optical_axis[t,0:3] = (rot_mat @ r_MATS[t] )
             
-            
-            #rot_mat2 = rot_arbit(pi/2+(pitch_sensor+pitch_offset_angle)/180*pi, normal_orbit[t,0:3])
-            #r_FOV2[t,0:3] = (rot_mat2 @ r_MATS[t]) /2
-            #r_FOV_unit_vector2[t,0:3] = r_FOV2[t,0:3]/norm(r_FOV2[t,0:3])
             
             "Rotate yaw of pointing direction, meaning to rotate around the vector to MATS"
-            rot_mat = rot_arbit(-yaw_offset_angle/180*pi, r_MATS[t,0:3])
-            r_FOV[t,0:3] = (rot_mat @ r_FOV[t,0:3] )
-            r_FOV_unit_vector[t,0:3] = r_FOV[t,0:3]/norm(r_FOV[t,0:3])
+            rot_mat = rot_arbit(-yaw_offset_angle/180*pi, r_MATS_unit_vector[t,0:3])
+            optical_axis[t,0:3] = (rot_mat @ optical_axis[t,0:3] )
+            optical_axis_unit_vector[t,0:3] = optical_axis[t,0:3]/norm(optical_axis[t,0:3])
             
             
             '''Rotate 'vector to MATS', to represent vector normal to satellite H-offset plane,
@@ -305,7 +299,7 @@ def date_calculator(Settings):
             r_H_offset_normal[t,0:3] = r_H_offset_normal[t,0:3] / norm(r_H_offset_normal[t,0:3])
             
             "If pointing direction has a Yaw defined, Rotate yaw of normal to pointing direction H-offset plane, meaning to rotate around the vector to MATS"
-            rot_mat = rot_arbit(-yaw_offset_angle/180*pi, r_MATS[t,0:3])
+            rot_mat = rot_arbit(-yaw_offset_angle/180*pi, r_MATS_unit_vector[t,0:3])
             r_H_offset_normal[t,0:3] = (rot_mat @ r_H_offset_normal[t,0:3])
             r_H_offset_normal[t,0:3] = r_H_offset_normal[t,0:3]/norm(r_H_offset_normal[t,0:3])
             
@@ -314,36 +308,34 @@ def date_calculator(Settings):
             r_V_offset_normal[t,0:3] = r_V_offset_normal[t,0:3]/norm(r_V_offset_normal[t,0:3])
             
             "Calculate Dec and RA of optical axis (disregarding parallax)"
-            optical_axis = r_FOV_unit_vector[t,0:3]
-            Dec = arctan(  optical_axis[2] / sqrt(optical_axis[0]**2 + optical_axis[1]**2) ) /pi * 180
-            Ra = arccos( dot( [1,0,0], [optical_axis[0],optical_axis[1],0] ) / norm([optical_axis[0],optical_axis[1],0]) ) / pi * 180
-            
-            
-            
-            if( optical_axis[1] < 0 ):
+            Dec = arctan(  optical_axis[t,2] / sqrt(optical_axis[t,0]**2 + optical_axis[t,1]**2) ) /pi * 180
+            Ra = arccos( dot( [1,0,0], [optical_axis[t,0],optical_axis[t,1],0] ) / norm([optical_axis[t,0],optical_axis[t,1],0]) ) / pi * 180
+            if( optical_axis[t,1] < 0 ):
                 Ra = 360-Ra
             
             if( t*timestep % log_timestep == 0 or t == 1 ):
                 Logger.debug('Current time: '+str(current_time))
                 Logger.debug('R_earth_LP [km]: '+str(R_earth_LP))
                 
-                Logger.debug('FOV pitch in degrees: '+str(pitch_sensor))
-                Logger.debug('Absolute value of latitude of LP: '+str(abs_lat_LP/pi*180))
-                Logger.debug('Pointing direction of FOV: '+str(r_FOV_unit_vector[t,0:3]))
-                #Logger.debug('Pointing direction of FOV2: '+str(r_FOV_unit_vector2[t,0:3]))
+                Logger.debug('Pitch in degrees: '+str(pitch_sensor))
+                Logger.debug('Latitude of LP: '+str(lat_LP/pi*180))
+                Logger.debug('Optical Axis: '+str(optical_axis_unit_vector[t,0:3]))
+                #Logger.debug('Pointing direction of FOV2: '+str(optical_axis_unit_vector2[t,0:3]))
                 Logger.debug('Orthogonal direction to H-offset plane: '+str(r_H_offset_normal[t,0:3]))
                 Logger.debug('Orthogonal direction to V-offset plane: '+str(r_V_offset_normal[t,0:3]))
                 Logger.debug('Orthogonal direction to the orbital plane: '+str(normal_orbit[t,0:3]))
                 Logger.debug('')
             
-            
+            """
             ############# End of Calculations of orbital and pointing vectors #####
+            
+        if(t != 0):
             
             "Add current date to date_magnitude_array"
             date_magnitude_array[t-1,0] = current_time 
             "Add optical axis Dec and RA to date_magnitude_array"
-            date_magnitude_array[t-1,2] = Dec
-            date_magnitude_array[t-1,3] = Ra
+            date_magnitude_array[t-1,2] = Dec_optical_axis[t]
+            date_magnitude_array[t-1,3] = RA_optical_axis[t]
             
             ###################### Star-mapper ####################################
             
@@ -362,8 +354,8 @@ def date_calculator(Settings):
                 stars_r_H_offset_plane[x] = stars_r[0][x] - (dot(stars_r[0][x],r_H_offset_normal[t]) * r_H_offset_normal[t]) 
                 
                 "Dot product to get the Vertical and Horizontal angle offset of the star in the FOV"
-                stars_vert_offset[t][x] = arccos(dot(r_FOV[t],stars_r_V_offset_plane[x]) / (norm(r_FOV[t]) * norm(stars_r_V_offset_plane[x]))) /pi*180
-                stars_hori_offset[t][x] = arccos(dot(r_FOV[t],stars_r_H_offset_plane[x]) / (norm(r_FOV[t]) * norm(stars_r_H_offset_plane[x]))) /pi*180
+                stars_vert_offset[t][x] = arccos(dot(optical_axis[t],stars_r_V_offset_plane[x]) / (norm(optical_axis[t]) * norm(stars_r_V_offset_plane[x]))) /pi*180
+                stars_hori_offset[t][x] = arccos(dot(optical_axis[t],stars_r_H_offset_plane[x]) / (norm(optical_axis[t]) * norm(stars_r_H_offset_plane[x]))) /pi*180
                 
                 
                 
@@ -412,36 +404,6 @@ def date_calculator(Settings):
     ################## End of Simulation ########################################
     
     
-    ########################## Optional plotter ###########################################
-    '''
-    from mpl_toolkits.mplot3d import axes3d
-    
-    "Orbital points to plot"
-    points_2_plot_start = 0#0*24*120
-    points_2_plot = points_2_plot_start+200
-    
-    "Plotting of orbit and FOV"
-    fig = figure(1)
-    ax = fig.add_subplot(111,projection='3d')
-    ax.set_xlim3d(-7000, 7000)
-    ax.set_ylim3d(-7000, 7000)
-    ax.set_zlim3d(-7000, 7000)
-    
-    ax.scatter(x_MATS[points_2_plot_start:points_2_plot],y_MATS[points_2_plot_start:points_2_plot],z_MATS[points_2_plot_start:points_2_plot])
-    ax.scatter(r_FOV[points_2_plot_start:points_2_plot,0],r_FOV[points_2_plot_start:points_2_plot,1],r_FOV[points_2_plot_start:points_2_plot,2])
-    
-    "Plotting of stars and FOV unit-vectors"
-    fig = figure(2)
-    ax = fig.add_subplot(111,projection='3d')
-    ax.scatter(stars_r[0][:,0],stars_r[0][:,1],stars_r[0][:,2])
-    ax.scatter(r_FOV_unit_vector[points_2_plot_start:points_2_plot,0],r_FOV_unit_vector[points_2_plot_start:points_2_plot,1],r_FOV_unit_vector[points_2_plot_start:points_2_plot,2])
-    ax.scatter(r_V_offset_normal[points_2_plot_start:points_2_plot,0]/2, r_V_offset_normal[points_2_plot_start:points_2_plot,1]/2, r_V_offset_normal[points_2_plot_start:points_2_plot,2]/2)
-    ax.scatter(normal_orbit[points_2_plot_start:points_2_plot,0]/2, normal_orbit[points_2_plot_start:points_2_plot,1]/2, normal_orbit[points_2_plot_start:points_2_plot,2]/2)
-    ax.scatter(r_H_offset_normal[points_2_plot_start:points_2_plot,0]/2, r_H_offset_normal[points_2_plot_start:points_2_plot,1]/2, r_H_offset_normal[points_2_plot_start:points_2_plot,2]/2)
-    '''
-    ########################### END of Optional plotter ########################################
-    
-        
     return(date_magnitude_array)
     
 
