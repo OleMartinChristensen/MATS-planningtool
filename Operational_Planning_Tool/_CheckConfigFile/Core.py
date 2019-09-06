@@ -72,8 +72,8 @@ def CheckConfigFile():
     if not( type(Timeline_settings['GPS_epoch']) == str ):
         Logger.error("Timeline_settings['GPS_epoch']")
         raise TypeError
-    if not( 0 < Timeline_settings['leap_seconds'] and type(Timeline_settings['leap_seconds']) == int ):
-        Logger.error("Timeline_settings['leap_seconds']")
+    if not( 0 < Timeline_settings['leapSeconds'] and type(Timeline_settings['leapSeconds']) == int ):
+        Logger.error("Timeline_settings['leapSeconds']")
         raise ValueError
     if not( 0 <= abs(Timeline_settings['yaw_amplitude']) < 20 and (type(Timeline_settings['yaw_amplitude']) == int or type(Timeline_settings['yaw_amplitude']) == float) ):
         Logger.error("Timeline_settings['yaw_amplitude']")

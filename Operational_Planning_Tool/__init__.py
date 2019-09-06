@@ -21,6 +21,8 @@ Examples:
     OPT.Timeline_gen()
     
     OPT.XML_gen('Output/Science_Mode_Timeline__OPT_Config_File.json')
+    
+    Data_MATS, Data_LP, Time, Time_OHB  = OPT.Timeline_Plotter('Output\Science_Mode_Timeline__OPT_Config_File.json')
 
 Settings for the programs are stated in a .py *Configuration File*, and the *Configuration File* to be used is set 
 by calling *Set_ConfigFile*. The *Configuration file* chosen must be visible in *sys.path*. A .py *Configuration File* with default values 
@@ -192,22 +194,25 @@ def Data_Plotter():
     Data_Plotter()
     
     
-def Timeline_Plotter(Timestep, Science_Mode_Path, OHB_H5_Path = False):
+def Timeline_Plotter(Science_Mode_Path, OHB_H5_Path = False, Timestep = 16 ):
     '''Invokes the *Timeline_Plotter* program part of *Operational_Planning_Tool*.
     
-    Simulates the position and attitude of MATS from a given Science Mode Timeline and compares it to
+    Simulates the position and attitude of MATS from a given Science Mode Timeline and also optionally compares it to
     positional and attitude data given in a data set, OHB_H5_Path. Plots both the simulated data and given data. \n
     Settings for the operation of the program are provided by the chosen *Science Mode Timeline*.
     
     Arguments:
         Science_Mode_Path (str): Path to the Science Mode Timeline to be plotted.
-        OHB_H5_Path (str): Path to the .h5 file containing position, time, and attitude data.
+        OHB_H5_Path (str): *Optional*. Path to the .h5 file containing position, time, and attitude data.
+        Timestep (int): *Optional*. The chosen timestep of the simulation [s].
         
     Returns:
-        None
+        
     '''
     from ._Timeline_Plotter.Core import Timeline_Plotter
     
     
-    Timeline_Plotter(Science_Mode_Path, Timestep, OHB_H5_Path)
+    Data_MATS, Data_LP, Time, Time_OHB  = Timeline_Plotter(Science_Mode_Path, OHB_H5_Path, Timestep)
+    
+    return Data_MATS, Data_LP, Time, Time_OHB
     

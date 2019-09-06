@@ -1,0 +1,344 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="python 3.7">
+  <head>
+    <meta charset="utf-8" />
+    <title>Operational_Planning_Tool._XMLGenerator.Core &#8212; Operational_Planning_Tool  documentation</title>
+    <link rel="stylesheet" href="../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../" src="../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for Operational_Planning_Tool._XMLGenerator.Core</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;Creates the base of the XML-tree and calculates initial values such as the </span>
+<span class="sd">start and end time and also duration of the timeline. Then goes through the </span>
+<span class="sd">supplied Science Mode Timeline List chronologically and calls for the corresponding function. \n</span>
+
+<span class="sd">Mode/Test/CMD specific settings given in the Science Mode Timeline List will overirde the use of the same settings stated in set *Configuration File*.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">lxml</span> <span class="k">import</span> <span class="n">etree</span>
+<span class="kn">import</span> <span class="nn">ephem</span><span class="o">,</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">json</span><span class="o">,</span> <span class="nn">importlib</span><span class="o">,</span> <span class="nn">datetime</span>
+
+<span class="kn">from</span> <span class="nn">Operational_Planning_Tool</span> <span class="k">import</span> <span class="n">_Globals</span><span class="p">,</span> <span class="n">_Library</span>
+<span class="n">OPT_Config_File</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">_Globals</span><span class="o">.</span><span class="n">Config_File</span><span class="p">)</span>
+<span class="c1">#from OPT_Config_File import Timeline_settings, initialConditions, Logger_name, Version</span>
+<span class="kn">from</span> <span class="nn">.Modes_and_Tests</span> <span class="k">import</span> <span class="n">MODES</span><span class="p">,</span> <span class="n">Tests</span><span class="p">,</span> <span class="n">SeparateCmds</span>
+
+<span class="n">Logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Logger_name</span><span class="p">())</span>
+
+
+<div class="viewcode-block" id="XML_generator"><a class="viewcode-back" href="../../../Operational_Planning_Tool._XMLGenerator.html#Operational_Planning_Tool._XMLGenerator.Core.XML_generator">[docs]</a><span class="k">def</span> <span class="nf">XML_generator</span><span class="p">(</span><span class="n">SCIMOD_Path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The core function of the XML_gen program.</span>
+<span class="sd">    </span>
+<span class="sd">    Takes a Science Mode Timeline and converts it into Commands. If settings are stated for a scheduled mode; </span>
+<span class="sd">    these will overwrite any values set in the set *Configuration File*</span>
+<span class="sd">    </span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        SCIMOD_Path (str): A string containing the path to the Science Mode Timeline .json file.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    
+    
+    <span class="c1">######## Try to Create a directory for storage of output files #######</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="s1">&#39;Output&#39;</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">pass</span>
+    
+    
+    <span class="c1">############# Set up Logger #################################</span>
+    <span class="n">_Library</span><span class="o">.</span><span class="n">SetupLogger</span><span class="p">()</span>
+    
+    
+    <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Start of Program&#39;</span><span class="p">)</span>
+    <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="n">Version</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Version</span><span class="p">()</span>
+    <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Configuration File used: &#39;</span><span class="o">+</span><span class="n">_Globals</span><span class="o">.</span><span class="n">Config_File</span><span class="o">+</span><span class="s1">&#39;, Version: &#39;</span><span class="o">+</span><span class="n">Version</span><span class="p">)</span>
+    <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    
+    
+    <span class="c1">################# Read Science Mode Timeline json file ############</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">SCIMOD_Path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">read_file</span><span class="p">:</span>
+        <span class="n">SCIMOD</span><span class="o">=</span> <span class="n">json</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">read_file</span><span class="p">)</span>
+    <span class="c1">################# Read Science Mode Timeline json file ############</span>
+    
+    <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Science Mode Timeline Used: &#39;</span><span class="o">+</span><span class="n">SCIMOD_Path</span><span class="p">)</span>
+    
+    <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Timeline_settings</span><span class="p">()</span>
+    <span class="k">if</span><span class="p">(</span> <span class="nb">str</span><span class="p">(</span><span class="n">SCIMOD</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="s1">&#39;Timeline_settings&#39;</span> <span class="p">):</span>
+        <span class="n">Timeline_settings_from_Timeline</span> <span class="o">=</span> <span class="n">SCIMOD</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span>
+        <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">_Library</span><span class="o">.</span><span class="n">params_checker</span><span class="p">(</span> <span class="n">Timeline_settings_from_Timeline</span><span class="p">,</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Timeline_settings</span><span class="p">())</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Timeline_settings found in Science Mode Timeline. Using them&#39;</span><span class="p">)</span>
+        
+        <span class="n">TLE_from_Timeline</span> <span class="o">=</span> <span class="n">SCIMOD</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">4</span><span class="p">]</span>
+        <span class="n">TLE_from_configFile</span> <span class="o">=</span>  <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">getTLE</span><span class="p">()</span>
+        
+        <span class="k">if</span><span class="p">(</span> <span class="n">TLE_from_Timeline</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">TLE_from_configFile</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">or</span> <span class="n">TLE_from_Timeline</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">TLE_from_configFile</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="p">):</span>
+            <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Mismatch between TLE in Science Mode Timeline and in ConfigFile. Check your chosen ConfigFile and maybe rerun OPT.Timeline_gen. Exiting...&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Timeline_settings not found in Science Mode Timeline. Using the ones in the chosen ConfigFile&#39;</span><span class="p">)</span>
+        
+    <span class="n">_Globals</span><span class="o">.</span><span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">Timeline_settings</span>
+    
+    <span class="c1">################ Get settings for Timeline from Config module ############</span>
+    <span class="n">timeline_duration</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;duration&#39;</span><span class="p">]</span>
+    <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;timeline_duration: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">timeline_duration</span><span class="p">))</span>
+    
+    <span class="n">timeline_start</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;start_date&#39;</span><span class="p">])</span>
+    <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;timeline_start: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">timeline_start</span><span class="p">))</span>
+    
+    
+    <span class="c1">########    Call function to create XML-tree basis ##########################</span>
+    <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Call function XML_Initial_Basis_Creator&#39;</span><span class="p">)</span>
+    <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="n">root</span> <span class="o">=</span> <span class="n">XML_Initial_Basis_Creator</span><span class="p">(</span><span class="n">timeline_start</span><span class="p">,</span><span class="n">timeline_duration</span><span class="p">,</span> <span class="n">SCIMOD_Path</span><span class="p">)</span>
+    
+    <span class="c1">######## Loop through SCIMOD TIMELINE lIST, selecting one mode at a time #####</span>
+    <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Loop through Science Mode Timeline List&#39;</span><span class="p">)</span>
+    
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">SCIMOD</span><span class="p">)):</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Iteration number: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+        
+        <span class="s2">&quot;Skip the first entry if it only contains Timeline_settings&quot;</span>
+        <span class="k">if</span><span class="p">(</span> <span class="nb">str</span><span class="p">(</span><span class="n">SCIMOD</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="s1">&#39;Timeline_settings&#39;</span> <span class="p">):</span>
+            <span class="k">continue</span>
+        
+        <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">SCIMOD</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Start Date: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">SCIMOD</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;End Date: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">SCIMOD</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="mi">2</span><span class="p">]))</span>
+        
+        <span class="n">mode_duration</span> <span class="o">=</span> <span class="nb">round</span><span class="p">((</span><span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">SCIMOD</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="mi">2</span><span class="p">])</span> <span class="o">-</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">SCIMOD</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span> <span class="p">)</span> <span class="o">*</span><span class="mi">24</span><span class="o">*</span><span class="mi">3600</span><span class="p">)</span>
+        <span class="n">relativeTime</span> <span class="o">=</span> <span class="nb">round</span><span class="p">((</span><span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">SCIMOD</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span><span class="o">-</span><span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">timeline_start</span><span class="p">))</span><span class="o">*</span><span class="mi">24</span><span class="o">*</span><span class="mi">3600</span><span class="p">)</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;mode_duration: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">mode_duration</span><span class="p">))</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;relativeTime: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">relativeTime</span><span class="p">))</span>
+        
+        <span class="k">if</span><span class="p">(</span> <span class="n">relativeTime</span> <span class="o">&gt;=</span> <span class="n">timeline_duration</span> <span class="p">):</span>
+            <span class="n">Logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;relativeTime is exceeding timeline_duration!!!&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span>
+            
+                
+        <span class="k">if</span><span class="p">(</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">SCIMOD</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span> <span class="o">&lt;</span> <span class="n">timeline_start</span> <span class="ow">or</span> <span class="n">mode_duration</span><span class="o">+</span><span class="n">relativeTime</span> <span class="o">&gt;</span> <span class="n">timeline_duration</span><span class="p">):</span>
+            <span class="n">Logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">SCIMOD</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span><span class="o">+</span><span class="s1">&#39;, is not scheduled within the boundaries of the timeline!!!&#39;</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span>
+            
+        
+        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Call XML_generator_select&#39;</span><span class="p">)</span>
+        <span class="n">XML_generator_select</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="n">root</span><span class="p">,</span> <span class="n">duration</span><span class="o">=</span><span class="n">mode_duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="o">=</span><span class="n">relativeTime</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="n">SCIMOD</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">date</span><span class="o">=</span><span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">SCIMOD</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="mi">1</span><span class="p">]),</span> <span class="n">params</span><span class="o">=</span><span class="n">SCIMOD</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="mi">3</span><span class="p">])</span>
+        
+    
+    <span class="c1">### Rewrite path string to allow it to be in the name of the generated XML command file ###</span>
+    <span class="n">SCIMOD_Path</span> <span class="o">=</span> <span class="n">SCIMOD_Path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">,</span><span class="s1">&#39;_&#39;</span><span class="p">)</span>
+    <span class="n">SCIMOD_Path</span> <span class="o">=</span> <span class="n">SCIMOD_Path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">,</span><span class="s1">&#39;_&#39;</span><span class="p">)</span>
+    <span class="n">SCIMOD_Path</span> <span class="o">=</span> <span class="n">SCIMOD_Path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.json&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    
+    <span class="c1">### Write finished XML-tree with all commands to a file #######</span>
+    <span class="n">MATS_COMMANDS</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;Output&#39;</span><span class="p">,</span><span class="s1">&#39;MATS_COMMANDS__&#39;</span><span class="o">+</span><span class="n">_Globals</span><span class="o">.</span><span class="n">Config_File</span><span class="o">+</span><span class="s1">&#39;__TimelineUSED__&#39;</span><span class="o">+</span><span class="n">SCIMOD_Path</span><span class="o">+</span><span class="s1">&#39;.xml&#39;</span><span class="p">)</span>
+    <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Write XML-tree to: &#39;</span><span class="o">+</span><span class="n">MATS_COMMANDS</span><span class="p">)</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">MATS_COMMANDS</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">etree</span><span class="o">.</span><span class="n">tostring</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">pretty_print</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">encoding</span> <span class="o">=</span> <span class="s1">&#39;unicode&#39;</span><span class="p">))</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    
+    <span class="n">logging</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span></div>
+
+
+
+<span class="c1">################### XML-tree basis creator ####################################</span>
+
+<div class="viewcode-block" id="XML_Initial_Basis_Creator"><a class="viewcode-back" href="../../../Operational_Planning_Tool._XMLGenerator.html#Operational_Planning_Tool._XMLGenerator.Core.XML_Initial_Basis_Creator">[docs]</a><span class="k">def</span> <span class="nf">XML_Initial_Basis_Creator</span><span class="p">(</span><span class="n">timeline_start</span><span class="p">,</span><span class="n">timeline_duration</span><span class="p">,</span> <span class="n">SCIMOD_Path</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Subfunction, Construct Basis of XML document and adds the description container.</span>
+<span class="sd">    </span>
+<span class="sd">    Arguments: </span>
+<span class="sd">        earliestStartingDate (ephem.Date): Earliest Starting date of the Timeline. On the form of the ephem.Date class.</span>
+<span class="sd">        latestStartingDate (ephem.Date): Latest Starting date of the Timeline. On the form of the ephem.Date class.</span>
+<span class="sd">        timeline_duration (int): Duration of the timeline [s].</span>
+<span class="sd">        SCIMOD_Path (str): The path as a string to the Science Mode Timeline .json file used in this run.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    
+    <span class="n">TimelineStart_Tuple</span> <span class="o">=</span> <span class="n">timeline_start</span><span class="o">.</span><span class="n">tuple</span><span class="p">()</span>
+    
+    
+    <span class="n">TimelineStart_datetime</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span> <span class="n">TimelineStart_Tuple</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">TimelineStart_Tuple</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">TimelineStart_Tuple</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> 
+                      <span class="n">TimelineStart_Tuple</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">TimelineStart_Tuple</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">TimelineStart_Tuple</span><span class="p">[</span><span class="mi">5</span><span class="p">]))</span> <span class="p">)</span>
+    
+    <span class="n">earliestStartingDate</span> <span class="o">=</span> <span class="n">TimelineStart_datetime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S&quot;</span><span class="p">)</span>
+    <span class="n">latestStartingDate</span> <span class="o">=</span> <span class="n">TimelineStart_datetime</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2">T%H:%M:%S&quot;</span><span class="p">)</span>
+    
+    <span class="c1">#earliestStartingDate = ephem.Date(timeline_start).datetime().strftime(&quot;%Y-%m-%dT%H:%M:%S&quot;)</span>
+    <span class="c1">#latestStartingDate = ephem.Date(timeline_start).datetime().strftime(&quot;%Y-%m-%dT%H:%M:%S&quot;)</span>
+    
+    <span class="n">root</span> <span class="o">=</span> <span class="n">etree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s1">&#39;InnoSatTimeline&#39;</span><span class="p">,</span> <span class="n">originator</span><span class="o">=</span><span class="s1">&#39;OHB&#39;</span><span class="p">,</span> <span class="n">sdbVersion</span><span class="o">=</span><span class="s1">&#39;9.5.99.2&#39;</span><span class="p">)</span>
+    
+    
+    <span class="n">root</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">etree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s1">&#39;description&#39;</span><span class="p">))</span>
+    
+    
+    <span class="n">etree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">root</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;timelineID&#39;</span><span class="p">,</span> <span class="n">procedureIdentifier</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">descriptiveName</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;1.0&quot;</span><span class="p">)</span>
+    
+    <span class="n">etree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">root</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;changeLog&#39;</span><span class="p">)</span>
+    <span class="n">etree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">root</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;changeLogItem&#39;</span><span class="p">,</span> <span class="n">version</span> <span class="o">=</span> <span class="s2">&quot;1.1&quot;</span><span class="p">,</span> <span class="n">date</span> <span class="o">=</span> <span class="s2">&quot;2019-01-17&quot;</span><span class="p">,</span> <span class="n">author</span> <span class="o">=</span> <span class="s2">&quot;David Skånberg&quot;</span><span class="p">)</span>
+    <span class="n">root</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;Created Document&quot;</span>
+    
+    
+    <span class="n">etree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">root</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;initialConditions&#39;</span><span class="p">)</span>
+    <span class="n">etree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">root</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span> <span class="s1">&#39;spacecraft&#39;</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">initialConditions</span><span class="p">()[</span><span class="s1">&#39;spacecraft&#39;</span><span class="p">][</span><span class="s1">&#39;mode&#39;</span><span class="p">],</span> <span class="n">acs</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">initialConditions</span><span class="p">()[</span><span class="s1">&#39;spacecraft&#39;</span><span class="p">][</span><span class="s1">&#39;acs&#39;</span><span class="p">])</span>
+    <span class="n">etree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">root</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">],</span> <span class="s1">&#39;payload&#39;</span><span class="p">,</span> <span class="n">power</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">initialConditions</span><span class="p">()[</span><span class="s1">&#39;payload&#39;</span><span class="p">][</span><span class="s1">&#39;power&#39;</span><span class="p">],</span> <span class="n">mode</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">initialConditions</span><span class="p">()[</span><span class="s1">&#39;payload&#39;</span><span class="p">][</span><span class="s1">&#39;mode&#39;</span><span class="p">])</span>
+    
+    
+    <span class="n">etree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">root</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;validity&#39;</span><span class="p">)</span>
+    <span class="n">etree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">root</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">],</span> <span class="s1">&#39;earliestStartingDate&#39;</span><span class="p">)</span>
+    <span class="n">root</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">earliestStartingDate</span>
+    <span class="n">etree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">root</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">],</span> <span class="s1">&#39;latestStartingDate&#39;</span><span class="p">)</span>
+    <span class="n">root</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="n">latestStartingDate</span>
+    <span class="n">etree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">root</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">],</span> <span class="s1">&#39;scenarioDuration&#39;</span><span class="p">)</span>
+    <span class="n">root</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">3</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">timeline_duration</span><span class="p">)</span>
+    
+    <span class="n">etree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">root</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s1">&#39;comment&#39;</span><span class="p">)</span>
+    <span class="n">root</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;This command sequence is an Innosat timeline. Science Mode Timeline used to generate: &quot;</span><span class="o">+</span><span class="n">SCIMOD_Path</span><span class="o">+</span><span class="s1">&#39;, Configuration File used: &#39;</span><span class="o">+</span><span class="n">_Globals</span><span class="o">.</span><span class="n">Config_File</span>
+    
+    
+    <span class="n">root</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">etree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s1">&#39;listOfCommands&#39;</span><span class="p">))</span>
+    
+    <span class="k">return</span> <span class="n">root</span></div>
+    
+<span class="c1">####################### End of XML-tree basis creator #############################</span>
+
+
+
+<span class="c1">####################### Mode selecter ###################################</span>
+
+<div class="viewcode-block" id="XML_generator_select"><a class="viewcode-back" href="../../../Operational_Planning_Tool._XMLGenerator.html#Operational_Planning_Tool._XMLGenerator.Core.XML_generator_select">[docs]</a><span class="k">def</span> <span class="nf">XML_generator_select</span><span class="p">(</span><span class="n">mode</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">params</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Subfunction, Selects corresponding mode, test or CMD function in the package *Modes_and_Tests* from the variable *mode*.</span>
+<span class="sd">    </span>
+<span class="sd">    Calls for any function named *XML_generator_XXX* where XXX is the string in the input *name*.</span>
+<span class="sd">    </span>
+<span class="sd">    Arguments: </span>
+<span class="sd">        mode (str): The name of the of the mode or test as a string. The name in the XML_generator_name function in OPT_XML_generator_MODES</span>
+<span class="sd">        root (lxml.etree.Element): XML tree structure. Main container object for the ElementTree API.</span>
+<span class="sd">        date (ephem.Date) = Starting date of the Mode. On the form of the ephem.Date class.</span>
+<span class="sd">        duration (int) = The duration of the mode [s] as an integer class.</span>
+<span class="sd">        relativeTime (int) = The starting time of the mode with regard to the start of the timeline [s] as an integer class</span>
+<span class="sd">        params (dict) = Dictionary containing the parameters of the Mode, CMD, or Test given in the Science_Mode_Timeline. </span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    
+    
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">Mode_Test_SeparateCmd_func</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">MODES</span><span class="p">,</span><span class="s1">&#39;XML_generator_&#39;</span><span class="o">+</span><span class="n">mode</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">Mode_Test_SeparateCmd_func</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">Tests</span><span class="p">,</span><span class="s1">&#39;XML_generator_&#39;</span><span class="o">+</span><span class="n">mode</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">Mode_Test_SeparateCmd_func</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">SeparateCmds</span><span class="p">,</span><span class="s1">&#39;XML_generator_&#39;</span><span class="o">+</span><span class="n">mode</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;No XML-generator is defined for &#39;</span><span class="o">+</span><span class="n">mode</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">AttributeError</span>
+    
+    <span class="s2">&quot;Check if no parameters are given&quot;</span>
+    <span class="k">if</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="n">Mode_Test_SeparateCmd_func</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">Mode_Test_SeparateCmd_func</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">params</span><span class="p">)</span></div>
+
+<span class="c1">####################### End of Mode selecter #############################</span>
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../index.html">Operational_Planning_Tool</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../Operational_Planning_Tool.html">Operational_Planning_Tool package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../index.html">Module code</a><ul>
+  <li><a href="../../Operational_Planning_Tool.html">Operational_Planning_Tool</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, David Skånberg.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -145,8 +145,6 @@ def date_calculator():
         TLE = OPT_Config_File.getTLE()
         Logger.debug('TLE used: '+TLE[0]+TLE[1])
         
-        MATS = ephem.readtle('MATS',TLE[0],TLE[1])
-        Moon = ephem.Moon()
         
         ts = skyfield.api.load.timescale()
         MATS_skyfield = skyfield.api.EarthSatellite(TLE[0], TLE[1])
@@ -165,186 +163,31 @@ def date_calculator():
         
         while(current_time < initial_time+ephem.second*duration):
             
-            Satellite_dict = Satellite_Simulator( 
-                    MATS_skyfield, current_time, Timeline_settings, pointing_altitude, timestep, t, log_timestep )
+            if( t*timestep % log_timestep == 0):
+                LogFlag = True
+            else:
+                LogFlag = False
             
-            r_MATS[t] = Satellite_dict['Position']
-            MATS_P[t] = Satellite_dict['OrbitalPeriod']
-            lat_MATS[t] =  Satellite_dict['Latitude']
-            long_MATS[t] =  Satellite_dict['Longitude']
+            Satellite_dict = Satellite_Simulator( 
+                    MATS_skyfield, current_time, Timeline_settings, pointing_altitude, LogFlag )
+            
+            r_MATS[t] = Satellite_dict['Position [km]']
+            MATS_P[t] = Satellite_dict['OrbitalPeriod [s]']
+            lat_MATS[t] =  Satellite_dict['Latitude [degrees]']
+            long_MATS[t] =  Satellite_dict['Longitude [degrees]']
             
             optical_axis[t] = Satellite_dict['OpticalAxis']
-            Dec_optical_axis[t] = Satellite_dict['Dec_OpticalAxis']
-            RA_optical_axis[t] = Satellite_dict['RA_OpticalAxis']
+            Dec_optical_axis[t] = Satellite_dict['Dec_OpticalAxis [degrees]']
+            RA_optical_axis[t] = Satellite_dict['RA_OpticalAxis [degrees]']
             
             ascending_node = Satellite_dict['AscendingNode']
-            yaw_offset_angle = Satellite_dict['Yaw']
-            arg_of_lat = Satellite_dict['ArgOfLat']
+            yaw_offset_angle = Satellite_dict['Yaw [degrees]']
+            arg_of_lat = Satellite_dict['ArgOfLat [degrees]']
             
             normal_orbit[t] = Satellite_dict['OrbitNormal']
             r_H_offset_normal[t] = Satellite_dict['Normal2H_offset']
             r_V_offset_normal[t] = Satellite_dict['Normal2V_offset']
             
-            
-            """
-            MATS.compute(current_time, epoch = '2000/01/01 11:58:55.816')
-            Moon.compute(current_time, epoch = '2000/01/01 11:58:55.816')
-            
-            (lat_MATS[t],long_MATS[t],altitude_MATS[t],a_ra_MATS[t],a_dec_MATS[t])= (
-            MATS.sublat,MATS.sublong,MATS.elevation/1000,MATS.a_ra,MATS.a_dec)
-            
-            R = lat_2_R(lat_MATS[t])
-            MATS_distance = R + altitude_MATS[t]
-            
-            z_MATS[t] = sin(a_dec_MATS[t])*(MATS_distance)
-            x_MATS[t] = cos(a_dec_MATS[t])*(MATS_distance)* cos(a_ra_MATS[t])
-            y_MATS[t] = cos(a_dec_MATS[t])*(MATS_distance)* sin(a_ra_MATS[t])
-           
-            r_MATS[t,0:3] = [x_MATS[t], y_MATS[t], z_MATS[t]]
-            
-            (a_ra_Moon[t], a_dec_Moon[t], distance_Moon[t])= (
-                    Moon.a_ra, Moon.a_dec, Moon.earth_distance*AU)
-            
-            z_Moon[t] = sin(a_dec_Moon[t]) * distance_Moon[t]
-            x_Moon[t] = cos(a_dec_Moon[t])*cos(a_ra_Moon[t]) * distance_Moon[t]
-            y_Moon[t] = cos(a_dec_Moon[t])*sin(a_ra_Moon[t]) * distance_Moon[t]
-           
-            r_Moon[t,0:3] = [x_Moon[t], y_Moon[t], z_Moon[t]]
-            
-            """
-            
-            """
-            current_time_datetime = ephem.Date(current_time).datetime()
-            year = current_time_datetime.year
-            month = current_time_datetime.month
-            day = current_time_datetime.day
-            hour = current_time_datetime.hour
-            minute = current_time_datetime.minute
-            second = current_time_datetime.second + current_time_datetime.microsecond/1000000
-            
-            current_time_skyfield = ts.utc(year, month, day, hour, minute, second)
-            
-            MATS_geo = MATS_skyfield.at(current_time_skyfield)
-            r_MATS[t] = MATS_geo.position.km
-            MATS_distance = MATS_geo.distance().km
-            MATS_subpoint = MATS_geo.subpoint()
-            lat_MATS[t] = MATS_subpoint.latitude.radians
-            long_MATS[t] = MATS_subpoint.longitude.radians
-            altitude_MATS[t] = MATS_subpoint.elevation.km
-            
-            
-            
-            r_MATS_unit_vector[t] = r_MATS[t]/norm(r_MATS[t])
-            
-            #Semi-Major axis of MATS, assuming circular orbit
-            MATS_p[t] = norm(r_MATS[t,0:3])
-            
-            #Orbital Period of MATS
-            MATS_P[t] = 2*pi*sqrt(MATS_p[t]**3/U)
-            
-            #Initial Estimated pitch or elevation angle for MATS pointing
-            if(t == 0):
-                pitch_LP_array[t]= array(arccos((R_mean+LP_altitude)/(MATS_distance))/pi*180)
-                pitch_LP = pitch_LP_array[t][0]
-                time_between_LP_and_MATS = MATS_P[t][0]*pitch_LP/360
-                timesteps_between_LP_and_MATS = int(time_between_LP_and_MATS / timestep)
-            
-            
-            
-            if( t*timestep % log_timestep == 0 and t != 0 or t == 1 ):
-                Logger.debug('')
-                
-                Logger.debug('t (loop iteration number): '+str(t))
-                Logger.debug('Current time: '+str(current_time))
-                Logger.debug('Semimajor axis in km: '+str(MATS_p[t]))
-                Logger.debug('Orbital Period in s: '+str(MATS_P[t]))
-                Logger.debug('Vector to MATS [km]: '+str(r_MATS[t,0:3]))
-                Logger.debug('Latitude in radians: '+str(lat_MATS[t]))
-                Logger.debug('Longitude in radians: '+str(long_MATS[t]))
-                Logger.debug('Altitude in km: '+str(altitude_MATS[t]))
-                
-            
-            if(t != 0):
-                # More accurate estimation of lat of LP using the position of MATS at a previous time
-                if( t >= timesteps_between_LP_and_MATS):
-                    lat_LP = lat_MATS[t-timesteps_between_LP_and_MATS]
-                    R_earth_LP = lat_2_R(lat_LP)
-                else:
-                    date_of_MATSlat_is_equal_2_current_LPlat = ephem.Date(current_time - ephem.second * timesteps_between_LP_and_MATS * timestep).datetime()
-                    lat_LP = lat_calculator( MATS_skyfield, date_of_MATSlat_is_equal_2_current_LPlat )
-                    R_earth_LP = lat_2_R(lat_LP)
-                    
-                
-                # More accurate estimation of pitch angle of MATS using R_earth_LP instead of R_mean
-                pitch_LP_array[t]= array(arccos((R_earth_LP+LP_altitude)/(MATS_distance))/pi*180)
-                pitch_LP = pitch_LP_array[t][0]
-                
-                pitch_pointing_command_array[t] = array(arccos((R_earth_LP+pointing_altitude )/(MATS_distance))/pi*180)
-                pitch_pointing_command = pitch_pointing_command_array[t][0]
-                
-                pitch_angle_between_command_and_LP_altitudes = pitch_LP - pitch_pointing_command
-                
-                
-                ############# Calculations of orbital and pointing vectors ############
-                "Vector normal to the orbital plane of MATS"
-                normal_orbit[t,0:3] = cross(r_MATS[t],r_MATS[t-1])
-                normal_orbit[t,0:3] = normal_orbit[t,0:3] / norm(normal_orbit[t,0:3])
-                
-                
-                
-                if( yaw_correction == True):
-                    "Calculate intersection between the orbital plane and the equator"
-                    ascending_node = cross(normal_orbit[t,0:3], celestial_eq_normal)
-                    
-                    arg_of_lat = arccos( dot(ascending_node, r_MATS[t,0:3]) / norm(r_MATS[t,0:3]) / norm(ascending_node) ) /pi*180
-                    
-                    "To determine if MATS is moving towards the ascending node"
-                    if( dot(cross( ascending_node, r_MATS[t,0:3]), normal_orbit[t,0:3]) >= 0 ):
-                        arg_of_lat = 360 - arg_of_lat
-                        
-                    yaw_offset_angle = Timeline_settings['yaw_amplitude'] * cos( arg_of_lat/180*pi - pitch_LP/180*pi + Timeline_settings['yaw_phase']/180*pi )
-                    yaw_offset_angle = yaw_offset_angle[0]
-                    
-                    if( t*timestep % log_timestep == 0 or t == 1 ):
-                        Logger.debug('ascending_node: '+str(ascending_node))
-                        Logger.debug('arg_of_lat [degrees]: '+str(arg_of_lat))
-                        Logger.debug('yaw_offset_angle [degrees]: '+str(yaw_offset_angle))
-                        
-                    
-                elif( yaw_correction == False):
-                    yaw_offset_angle = 0
-                
-                "Rotate 'vector to MATS', to represent pointing direction, includes vertical offset change"
-                rot_mat = rot_arbit(pi/2+(pitch_pointing_command)/180*pi, normal_orbit[t,0:3])
-                optical_axis[t,0:3] = (rot_mat @ r_MATS[t])
-                
-                "Rotate yaw of pointing direction, meaning to rotate around the vector to MATS"
-                rot_mat = rot_arbit( (-yaw_offset_angle)/180*pi, r_MATS_unit_vector[t,0:3])
-                optical_axis[t,0:3] =  rot_mat @ optical_axis[t,0:3]
-                optical_axis[t,0:3] = optical_axis[t,0:3] / norm(optical_axis[t,0:3])
-                
-                "Calculate Dec and RA of optical axis (disregarding parallax)"
-                Dec_optical_axis = arctan(  optical_axis[t,2] / sqrt(optical_axis[t,0]**2 + optical_axis[t,1]**2) ) /pi * 180
-                Ra_optical_axis = arccos( dot( [1,0,0], [optical_axis[t,0],optical_axis[t,1],0] ) / norm([optical_axis[t,0],optical_axis[t,1],0]) ) / pi * 180
-                
-                if( optical_axis[t,1] < 0 ):
-                    Ra_optical_axis = 360-Ra_optical_axis
-                    
-                
-                
-                "Rotate 'vector to MATS', to represent a vector normal to the H-offset pointing plane, includes vertical offset change (Parallax is negligable)"
-                rot_mat = rot_arbit((pitch_pointing_command)/180*pi, normal_orbit[t,0:3])
-                r_H_offset_normal[t,0:3] = (rot_mat @ r_MATS[t])
-                
-                "If pointing direction has a Yaw defined, Rotate yaw of normal to pointing direction H-offset plane, meaning to rotate around the vector to MATS"
-                rot_mat = rot_arbit(-yaw_offset_angle/180*pi, r_MATS_unit_vector[t,0:3])
-                r_H_offset_normal[t,0:3] = (rot_mat @ r_H_offset_normal[t])
-                r_H_offset_normal[t,0:3] = r_H_offset_normal[t,0:3]/norm(r_H_offset_normal[t,0:3])
-                
-                "Rotate orbital plane normal to make it into pointing V-offset plane normal"
-                r_V_offset_normal[t,0:3] = (rot_mat @ normal_orbit[t])
-                r_V_offset_normal[t,0:3] = r_V_offset_normal[t,0:3]/norm(r_V_offset_normal[t,0:3])
-                """
             
             ############# End of Calculations of orbital and pointing vectors #####
             

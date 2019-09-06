@@ -40,7 +40,7 @@ $ conda install -c astropy astroquery
 
 $ conda install pip
 
-$ pip install skyfield
+$ conda install -c conda-forge skyfield=1.10
 
 
 4. Run the following command to list all currently installed packages and their version number.
@@ -69,5 +69,7 @@ of the Spyder project, as that directory is automatically part of the PYTHONPATH
     OPT.Timeline_gen()
     
     OPT.XML_gen('Output/Science_Mode_Timeline__OPT_Config_File.json')
+	
+	Data_MATS, Data_LP, Time, Time_OHB  = OPT.Timeline_Plotter('Output\Science_Mode_Timeline__OPT_Config_File.json')
 
 See further documentation found under "Docs" in Operational_Planning_Tool to learn how to use the Operational_Planning_Tool package.

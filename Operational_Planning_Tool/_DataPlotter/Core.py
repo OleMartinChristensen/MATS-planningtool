@@ -40,22 +40,18 @@ def Data_Plotter():
     Logger.info('Configuration File used: '+_Globals.Config_File+', Version: '+Version)
     
     #timesteps = 29
-    Settings = OPT_Config_File.Timeline_settings()
+    Timeline_settings = OPT_Config_File.Timeline_settings()
     
     
     "Simulation length and timestep"
-    log_timestep = 3600
     timestep = 10 #In seconds
-    duration = Settings['duration']
+    duration = Timeline_settings['duration']
     timesteps = int(floor(duration / timestep))+1
     timesteps = 300
     #timesteps = 10000
     start_from = 6000
     #start_from = 0
-    date = ephem.Date(Settings['start_date'])
-    
-    yaw_correction = Settings['yaw_correction']
-    
+    date = ephem.Date(Timeline_settings['start_date'])
     
     ephemDate2MatplotDate = datestr2num('1899/12/31 12:00:00')
     
@@ -63,11 +59,6 @@ def Data_Plotter():
     lat_MATS = zeros((timesteps,1))
     long_MATS = zeros((timesteps,1))
     alt_MATS = zeros((timesteps,1))
-    a_ra_MATS = zeros((timesteps,1))
-    a_dec_MATS = zeros((timesteps,1))
-    x_MATS = zeros((timesteps,1))
-    y_MATS = zeros((timesteps,1))
-    z_MATS = zeros((timesteps,1))
     r_MATS = zeros((timesteps,3))
     r_MATS_unit_vector = zeros((timesteps,3))
     r_MATS_ECEF = zeros((timesteps,3))
@@ -90,38 +81,26 @@ def Data_Plotter():
     
     r_LP = zeros((timesteps,3))
     r_LP_ECEF = zeros((timesteps,3))
-    
-    MATS_p = zeros((timesteps,1))
+    v_MATS = zeros((timesteps,3))
+    v_MATS_unit_vector = zeros((timesteps,3))
     MATS_P = zeros((timesteps,1))
     yaw_offset_angle = zeros((timesteps,1))
     pitch_MATS = zeros((timesteps,1))
     yaw_offset_angle_ECI = zeros((timesteps,1))
     
-    Ra = zeros((timesteps,1))
-    Dec = zeros((timesteps,1))
-    
-    sun_angle = zeros((timesteps,1))
+    RA_optical_axis = zeros((timesteps,1))
+    Dec_optical_axis = zeros((timesteps,1))
     lat_LP = zeros((timesteps,1))
     long_LP = zeros((timesteps,1))
     alt_LP = zeros((timesteps,1))
-    normal_orbital = zeros((timesteps,3))
-    orbangle_between_LP_MATS_array = zeros((timesteps,1))
-    lat_flag = 0
-    R_earth_MATS = zeros((timesteps,1))
+    orbangle_between_LP_MATS_array_dotproduct = zeros((timesteps,1))
+    LogFlag = False
     current_time = zeros((timesteps,1))
     current_time_MPL = zeros((timesteps,1))
     
-    "Constants"
-    R_mean = 6371 #Earth radius [km]
-    #wgs84_Re = 6378.137 #Equatorial radius of wgs84 spheroid [km]
-    # wgs84_Rp = 6356752.3142 #Polar radius of wgs84 spheroid [km]
-    U = 398600.4418 #Earth gravitational parameter
-    celestial_eq_normal = array([[0,0,1]])
-    earth_north_pole = zeros((timesteps,3))
+    Timeline_settings = OPT_Config_File.Timeline_settings()
     
-    
-    
-    LP_altitude = OPT_Config_File.Timeline_settings()['LP_pointing_altitude']/1000  #Altitude of LP at which MATS center of FOV is looking [km]
+    pointing_altitude = Timeline_settings['LP_pointing_altitude']/1000  #Altitude of LP at which MATS center of FOV is looking [km]
     
     
     TLE1 = OPT_Config_File.getTLE()[0]
@@ -139,249 +118,80 @@ def Data_Plotter():
         
         current_time[t] = ephem.Date(date+ephem.second*(timestep*t+start_from))
         
+        Satellite_dict = _Library.Satellite_Simulator( 
+                    MATS_skyfield, ephem.Date(current_time[t]), Timeline_settings, pointing_altitude, LogFlag )
         
         
-        ################### Skyfield ##############################
-        current_time[t] = ephem.Date(date+ephem.second*(timestep*t+start_from))
-        current_time_datetime = ephem.Date(date+ephem.second*(timestep*t+start_from)).datetime()
-        year = current_time_datetime.year
-        month = current_time_datetime.month
-        day = current_time_datetime.day
-        hour = current_time_datetime.hour
-        minute = current_time_datetime.minute
-        second = current_time_datetime.second + current_time_datetime.microsecond/1000000
+        r_MATS[t] = Satellite_dict['Position [km]']
+        v_MATS[t] = Satellite_dict['Velocity [km/s]']
+        normal_orbit[t] = Satellite_dict['OrbitNormal']
+        MATS_P[t] = Satellite_dict['OrbitalPeriod [s]']
+        alt_MATS[t] = Satellite_dict['Altitude [km]']
+        lat_MATS[t] =  Satellite_dict['Latitude [degrees]']
+        long_MATS[t] =  Satellite_dict['Longitude [degrees]']
+        optical_axis[t] = Satellite_dict['OpticalAxis']
+        Dec_optical_axis[t] = Satellite_dict['Dec_OpticalAxis [degrees]']
+        RA_optical_axis[t] = Satellite_dict['RA_OpticalAxis [degrees]']
+        r_H_offset_normal[t] = Satellite_dict['Normal2H_offset']
+        r_V_offset_normal[t] = Satellite_dict['Normal2V_offset']
+        pitch_MATS[t] = Satellite_dict['Pitch [degrees]']
+        lat_LP_estimated[t] = Satellite_dict['EstimatedLatitude_LP [degrees]']
         
-        current_time_skyfield = ts.utc(year, month, day, hour, minute, second)
-        
-        MATS_geo = MATS_skyfield.at(current_time_skyfield)
-        r_MATS[t] = MATS_geo.position.km
-        MATS_distance = MATS_geo.distance().km
-        MATS_subpoint = MATS_geo.subpoint()
-        lat_MATS[t] = MATS_subpoint.latitude.radians
-        long_MATS[t] = MATS_subpoint.longitude.radians
-        alt_MATS[t] = MATS_subpoint.elevation.km
-        
-        
-        """
-        MATS.compute(current_time[t], epoch = '2000/01/01 11:58:55.816')
-        
-        
-        
-        (lat_MATS[t],long_MATS[t],alt_MATS[t],a_ra_MATS[t],a_dec_MATS[t])= (
-                MATS.sublat, MATS.sublong, MATS.elevation/1000, MATS.a_ra, MATS.a_dec)
-        
-        
-        
-        ###########################################################
-        #First iteration of determining MATS distance from center of Earth
-        R_earth_MATS[t] = _Library.lat_2_R(lat_MATS[t]) #WGS84 radius from latitude of MATS
-        
-        z_MATS[t] = sin(a_dec_MATS[t])*(alt_MATS[t]+R_earth_MATS[t])
-        x_MATS[t] = cos(a_dec_MATS[t])*(alt_MATS[t]+R_earth_MATS[t])* cos(a_ra_MATS[t])
-        y_MATS[t] = cos(a_dec_MATS[t])*(alt_MATS[t]+R_earth_MATS[t])* sin(a_ra_MATS[t])
-        r_MATS[t,0:3] = [x_MATS[t], y_MATS[t], z_MATS[t]]
-        """
-        
+        v_MATS_unit_vector[t,0:3] = v_MATS[t,0:3] / norm(v_MATS[t,0:3])
         r_MATS_unit_vector[t,0:3] = r_MATS[t,0:3] / norm(r_MATS[t,0:3])
-        
         
         r_MATS_ECEF[t,0], r_MATS_ECEF[t,1], r_MATS_ECEF[t,2] = _MATS_coordinates.eci2ecef(
                 r_MATS[t,0], r_MATS[t,1], r_MATS[t,2], ephem.Date(current_time[t][0]).datetime())
         
-        """
-        lat_MATS[t], long_MATS[t], alt_MATS[t]  = _MATS_coordinates.ECEF2lla(r_MATS_ECEF[t,0]*1000, r_MATS_ECEF[t,1]*1000, r_MATS_ECEF[t,2]*1000)
-        
-        lat_MATS[t] = lat_MATS[t] / 180*pi
-        long_MATS[t] = long_MATS[t] / 180*pi
-        alt_MATS[t] = alt_MATS[t] / 1000
-        """
-        ##############################################################
-        
-        
-        
-        """
-        ###########################################################
-        #Second iteration of determining MATS distance from center of Earth
-        R_earth_MATS[t] = _Library.lat_2_R(lat_MATS[t]) #WGS84 radius from latitude of MATS
-        
-        z_MATS[t] = sin(a_dec_MATS[t])*(alt_MATS[t]+R_earth_MATS[t])
-        x_MATS[t] = cos(a_dec_MATS[t])*(alt_MATS[t]+R_earth_MATS[t])* cos(a_ra_MATS[t])
-        y_MATS[t] = cos(a_dec_MATS[t])*(alt_MATS[t]+R_earth_MATS[t])* sin(a_ra_MATS[t])
-        r_MATS[t,0:3] = [x_MATS[t], y_MATS[t], z_MATS[t]]
-        
-        r_MATS_unit_vector[t,0:3] = r_MATS[t,0:3] / norm(r_MATS[t,0:3])
-        
-        """
-        r_MATS_ECEF[t,0], r_MATS_ECEF[t,1], r_MATS_ECEF[t,2] = _MATS_coordinates.eci2ecef(
-                r_MATS[t,0], r_MATS[t,1], r_MATS[t,2], ephem.Date(current_time[t][0]).datetime())
-        
-        """
-        lat_MATS[t], long_MATS[t], alt_MATS[t]  = _MATS_coordinates.ECEF2lla(r_MATS_ECEF[t,0]*1000, r_MATS_ECEF[t,1]*1000, r_MATS_ECEF[t,2]*1000)
-        
-        lat_MATS[t] = lat_MATS[t] / 180*pi
-        long_MATS[t] = long_MATS[t] / 180*pi
-        alt_MATS[t] = alt_MATS[t] / 1000
-        ################################################################
-        """
-        
-        #Semi-Major axis of MATS, assuming circular orbit
-        MATS_p[t] = norm(r_MATS[t,0:3])
-        
-        #Orbital Period of MATS
-        MATS_P[t] = 2*pi*sqrt(MATS_p[t]**3/U)
-        
-        ################################################################
-        
-        
-        #Initial Estimated pitch or elevation angle for MATS pointing using R_mean
-        if(t == 0):
-            orbangle_between_LP_MATS_array[t]= arccos((R_mean+LP_altitude)/(MATS_distance))/pi*180
-            #orbangle_between_LP_MATS_array[t]= arccos((R_mean+LP_altitude)/(MATS_distance))/pi*180
-            orbangle_between_LP_MATS = orbangle_between_LP_MATS_array[t][0]
-            time_between_LP_and_MATS = MATS_P[t][0]*orbangle_between_LP_MATS/360
-            timesteps_between_LP_and_MATS = int(time_between_LP_and_MATS / timestep)
-        
-    #for t in range(timesteps):
-                
-        if(t != 0):
-            if( t >= timesteps_between_LP_and_MATS):
-                lat_LP_estimated[t] = lat_MATS[t-timesteps_between_LP_and_MATS]
-                R_earth_LP = _Library.lat_2_R(lat_LP_estimated[t][0])
-            else:
-                date_of_MATSlat_is_equal_2_current_LPlat = ephem.Date(current_time[t] - ephem.second * timesteps_between_LP_and_MATS * timestep).datetime()
-                lat_LP_estimated[t] = _Library.lat_calculator( MATS_skyfield,date_of_MATSlat_is_equal_2_current_LPlat )
-                R_earth_LP = _Library.lat_2_R(lat_LP_estimated[t][0])
-            
-            "Vector normal to the orbital plane of MATS"
-            normal_orbit[t,0:3] = cross(r_MATS[t],r_MATS[t-1])
-            normal_orbit[t,0:3] = normal_orbit[t,0:3] / norm(normal_orbit[t,0:3])
-            
-            normal_orbit_ECEF[t,0], normal_orbit_ECEF[t,1], normal_orbit_ECEF[t,2] = _MATS_coordinates.eci2ecef(
-                normal_orbit[t,0], normal_orbit[t,1], normal_orbit[t,2], ephem.Date(current_time[t][0]).datetime())
-        
-            
-            # More accurate estimation of pitch angle of MATS using R_earth_LP instead of R_mean
-            orbangle_between_LP_MATS_array[t] = array(arccos((R_earth_LP+LP_altitude)/(MATS_distance))/pi*180)
-            #orbangle_between_LP_MATS_array[t] = array(arccos((R_mean+LP_altitude)/(R_mean+alt_MATS[t]))/pi*180)
-            orbangle_between_LP_MATS = orbangle_between_LP_MATS_array[t][0]
-            
-            
-            
-            pitch_MATS[t] = orbangle_between_LP_MATS + 90
-            
-            
-            ############# Calculations of orbital and pointing vectors ############
-            
-            if( yaw_correction == True):
-                "Calculate intersection between the orbital plane and the equator"
-                ascending_node = cross(normal_orbit_ECEF[t,0:3], celestial_eq_normal)
-                
-                arg_of_lat = arccos( dot(ascending_node, r_MATS_ECEF[t,0:3]) / norm(r_MATS_ECEF[t,0:3]) / norm(ascending_node) ) /pi*180
-                
-                "To determine if MATS is moving towards the ascending node"
-                if( dot(cross( ascending_node, r_MATS_ECEF[t,0:3]), normal_orbit_ECEF[t,0:3]) >= 0 ):
-                    arg_of_lat = 360 - arg_of_lat
-                    
-                yaw_offset_angle[t] = Settings['yaw_amplitude'] * cos( arg_of_lat/180*pi - orbangle_between_LP_MATS/180*pi + Settings['yaw_phase']/180*pi )
-                #yaw_offset_angle[t] = -4.11 * cos( arg_of_lat/180*pi - orbangle_between_LP_MATS/180*pi )
-                #yaw_offset_angle = yaw_offset_angle[0]
-                
-                "Calculate intersection between the orbital plane and the equator"
-                ascending_node = cross(normal_orbit[t,0:3], celestial_eq_normal)
-                
-                arg_of_lat = arccos( dot(ascending_node, r_MATS[t,0:3]) / norm(r_MATS[t,0:3]) / norm(ascending_node) ) /pi*180
-                
-                "To determine if MATS is moving towards the ascending node"
-                if( dot(cross( ascending_node, r_MATS[t,0:3]), normal_orbit[t,0:3]) >= 0 ):
-                    arg_of_lat = 360 - arg_of_lat
-                    
-                yaw_offset_angle_ECI[t] = Settings['yaw_amplitude'] * cos( arg_of_lat/180*pi - orbangle_between_LP_MATS/180*pi + Settings['yaw_phase']/180*pi )
-                #yaw_offset_angle[t] = -4.11 * cos( arg_of_lat/180*pi - orbangle_between_LP_MATS/180*pi )
-                #yaw_offset_angle = yaw_offset_angle[0]
-                
-                
-            elif( yaw_correction == False):
-                yaw_offset_angle[t] = 0
-            
-            "Rotate 'vector to MATS', to represent pointing direction, includes vertical offset change (Parallax is negligable)"
-            rot_mat = _Library.rot_arbit(pitch_MATS[t][0]/180*pi, normal_orbit[t,0:3])
-            optical_axis[t,0:3] = (rot_mat @ r_MATS[t])
-            optical_axis[t,0:3] = optical_axis[t,0:3] / norm(optical_axis[t,0:3])
-            
-            "Rotate yaw of pointing direction, meaning to rotate around the vector to MATS"
-            rot_mat = _Library.rot_arbit( (-yaw_offset_angle[t][0])/180*pi, r_MATS_unit_vector[t,0:3])
-            optical_axis[t,0:3] = rot_mat @ optical_axis[t,0:3]
-            optical_axis[t,0:3] = optical_axis[t,0:3]/norm(optical_axis[t,0:3])
-            
-            optical_axis_ECEF[t,0], optical_axis_ECEF[t,1], optical_axis_ECEF[t,2] = _MATS_coordinates.eci2ecef(
+        optical_axis_ECEF[t,0], optical_axis_ECEF[t,1], optical_axis_ECEF[t,2] = _MATS_coordinates.eci2ecef(
                 optical_axis[t,0], optical_axis[t,1], optical_axis[t,2], ephem.Date(current_time[t][0]).datetime())
+        
+        
+        r_LP_ECEF[t,0], r_LP_ECEF[t,1], r_LP_ECEF[t,2] = _MATS_coordinates.ecef2tanpoint(r_MATS_ECEF[t][0]*1000, r_MATS_ECEF[t][1]*1000, r_MATS_ECEF[t][2]*1000, 
+                                   optical_axis_ECEF[t,0], optical_axis_ECEF[t,1], optical_axis_ECEF[t,2])
+        
+        lat_LP[t], long_LP[t], alt_LP[t]  = _MATS_coordinates.ECEF2lla(r_LP_ECEF[t,0], r_LP_ECEF[t,1], r_LP_ECEF[t,2])
+        
+        
+        r_LP[t,0], r_LP[t,1], r_LP[t,2] = _MATS_coordinates.ecef2eci( r_LP_ECEF[t,0], r_LP_ECEF[t,1], r_LP_ECEF[t,2], 
+                                       ephem.Date(current_time[t][0]).datetime())
+        
+        orbangle_between_LP_MATS_array_dotproduct[t] = arccos( dot(r_MATS_unit_vector[t], r_LP[t]) / norm(r_LP[t]) ) / pi*180
+        
+        if( t == 0 ):
+            first_r_LP[t] = r_LP[t]
             
-            r_LP_ECEF[t,0], r_LP_ECEF[t,1], r_LP_ECEF[t,2] = _MATS_coordinates.ecef2tanpoint(r_MATS_ECEF[t][0]*1000, r_MATS_ECEF[t][1]*1000, r_MATS_ECEF[t][2]*1000, 
-                                       optical_axis_ECEF[t,0], optical_axis_ECEF[t,1], optical_axis_ECEF[t,2])
+        
+        if( t >= 1):
             
-            lat_LP[t], long_LP[t], alt_LP[t]  = _MATS_coordinates.ECEF2lla(r_LP_ECEF[t,0], r_LP_ECEF[t,1], r_LP_ECEF[t,2])
+            earth_rotation_speed = 360 / (23*3600 + 56*60+ 4) #degrees/s
             
-            Dec[t] = arctan( optical_axis[t,2] / sqrt(optical_axis[t,0]**2 + optical_axis[t,1]**2) ) /pi * 180
-            Ra[t] = arccos( dot( [1,0,0], [optical_axis[t,0],optical_axis[t,1],0] ) / norm([optical_axis[t,0],optical_axis[t,1],0]) ) / pi * 180
-            
-            if( optical_axis[t,1] < 0 ):
-                Ra[t] = 360-Ra[t]
-            
-            r_LP[t,0], r_LP[t,1], r_LP[t,2] = _MATS_coordinates.ecef2eci( r_LP_ECEF[t,0], r_LP_ECEF[t,1], r_LP_ECEF[t,2], 
-                                           ephem.Date(current_time[t][0]).datetime())
-                
-            
-            if( t == 1 ):
-                first_r_LP[t] = r_LP[t]
-                
-            
-            if( t >= 2):
-                
-                earth_rotation_speed = 360 / (23*3600 + 56*60+ 4) #degrees/s
-                
-                rot_mat = _Library.rot_arbit((earth_rotation_speed*timestep)/180*pi, [0,0,1])
-                first_r_LP[t] = rot_mat @ first_r_LP[t-1]
-                
-                
-                MATS_2_first_LP[t] = first_r_LP[t] - r_MATS[t]*1000
-                #MATS_2_first_LP[t] = MATS_2_first_LP[t] / norm(MATS_2_first_LP[t])
-                MATS_2_LP[t] = r_LP[t] - r_MATS[t]*1000
-                #MATS_2_LP[t] = MATS_2_LP[t] / norm(MATS_2_LP[t])
-                
-                '''Rotate 'vector to MATS', to represent vector normal to satellite H-offset plane,
-                which will be used to project stars onto it which allows the H-offset of stars to be found'''
-                rot_mat = _Library.rot_arbit((orbangle_between_LP_MATS)/180*pi, normal_orbit[t,0:3])
-                r_H_offset_normal[t,0:3] = (rot_mat @ r_MATS[t])
-                r_H_offset_normal[t,0:3] = r_H_offset_normal[t,0:3] / norm(r_H_offset_normal[t,0:3])
-                
-                "If pointing direction has a Yaw defined, Rotate yaw of normal to pointing direction H-offset plane, meaning to rotate around the vector to MATS"
-                rot_mat = _Library.rot_arbit(-yaw_offset_angle[t][0]/180*pi, r_MATS_unit_vector[t,0:3])
-                r_H_offset_normal[t,0:3] = (rot_mat @ r_H_offset_normal[t])
-                r_H_offset_normal[t,0:3] = r_H_offset_normal[t,0:3]/norm(r_H_offset_normal[t,0:3])
-                
-                '''Rotate orbital plane normal to make it into pointing V-offset plane normal 
-                which will be used to project stars onto it which allows the V-offset of stars to be found'''
-                r_V_offset_normal[t,0:3] = (rot_mat @ normal_orbit[t])
-                r_V_offset_normal[t,0:3] = r_V_offset_normal[t,0:3]/norm(r_V_offset_normal[t,0:3])
-                
-                
-                "Project 'star vectors' ontop pointing H-offset and V-offset plane"
-                MATS_2_LP_V_offset_plane[t] = MATS_2_first_LP[t] - dot(MATS_2_first_LP[t],r_V_offset_normal[t,0:3]) * r_V_offset_normal[t,0:3]
-    
-                MATS_2_LP_H_offset_plane[t] = MATS_2_first_LP[t] - dot(MATS_2_first_LP[t],r_H_offset_normal[t]) * r_H_offset_normal[t]
-    
-                "Dot product to get the Vertical and Horizontal angle offset of the star in the FOV"
-                MATS_2_LP_vert_offset[t] = arccos(dot(MATS_2_LP[t],MATS_2_LP_V_offset_plane[t]) / (norm(MATS_2_LP[t])) / norm(MATS_2_LP_V_offset_plane[t]) ) /pi*180
-                MATS_2_LP_hori_offset[t] = arccos(dot(MATS_2_LP[t],MATS_2_LP_H_offset_plane[t]) / (norm(MATS_2_LP[t])) / norm(MATS_2_LP_H_offset_plane[t]) ) /pi*180
-                
-                "Determine sign of off-set angle where positive V-offset angle is when looking at higher altitude"
-                if( dot(cross(MATS_2_LP[t],MATS_2_LP_V_offset_plane[t]),r_V_offset_normal[t,0:3]) > 0 ):
-                    MATS_2_LP_vert_offset[t] = -MATS_2_LP_vert_offset[t]
-                if( dot(cross(MATS_2_LP[t],MATS_2_LP_H_offset_plane[t]),r_H_offset_normal[t]) > 0 ):
-                    MATS_2_LP_hori_offset[t] = -MATS_2_LP_hori_offset[t]
-                
+            rot_mat = _Library.rot_arbit((earth_rotation_speed*timestep)/180*pi, [0,0,1])
+            first_r_LP[t] = rot_mat @ first_r_LP[t-1]
             
             
+            MATS_2_first_LP[t] = first_r_LP[t] - r_MATS[t]*1000
+            #MATS_2_first_LP[t] = MATS_2_first_LP[t] / norm(MATS_2_first_LP[t])
+            MATS_2_LP[t] = r_LP[t] - r_MATS[t]*1000
+            #MATS_2_LP[t] = MATS_2_LP[t] / norm(MATS_2_LP[t])
+            
+            "Project 'star vectors' ontop pointing H-offset and V-offset plane"
+            MATS_2_LP_V_offset_plane[t] = MATS_2_first_LP[t] - dot(MATS_2_first_LP[t],r_V_offset_normal[t,0:3]) * r_V_offset_normal[t,0:3]
+
+            MATS_2_LP_H_offset_plane[t] = MATS_2_first_LP[t] - dot(MATS_2_first_LP[t],r_H_offset_normal[t]) * r_H_offset_normal[t]
+
+            "Dot product to get the Vertical and Horizontal angle offset of the star in the FOV"
+            MATS_2_LP_vert_offset[t] = arccos(dot(MATS_2_LP[t],MATS_2_LP_V_offset_plane[t]) / (norm(MATS_2_LP[t])) / norm(MATS_2_LP_V_offset_plane[t]) ) /pi*180
+            MATS_2_LP_hori_offset[t] = arccos(dot(MATS_2_LP[t],MATS_2_LP_H_offset_plane[t]) / (norm(MATS_2_LP[t])) / norm(MATS_2_LP_H_offset_plane[t]) ) /pi*180
+            
+            "Determine sign of off-set angle where positive V-offset angle is when looking at higher altitude"
+            if( dot(cross(MATS_2_LP[t],MATS_2_LP_V_offset_plane[t]),r_V_offset_normal[t,0:3]) > 0 ):
+                MATS_2_LP_vert_offset[t] = -MATS_2_LP_vert_offset[t]
+            if( dot(cross(MATS_2_LP[t],MATS_2_LP_H_offset_plane[t]),r_H_offset_normal[t]) > 0 ):
+                MATS_2_LP_hori_offset[t] = -MATS_2_LP_hori_offset[t]
+            
+        
+        
             
             
             
@@ -449,8 +259,8 @@ def Data_Plotter():
     z_axis_SLOF_STK = zeros((timesteps,3))
     x_axis_SLOF_STK = zeros((timesteps,3))
     
-    #with open('tle-54321_54321 Data_handlin_OHB_TLE.csv') as csv_file:
-    with open('OHB_timeshifted2sTLE_ICRF_addedEOP.csv') as csv_file:
+    with open('tle-54321_54321 Data_handlin_OHB_TLE.csv') as csv_file:
+    #with open('OHB_timeshifted2sTLE_ICRF_addedEOP.csv') as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         interestingrows=[row for idx, row in enumerate(csv_reader) if idx in range(start_from,100000)]
         line_count = 0
@@ -787,6 +597,7 @@ def Data_Plotter():
     r_MATS_OHB_ECEF2 = zeros((timesteps_OHB,3))
     optical_axis_OHB = zeros((timesteps_OHB,3))
     r_LP_ECEF_OHB = zeros((timesteps_OHB,3))
+    r_LP_OHB = zeros((timesteps_OHB,3))
     lat_LP_OHB = zeros((timesteps_OHB,1))
     long_LP_OHB = zeros((timesteps_OHB,1))
     alt_LP_OHB = zeros((timesteps_OHB,1))
@@ -803,7 +614,7 @@ def Data_Plotter():
     optical_axis_OHB = zeros((timesteps_OHB,3))
     optical_axis_OHB_ECEF = zeros((timesteps_OHB,3))
     
-    
+    orbangle_between_LP_MATS_array_dotproduct_OHB = zeros((timesteps_OHB,1))
     
     
     yaw_SLOF_OHB = zeros((timesteps_OHB,1))
@@ -823,12 +634,14 @@ def Data_Plotter():
         
         #current_time.append( DT.datetime(2000,1,1)+DT.timedelta(days = float(days[t_OHB]), milliseconds = float(milliseconds[t_OHB])) )
         
+        Timeshift = 2
+        
         Time_State_OHB_float[t] = float(Time_State_OHB[t_OHB])
         Time_Attitude_OHB_float[t] = float(Time_Attitude_OHB[t_OHB])
         
-        current_time_state.append(DT.datetime(1980,1,6)+DT.timedelta(seconds = Time_State_OHB_float[t,0]-18) )
+        current_time_state.append(DT.datetime(1980,1,6)+DT.timedelta(seconds = Time_State_OHB_float[t,0]-18+Timeshift) )
         
-        current_time_attitude.append(DT.datetime(1980,1,6)+DT.timedelta(seconds = Time_Attitude_OHB_float[t,0]-18) )
+        current_time_attitude.append(DT.datetime(1980,1,6)+DT.timedelta(seconds = Time_Attitude_OHB_float[t,0]-18+Timeshift) )
         
         r_MATS_OHB[t,0] = x_MATS_OHB[t_OHB] 
         r_MATS_OHB[t,1] = y_MATS_OHB[t_OHB] 
@@ -873,7 +686,6 @@ def Data_Plotter():
         
         if( optical_axis_OHB[t,1] < 0 ):
             Ra_OHB[t] = 360-Ra_OHB[t]
-        
         
         
         
@@ -928,6 +740,11 @@ def Data_Plotter():
         
         lat_LP_OHB[t], long_LP_OHB[t], alt_LP_OHB[t]  = _MATS_coordinates.ECEF2lla(r_LP_ECEF_OHB[t,0], r_LP_ECEF_OHB[t,1], r_LP_ECEF_OHB[t,2])
         
+        
+        r_LP_OHB[t,0], r_LP_OHB[t,1], r_LP_OHB[t,2] = _MATS_coordinates.ecef2eci( r_LP_ECEF_OHB[t,0], r_LP_ECEF_OHB[t,1], r_LP_ECEF_OHB[t,2], 
+                                           current_time_state[t] )
+        
+        orbangle_between_LP_MATS_array_dotproduct_OHB[t] = arccos( dot(r_MATS_OHB[t], r_LP_OHB[t]) / norm(r_LP_OHB[t]) / norm(r_MATS_OHB[t]) ) / pi*180
         
         #R_earth_MATS[t][t] = norm(r_MATS_OHB[t,:]*1000)-alt_MATS_OHB[t]
         
@@ -1038,15 +855,16 @@ def Data_Plotter():
     r_MATS_error_OHB_STK = abs(r_MATS_STK_FIXED*1000-r_MATS_OHB_ECEF)
     r_MATS_error_OHB_STK_transformed = abs(r_MATS_STK_ECEF-r_MATS_OHB_ECEF)
     
-    in_track = cross( normal_orbit[t], r_MATS_unit_vector[t])
-    
     
     for t in range(timesteps):
-        in_track = cross( normal_orbit[t], r_MATS_unit_vector[t])
-        change_of_basis_RCI = transpose( array( ( (r_MATS_unit_vector[t,0], normal_orbit[t,0], in_track[0]),
-            (r_MATS_unit_vector[t,1], normal_orbit[t,1], in_track[1]), 
-            (r_MATS_unit_vector[t,2], normal_orbit[t,2], in_track[2]) ) ) )
-        r_MATS_error_STK_transformed_RCI[t] =  change_of_basis_RCI @ r_MATS_error_STK_transformed_ECI[t]
+        UnitVectorBasis_RCI = transpose( array( ( (r_MATS_unit_vector[t,0], normal_orbit[t,0], v_MATS_unit_vector[t,0]),
+            (r_MATS_unit_vector[t,1], normal_orbit[t,1], v_MATS_unit_vector[t,1]), 
+            (r_MATS_unit_vector[t,2], normal_orbit[t,2], v_MATS_unit_vector[t,2]) ) ) )
+        
+        change_of_basis_RCI = transpose(UnitVectorBasis_RCI)
+        dcm_change_of_basis_RCI = R.from_dcm(change_of_basis_RCI)
+        
+        r_MATS_error_STK_transformed_RCI[t] =  dcm_change_of_basis_RCI.apply( r_MATS_error_STK_transformed_ECI[t])
         
         
         total_r_MATS_error_STK[t] = norm(r_MATS_error_STK[t,:])
@@ -1154,17 +972,12 @@ def Data_Plotter():
     ylabel('Altitude of MATS in degrees')
     legend()
     
-    figure()
-    plot_date(current_time_MPL[1:],a_ra_MATS[1:]/pi *180, markersize = 1, label = 'Predicted')
-    xlabel('Date')
-    ylabel('a_ra_MATS of MATS in degrees')
-    legend()
     
     figure()
     plot_date(current_time_MPL[1:], lat_LP[1:], markersize = 1, label = 'Predicted')
     plot_date(current_time_MPL[1:], lat_LP_STK[1:], markersize = 1, label = 'STK-Data')
     plot_date(current_time_MPL_OHB[1:], lat_LP_OHB[1:], markersize = 1, label = 'OHB-Data')
-    plot_date(current_time_MPL[1:], lat_LP_estimated[1:]/pi*180, markersize = 1, label = 'Predicted from orbangle and lat_MATS')
+    plot_date(current_time_MPL[1:], lat_LP_estimated[1:]/pi*180, markersize = 1, label = 'Estimated from latitude of MATS')
     xlabel('Date')
     ylabel('Latitude of LP in degrees')
     legend()
@@ -1222,10 +1035,25 @@ def Data_Plotter():
     ylabel('Total Absolute error in ECEF position of LP in m')
     legend()
     
+    figure()
+    plot_date(current_time_MPL[1:],abs(lat_MATS[1:]-lat_LP[1:]), markersize = 1, label = 'Prediction')
+    plot_date(current_time_MPL[1:],abs(lat_MATS_OHB[1:]-lat_LP_OHB[1:]), markersize = 1, label = 'OHB')
+    xlabel('Date')
+    ylabel('Latitude difference between MATS and LP')
+    legend()
+    
+    
     
     
     figure()
-    plot_date(current_time_MPL[1:],Ra[1:], markersize = 1, label = 'Predicted')
+    plot_date(current_time_MPL[1:],orbangle_between_LP_MATS_array_dotproduct[1:], markersize = 1, label = 'Prediction dot-product')
+    plot_date(current_time_MPL[1:],orbangle_between_LP_MATS_array_dotproduct_OHB[1:], markersize = 1, label = 'OHB')
+    xlabel('Date')
+    ylabel('Orbital angle between MATS and LP')
+    legend()
+    
+    figure()
+    plot_date(current_time_MPL[1:],RA_optical_axis[1:], markersize = 1, label = 'Predicted')
     plot_date(current_time_MPL[1:],Ra_STK[1:], markersize = 1, label = 'STK-Data')
     plot_date(current_time_MPL_OHB[1:],Ra_OHB[1:], markersize = 1, label = 'OHB-Data')
     xlabel('Date')
@@ -1233,14 +1061,14 @@ def Data_Plotter():
     legend()
     
     figure()
-    plot_date(current_time_MPL[1:],abs(Ra_STK[1:]-Ra[1:]), markersize = 1, label = 'Prediction vs STK')
-    plot_date(current_time_MPL[1:],abs(Ra_OHB[1:]-Ra[1:]), markersize = 1, label = 'Prediction vs OHB')
+    plot_date(current_time_MPL[1:],abs(Ra_STK[1:]-RA_optical_axis[1:]), markersize = 1, label = 'Prediction vs STK')
+    plot_date(current_time_MPL[1:],abs(Ra_OHB[1:]-RA_optical_axis[1:]), markersize = 1, label = 'Prediction vs OHB')
     xlabel('Date')
     ylabel('Absolute error in Right Ascension in degrees (STK vs predicted) [J2000] (Parallax assumed negligable)')
     legend()
     """
     figure()
-    plot_date(current_time_MPL[1:],abs(Ra_STK[1:]-Ra[1:]), markersize = 1, label = 'Abs Error')
+    plot_date(current_time_MPL[1:],abs(Ra_STK[1:]-RA_optical_axis[1:]), markersize = 1, label = 'Abs Error')
     xlabel('Date')
     ylabel('Absolute error in Right Ascension in degrees, (STK vs predicted) [J2000] (Parallax assumed negligable)')
     legend()
@@ -1253,7 +1081,7 @@ def Data_Plotter():
     legend()
     """
     figure()
-    plot_date(current_time_MPL[1:],Dec[1:], markersize = 1, label = 'Predicted')
+    plot_date(current_time_MPL[1:],Dec_optical_axis[1:], markersize = 1, label = 'Predicted')
     plot_date(current_time_MPL[1:],Dec_STK[1:], markersize = 1, label = 'STK-Data')
     plot_date(current_time_MPL_OHB[1:],Dec_OHB[1:], markersize = 1, label = 'OHB-Data')
     xlabel('Date')
@@ -1261,14 +1089,14 @@ def Data_Plotter():
     legend()
     
     figure()
-    plot_date(current_time_MPL[1:],abs(Dec_STK[1:]-Dec[1:]), markersize = 1, label = 'Prediction vs STK')
-    plot_date(current_time_MPL_OHB[1:],abs(Dec_OHB[1:]-Dec[1:]), markersize = 1, label = 'Prediction vs OHB')
+    plot_date(current_time_MPL[1:],abs(Dec_STK[1:]-Dec_optical_axis[1:]), markersize = 1, label = 'Prediction vs STK')
+    plot_date(current_time_MPL_OHB[1:],abs(Dec_OHB[1:]-Dec_optical_axis[1:]), markersize = 1, label = 'Prediction vs OHB')
     xlabel('Date')
     ylabel('Absolute error in Declination in degrees (STK vs predicted) [J2000] (Parallax assumed negligable)')
     legend()
     """
     figure()
-    plot_date(current_time_MPL[1:],abs(Dec_STK[1:]-Dec[1:]), markersize = 1, label = 'Abs Error')
+    plot_date(current_time_MPL[1:],abs(Dec_STK[1:]-Dec_optical_axis[1:]), markersize = 1, label = 'Abs Error')
     xlabel('Date')
     ylabel('Absolute error in Declination in degrees (STK vs predicted) [J2000] (Parallax assumed negligable)')
     legend()

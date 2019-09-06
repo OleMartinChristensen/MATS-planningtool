@@ -12,4 +12,4 @@ $ conda install -c astropy astroquery
 
 $ conda install pip
 
-$ pip install skyfield
+$ conda install -c conda-forge skyfield=1.10

@@ -1,0 +1,208 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="python 3.7">
+  <head>
+    <meta charset="utf-8" />
+    <title>Operational_Planning_Tool._TimelineGenerator.Modes.Mode131 &#8212; Operational_Planning_Tool  documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for Operational_Planning_Tool._TimelineGenerator.Modes.Mode131</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Created on Tue Jun  4 12:24:46 2019</span>
+
+<span class="sd">@author: David</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="kn">import</span> <span class="nn">ephem</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">importlib</span>
+
+<span class="kn">from</span> <span class="nn">Operational_Planning_Tool._Library</span> <span class="k">import</span> <span class="n">scheduler</span>
+<span class="kn">from</span> <span class="nn">Operational_Planning_Tool</span> <span class="k">import</span> <span class="n">_Globals</span>
+
+<span class="n">OPT_Config_File</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">_Globals</span><span class="o">.</span><span class="n">Config_File</span><span class="p">)</span>
+<span class="n">Logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Logger_name</span><span class="p">())</span>
+
+
+<div class="viewcode-block" id="Mode131"><a class="viewcode-back" href="../../../../Operational_Planning_Tool._TimelineGenerator.Modes.html#Operational_Planning_Tool._TimelineGenerator.Modes.Mode131.Mode131">[docs]</a><span class="k">def</span> <span class="nf">Mode131</span><span class="p">(</span><span class="n">Occupied_Timeline</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Core function for the scheduling of Mode131.</span>
+<span class="sd">    </span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        Occupied_Timeline (:obj:`dict` of :obj:`list`): Dictionary with keys equal to planned and scheduled Modes with entries equal to their start and end time as a list.</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (tuple): tuple containing:</span>
+<span class="sd">            (:obj:`dict` of :obj:`list`): Occupied_Timeline (updated with the result from the scheduled Mode). \n</span>
+<span class="sd">            (str): Comment regarding the result of scheduling of the mode.</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">initialDate</span><span class="p">,</span> <span class="n">endDate</span> <span class="o">=</span> <span class="n">date_calculator</span><span class="p">()</span>
+    
+    <span class="n">Occupied_Timeline</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">date_select</span><span class="p">(</span><span class="n">Occupied_Timeline</span><span class="p">,</span> <span class="n">initialDate</span><span class="p">,</span> <span class="n">endDate</span><span class="p">)</span>
+    
+    
+    <span class="k">return</span> <span class="n">Occupied_Timeline</span><span class="p">,</span> <span class="n">comment</span></div>
+    
+
+
+<span class="c1">##################################################################################################</span>
+<span class="c1">##################################################################################################</span>
+
+
+
+<div class="viewcode-block" id="date_calculator"><a class="viewcode-back" href="../../../../Operational_Planning_Tool._TimelineGenerator.Modes.html#Operational_Planning_Tool._TimelineGenerator.Modes.Mode131.date_calculator">[docs]</a><span class="k">def</span> <span class="nf">date_calculator</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Subfunction, Returns the requested initial date and a end for the Mode to be scheduled.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (tuple): tuple containing:</span>
+<span class="sd">            (ephem.Date): initialDate</span>
+<span class="sd">            (ephem.Date): endDate</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Timeline_settings</span><span class="p">()</span>
+    <span class="n">Settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Mode131_settings</span><span class="p">()</span>
+    
+    <span class="k">if</span><span class="p">(</span> <span class="n">Settings</span><span class="p">[</span><span class="s1">&#39;start_date&#39;</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;0&#39;</span> <span class="p">):</span>
+        <span class="n">initialDate</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">Settings</span><span class="p">[</span><span class="s1">&#39;start_date&#39;</span><span class="p">])</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Mode specific start_date used as initial date&#39;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Timeline start_date used as initial date&#39;</span><span class="p">)</span>
+        <span class="n">initialDate</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;start_date&#39;</span><span class="p">])</span>
+    
+    <span class="n">endDate</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">initialDate</span> <span class="o">+</span> <span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="n">Settings</span><span class="p">[</span><span class="s1">&#39;mode_duration&#39;</span><span class="p">])</span>
+    
+    <span class="k">return</span> <span class="n">initialDate</span><span class="p">,</span> <span class="n">endDate</span></div>
+
+
+
+<span class="c1">##################################################################################################</span>
+<span class="c1">##################################################################################################</span>
+
+
+
+<div class="viewcode-block" id="date_select"><a class="viewcode-back" href="../../../../Operational_Planning_Tool._TimelineGenerator.Modes.html#Operational_Planning_Tool._TimelineGenerator.Modes.Mode131.date_select">[docs]</a><span class="k">def</span> <span class="nf">date_select</span><span class="p">(</span><span class="n">Occupied_Timeline</span><span class="p">,</span> <span class="n">initialDate</span><span class="p">,</span> <span class="n">endDate</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Subfunction, Checks if the requested initial date is available and post-pones it until available if occupied.</span>
+<span class="sd">    </span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        Occupied_Timeline (:obj:`dict` of :obj:`list`): Dictionary with keys equal to planned and scheduled Modes together with their start and end time in a list. The list is empty if the Mode is unscheduled.</span>
+<span class="sd">        initialDate (ephem.Date): The initially requested date for the Mode.</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (tuple): tuple containing:</span>
+<span class="sd">            (:obj:`dict` of :obj:`list`): Occupied_Timeline (updated with the result from the scheduled Mode). \n</span>
+<span class="sd">            (str): Comment regarding the result of scheduling of the mode.</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    
+    <span class="c1">############### Start of availability schedueler ##########################</span>
+    
+    <span class="n">date</span><span class="p">,</span> <span class="n">endDate</span><span class="p">,</span> <span class="n">iterations</span> <span class="o">=</span> <span class="n">scheduler</span><span class="p">(</span><span class="n">Occupied_Timeline</span><span class="p">,</span> <span class="n">initialDate</span><span class="p">,</span> <span class="n">endDate</span><span class="p">)</span>
+                
+    <span class="c1">############### End of availability schedueler ##########################</span>
+    
+    <span class="n">comment</span> <span class="o">=</span> <span class="s1">&#39;Number of times date postponed: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">iterations</span><span class="p">)</span>
+    
+    <span class="s2">&quot;Get the name of the parent function, which is always defined as the name of the mode&quot;</span>
+    <span class="n">Mode_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>
+    
+    <span class="n">Occupied_Timeline</span><span class="p">[</span><span class="n">Mode_name</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">date</span><span class="p">,</span><span class="n">endDate</span><span class="p">))</span>
+    
+    <span class="k">return</span> <span class="n">Occupied_Timeline</span><span class="p">,</span> <span class="n">comment</span></div>
+
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../index.html">Operational_Planning_Tool</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../Operational_Planning_Tool.html">Operational_Planning_Tool package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  <li><a href="../../../Operational_Planning_Tool.html">Operational_Planning_Tool</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, David Skånberg.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

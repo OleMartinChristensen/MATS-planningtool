@@ -1,0 +1,618 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="python 3.7">
+  <head>
+    <meta charset="utf-8" />
+    <title>Operational_Planning_Tool._TimelineGenerator.Modes.Mode120 &#8212; Operational_Planning_Tool  documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for Operational_Planning_Tool._TimelineGenerator.Modes.Mode120</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;Schedules the active Mode and saves the result in the Occupied_Timeline dictionary.</span>
+
+<span class="sd">Part of Timeline_generator, as part of OPT.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">csv</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">importlib</span>
+<span class="kn">import</span> <span class="nn">ephem</span>
+<span class="kn">from</span> <span class="nn">pylab</span> <span class="k">import</span> <span class="n">array</span><span class="p">,</span> <span class="n">cos</span><span class="p">,</span> <span class="n">sin</span><span class="p">,</span> <span class="n">cross</span><span class="p">,</span> <span class="n">dot</span><span class="p">,</span> <span class="n">zeros</span><span class="p">,</span> <span class="n">norm</span><span class="p">,</span> <span class="n">pi</span><span class="p">,</span> <span class="n">arccos</span><span class="p">,</span> <span class="n">floor</span>
+<span class="kn">from</span> <span class="nn">astroquery.vizier</span> <span class="k">import</span> <span class="n">Vizier</span>
+<span class="kn">import</span> <span class="nn">skyfield.api</span>
+
+
+<span class="kn">from</span> <span class="nn">Operational_Planning_Tool._Library</span> <span class="k">import</span> <span class="n">deg2HMS</span><span class="p">,</span> <span class="n">scheduler</span><span class="p">,</span> <span class="n">Satellite_Simulator</span>
+<span class="kn">from</span> <span class="nn">Operational_Planning_Tool</span> <span class="k">import</span> <span class="n">_Globals</span>
+
+<span class="n">OPT_Config_File</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">_Globals</span><span class="o">.</span><span class="n">Config_File</span><span class="p">)</span>
+<span class="n">Logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Logger_name</span><span class="p">())</span>
+
+
+<div class="viewcode-block" id="Mode120"><a class="viewcode-back" href="../../../../Operational_Planning_Tool._TimelineGenerator.Modes.html#Operational_Planning_Tool._TimelineGenerator.Modes.Mode120.Mode120">[docs]</a><span class="k">def</span> <span class="nf">Mode120</span><span class="p">(</span><span class="n">Occupied_Timeline</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Core function for the scheduling of Mode120.</span>
+<span class="sd">    </span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        Occupied_Timeline (:obj:`dict` of :obj:`list`): Dictionary with keys equal to planned and scheduled Modes with entries equal to their start and end time as a list.</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (tuple): tuple containing:</span>
+<span class="sd">            (:obj:`dict` of :obj:`list`): Occupied_Timeline (updated with the result from the scheduled Mode). \n</span>
+<span class="sd">            (str): Comment regarding the result of scheduling of the mode.</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">dates</span> <span class="o">=</span> <span class="n">Mode120_date_calculator</span><span class="p">()</span>
+    
+    <span class="n">Occupied_Timeline</span><span class="p">,</span> <span class="n">Mode120_comment</span> <span class="o">=</span> <span class="n">Mode120_date_select</span><span class="p">(</span><span class="n">Occupied_Timeline</span><span class="p">,</span> <span class="n">dates</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">Occupied_Timeline</span><span class="p">,</span> <span class="n">Mode120_comment</span></div>
+
+
+
+<span class="c1">#########################################################################################</span>
+<span class="c1">#####################################################################################################</span>
+
+
+
+<div class="viewcode-block" id="Mode120_date_calculator"><a class="viewcode-back" href="../../../../Operational_Planning_Tool._TimelineGenerator.Modes.html#Operational_Planning_Tool._TimelineGenerator.Modes.Mode120.Mode120_date_calculator">[docs]</a><span class="k">def</span> <span class="nf">Mode120_date_calculator</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;Subfunction, Either selects a user provided date, or simulates MATS FOV and stars.</span>
+<span class="sd">    </span>
+<span class="sd">    </span>
+<span class="sd">    If &#39;automatic&#39; in *Mode120_settings* is set to False, the date in *Mode120_settings* will be returned.. \n</span>
+<span class="sd">    If &#39;automatic&#39; in *Mode120_settings* is set to True. A list of dictionaries containing simulated dates is returned. </span>
+<span class="sd">    </span>
+<span class="sd">    Determines when stars are entering the FOV at an vertical offset-angle equal to *#V-offset*, and also being </span>
+<span class="sd">    located at a horizontal off-set angle equal to less than *#H-offset*, when pointing at the LP located at an altitude equal to *#pointing_altitude*. </span>
+<span class="sd">    Also determines when the optical axis is pointing towards a LP located at an altitude equal to *#LP_pointing_altitude* during the hypothetical attitude freeze. \n</span>
+<span class="sd">    </span>
+<span class="sd">    (# as defined in the *Configuration File*). \n</span>
+<span class="sd">    </span>
+<span class="sd">    Saves the date and parameters regarding the spotting of a star.</span>
+<span class="sd">    Also saves relevant data to an .csv file located in Output/.</span>
+<span class="sd">    </span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        dates ((:obj:`list` of :obj:`dict`)) or (str): A list containing dictionaries containing parameters for each time a star is spotted. Or just a date depending on &#39;automatic&#39; in *Mode124_settings*.</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Timeline_settings</span><span class="p">()</span>
+    <span class="n">Mode120_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Mode120_settings</span><span class="p">()</span>
+    
+    <span class="n">automatic</span> <span class="o">=</span> <span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;automatic&#39;</span><span class="p">]</span>
+    <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;automatic = &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">automatic</span><span class="p">))</span>
+    
+    <span class="s2">&quot;To either calculate when stars are visible and schedule from that data or just schedule at a given time given by Mode120_settings[&#39;start_date&#39;]&quot;</span>
+    <span class="k">if</span><span class="p">(</span> <span class="n">automatic</span> <span class="o">==</span> <span class="kc">False</span> <span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">date</span> <span class="o">=</span><span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;start_date&#39;</span><span class="p">])</span>
+            <span class="k">return</span> <span class="n">date</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Could not get Mode120_settings[&quot;start_date&quot;], exiting...&#39;</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+        
+    <span class="k">elif</span><span class="p">(</span> <span class="n">automatic</span> <span class="o">==</span> <span class="kc">True</span> <span class="p">):</span>
+        
+        <span class="s2">&quot;Simulation length and timestep&quot;</span>
+        <span class="n">log_timestep</span> <span class="o">=</span> <span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;log_timestep&#39;</span><span class="p">]</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;log_timestep: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">log_timestep</span><span class="p">))</span>
+    
+        <span class="n">timestep</span> <span class="o">=</span> <span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;timestep&#39;</span><span class="p">]</span> <span class="c1">#In seconds</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;timestep set to: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">timestep</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; s&#39;</span><span class="p">)</span>
+        
+        <span class="n">duration</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;duration&#39;</span><span class="p">]</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Duration set to: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; s&#39;</span><span class="p">)</span>
+        
+        <span class="n">timesteps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">floor</span><span class="p">(</span><span class="n">duration</span> <span class="o">/</span> <span class="n">timestep</span><span class="p">))</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Total number of timesteps set to: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">timesteps</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; s&#39;</span><span class="p">)</span>
+        
+        <span class="n">timeline_start</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;start_date&#39;</span><span class="p">])</span>
+        <span class="n">initial_time</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span> <span class="n">timeline_start</span> <span class="o">+</span> <span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;freeze_start&#39;</span><span class="p">]</span> <span class="p">)</span>
+        
+        <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Initial simulation date set to: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">initial_time</span><span class="p">))</span>
+        
+        
+        <span class="s2">&quot;Get relevant stars&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">Vizier</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;all&#39;</span><span class="p">],</span> <span class="n">row_limit</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span><span class="o">.</span><span class="n">query_constraints</span><span class="p">(</span><span class="n">catalog</span><span class="o">=</span><span class="s1">&#39;I/239/hip_main&#39;</span><span class="p">,</span><span class="n">Vmag</span><span class="o">=</span><span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;Vmag&#39;</span><span class="p">])</span>
+        <span class="n">star_cat</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">ROWS</span> <span class="o">=</span> <span class="n">star_cat</span><span class="p">[</span><span class="mi">0</span><span class="p">][:]</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
+        <span class="n">stars</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">stars_dec</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">ROWS</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">stars_ra</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">ROWS</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+        
+        <span class="s2">&quot;Insert stars into Pyephem&quot;</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ROWS</span><span class="p">):</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">{}</span><span class="s2">,f|M|F7,</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="s2">,2000/01/01 11:58:55.816&quot;</span>
+            <span class="n">s</span> <span class="o">=</span> <span class="n">s</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">star_cat</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="s1">&#39;HIP&#39;</span><span class="p">],</span> <span class="n">deg2HMS</span><span class="p">(</span><span class="n">ra</span><span class="o">=</span><span class="n">star_cat</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="s1">&#39;_RA.icrs&#39;</span><span class="p">]),</span> <span class="n">deg2HMS</span><span class="p">(</span><span class="n">dec</span><span class="o">=</span><span class="n">star_cat</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="s1">&#39;_DE.icrs&#39;</span><span class="p">]),</span> <span class="n">star_cat</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="s1">&#39;Vmag&#39;</span><span class="p">])</span>
+            <span class="n">stars</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ephem</span><span class="o">.</span><span class="n">readdb</span><span class="p">(</span><span class="n">s</span><span class="p">))</span>
+            <span class="n">stars</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">epoch</span><span class="o">=</span><span class="s1">&#39;2000/01/01 11:58:55.816&#39;</span><span class="p">)</span>
+            <span class="n">stars_dec</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">stars</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">.</span><span class="n">dec</span>
+            <span class="n">stars_ra</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">stars</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">.</span><span class="n">ra</span>
+        
+        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;List of stars used: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">star_cat</span><span class="p">))</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        
+        <span class="s2">&quot;Calculate unit-vectors of stars&quot;</span>
+        <span class="n">stars_x</span> <span class="o">=</span> <span class="n">cos</span><span class="p">(</span><span class="n">stars_dec</span><span class="p">)</span><span class="o">*</span> <span class="n">cos</span><span class="p">(</span><span class="n">stars_ra</span><span class="p">)</span>
+        <span class="n">stars_y</span> <span class="o">=</span> <span class="n">cos</span><span class="p">(</span><span class="n">stars_dec</span><span class="p">)</span><span class="o">*</span> <span class="n">sin</span><span class="p">(</span><span class="n">stars_ra</span><span class="p">)</span>
+        <span class="n">stars_z</span> <span class="o">=</span> <span class="n">sin</span><span class="p">(</span><span class="n">stars_dec</span><span class="p">)</span>
+        <span class="n">stars_r</span> <span class="o">=</span> <span class="n">array</span><span class="p">([</span><span class="n">stars_x</span><span class="p">,</span><span class="n">stars_y</span><span class="p">,</span><span class="n">stars_z</span><span class="p">])</span>
+        <span class="n">stars_r</span> <span class="o">=</span> <span class="n">stars_r</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+        
+        <span class="s2">&quot;Prepare the excel file output&quot;</span>
+        <span class="n">star_list_excel</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">star_list_excel</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s1">&#39;Name&#39;</span><span class="p">])</span>
+        <span class="n">star_list_excel</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s1">&#39;t1&#39;</span><span class="p">])</span>
+        <span class="n">star_list_excel</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s1">&#39;long&#39;</span><span class="p">])</span>
+        <span class="n">star_list_excel</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s1">&#39;lat&#39;</span><span class="p">])</span>
+        <span class="n">star_list_excel</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s1">&#39;mag&#39;</span><span class="p">])</span>
+        <span class="n">star_list_excel</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s1">&#39;H_offset&#39;</span><span class="p">])</span>
+        <span class="n">star_list_excel</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s1">&#39;V_offset&#39;</span><span class="p">])</span>
+        <span class="n">star_list_excel</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s1">&#39;e_Hpmag&#39;</span><span class="p">])</span>
+        <span class="n">star_list_excel</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s1">&#39;Hpscat&#39;</span><span class="p">])</span>
+        <span class="n">star_list_excel</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s1">&#39;o_Hpmag&#39;</span><span class="p">])</span>
+        <span class="n">star_list_excel</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s1">&#39;Classification&#39;</span><span class="p">])</span>
+        <span class="n">star_list_excel</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s1">&#39;Optical Axis Dec (ICRS J2000, eq)&#39;</span><span class="p">])</span>
+        <span class="n">star_list_excel</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s1">&#39;Optical Axis RA (ICRS J2000, eq)&#39;</span><span class="p">])</span>
+        <span class="n">star_list_excel</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s1">&#39;Star Dec (ICRS J2000, eq)&#39;</span><span class="p">])</span>
+        <span class="n">star_list_excel</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="s1">&#39;Star RA (ICRS J2000, eq)&#39;</span><span class="p">])</span>
+        
+        <span class="s2">&quot;Prepare the output&quot;</span>
+        <span class="n">star_list</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="s2">&quot;Pre-allocate space&quot;</span>
+        <span class="n">lat_MATS</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">timesteps</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">long_MATS</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">timesteps</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">optical_axis</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">timesteps</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+        <span class="n">stars_r_V_offset_plane</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">ROWS</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+        <span class="n">stars_r_H_offset_plane</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">ROWS</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+        <span class="n">stars_vert_offset</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">timesteps</span><span class="p">,</span><span class="n">ROWS</span><span class="p">))</span>
+        <span class="n">stars_hori_offset</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">timesteps</span><span class="p">,</span><span class="n">ROWS</span><span class="p">))</span>
+        <span class="n">stars_offset</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">timesteps</span><span class="p">,</span><span class="n">ROWS</span><span class="p">))</span>
+        <span class="n">r_V_offset_normal</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">timesteps</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+        <span class="n">r_H_offset_normal</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">timesteps</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+        <span class="n">star_counter</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">spotted_star_name</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">spotted_star_timestamp</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">spotted_star_timecounter</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">skip_star_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">MATS_P</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">timesteps</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+        
+        <span class="n">Dec_optical_axis</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">timesteps</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">RA_optical_axis</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">timesteps</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+        
+        <span class="n">angle_between_orbital_plane_and_star</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">timesteps</span><span class="p">,</span><span class="n">ROWS</span><span class="p">))</span>
+        
+        <span class="s2">&quot;Constants&quot;</span>
+        <span class="n">pointing_altitude</span> <span class="o">=</span> <span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;pointing_altitude&#39;</span><span class="p">]</span><span class="o">/</span><span class="mi">1000</span> 
+        
+        <span class="n">V_offset</span> <span class="o">=</span> <span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;V_offset&#39;</span><span class="p">]</span>
+        <span class="n">H_offset</span> <span class="o">=</span> <span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;H_offset&#39;</span><span class="p">]</span>
+        
+        
+        <span class="n">yaw_correction</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;yaw_correction&#39;</span><span class="p">]</span>
+        
+        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;H_offset set to [degrees]: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">H_offset</span><span class="p">))</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;V_offset set to [degrees]: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">V_offset</span><span class="p">))</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;yaw_correction set to: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">yaw_correction</span><span class="p">))</span>
+        
+        <span class="n">TLE</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">getTLE</span><span class="p">()</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;TLE used: &#39;</span><span class="o">+</span><span class="n">TLE</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">TLE</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">MATS</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">readtle</span><span class="p">(</span><span class="s1">&#39;MATS&#39;</span><span class="p">,</span><span class="n">TLE</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">TLE</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        
+        <span class="n">date</span> <span class="o">=</span> <span class="n">initial_time</span>
+        
+        <span class="n">MATS_skyfield</span> <span class="o">=</span> <span class="n">skyfield</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">EarthSatellite</span><span class="p">(</span><span class="n">TLE</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">TLE</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+        
+        <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Start of simulation of MATS for Mode120&#39;</span><span class="p">)</span>
+        <span class="c1">################## Start of Simulation ########################################</span>
+        <span class="s2">&quot;Loop and calculate the relevant angle of each star to each direction of MATS&#39;s FOV&quot;</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">timesteps</span><span class="p">):</span>
+            
+            <span class="n">current_time</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">date</span><span class="o">+</span><span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="n">timestep</span><span class="o">*</span><span class="n">t</span><span class="p">)</span>
+            
+            <span class="k">if</span><span class="p">(</span> <span class="n">t</span><span class="o">*</span><span class="n">timestep</span> <span class="o">%</span> <span class="n">log_timestep</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="n">LogFlag</span> <span class="o">=</span> <span class="kc">True</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">LogFlag</span> <span class="o">=</span> <span class="kc">False</span>
+            
+            <span class="n">Satellite_dict</span> <span class="o">=</span> <span class="n">Satellite_Simulator</span><span class="p">(</span> 
+                    <span class="n">MATS_skyfield</span><span class="p">,</span> <span class="n">current_time</span><span class="p">,</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">pointing_altitude</span><span class="p">,</span> <span class="n">LogFlag</span> <span class="p">)</span>
+            
+            <span class="n">MATS_P</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">Satellite_dict</span><span class="p">[</span><span class="s1">&#39;OrbitalPeriod [s]&#39;</span><span class="p">]</span>
+            <span class="n">lat_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span>  <span class="n">Satellite_dict</span><span class="p">[</span><span class="s1">&#39;Latitude [degrees]&#39;</span><span class="p">]</span>
+            <span class="n">long_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span>  <span class="n">Satellite_dict</span><span class="p">[</span><span class="s1">&#39;Longitude [degrees]&#39;</span><span class="p">]</span>
+            <span class="n">optical_axis</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">Satellite_dict</span><span class="p">[</span><span class="s1">&#39;OpticalAxis&#39;</span><span class="p">]</span>
+            <span class="n">Dec_optical_axis</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">Satellite_dict</span><span class="p">[</span><span class="s1">&#39;Dec_OpticalAxis [degrees]&#39;</span><span class="p">]</span>
+            <span class="n">RA_optical_axis</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">Satellite_dict</span><span class="p">[</span><span class="s1">&#39;RA_OpticalAxis [degrees]&#39;</span><span class="p">]</span>
+            <span class="n">r_H_offset_normal</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">Satellite_dict</span><span class="p">[</span><span class="s1">&#39;Normal2H_offset&#39;</span><span class="p">]</span>
+            <span class="n">r_V_offset_normal</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">Satellite_dict</span><span class="p">[</span><span class="s1">&#39;Normal2V_offset&#39;</span><span class="p">]</span>
+            
+            
+            <span class="c1">###################### Star-mapper ####################################</span>
+            
+            <span class="k">if</span><span class="p">(</span><span class="n">t</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
+                <span class="s2">&quot;Check position of stars relevant to pointing direction&quot;</span>
+                <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ROWS</span><span class="p">):</span>
+                    
+                    <span class="s2">&quot;Skip star if it is not visible during this epoch&quot;</span>
+                    <span class="k">if</span><span class="p">(</span><span class="n">stars</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">skip_star_list</span><span class="p">):</span>
+                        <span class="k">continue</span>
+                    
+                    <span class="s2">&quot;Check if a star has already been spotted during this orbit.&quot;</span>
+                    <span class="k">if</span><span class="p">(</span> <span class="n">stars</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">spotted_star_name</span> <span class="p">):</span>
+                        
+                        <span class="n">time_until_far_outside_of_FOV</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="p">(</span><span class="mi">180</span><span class="o">*</span><span class="n">MATS_P</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">/</span><span class="mi">360</span><span class="p">)</span>
+                        
+                        <span class="s2">&quot;If enough time has passed (half an orbit), the star can be removed from the exception list&quot;</span>
+                        <span class="k">if</span><span class="p">((</span><span class="n">current_time</span> <span class="o">-</span> <span class="n">spotted_star_timestamp</span><span class="p">[</span><span class="n">spotted_star_name</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">stars</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">)])</span> <span class="o">&gt;=</span> <span class="n">time_until_far_outside_of_FOV</span><span class="p">):</span>
+                            <span class="n">spotted_star_timestamp</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">spotted_star_name</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">stars</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+                            <span class="n">spotted_star_timecounter</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">spotted_star_name</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">stars</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">))</span>
+                            <span class="n">spotted_star_name</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">stars</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                        <span class="k">continue</span>
+                    
+                    
+                    
+                    <span class="s2">&quot;Total angle offset of the star compared to MATS&#39;s FOV&quot;</span>
+                    <span class="n">stars_offset</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="n">arccos</span><span class="p">(</span><span class="n">dot</span><span class="p">(</span><span class="n">optical_axis</span><span class="p">[</span><span class="n">t</span><span class="p">],</span><span class="n">stars_r</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">x</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">norm</span><span class="p">(</span><span class="n">optical_axis</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">*</span> <span class="n">norm</span><span class="p">(</span><span class="n">stars_r</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">x</span><span class="p">])))</span> <span class="o">/</span><span class="n">pi</span><span class="o">*</span><span class="mi">180</span>
+                    
+                    <span class="s2">&quot;Project &#39;star vectors&#39; ontop pointing H-offset and V-offset plane&quot;</span>
+                    <span class="n">stars_r_V_offset_plane</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="n">stars_r</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">x</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="n">dot</span><span class="p">(</span><span class="n">stars_r</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">x</span><span class="p">],</span><span class="n">r_V_offset_normal</span><span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span> <span class="o">*</span> <span class="n">r_V_offset_normal</span><span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span>
+                    
+                    <span class="n">stars_r_H_offset_plane</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="n">stars_r</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">x</span><span class="p">]</span> <span class="o">-</span> <span class="p">(</span><span class="n">dot</span><span class="p">(</span><span class="n">stars_r</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">x</span><span class="p">],</span><span class="n">r_H_offset_normal</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">*</span> <span class="n">r_H_offset_normal</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> 
+                    
+                    <span class="s2">&quot;Dot product to get the Vertical and Horizontal angle offset of the star in the FOV&quot;</span>
+                    <span class="n">stars_vert_offset</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="n">arccos</span><span class="p">(</span><span class="n">dot</span><span class="p">(</span><span class="n">optical_axis</span><span class="p">[</span><span class="n">t</span><span class="p">],</span><span class="n">stars_r_V_offset_plane</span><span class="p">[</span><span class="n">x</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">norm</span><span class="p">(</span><span class="n">optical_axis</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">*</span> <span class="n">norm</span><span class="p">(</span><span class="n">stars_r_V_offset_plane</span><span class="p">[</span><span class="n">x</span><span class="p">])))</span> <span class="o">/</span><span class="n">pi</span><span class="o">*</span><span class="mi">180</span>
+                    <span class="n">stars_hori_offset</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="n">arccos</span><span class="p">(</span><span class="n">dot</span><span class="p">(</span><span class="n">optical_axis</span><span class="p">[</span><span class="n">t</span><span class="p">],</span><span class="n">stars_r_H_offset_plane</span><span class="p">[</span><span class="n">x</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">norm</span><span class="p">(</span><span class="n">optical_axis</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">*</span> <span class="n">norm</span><span class="p">(</span><span class="n">stars_r_H_offset_plane</span><span class="p">[</span><span class="n">x</span><span class="p">])))</span> <span class="o">/</span><span class="n">pi</span><span class="o">*</span><span class="mi">180</span>
+                    
+                    <span class="s2">&quot;Determine sign of off-set angle where positive V-offset angle is when looking at higher altitude&quot;</span>
+                    <span class="k">if</span><span class="p">(</span> <span class="n">dot</span><span class="p">(</span><span class="n">cross</span><span class="p">(</span><span class="n">optical_axis</span><span class="p">[</span><span class="n">t</span><span class="p">],</span><span class="n">stars_r_V_offset_plane</span><span class="p">[</span><span class="n">x</span><span class="p">]),</span><span class="n">r_V_offset_normal</span><span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="p">):</span>
+                        <span class="n">stars_vert_offset</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">stars_vert_offset</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">x</span><span class="p">]</span>
+                    <span class="k">if</span><span class="p">(</span> <span class="n">dot</span><span class="p">(</span><span class="n">cross</span><span class="p">(</span><span class="n">optical_axis</span><span class="p">[</span><span class="n">t</span><span class="p">],</span><span class="n">stars_r_H_offset_plane</span><span class="p">[</span><span class="n">x</span><span class="p">]),</span><span class="n">r_H_offset_normal</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="p">):</span>
+                        <span class="n">stars_hori_offset</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">stars_hori_offset</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">x</span><span class="p">]</span>
+                    
+                    
+                    <span class="s2">&quot;To be able to skip stars far outside the orbital plane of MATS&quot;</span>
+                    <span class="k">if</span><span class="p">(</span> <span class="n">t</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">):</span>
+                        <span class="s2">&quot;For first loop of stars, calculate angle between stars and orbital plane&quot;</span>
+                        <span class="n">angle_between_orbital_plane_and_star</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="n">arccos</span><span class="p">(</span> <span class="n">dot</span><span class="p">(</span><span class="n">stars_r</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="n">x</span><span class="p">],</span> <span class="n">stars_r_V_offset_plane</span><span class="p">[</span><span class="n">x</span><span class="p">])</span> <span class="o">/</span> <span class="n">norm</span><span class="p">(</span><span class="n">stars_r_V_offset_plane</span><span class="p">[</span><span class="n">x</span><span class="p">]))</span> <span class="o">/</span><span class="n">pi</span><span class="o">*</span><span class="mi">180</span>
+                        
+                        <span class="s2">&quot;Make exception list for stars not visible during this epoch (relativiely far outside of orbital plane)&quot;</span>
+                        <span class="k">if</span><span class="p">(</span> <span class="p">(</span> <span class="nb">abs</span><span class="p">(</span><span class="n">angle_between_orbital_plane_and_star</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">x</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">H_offset</span><span class="o">+</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">365</span><span class="o">*</span><span class="mi">24</span><span class="o">*</span><span class="mi">3600</span><span class="p">)</span><span class="o">*</span><span class="mi">360</span> <span class="ow">and</span> <span class="n">yaw_correction</span> <span class="o">==</span> <span class="kc">False</span> <span class="p">)</span> <span class="ow">or</span> 
+                           <span class="p">(</span> <span class="nb">abs</span><span class="p">(</span><span class="n">angle_between_orbital_plane_and_star</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">x</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">H_offset</span> <span class="o">+</span> <span class="nb">abs</span><span class="p">(</span><span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;yaw_amplitude&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="p">(</span><span class="n">duration</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="mi">365</span><span class="o">*</span><span class="mi">24</span><span class="o">*</span><span class="mi">3600</span><span class="p">)</span><span class="o">*</span><span class="mi">360</span> <span class="ow">and</span> <span class="n">yaw_correction</span> <span class="o">==</span> <span class="kc">True</span> <span class="p">)):</span>
+                            
+                            <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Skip star: &#39;</span><span class="o">+</span><span class="n">stars</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="o">+</span><span class="s1">&#39;, with angle_between_orbital_plane_and_star of: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">angle_between_orbital_plane_and_star</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">x</span><span class="p">])</span><span class="o">+</span><span class="s1">&#39; degrees&#39;</span><span class="p">)</span>
+                            <span class="n">skip_star_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stars</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                            <span class="k">continue</span>
+                    
+                    
+                    <span class="s2">&quot;Check that the star is entering at V-offset degrees and within the H-offset angle&quot;</span>
+                    <span class="k">if</span><span class="p">(</span> <span class="n">stars_vert_offset</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">x</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">V_offset</span> <span class="ow">and</span> <span class="n">stars_vert_offset</span><span class="p">[</span><span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="n">x</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">V_offset</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">stars_hori_offset</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">x</span><span class="p">])</span> <span class="o">&lt;</span> <span class="n">H_offset</span><span class="p">):</span>
+                        
+                        <span class="k">if</span><span class="p">(</span> <span class="n">t</span> <span class="o">%</span> <span class="n">log_timestep</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+                            <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Star: &#39;</span><span class="o">+</span><span class="n">stars</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="o">+</span><span class="s1">&#39;, with H-offset: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">stars_hori_offset</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">x</span><span class="p">])</span><span class="o">+</span><span class="s1">&#39; V-offset: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">stars_vert_offset</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">x</span><span class="p">])</span><span class="o">+</span><span class="s1">&#39; in degrees is available&#39;</span><span class="p">)</span>
+                        
+                        <span class="s2">&quot;Add the spotted star to the exception list and timestamp it&quot;</span>
+                        <span class="n">spotted_star_name</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stars</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                        <span class="n">spotted_star_timestamp</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">current_time</span><span class="p">)</span>
+                        <span class="n">spotted_star_timecounter</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span> 
+                        
+                        
+                        <span class="s2">&quot;Log all relevent data for the star&quot;</span>
+                        <span class="n">star_list_excel</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stars</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+                        <span class="n">star_list_excel</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">current_time</span><span class="p">))</span>
+                        <span class="n">star_list_excel</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">long_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">/</span><span class="n">pi</span><span class="o">*</span><span class="mi">180</span><span class="p">)))</span>
+                        <span class="n">star_list_excel</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">lat_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">/</span><span class="n">pi</span><span class="o">*</span><span class="mi">180</span><span class="p">)))</span>
+                        <span class="n">star_list_excel</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">stars</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">mag</span><span class="p">))</span>
+                        <span class="n">star_list_excel</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">stars_hori_offset</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">x</span><span class="p">]))</span>
+                        <span class="n">star_list_excel</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">stars_vert_offset</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">x</span><span class="p">]))</span>
+                        <span class="n">star_list_excel</span><span class="p">[</span><span class="mi">7</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">star_cat</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="s1">&#39;e_Hpmag&#39;</span><span class="p">]))</span>
+                        <span class="n">star_list_excel</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">star_cat</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="s1">&#39;Hpscat&#39;</span><span class="p">]))</span>
+                        <span class="n">star_list_excel</span><span class="p">[</span><span class="mi">9</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">star_cat</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="s1">&#39;o_Hpmag&#39;</span><span class="p">]))</span>
+                        <span class="n">star_list_excel</span><span class="p">[</span><span class="mi">10</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">star_cat</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="s1">&#39;SpType&#39;</span><span class="p">]))</span>
+                        <span class="n">star_list_excel</span><span class="p">[</span><span class="mi">11</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">Dec_optical_axis</span><span class="p">[</span><span class="n">t</span><span class="p">]))</span>
+                        <span class="n">star_list_excel</span><span class="p">[</span><span class="mi">12</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">RA_optical_axis</span><span class="p">[</span><span class="n">t</span><span class="p">]))</span>
+                        <span class="n">star_list_excel</span><span class="p">[</span><span class="mi">13</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">stars_dec</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">/</span><span class="n">pi</span><span class="o">*</span><span class="mi">180</span><span class="p">))</span>
+                        <span class="n">star_list_excel</span><span class="p">[</span><span class="mi">14</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">stars_ra</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">/</span><span class="n">pi</span><span class="o">*</span><span class="mi">180</span><span class="p">))</span>
+                        
+                        <span class="s2">&quot;Log data of star relevant to filtering process&quot;</span>
+                        <span class="n">star_list</span><span class="o">.</span><span class="n">append</span><span class="p">({</span> <span class="s1">&#39;Date&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="n">current_time</span><span class="p">),</span> <span class="s1">&#39;V-offset&#39;</span><span class="p">:</span> <span class="n">stars_vert_offset</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">x</span><span class="p">],</span> <span class="s1">&#39;H-offset&#39;</span><span class="p">:</span> <span class="n">stars_hori_offset</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="n">x</span><span class="p">],</span> 
+                                          <span class="s1">&#39;long_MATS&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">long_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">/</span><span class="n">pi</span><span class="o">*</span><span class="mi">180</span><span class="p">),</span> <span class="s1">&#39;lat_MATS&#39;</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">lat_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">/</span><span class="n">pi</span><span class="o">*</span><span class="mi">180</span><span class="p">),</span> 
+                                          <span class="s1">&#39;Dec_optical_axis&#39;</span><span class="p">:</span> <span class="n">Dec_optical_axis</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="s1">&#39;RA_optical_axis&#39;</span><span class="p">:</span> <span class="n">RA_optical_axis</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> 
+                                          <span class="s1">&#39;Vmag&#39;</span><span class="p">:</span> <span class="n">stars</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">mag</span><span class="p">,</span> <span class="s1">&#39;Name&#39;</span><span class="p">:</span> <span class="n">stars</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="s1">&#39;Dec&#39;</span><span class="p">:</span> <span class="n">stars_dec</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">/</span><span class="n">pi</span><span class="o">*</span><span class="mi">180</span><span class="p">,</span> <span class="s1">&#39;RA&#39;</span><span class="p">:</span> <span class="n">stars_ra</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">/</span><span class="n">pi</span><span class="o">*</span><span class="mi">180</span> <span class="p">})</span>
+                        
+                        <span class="n">star_counter</span> <span class="o">=</span> <span class="n">star_counter</span> <span class="o">+</span> <span class="mi">1</span>
+                        
+                <span class="c1">######################### End of star_mapper #############################</span>
+            
+        
+        <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;End of simulation for Mode120&#39;</span><span class="p">)</span>
+        
+        
+        <span class="s2">&quot;Write spotted stars to file&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="s1">&#39;Output&#39;</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">pass</span>
+        
+        <span class="k">while</span><span class="p">(</span><span class="kc">True</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">file_directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;Output&#39;</span><span class="p">,</span><span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span><span class="o">+</span><span class="s1">&#39;_Visible_Stars_&#39;</span><span class="o">+</span><span class="n">_Globals</span><span class="o">.</span><span class="n">Config_File</span><span class="o">+</span><span class="s1">&#39;.csv&#39;</span><span class="p">)</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">file_directory</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">write_file</span><span class="p">:</span>
+                    <span class="n">writer</span> <span class="o">=</span> <span class="n">csv</span><span class="o">.</span><span class="n">writer</span><span class="p">(</span><span class="n">write_file</span><span class="p">,</span> <span class="n">dialect</span><span class="o">=</span><span class="s1">&#39;excel-tab&#39;</span><span class="p">)</span>
+                    <span class="n">writer</span><span class="o">.</span><span class="n">writerows</span><span class="p">(</span><span class="n">star_list_excel</span><span class="p">)</span>
+                <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Available Stars data saved to: &#39;</span><span class="o">+</span><span class="n">file_directory</span><span class="p">)</span>
+                <span class="c1">#print(&#39;Available Stars data saved to: &#39;+file_directory)</span>
+                <span class="k">break</span>
+            <span class="k">except</span> <span class="ne">PermissionError</span><span class="p">:</span>
+                <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">file_directory</span><span class="o">+</span><span class="s1">&#39; cannot be overwritten. Please close it&#39;</span><span class="p">)</span>
+                <span class="n">data</span> <span class="o">=</span> <span class="nb">input</span><span class="p">(</span><span class="s1">&#39;Enter anything to try again or 1 to exit&#39;</span><span class="p">)</span>
+                <span class="k">if</span><span class="p">(</span> <span class="n">data</span> <span class="o">==</span> <span class="s1">&#39;1&#39;</span><span class="p">):</span>
+                    <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+        
+        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Visible star list to be filtered:&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">star_list</span><span class="p">)):</span>
+            <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">star_list</span><span class="p">[</span><span class="n">x</span><span class="p">]))</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        
+        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Exit &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="vm">__name__</span><span class="p">))</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+        
+    
+    <span class="k">return</span><span class="p">(</span><span class="n">star_list</span><span class="p">)</span></div>
+
+
+
+<span class="c1">#####################################################################################################</span>
+<span class="c1">#####################################################################################################</span>
+
+
+
+<div class="viewcode-block" id="Mode120_date_select"><a class="viewcode-back" href="../../../../Operational_Planning_Tool._TimelineGenerator.Modes.html#Operational_Planning_Tool._TimelineGenerator.Modes.Mode120.Mode120_date_select">[docs]</a><span class="k">def</span> <span class="nf">Mode120_date_select</span><span class="p">(</span><span class="n">Occupied_Timeline</span><span class="p">,</span> <span class="n">dates</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Subfunction, Either schedules a user provided date or a simulated date.</span>
+<span class="sd">    </span>
+<span class="sd">    If automatic in OPT_Config_File is set to False, the date is user provided. It will be postponed until available. \n</span>
+<span class="sd">    If automatic in OPT_Config_File is set to True. A list of dictionaries containing simulated dates is provided. </span>
+<span class="sd">    A date is selected for which the brightest star is visible at the minimum amount of H-offset in the FOV.</span>
+<span class="sd">    If the date is occupied the same star will be selected with the 2nd least amount of H-offset and so on. Another star will not be chosen and if </span>
+<span class="sd">    no date is available for the brightest star; the Mode will not be scheduled.</span>
+<span class="sd">    </span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        Occupied_Timeline (:obj:`dict` of :obj:`list`): Dictionary with keys equal to planned and scheduled Modes together with their start and end time in a list. The list is empty if the Mode is unscheduled.</span>
+<span class="sd">        dates ((:obj:`list` of :obj:`dict`)): A list containing dictionaries containing parameters for each time a star is spotted.</span>
+<span class="sd">        dates (ephem.Date): A user provided date for the to schedule the Mode.</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (tuple): tuple containing:</span>
+<span class="sd">            (:obj:`dict` of :obj:`list`): Occupied_Timeline (updated with the result from the scheduled Mode). \n</span>
+<span class="sd">            (str): Comment regarding the result of scheduling of the mode.</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">Mode120_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Mode120_settings</span><span class="p">()</span>
+    
+    <span class="n">automatic</span> <span class="o">=</span> <span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;automatic&#39;</span><span class="p">]</span>
+    
+    <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Start of filtering function&#39;</span><span class="p">)</span>
+    
+    <span class="s2">&quot;Either schedules a user provided date or filters and schedules calculated dates&quot;</span>
+    <span class="k">if</span><span class="p">(</span> <span class="n">automatic</span> <span class="o">==</span> <span class="kc">False</span> <span class="p">):</span>
+        
+        <span class="n">endDate</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">dates</span><span class="o">+</span><span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;mode_duration&#39;</span><span class="p">])</span>
+        
+        <span class="c1">############### Start of availability schedueler ##########################</span>
+        
+        <span class="n">date</span><span class="p">,</span> <span class="n">endDate</span><span class="p">,</span> <span class="n">iterations</span> <span class="o">=</span> <span class="n">scheduler</span><span class="p">(</span><span class="n">Occupied_Timeline</span><span class="p">,</span> <span class="n">dates</span><span class="p">,</span> <span class="n">endDate</span><span class="p">)</span>
+        
+        <span class="c1">############### End of availability schedueler ##########################</span>
+        
+        <span class="k">if</span><span class="p">(</span><span class="n">iterations</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="n">Logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;User Specified date was occupied and got postponed!!&#39;</span><span class="p">)</span>
+            <span class="c1">#input()</span>
+            
+            
+        <span class="n">Occupied_Timeline</span><span class="p">[</span><span class="s1">&#39;Mode120&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">endDate</span><span class="p">)</span> <span class="p">)</span>
+        <span class="n">Mode120_comment</span> <span class="o">=</span> <span class="s1">&#39;Mode120 scheduled using a user given date, the date got postponed &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">iterations</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; times&#39;</span>
+        
+        
+    <span class="k">elif</span><span class="p">(</span> <span class="n">automatic</span> <span class="o">==</span> <span class="kc">True</span> <span class="p">):</span>
+        
+        
+        <span class="k">if</span><span class="p">(</span> <span class="nb">len</span><span class="p">(</span><span class="n">dates</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="n">Mode120_comment</span> <span class="o">=</span> <span class="s1">&#39;Stars not visible (Empty dates)&#39;</span>
+            
+            <span class="n">Logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">Mode120_comment</span><span class="p">)</span>
+            <span class="c1">#input(&#39;Enter anything to acknowledge and continue&#39;)</span>
+        
+            <span class="k">return</span> <span class="n">Occupied_Timeline</span><span class="p">,</span> <span class="n">Mode120_comment</span>
+        
+        <span class="n">star_min_mag_H_offset</span> <span class="o">=</span> <span class="p">[]</span>
+        
+        <span class="n">star_H_offset</span> <span class="o">=</span> <span class="p">[</span><span class="n">dates</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="s1">&#39;H-offset&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dates</span><span class="p">))]</span>
+        <span class="c1">#print(&#39;star_H_offset&#39;)</span>
+        <span class="c1">#print(star_H_offset)</span>
+        <span class="n">star_V_offset</span> <span class="o">=</span> <span class="p">[</span><span class="n">dates</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="s1">&#39;V-offset&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dates</span><span class="p">))]</span>
+        <span class="n">star_date</span> <span class="o">=</span> <span class="p">[</span><span class="n">dates</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="s1">&#39;Date&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dates</span><span class="p">))]</span>
+        <span class="n">star_mag</span> <span class="o">=</span> <span class="p">[</span><span class="n">dates</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="s1">&#39;Vmag&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dates</span><span class="p">))]</span>
+        <span class="n">star_name</span> <span class="o">=</span> <span class="p">[</span><span class="n">dates</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="s1">&#39;Name&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dates</span><span class="p">))]</span>
+        <span class="n">long_MATS</span> <span class="o">=</span> <span class="p">[</span><span class="n">dates</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="s1">&#39;long_MATS&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dates</span><span class="p">))]</span>
+        <span class="n">lat_MATS</span> <span class="o">=</span> <span class="p">[</span><span class="n">dates</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="s1">&#39;lat_MATS&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dates</span><span class="p">))]</span>
+        <span class="n">Dec_optical_axis</span> <span class="o">=</span> <span class="p">[</span><span class="n">dates</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="s1">&#39;Dec_optical_axis&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dates</span><span class="p">))]</span>
+        <span class="n">RA_optical_axis</span> <span class="o">=</span> <span class="p">[</span><span class="n">dates</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="s1">&#39;RA_optical_axis&#39;</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dates</span><span class="p">))]</span>
+        
+        <span class="n">star_mag_sorted</span> <span class="o">=</span> <span class="p">[</span><span class="nb">abs</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">star_mag</span><span class="p">]</span>
+        <span class="n">star_mag_sorted</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        
+        <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Brightest star magnitude: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">star_mag</span><span class="p">)))</span>
+        
+        <span class="s2">&quot;Extract all the H-offsets for the brightest star&quot;</span>
+        <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">dates</span><span class="p">)):</span>
+            <span class="k">if</span><span class="p">(</span> <span class="nb">min</span><span class="p">(</span><span class="n">star_mag</span><span class="p">)</span> <span class="o">==</span> <span class="n">star_mag</span><span class="p">[</span><span class="n">x</span><span class="p">]):</span>
+                <span class="n">star_min_mag_H_offset</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">star_H_offset</span><span class="p">[</span><span class="n">x</span><span class="p">])</span>
+                
+            <span class="c1">#Just add an arbitrary large H-offset value for stars other than the brightest to keep the list the same length</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">star_min_mag_H_offset</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+        
+        
+        
+        <span class="c1">#star_H_offset_abs = [abs(x) for x in star_H_offset]</span>
+        <span class="n">star_H_offset_abs</span> <span class="o">=</span> <span class="p">[</span><span class="nb">abs</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">star_min_mag_H_offset</span><span class="p">]</span>
+        <span class="c1">#star_H_offset_sorted = star_H_offset_abs</span>
+        <span class="n">star_H_offset_sorted</span> <span class="o">=</span> <span class="p">[</span><span class="nb">abs</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">star_min_mag_H_offset</span><span class="p">]</span>
+        <span class="n">star_H_offset_sorted</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;star_H_offset_abs: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">star_H_offset_abs</span><span class="p">))</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;star_H_offset_sorted: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">star_H_offset_sorted</span><span class="p">))</span>
+        
+        
+        <span class="n">restart</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">iterations</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="c1">## Selects date based on min H-offset, if occupied, select date for next min H-offset</span>
+        <span class="k">while</span><span class="p">(</span> <span class="n">restart</span> <span class="o">==</span> <span class="kc">True</span><span class="p">):</span>
+            
+            <span class="c1">## If all available dates for the brightest star is occupied, no Mode120 will be schedueled</span>
+            <span class="k">if</span><span class="p">(</span> <span class="nb">len</span><span class="p">(</span><span class="n">star_min_mag_H_offset</span><span class="p">)</span> <span class="o">==</span> <span class="n">iterations</span><span class="p">):</span>
+                <span class="n">Mode120_comment</span> <span class="o">=</span> <span class="s1">&#39;No available time for Mode120 using the brightest available star&#39;</span>
+                <span class="n">Logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="n">Mode120_comment</span><span class="p">)</span>
+                <span class="c1">#input(&#39;Enter anything to ackknowledge and continue&#39;)</span>
+                <span class="k">return</span> <span class="n">Occupied_Timeline</span><span class="p">,</span> <span class="n">Mode120_comment</span>
+            
+            <span class="n">restart</span> <span class="o">=</span> <span class="kc">False</span>
+            
+            <span class="c1">#Extract index of  minimum H-offset for first iteration, </span>
+            <span class="c1">#then next smallest if 2nd iterations needed and so on</span>
+            <span class="n">x</span> <span class="o">=</span> <span class="n">star_H_offset_abs</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">star_H_offset_sorted</span><span class="p">[</span><span class="n">iterations</span><span class="p">])</span>
+            
+            <span class="n">Mode120_date</span> <span class="o">=</span> <span class="n">star_date</span><span class="p">[</span><span class="n">x</span><span class="p">]</span>
+            
+            <span class="n">Mode120_date</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">Mode120_date</span><span class="p">)</span><span class="o">-</span><span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="p">(</span><span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;freeze_start&#39;</span><span class="p">]))</span>
+            
+            <span class="n">Mode120_endDate</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">Mode120_date</span><span class="o">+</span><span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;mode_duration&#39;</span><span class="p">])</span>
+            
+            <span class="s2">&quot;Check that the scheduled date is not before the start of the timeline&quot;</span>
+            <span class="k">if</span><span class="p">(</span> <span class="n">Mode120_date</span> <span class="o">&lt;</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Timeline_settings</span><span class="p">()[</span><span class="s1">&#39;start_date&#39;</span><span class="p">])</span> <span class="p">):</span>
+                <span class="n">iterations</span> <span class="o">=</span> <span class="n">iterations</span> <span class="o">+</span> <span class="mi">1</span>
+                <span class="n">restart</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="k">continue</span>
+            
+            <span class="c1">## Extract Occupied dates and if they clash, restart loop and select new date</span>
+            <span class="k">for</span> <span class="n">busy_dates</span> <span class="ow">in</span> <span class="n">Occupied_Timeline</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
+                <span class="k">if</span><span class="p">(</span> <span class="n">busy_dates</span> <span class="o">==</span> <span class="p">[]):</span>
+                    <span class="k">continue</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="s2">&quot;Extract the start and end date of each instance of a scheduled mode&quot;</span>
+                    <span class="k">for</span> <span class="n">busy_date</span> <span class="ow">in</span> <span class="n">busy_dates</span><span class="p">:</span>
+                        <span class="k">if</span><span class="p">(</span> <span class="n">busy_date</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">Mode120_date</span> <span class="o">&lt;=</span> <span class="n">busy_date</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">or</span> 
+                               <span class="n">busy_date</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">Mode120_endDate</span> <span class="o">&lt;=</span> <span class="n">busy_date</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">or</span>
+                           <span class="p">(</span><span class="n">Mode120_date</span> <span class="o">&lt;</span> <span class="n">busy_date</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">Mode120_endDate</span> <span class="o">&gt;</span> <span class="n">busy_date</span><span class="p">[</span><span class="mi">1</span><span class="p">])):</span>
+                            
+                            <span class="n">iterations</span> <span class="o">=</span> <span class="n">iterations</span> <span class="o">+</span> <span class="mi">1</span>
+                            <span class="n">restart</span> <span class="o">=</span> <span class="kc">True</span>
+                            <span class="k">break</span>
+        
+        
+        <span class="n">Occupied_Timeline</span><span class="p">[</span><span class="s1">&#39;Mode120&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="n">Mode120_date</span><span class="p">,</span> <span class="n">Mode120_endDate</span><span class="p">)</span> <span class="p">)</span>
+        
+        <span class="n">Mode120_comment</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;Star name:&#39;</span><span class="o">+</span><span class="n">star_name</span><span class="p">[</span><span class="n">x</span><span class="p">]</span><span class="o">+</span><span class="s1">&#39;, V-offset: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">star_V_offset</span><span class="p">[</span><span class="n">x</span><span class="p">])</span><span class="o">+</span><span class="s1">&#39;, H-offset: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">star_H_offset</span><span class="p">[</span><span class="n">x</span><span class="p">])</span><span class="o">+</span><span class="s1">&#39;, V-mag: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">star_mag</span><span class="p">[</span><span class="n">x</span><span class="p">])</span><span class="o">+</span><span class="s1">&#39;, Number of times date changed: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">iterations</span><span class="p">)</span>
+            <span class="o">+</span><span class="s1">&#39;, MATS (long,lat) in degrees = (&#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">long_MATS</span><span class="p">[</span><span class="n">x</span><span class="p">])</span><span class="o">+</span><span class="s1">&#39;, &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">lat_MATS</span><span class="p">[</span><span class="n">x</span><span class="p">])</span><span class="o">+</span><span class="s1">&#39;), optical-axis Dec (J2000 ICRS): &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">Dec_optical_axis</span><span class="p">[</span><span class="n">x</span><span class="p">])</span><span class="o">+</span><span class="s1">&#39;), optical-axis RA (J2000 ICRS): &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">RA_optical_axis</span><span class="p">[</span><span class="n">x</span><span class="p">])</span><span class="o">+</span>
+        <span class="s1">&#39;), star Dec (J2000 ICRS): &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">dates</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="s1">&#39;Dec&#39;</span><span class="p">])</span><span class="o">+</span><span class="s1">&#39;, star RA (J2000 ICRS): &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">dates</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="s1">&#39;RA&#39;</span><span class="p">]))</span>
+        
+    
+    <span class="k">return</span> <span class="n">Occupied_Timeline</span><span class="p">,</span> <span class="n">Mode120_comment</span></div>
+    
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../index.html">Operational_Planning_Tool</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../Operational_Planning_Tool.html">Operational_Planning_Tool package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  <li><a href="../../../Operational_Planning_Tool.html">Operational_Planning_Tool</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, David Skånberg.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

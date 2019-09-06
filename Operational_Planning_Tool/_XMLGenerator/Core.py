@@ -8,7 +8,7 @@ Mode/Test/CMD specific settings given in the Science Mode Timeline List will ove
 """
 
 from lxml import etree
-import ephem, logging, sys, time, os, json, importlib
+import ephem, logging, sys, time, os, json, importlib, datetime
 
 from Operational_Planning_Tool import _Globals, _Library
 OPT_Config_File = importlib.import_module(_Globals.Config_File)
@@ -55,6 +55,8 @@ def XML_generator(SCIMOD_Path):
     with open(SCIMOD_Path, "r") as read_file:
         SCIMOD= json.load(read_file)
     ################# Read Science Mode Timeline json file ############
+    
+    Logger.info('Science Mode Timeline Used: '+SCIMOD_Path)
     
     Timeline_settings = OPT_Config_File.Timeline_settings()
     if( str(SCIMOD[0][0]) == 'Timeline_settings' ):
@@ -148,9 +150,17 @@ def XML_Initial_Basis_Creator(timeline_start,timeline_duration, SCIMOD_Path):
         SCIMOD_Path (str): The path as a string to the Science Mode Timeline .json file used in this run.
     '''
     
-    earliestStartingDate = ephem.Date(timeline_start).datetime().strftime("%Y-%m-%dT%H:%M:%S")
-    latestStartingDate = ephem.Date(timeline_start).datetime().strftime("%Y-%m-%dT%H:%M:%S")
+    TimelineStart_Tuple = timeline_start.tuple()
     
+    
+    TimelineStart_datetime = datetime.datetime( TimelineStart_Tuple[0], TimelineStart_Tuple[1], TimelineStart_Tuple[2], 
+                      TimelineStart_Tuple[3], TimelineStart_Tuple[4], int(round(TimelineStart_Tuple[5])) )
+    
+    earliestStartingDate = TimelineStart_datetime.strftime("%Y-%m-%dT%H:%M:%S")
+    latestStartingDate = TimelineStart_datetime.strftime("%Y-%m-%dT%H:%M:%S")
+    
+    #earliestStartingDate = ephem.Date(timeline_start).datetime().strftime("%Y-%m-%dT%H:%M:%S")
+    #latestStartingDate = ephem.Date(timeline_start).datetime().strftime("%Y-%m-%dT%H:%M:%S")
     
     root = etree.Element('InnoSatTimeline', originator='OHB', sdbVersion='9.5.99.2')
     

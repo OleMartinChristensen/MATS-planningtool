@@ -35,7 +35,7 @@ def Operational_Limb_Pointing_macro(root, relativeTime, CCD_settings, pointing_a
         relativeTime (float): Time in seconds equal to the input "relativeTime" with added delay from the scheduling of commands.
     '''
     
-    CCDSEL, NCCD, TEXPIOFS, TEXPIMS = _Library.SyncArgCalculator(CCD_settings, _Globals.Timeline_settings)
+    CCDSEL, NCCD, TEXPIOFS, TEXPIMS = _Library.SyncArgCalculator(CCD_settings, _Globals.Timeline_settings['CCDSYNC_ExtraOffset'], _Globals.Timeline_settings['CCDSYNC_ExtraIntervalTime'])
     
     
     relativeTime = Commands.TC_pafMode(root, relativeTime, mode = 2, comment = comment)
@@ -81,7 +81,7 @@ def FullReadout_Operational_Limb_Pointing_macro(root, relativeTime, CCD_settings
     '''
     
     
-    CCDSEL, NCCD, TEXPIOFS, Disregarded = _Library.SyncArgCalculator(CCD_settings, _Globals.Timeline_settings)
+    CCDSEL, NCCD, TEXPIOFS, Disregarded = _Library.SyncArgCalculator(CCD_settings, _Globals.Timeline_settings['CCDSYNC_ExtraOffset'], _Globals.Timeline_settings['CCDSYNC_ExtraIntervalTime'])
     
     relativeTime = Commands.TC_pafMode(root, relativeTime, mode = 2, comment = comment)
     
@@ -125,7 +125,7 @@ def Operational_Sweep_macro(root, relativeTime, CCD_settings, pointing_altitude_
     
     
     
-    CCDSEL, NCCD, TEXPIOFS, TEXPIMS = _Library.SyncArgCalculator(CCD_settings, _Globals.Timeline_settings)
+    CCDSEL, NCCD, TEXPIOFS, TEXPIMS = _Library.SyncArgCalculator(CCD_settings, _Globals.Timeline_settings['CCDSYNC_ExtraOffset'], _Globals.Timeline_settings['CCDSYNC_ExtraIntervalTime'])
     
     
     relativeTime = Commands.TC_pafMode(root, relativeTime, mode = 2, comment = comment)
@@ -149,12 +149,12 @@ def Snapshot_Inertial_macro(root, relativeTime, CCD_settings, FreezeTime, Freeze
     ''' Macro that corresponds to pointing towards an Inertial direction and take a Snapshot with all the CCDs (except Nadir).
     
     1. Set Payload to idle mode
-    2. Run CCD Commands with given settings.
-    3. Point the satellite to *pointing_altitude*.
+    2. Point the satellite to *pointing_altitude*.
+    3. Run CCD Commands with given settings.
     4. Run ArgFreezeStart Command with *FreezeTime*.
     5. Run ArgFreezeDuration Command with *FreezeDuration*.
     6. Take a Snapshot with each CCD (except Nadir) starting at *Snapshot_relativeTime* with a spacing of *SnapshotSpacing*.
-    6. Point the satellite to *LP_pointing_altitude*.
+    7. Point the satellite to *LP_pointing_altitude*.
     
     Arguments:
         root (lxml.etree._Element):  XML tree structure. Main container object for the ElementTree API.
@@ -735,17 +735,12 @@ def PWRTOGGLE_macro(root, relativeTime, CONST, comment = ''):
 def CCD_macro(root, relativeTime, CCD_settings, TEXPIMS = 60000, comment = ''):
     """ Macro that corresponds to configurating the settings of the CCDs.
     
-    The settings are different for 3 pairs of CCDs and the nadir camera.
-    The pairs are CCD5/6 (CCDSEL=48), CCD1/4 (CCDSEL=9), CCD2/3 (CCDSEL=6), and the 
-    nadir camera CCD7 (CCDSEL=7).
+    The settings are set for each corresponding CCDSEL argument. 
     
     Arguments:
         root (lxml.etree._Element):  XML tree structure. Main container object for the ElementTree API.
         relativeTime (float): The relative starting time of the macro with regard to the start of the timeline [s]
-        CCD_48 (:obj:`dict` of int): A dict containing settings for the CCDs corresponding to CCDSEL=48.
-        CCD_9 (:obj:`dict` of int): A dict containing settings for the CCDs corresponding to CCDSEL=9.
-        CCD_6 (:obj:`dict` of int): A dict containing settings for the CCDs corresponding to CCDSEL=6.
-        CCD_64 (:obj:`dict` of int): A dict containing settings for the CCDs corresponding to CCDSEL=64.
+        CCD_settings (:obj:`dict` of int): A dict containing settings for the CCDs.
         TEXPIMS (int): ExposureIntervalTime for the CCDs in ms.
         comment (str): A comment for the macro. Will be printed in the genereated XML-file.
     
@@ -754,34 +749,58 @@ def CCD_macro(root, relativeTime, CCD_settings, TEXPIMS = 60000, comment = ''):
         
     """
     
-    CCD_48 = CCD_settings['CCD_48']
-    CCD_9 = CCD_settings['CCD_9']
-    CCD_6 = CCD_settings['CCD_6']
-    CCD_64 = CCD_settings['CCD_64']
+    CCDSEL_16 = CCD_settings['CCDSEL_16']
+    CCDSEL_32 = CCD_settings['CCDSEL_32']
+    CCDSEL_1 = CCD_settings['CCDSEL_1']
+    CCDSEL_8 = CCD_settings['CCDSEL_8']
+    CCDSEL_2 = CCD_settings['CCDSEL_2']
+    CCDSEL_4 = CCD_settings['CCDSEL_4']
+    CCDSEL_64 = CCD_settings['CCDSEL_64']
     
-    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDSEL = 48, PWR = CCD_48['PWR'], WDW = CCD_48['WDW'], 
-                                          ExpInterval = TEXPIMS, ExpTime = CCD_48['TEXPMS'], GAIN = CCD_48['GAIN'], 
-                                          NFLUSH = CCD_48['NFLUSH'], NRSKIP = CCD_48['NRSKIP'], NRBIN = CCD_48['NRBIN'], 
-                                          NROW = CCD_48['NROW'], NCSKIP = CCD_48['NCSKIP'], NCBIN = CCD_48['NCBIN'], 
-                                          NCOL = CCD_48['NCOL'], NCBINFPGA = CCD_48['NCBINFPGA'], SIGMODE = CCD_48['SIGMODE'], comment = comment)
+    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDSEL = 16, PWR = CCDSEL_16['PWR'], WDW = CCDSEL_16['WDW'], 
+                                          ExpInterval = TEXPIMS, ExpTime = CCDSEL_16['TEXPMS'], GAIN = CCDSEL_16['GAIN'], 
+                                          NFLUSH = CCDSEL_16['NFLUSH'], NRSKIP = CCDSEL_16['NRSKIP'], NRBIN = CCDSEL_16['NRBIN'], 
+                                          NROW = CCDSEL_16['NROW'], NCSKIP = CCDSEL_16['NCSKIP'], NCBIN = CCDSEL_16['NCBIN'], 
+                                          NCOL = CCDSEL_16['NCOL'], NCBINFPGA = CCDSEL_16['NCBINFPGA'], SIGMODE = CCDSEL_16['SIGMODE'], comment = comment)
     
-    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDSEL = 9, PWR = CCD_9['PWR'], WDW = CCD_9['WDW'], 
-                                          ExpInterval = TEXPIMS, ExpTime = CCD_9['TEXPMS'], GAIN = CCD_9['GAIN'], 
-                                          NFLUSH = CCD_9['NFLUSH'], NRSKIP = CCD_9['NRSKIP'], NRBIN = CCD_9['NRBIN'], 
-                                          NROW = CCD_9['NROW'], NCSKIP = CCD_9['NCSKIP'], NCBIN = CCD_9['NCBIN'], 
-                                          NCOL = CCD_9['NCOL'], NCBINFPGA = CCD_9['NCBINFPGA'], SIGMODE = CCD_9['SIGMODE'], comment = comment)
+    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDSEL = 32, PWR = CCDSEL_32['PWR'], WDW = CCDSEL_32['WDW'], 
+                                          ExpInterval = TEXPIMS, ExpTime = CCDSEL_32['TEXPMS'], GAIN = CCDSEL_32['GAIN'], 
+                                          NFLUSH = CCDSEL_32['NFLUSH'], NRSKIP = CCDSEL_32['NRSKIP'], NRBIN = CCDSEL_32['NRBIN'], 
+                                          NROW = CCDSEL_32['NROW'], NCSKIP = CCDSEL_32['NCSKIP'], NCBIN = CCDSEL_32['NCBIN'], 
+                                          NCOL = CCDSEL_32['NCOL'], NCBINFPGA = CCDSEL_32['NCBINFPGA'], SIGMODE = CCDSEL_32['SIGMODE'], comment = comment)
     
-    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDSEL = 6, PWR = CCD_6['PWR'], WDW = CCD_6['WDW'], 
-                                          ExpInterval = TEXPIMS, ExpTime = CCD_6['TEXPMS'], GAIN = CCD_6['GAIN'], 
-                                          NFLUSH = CCD_6['NFLUSH'], NRSKIP = CCD_6['NRSKIP'], NRBIN = CCD_6['NRBIN'], 
-                                          NROW = CCD_6['NROW'], NCSKIP = CCD_6['NCSKIP'], NCBIN = CCD_6['NCBIN'], 
-                                          NCOL = CCD_6['NCOL'], NCBINFPGA = CCD_6['NCBINFPGA'], SIGMODE = CCD_6['SIGMODE'], comment = comment)
     
-    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDSEL = 64, PWR = CCD_64['PWR'], WDW = CCD_64['WDW'], 
-                                          ExpInterval = TEXPIMS, ExpTime = CCD_64['TEXPMS'], GAIN = CCD_64['GAIN'], 
-                                          NFLUSH = CCD_64['NFLUSH'], NRSKIP = CCD_64['NRSKIP'], NRBIN = CCD_64['NRBIN'], 
-                                          NROW = CCD_64['NROW'], NCSKIP = CCD_64['NCSKIP'], NCBIN = CCD_64['NCBIN'], 
-                                          NCOL = CCD_64['NCOL'], NCBINFPGA = CCD_64['NCBINFPGA'], SIGMODE = CCD_64['SIGMODE'], comment = comment)
+    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDSEL = 1, PWR = CCDSEL_1['PWR'], WDW = CCDSEL_1['WDW'], 
+                                          ExpInterval = TEXPIMS, ExpTime = CCDSEL_1['TEXPMS'], GAIN = CCDSEL_1['GAIN'], 
+                                          NFLUSH = CCDSEL_1['NFLUSH'], NRSKIP = CCDSEL_1['NRSKIP'], NRBIN = CCDSEL_1['NRBIN'], 
+                                          NROW = CCDSEL_1['NROW'], NCSKIP = CCDSEL_1['NCSKIP'], NCBIN = CCDSEL_1['NCBIN'], 
+                                          NCOL = CCDSEL_1['NCOL'], NCBINFPGA = CCDSEL_1['NCBINFPGA'], SIGMODE = CCDSEL_1['SIGMODE'], comment = comment)
+    
+    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDSEL = 8, PWR = CCDSEL_8['PWR'], WDW = CCDSEL_8['WDW'], 
+                                          ExpInterval = TEXPIMS, ExpTime = CCDSEL_8['TEXPMS'], GAIN = CCDSEL_8['GAIN'], 
+                                          NFLUSH = CCDSEL_8['NFLUSH'], NRSKIP = CCDSEL_8['NRSKIP'], NRBIN = CCDSEL_8['NRBIN'], 
+                                          NROW = CCDSEL_8['NROW'], NCSKIP = CCDSEL_8['NCSKIP'], NCBIN = CCDSEL_8['NCBIN'], 
+                                          NCOL = CCDSEL_8['NCOL'], NCBINFPGA = CCDSEL_8['NCBINFPGA'], SIGMODE = CCDSEL_8['SIGMODE'], comment = comment)
+    
+    
+    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDSEL = 2, PWR = CCDSEL_2['PWR'], WDW = CCDSEL_2['WDW'], 
+                                          ExpInterval = TEXPIMS, ExpTime = CCDSEL_2['TEXPMS'], GAIN = CCDSEL_2['GAIN'], 
+                                          NFLUSH = CCDSEL_2['NFLUSH'], NRSKIP = CCDSEL_2['NRSKIP'], NRBIN = CCDSEL_2['NRBIN'], 
+                                          NROW = CCDSEL_2['NROW'], NCSKIP = CCDSEL_2['NCSKIP'], NCBIN = CCDSEL_2['NCBIN'], 
+                                          NCOL = CCDSEL_2['NCOL'], NCBINFPGA = CCDSEL_2['NCBINFPGA'], SIGMODE = CCDSEL_2['SIGMODE'], comment = comment)
+    
+    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDSEL = 4, PWR = CCDSEL_4['PWR'], WDW = CCDSEL_4['WDW'], 
+                                          ExpInterval = TEXPIMS, ExpTime = CCDSEL_4['TEXPMS'], GAIN = CCDSEL_4['GAIN'], 
+                                          NFLUSH = CCDSEL_4['NFLUSH'], NRSKIP = CCDSEL_4['NRSKIP'], NRBIN = CCDSEL_4['NRBIN'], 
+                                          NROW = CCDSEL_4['NROW'], NCSKIP = CCDSEL_4['NCSKIP'], NCBIN = CCDSEL_4['NCBIN'], 
+                                          NCOL = CCDSEL_4['NCOL'], NCBINFPGA = CCDSEL_4['NCBINFPGA'], SIGMODE = CCDSEL_4['SIGMODE'], comment = comment)
+    
+    
+    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDSEL = 64, PWR = CCDSEL_64['PWR'], WDW = CCDSEL_64['WDW'], 
+                                          ExpInterval = TEXPIMS, ExpTime = CCDSEL_64['TEXPMS'], GAIN = CCDSEL_64['GAIN'], 
+                                          NFLUSH = CCDSEL_64['NFLUSH'], NRSKIP = CCDSEL_64['NRSKIP'], NRBIN = CCDSEL_64['NRBIN'], 
+                                          NROW = CCDSEL_64['NROW'], NCSKIP = CCDSEL_64['NCSKIP'], NCBIN = CCDSEL_64['NCBIN'], 
+                                          NCOL = CCDSEL_64['NCOL'], NCBINFPGA = CCDSEL_64['NCBINFPGA'], SIGMODE = CCDSEL_64['SIGMODE'], comment = comment)
     
     return relativeTime
 

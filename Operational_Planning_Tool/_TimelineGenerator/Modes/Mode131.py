@@ -28,9 +28,9 @@ def Mode131(Occupied_Timeline):
     
     """
     
-    initial_date = date_calculator()
+    initialDate, endDate = date_calculator()
     
-    Occupied_Timeline, comment = date_select(Occupied_Timeline, initial_date)
+    Occupied_Timeline, comment = date_select(Occupied_Timeline, initialDate, endDate)
     
     
     return Occupied_Timeline, comment
@@ -43,22 +43,28 @@ def Mode131(Occupied_Timeline):
 
 
 def date_calculator():
-    """Subfunction, Returns the requested initial date for the Mode to be scheduled.
+    """Subfunction, Returns the requested initial date and a end for the Mode to be scheduled.
     
     Returns:
-        (ephem.Date): initial_date
+        (tuple): tuple containing:
+            (ephem.Date): initialDate
+            (ephem.Date): endDate
     
     """
     
+    Timeline_settings = OPT_Config_File.Timeline_settings()
+    Settings = OPT_Config_File.Mode131_settings()
     
-    if( OPT_Config_File.Mode131_settings()['start_date'] != '0' ):
-        initial_date = ephem.Date(OPT_Config_File.Mode131_settings()['start_date'])
+    if( Settings['start_date'] != '0' ):
+        initialDate = ephem.Date(Settings['start_date'])
         Logger.info('Mode specific start_date used as initial date')
     else:
         Logger.info('Timeline start_date used as initial date')
-        initial_date = ephem.Date(OPT_Config_File.Timeline_settings()['start_date'])
+        initialDate = ephem.Date(Timeline_settings['start_date'])
     
-    return initial_date
+    endDate = ephem.Date(initialDate + ephem.second*Settings['mode_duration'])
+    
+    return initialDate, endDate
 
 
 
@@ -67,12 +73,12 @@ def date_calculator():
 
 
 
-def date_select(Occupied_Timeline, initial_date):
+def date_select(Occupied_Timeline, initialDate, endDate):
     """Subfunction, Checks if the requested initial date is available and post-pones it until available if occupied.
     
     Arguments:
         Occupied_Timeline (:obj:`dict` of :obj:`list`): Dictionary with keys equal to planned and scheduled Modes together with their start and end time in a list. The list is empty if the Mode is unscheduled.
-        initial_date (ephem.Date): The initially requested date for the Mode.
+        initialDate (ephem.Date): The initially requested date for the Mode.
         
     Returns:
         (tuple): tuple containing:
@@ -82,14 +88,9 @@ def date_select(Occupied_Timeline, initial_date):
     """
     
     
-    
-    date = initial_date
-    endDate = ephem.Date(initial_date + ephem.second*OPT_Config_File.Mode131_settings()['mode_duration'])
-    
-    
     ############### Start of availability schedueler ##########################
     
-    date, endDate, iterations = scheduler(Occupied_Timeline, date, endDate)
+    date, endDate, iterations = scheduler(Occupied_Timeline, initialDate, endDate)
                 
     ############### End of availability schedueler ##########################
     

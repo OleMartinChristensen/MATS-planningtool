@@ -26,7 +26,7 @@ import ephem, logging, sys, pylab, importlib, skyfield.api
 from Operational_Planning_Tool import _Globals
 
 OPT_Config_File = importlib.import_module(_Globals.Config_File)
-from Operational_Planning_Tool._Library import lat_calculator, rot_arbit, params_checker, utc_to_onboardTime, lat_2_R
+from Operational_Planning_Tool._Library import Satellite_Simulator, lat_calculator, rot_arbit, params_checker, utc_to_onboardTime, lat_2_R
 from .Macros import Macros
 from Operational_Planning_Tool import _MATS_coordinates
 
@@ -76,71 +76,47 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
     zeros = pylab.zeros
     pi = pylab.pi
     arccos = pylab.arccos
-    sin = pylab.sin
-    cos = pylab.cos
     norm = pylab.norm
-    cross = pylab.cross
-    sqrt = pylab.sqrt
-    arctan = pylab.arctan
     dot = pylab.dot
     array = pylab.array
     
     CCD_settings = OPT_Config_File.CCD_macro_settings('HighResUV')
     settings = OPT_Config_File.Mode1_2_settings()
-    #Timeline_settings = OPT_Config_File.Timeline_settings()
     Timeline_settings = _Globals.Timeline_settings
     
     params = params_checker(params,settings)
     
     timestep = params['timestep']
-    TEXPMS_UV = CCD_settings['CCD_48']['TEXPMS']
-    TEXPMS_nadir = CCD_settings['CCD_64']['TEXPMS']
+    TEXPMS_16 = CCD_settings['CCDSEL_16']['TEXPMS']
+    TEXPMS_32 = CCD_settings['CCDSEL_32']['TEXPMS']
+    TEXPMS_nadir = CCD_settings['CCDSEL_64']['TEXPMS']
     
     log_timestep = params['log_timestep']
     Logger.debug('log_timestep [s]: '+str(log_timestep))
     
     TLE = OPT_Config_File.getTLE()
-    Sun = ephem.Sun()
-    MATS = ephem.readtle('MATS', TLE[0], TLE[1])
     
     "Pre-allocate space"
     lat_MATS = zeros((duration,1))
-    
-    altitude_MATS = zeros((duration,1))
-    a_ra_MATS = zeros((duration,1))
-    a_dec_MATS = zeros((duration,1))
-    x_MATS = zeros((duration,1))
-    y_MATS = zeros((duration,1))
-    z_MATS = zeros((duration,1))
     r_MATS = zeros((duration,3))
     r_MATS_ECEF = zeros((duration,3))
     r_MATS_unit_vector = zeros((duration,3))
     optical_axis = zeros((duration,3))
-    optical_axis_ECEF = zeros((duration,3))
-    LP_ECEF = zeros((duration,3))
     lat_LP = zeros((duration,1))
-    long_LP = zeros((duration,1))
-    alt_LP = zeros((duration,1))
     MATS_P = zeros((duration,1))
-    MATS_p = zeros((duration,1))
-    pitch_LP = zeros((duration,1))
+    
+    r_Sun = zeros((duration,3))
+    r_Sun_unit_vector = zeros((duration,3))
     
     sun_angle = zeros((duration,1))
     lat_LP = zeros((duration,1))
-    normal_orbital = zeros((duration,3))
-    orbangle_between_LP_MATS_array = zeros((duration,1))
     
-    
-    U = 398600.4418 #Earth gravitational parameter
-    R_mean = 6371
+    R_mean = 6371000
     pointing_altitude = Timeline_settings['LP_pointing_altitude']
     lat = params['lat']
-    Earth_north = array([[0,0,1]])
-    
-    #Earth_north = pm3d.ecef2eci(0,0,1,date)
     
     #Estimation of the angle between the sun and the FOV position when it enters eclipse
-    MATS_nadir_eclipse_angle = arccos(R_mean/(R_mean+pointing_altitude/1000))/pi*180 + 90
+    MATS_nadir_eclipse_angle = arccos(R_mean/(R_mean+pointing_altitude))/pi*180 + 90
     
     Logger.debug('MATS_nadir_eclipse_angle : '+str(MATS_nadir_eclipse_angle))
     Logger.debug('')
@@ -148,348 +124,221 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
     ts = skyfield.api.load.timescale()
     MATS_skyfield = skyfield.api.EarthSatellite(TLE[0], TLE[1])
     
+    MATS = ephem.readtle('MATS',TLE[0],TLE[1])
+    Sun = ephem.Sun()
+    
+    
+    
     "Loop and calculate the relevant angle of each star to each direction of MATS's FOV"
     for t in range(int(duration/timestep)):
         
         current_time = ephem.Date(date+ephem.second*timestep*t)
         
-        """
-        #Skyfield
-        current_time_datetime = ephem.Date(current_time).datetime()
-        year = current_time_datetime.year
-        month = current_time_datetime.month
-        day = current_time_datetime.day
-        hour = current_time_datetime.hour
-        minute = current_time_datetime.minute
-        second = current_time_datetime.second + current_time_datetime.microsecond/1000000
-        current_time_skyfield = ts.utc(year, month, day, hour, minute, second)
+        if( t*timestep % log_timestep == 0):
+            LogFlag = True
+        else:
+            LogFlag = False
         
-        MATS_geocentric = MATS_skyfield.at(current_time_skyfield)
-        r_MATS[t] = MATS_geocentric.position.km
-        MATS_subpoint = MATS_geocentric.subpoint()
-        lat_MATS[t] = MATS_subpoint.latitude.radians
-        altitude_MATS[t] = MATS_subpoint.elevation.km
+        Satellite_dict = Satellite_Simulator( 
+                    MATS_skyfield, current_time, Timeline_settings, pointing_altitude/1000, LogFlag )
         
-        R_earth_MATS = lat_2_R(lat_MATS[t])
-        """
-        
-        MATS.compute(current_time, epoch='2000/01/01 11:58:55.816')
+        r_MATS[t] = Satellite_dict['Position [km]']
+        MATS_P[t] = Satellite_dict['OrbitalPeriod [s]']
+        lat_MATS[t] =  Satellite_dict['Latitude [degrees]']
+        optical_axis[t] = Satellite_dict['OpticalAxis']
+        lat_LP[t] = Satellite_dict['EstimatedLatitude_LP [degrees]']
         
         
-        (lat_MATS[t],altitude_MATS[t],a_ra_MATS[t],a_dec_MATS[t])= (
-        MATS.sublat,MATS.elevation/1000,MATS.a_ra,MATS.a_dec)
-        
-        R_earth_MATS = lat_2_R(lat_MATS[t])
-        
-        MATS_distance = R_earth_MATS + altitude_MATS[t]
-        z_MATS[t] = sin(a_dec_MATS[t])*(MATS_distance)
-        x_MATS[t] = cos(a_dec_MATS[t])*(MATS_distance)* cos(a_ra_MATS[t])
-        y_MATS[t] = cos(a_dec_MATS[t])*(MATS_distance)* sin(a_ra_MATS[t])
-        
-        r_MATS[t,0:3] = [x_MATS[t], y_MATS[t], z_MATS[t]]
-        
-        #r_MATS_ECEF[t,0], r_MATS_ECEF[t,1], r_MATS_ECEF[t,2] = _MATS_coordinates.eci2ecef(
-        #        r_MATS[t,0]*1000, r_MATS[t,1]*1000, r_MATS[t,2]*1000, ephem.Date(current_time).datetime())
-        
-        
-        r_MATS_unit_vector[t,0:3] = r_MATS[t,0:3] / norm(r_MATS[t,0:3])
-        
-        #Semi-Major axis of MATS, assuming circular orbit
-        MATS_p[t] = norm(r_MATS[t,0:3])
-        
-        #Orbital Period of MATS
-        MATS_P[t] = 2*pi*sqrt(MATS_p[t]**3/U)
-        
-        if( t == 0):
-            orbangle_between_LP_MATS_array[t]= arccos((R_mean+pointing_altitude/1000)/(MATS_distance))/pi*180
-            orbangle_between_LP_MATS = orbangle_between_LP_MATS_array[t][0]
-        
-        
-        Sun.compute(current_time, epoch='2000/01/01 11:58:55.816')
+        MATS.compute(current_time, epoch = '2000/01/01 11:58:55.816')
+        Sun.compute(current_time, epoch = '2000/01/01 11:58:55.816')
         sun_angle[t]= ephem.separation(Sun,MATS)/pi*180
         
-        
-        
-        
-        if( t % log_timestep == 0 and t != 0 and t != 1):
-            Logger.debug('')
-            Logger.debug('current_time: '+str(current_time))
-            Logger.debug('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
-            Logger.debug('lat_LP [degrees]: '+str(lat_LP[t]))
+        if( t*timestep % log_timestep == 0):
             Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
+        
+        ############# Initial Mode setup ##########################################
+        
+        if( t == 0 ):
             
+            
+            "Check if night or day"
+            if( sun_angle[t] > MATS_nadir_eclipse_angle ):
+                
+                if( abs(lat_LP[t]) < lat):
+                    current_state = "NLC_night_UV_off"
+                    comment = current_state+': '+str(current_time)+', parameters: '+str(params)
+                    #Macros.Mode1_macro(root,t*timestep+relativeTime, pointing_altitude=pointing_altitude, UV_on = False, nadir_on = True, comment = comment)
+                    CCD_settings['CCDSEL_16']['TEXPMS'] = 0
+                    CCD_settings['CCDSEL_32']['TEXPMS'] = 0
+                    CCD_settings['CCDSEL_64']['TEXPMS'] = TEXPMS_nadir
+                    Macros.Operational_Limb_Pointing_macro(root, t*timestep+relativeTime, CCD_settings, 
+                                                               pointing_altitude=pointing_altitude, comment = comment)
+                    
+                elif( abs(lat_LP[t]) > lat):
+                    current_state = "NLC_night_UV_on"
+                    comment = current_state+': '+str(current_time)+', parameters: '+str(params)
+                    #Macros.Mode1_macro(root,t*timestep+relativeTime, pointing_altitude=pointing_altitude, UV_on = True, nadir_on = True, comment = comment)
+                    CCD_settings['CCDSEL_16']['TEXPMS'] = TEXPMS_16
+                    CCD_settings['CCDSEL_32']['TEXPMS'] = TEXPMS_32
+                    CCD_settings['CCDSEL_64']['TEXPMS'] = TEXPMS_nadir
+                    Macros.Operational_Limb_Pointing_macro(root, t*timestep+relativeTime, CCD_settings, 
+                                                               pointing_altitude=pointing_altitude, comment = comment)
+                    
+                    
+            elif( sun_angle[t] < MATS_nadir_eclipse_angle ):
+                
+                if( abs(lat_LP[t]) < lat):
+                    current_state = "NLC_day_UV_off"
+                    comment = current_state+': '+str(current_time)+', parameters: '+str(params)
+                    #Macros.Mode1_macro(root,t*timestep+relativeTime,pointing_altitude, UV_on = False, nadir_on = False, comment = comment)
+                    CCD_settings['CCDSEL_16']['TEXPMS'] = 0
+                    CCD_settings['CCDSEL_32']['TEXPMS'] = 0
+                    CCD_settings['CCDSEL_64']['TEXPMS'] = 0
+                    Macros.Operational_Limb_Pointing_macro(root, t*timestep+relativeTime, CCD_settings, 
+                                                               pointing_altitude=pointing_altitude, comment = comment)
+                    
+                elif( abs(lat_LP[t]) > lat):
+                    current_state = "NLC_day_UV_on"
+                    comment = current_state+': '+str(current_time)+', parameters: '+str(params)
+                    #Macros.Mode1_macro(root,t*timestep+relativeTime,pointing_altitude, UV_on = True, nadir_on = False, comment = comment)
+                    CCD_settings['CCDSEL_16']['TEXPMS'] = TEXPMS_16
+                    CCD_settings['CCDSEL_32']['TEXPMS'] = TEXPMS_32
+                    CCD_settings['CCDSEL_64']['TEXPMS'] = 0
+                    Macros.Operational_Limb_Pointing_macro(root, t*timestep+relativeTime, CCD_settings, 
+                                                               pointing_altitude=pointing_altitude, comment = comment)
+                    
+                    
+            Logger.debug(current_state)
+            Logger.debug('')
+        
+        
+        ############# End of Initial Mode setup ###################################
+        
         
         if( t != 0):
+            ####################### SCI-mode Operation planner ################
             
-            time_between_LP_and_MATS = MATS_P[t][0]*orbangle_between_LP_MATS/360
-            timesteps_between_LP_and_MATS = int(time_between_LP_and_MATS / timestep)
-            
-            "More accurate estimation of lat of LP using the position of MATS at a previous time"
-            if( t >= timesteps_between_LP_and_MATS):
-                lat_LP[t] = lat_MATS[t-timesteps_between_LP_and_MATS]/pi*180
-                R_earth_LP = lat_2_R(lat_LP[t] /180*pi)
-            else:
-                date_of_MATSlat_is_equal_2_current_LPlat = ephem.Date(current_time - ephem.second * timesteps_between_LP_and_MATS * timestep).datetime()
-                lat_LP[t] = lat_calculator( MATS_skyfield, date_of_MATSlat_is_equal_2_current_LPlat )/pi*180
-                R_earth_LP = lat_2_R(lat_LP[t]/180*pi)
+            #Check if night or day
+            if( sun_angle[t] > MATS_nadir_eclipse_angle ):
                 
-            '''
-            orbangle_between_LP_MATS_array[t]= arccos((R_earth_LP+pointing_altitude/1000)/(MATS_distance))/pi*180
-            pitch_LP = orbangle_between_LP_MATS_array[t][0] + 90
-            
-            
-            
-            "Vector normal to the orbital plane of MATS"
-            normal_orbital[t,0:3] = cross(r_MATS[t],r_MATS[t-1])
-            normal_orbital[t,0:3] = normal_orbital[t,0:3] / norm(normal_orbital[t,0:3])
-            
-            
-            "Rotate 'vector to MATS', to represent pointing direction, (Parallax is negligable)"
-            rot_mat = rot_arbit((pitch_LP)/180*pi, normal_orbital[t,0:3])
-            optical_axis[t,0:3] = rot_mat @ r_MATS[t]
-            optical_axis[t,0:3] = optical_axis[t,0:3] / norm(optical_axis[t,0:3])
-            
-            "Calculate intersection between the orbital plane and the equator"
-            ascending_node = cross(normal_orbital[t,0:3], Earth_north)
-            
-            arg_of_lat = arccos( dot(ascending_node, r_MATS[t,0:3]) / norm(r_MATS[t,0:3]) / norm(ascending_node) ) /pi*180
-            
-            "To determine if MATS is moving towards the ascending node"
-            if( dot(cross( ascending_node, r_MATS[t,0:3]), normal_orbital[t,0:3]) >= 0 ):
-                arg_of_lat = 360 - arg_of_lat
-                
-            if( Timeline_settings['yaw_correction'] == True ):
-                yaw_offset_angle = Timeline_settings['yaw_amplitude'] * cos( arg_of_lat/180*pi - orbangle_between_LP_MATS/180*pi + Timeline_settings['yaw_phase']/180*pi )
-                yaw_offset_angle = yaw_offset_angle[0]
-            elif( Timeline_settings['yaw_correction'] == False  ):
-                yaw_offset_angle = 0
-                
-            
-            if( t % log_timestep == 0 or t == 1 ):
-                Logger.debug('ascending_node: '+str(ascending_node))
-                Logger.debug('arg_of_lat [degrees]: '+str(arg_of_lat))
-                Logger.debug('yaw_offset_angle [degrees]: '+str(yaw_offset_angle))
-                Logger.debug('')
-            
-            "Rotate yaw of pointing direction, meaning to rotate around the vector to MATS"
-            rot_mat = rot_arbit( (-yaw_offset_angle)/180*pi, r_MATS_unit_vector[t,0:3])
-            optical_axis[t,0:3] = rot_mat @ optical_axis[t,0:3]
-            optical_axis[t,0:3] = optical_axis[t,0:3] / norm(optical_axis[t,0:3])
-            
-            """
-            optical_axis_ECEF[t,0], optical_axis_ECEF[t,1], optical_axis_ECEF[t,2] = _MATS_coordinates.eci2ecef(
-                optical_axis[t,0]*1000, optical_axis[t,1]*1000, optical_axis[t,2]*1000, ephem.Date(current_time).datetime())
-            
-            LP_ECEF[t,0], LP_ECEF[t,1], LP_ECEF[t,2] = _MATS_coordinates.ecef2tanpoint(r_MATS_ECEF[t][0]*1000, r_MATS_ECEF[t][1]*1000, r_MATS_ECEF[t][2]*1000, 
-                                       optical_axis_ECEF[t,0], optical_axis_ECEF[t,1], optical_axis_ECEF[t,2])
-            
-            lat_LP[t], long_LP[t], alt_LP[t]  = _MATS_coordinates.ECEF2lla(LP_ECEF[t,0], LP_ECEF[t,1], LP_ECEF[t,2])
-            """
-            
-            
-            
-            
-            
-            
-            """
-            "Estimate latitude by calculating angle between xy-plane vector and z-vector (ECI)"
-            r_LP__direction_xy = sqrt(optical_axis[t,0]**2+optical_axis[t,1]**2)
-            lat_LP[t] = arctan(optical_axis[t,2]/r_LP__direction_xy)
-            """
-            
-            if( abs(lat_MATS[t])-abs(lat_MATS[t-1]) > 0 ):
-                lat_LP[t] = lat_MATS[t] - lat_diff_LP_MATS * sign(lat_MATS[t])
-            elif( abs(lat_MATS[t])-abs(lat_MATS[t-1]) < 0 ):
-                lat_LP[t] = lat_MATS[t] + lat_diff_LP_MATS * sign(lat_MATS[t])
-            
-            '''
-            ############# Initial Mode setup ##########################################
-            
-            if( t == 1 ):
-                
-                Logger.debug('')
-                '''
-                Logger.debug(str(r_MATS[t,0:3]))
-                Logger.debug(str(optical_axis[t,0:3]))
-                Logger.debug(str(orbangle_between_LP_MATS_array[t]))
-                '''
-                Logger.debug('current_time: '+str(current_time))
-                Logger.debug('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
-                Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
-                Logger.debug('lat_LP [degrees]: '+str(lat_LP[t]))
-                Logger.debug('r_MATS_ECEF: '+str(r_MATS_ECEF[t,0]))
-                
-                
-                "Check if night or day"
-                if( sun_angle[t] > MATS_nadir_eclipse_angle ):
+                #Check latitude
+                if( abs(lat_LP[t]) < lat and current_state != "NLC_night_UV_off"):
                     
-                    if( abs(lat_LP[t]) < lat):
+                    #Check dusk/dawn and latitude boundaries
+                    if( (sun_angle[t] > MATS_nadir_eclipse_angle and sun_angle[t-1] < MATS_nadir_eclipse_angle) or
+                       ( abs(lat_LP[t]) < lat and abs(lat_LP[t-1]) > lat ) ):
+                        
+                        Logger.debug('')
                         current_state = "NLC_night_UV_off"
                         comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                        #Macros.Mode1_macro(root,t*timestep+relativeTime, pointing_altitude=pointing_altitude, UV_on = False, nadir_on = True, comment = comment)
-                        CCD_settings['CCD_48']['TEXPMS'] = 0
-                        CCD_settings['CCD_64']['TEXPMS'] = TEXPMS_nadir
+                        #Macros.Mode1_macro(root, t*timestep+relativeTime, pointing_altitude, UV_on = False, nadir_on = True, comment = comment)
+                        CCD_settings['CCDSEL_16']['TEXPMS'] = 0
+                        CCD_settings['CCDSEL_32']['TEXPMS'] = 0
+                        CCD_settings['CCDSEL_64']['TEXPMS'] = TEXPMS_nadir
                         Macros.Operational_Limb_Pointing_macro(root, t*timestep+relativeTime, CCD_settings, 
-                                                                   pointing_altitude=pointing_altitude, comment = comment)
+                                                               pointing_altitude=pointing_altitude, comment = comment)
                         
-                    elif( abs(lat_LP[t]) > lat):
+                        Logger.debug(current_state)
+                        Logger.debug('current_time: '+str(current_time))
+                        Logger.debug('lat_MATS [degrees]: '+str(lat_MATS[t]))
+                        Logger.debug('lat_LP [degrees]: '+str(lat_LP[t]))
+                        Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
+                        Logger.debug('')
+                        #IR_night(root,str(t+relativeTime),pointing_altitude, comment = comment)
+                        
+                        
+                        
+                #Check latitude
+                if( abs(lat_LP[t]) > lat and current_state != "NLC_night_UV_on"):
+                    
+                    #Check dusk/dawn and latitude boundaries
+                    if( (sun_angle[t] > MATS_nadir_eclipse_angle and sun_angle[t-1] < MATS_nadir_eclipse_angle) or
+                       ( abs(lat_LP[t]) > lat and abs(lat_LP[t-1]) < lat )):
+                        
+                        Logger.debug('')
                         current_state = "NLC_night_UV_on"
                         comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                        #Macros.Mode1_macro(root,t*timestep+relativeTime, pointing_altitude=pointing_altitude, UV_on = True, nadir_on = True, comment = comment)
-                        CCD_settings['CCD_48']['TEXPMS'] = TEXPMS_UV
-                        CCD_settings['CCD_64']['TEXPMS'] = TEXPMS_nadir
+                        #Macros.Mode1_macro(root, t*timestep+relativeTime, pointing_altitude=pointing_altitude, UV_on = True, nadir_on = True, comment = comment)
+                        CCD_settings['CCDSEL_16']['TEXPMS'] = TEXPMS_16
+                        CCD_settings['CCDSEL_32']['TEXPMS'] = TEXPMS_32
+                        CCD_settings['CCDSEL_64']['TEXPMS'] = TEXPMS_nadir
                         Macros.Operational_Limb_Pointing_macro(root, t*timestep+relativeTime, CCD_settings, 
-                                                                   pointing_altitude=pointing_altitude, comment = comment)
+                                                               pointing_altitude=pointing_altitude, comment = comment)
+                        
+                        Logger.debug(current_state)
+                        Logger.debug('current_time: '+str(current_time))
+                        Logger.debug('lat_MATS [degrees]: '+str(lat_MATS[t]))
+                        Logger.debug('lat_LP [degrees]: '+str(lat_LP[t]))
+                        Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
+                        Logger.debug('')
+                        #Mode1_macro(root,str(t+relativeTime),pointing_altitude, comment = comment)
                         
                         
-                elif( sun_angle[t] < MATS_nadir_eclipse_angle ):
+                        
+                        
+            #Check if night or day#            
+            if( sun_angle[t] < MATS_nadir_eclipse_angle ):
+                
+                #Check latitude
+                if( abs(lat_LP[t]) < lat and current_state != "NLC_day_UV_off"):
                     
-                    if( abs(lat_LP[t]) < lat):
+                    #Check dusk/dawn and latitude boundaries
+                    if( (sun_angle[t] < MATS_nadir_eclipse_angle and sun_angle[t-1] > MATS_nadir_eclipse_angle) or
+                       (abs(lat_LP[t]) < lat and abs(lat_LP[t-1]) > lat) ):
+                        
+                        Logger.debug('')
                         current_state = "NLC_day_UV_off"
                         comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                        #Macros.Mode1_macro(root,t*timestep+relativeTime,pointing_altitude, UV_on = False, nadir_on = False, comment = comment)
-                        CCD_settings['CCD_48']['TEXPMS'] = 0
-                        CCD_settings['CCD_64']['TEXPMS'] = 0
+                        #Macros.Mode1_macro(root, t*timestep+relativeTime, pointing_altitude=pointing_altitude, UV_on = False, nadir_on = False, comment = comment)
+                        CCD_settings['CCDSEL_16']['TEXPMS'] = 0
+                        CCD_settings['CCDSEL_32']['TEXPMS'] = 0
+                        CCD_settings['CCDSEL_64']['TEXPMS'] = 0
                         Macros.Operational_Limb_Pointing_macro(root, t*timestep+relativeTime, CCD_settings, 
-                                                                   pointing_altitude=pointing_altitude, comment = comment)
+                                                               pointing_altitude=pointing_altitude, comment = comment)
                         
-                    elif( abs(lat_LP[t]) > lat):
+                        
+                        Logger.debug(current_state)
+                        Logger.debug('current_time: '+str(current_time))
+                        Logger.debug('lat_MATS [degrees]: '+str(lat_MATS[t]))
+                        Logger.debug('lat_LP [degrees]: '+str(lat_LP[t]))
+                        Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
+                        Logger.debug('')
+                        #IR_day(root,str(t+relativeTime),pointing_altitude, comment = comment)
+                        
+                        
+                    
+                    
+                #Check latitude
+                if( abs(lat_LP[t]) > lat and current_state != "NLC_day_UV_on"):
+                    
+                    #Check dusk/dawn and latitude boundaries
+                    if( (sun_angle[t] > MATS_nadir_eclipse_angle and sun_angle[t-1] < MATS_nadir_eclipse_angle) or
+                       (abs(lat_LP[t]) > lat and abs(lat_LP[t-1]) < lat) ):
+                        
+                        Logger.debug('')
                         current_state = "NLC_day_UV_on"
                         comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                        #Macros.Mode1_macro(root,t*timestep+relativeTime,pointing_altitude, UV_on = True, nadir_on = False, comment = comment)
-                        CCD_settings['CCD_48']['TEXPMS'] = TEXPMS_UV
-                        CCD_settings['CCD_64']['TEXPMS'] = 0
+                        #Macros.Mode1_macro(root, t*timestep+relativeTime, pointing_altitude=pointing_altitude, UV_on = True, nadir_on = False, comment = comment)
+                        CCD_settings['CCDSEL_16']['TEXPMS'] = TEXPMS_16
+                        CCD_settings['CCDSEL_32']['TEXPMS'] = TEXPMS_32
+                        CCD_settings['CCDSEL_64']['TEXPMS'] = 0
                         Macros.Operational_Limb_Pointing_macro(root, t*timestep+relativeTime, CCD_settings, 
-                                                                   pointing_altitude=pointing_altitude, comment = comment)
+                                                               pointing_altitude=pointing_altitude, comment = comment)
                         
                         
-                Logger.debug(current_state)
-                Logger.debug('')
+                        Logger.debug(current_state)
+                        Logger.debug('current_time: '+str(current_time))
+                        Logger.debug('lat_MATS [degrees]: '+str(lat_MATS[t]))
+                        Logger.debug('lat_LP [degrees]: '+str(lat_LP[t]))
+                        Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
+                        Logger.debug('')
+                        #Mode1_macro(root,str(t+relativeTime),pointing_altitude, comment = comment)
+                        
+                        
             
             
-            ############# End of Initial Mode setup ###################################
+            ############### End of SCI-mode operation planner #################
             
-            
-            if( t != 1):
-                ####################### SCI-mode Operation planner ################
-                
-                #Check if night or day
-                if( sun_angle[t] > MATS_nadir_eclipse_angle ):
-                    
-                    #Check latitude
-                    if( abs(lat_LP[t]) < lat and current_state != "NLC_night_UV_off"):
-                        
-                        #Check dusk/dawn and latitude boundaries
-                        if( (sun_angle[t] > MATS_nadir_eclipse_angle and sun_angle[t-1] < MATS_nadir_eclipse_angle) or
-                           ( abs(lat_LP[t]) < lat and abs(lat_LP[t-1]) > lat ) ):
-                            
-                            Logger.debug('')
-                            current_state = "NLC_night_UV_off"
-                            comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                            #Macros.Mode1_macro(root, t*timestep+relativeTime, pointing_altitude, UV_on = False, nadir_on = True, comment = comment)
-                            CCD_settings['CCD_48']['TEXPMS'] = 0
-                            CCD_settings['CCD_64']['TEXPMS'] = TEXPMS_nadir
-                            Macros.Operational_Limb_Pointing_macro(root, t*timestep+relativeTime, CCD_settings, 
-                                                                   pointing_altitude=pointing_altitude, comment = comment)
-                            
-                            Logger.debug(current_state)
-                            Logger.debug('current_time: '+str(current_time))
-                            Logger.debug('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
-                            Logger.debug('lat_LP [degrees]: '+str(lat_LP[t]))
-                            Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
-                            Logger.debug('')
-                            #IR_night(root,str(t+relativeTime),pointing_altitude, comment = comment)
-                            
-                            
-                            
-                    #Check latitude
-                    if( abs(lat_LP[t]) > lat and current_state != "NLC_night_UV_on"):
-                        
-                        #Check dusk/dawn and latitude boundaries
-                        if( (sun_angle[t] > MATS_nadir_eclipse_angle and sun_angle[t-1] < MATS_nadir_eclipse_angle) or
-                           ( abs(lat_LP[t]) > lat and abs(lat_LP[t-1]) < lat )):
-                            
-                            Logger.debug('')
-                            current_state = "NLC_night_UV_on"
-                            comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                            #Macros.Mode1_macro(root, t*timestep+relativeTime, pointing_altitude=pointing_altitude, UV_on = True, nadir_on = True, comment = comment)
-                            CCD_settings['CCD_48']['TEXPMS'] = TEXPMS_UV
-                            CCD_settings['CCD_64']['TEXPMS'] = TEXPMS_nadir
-                            Macros.Operational_Limb_Pointing_macro(root, t*timestep+relativeTime, CCD_settings, 
-                                                                   pointing_altitude=pointing_altitude, comment = comment)
-                            
-                            Logger.debug(current_state)
-                            Logger.debug('current_time: '+str(current_time))
-                            Logger.debug('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
-                            Logger.debug('lat_LP [degrees]: '+str(lat_LP[t]))
-                            Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
-                            Logger.debug('')
-                            #Mode1_macro(root,str(t+relativeTime),pointing_altitude, comment = comment)
-                            
-                            
-                            
-                            
-                #Check if night or day#            
-                if( sun_angle[t] < MATS_nadir_eclipse_angle ):
-                    
-                    #Check latitude
-                    if( abs(lat_LP[t]) < lat and current_state != "NLC_day_UV_off"):
-                        
-                        #Check dusk/dawn and latitude boundaries
-                        if( (sun_angle[t] < MATS_nadir_eclipse_angle and sun_angle[t-1] > MATS_nadir_eclipse_angle) or
-                           (abs(lat_LP[t]) < lat and abs(lat_LP[t-1]) > lat) ):
-                            
-                            Logger.debug('')
-                            current_state = "NLC_day_UV_off"
-                            comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                            #Macros.Mode1_macro(root, t*timestep+relativeTime, pointing_altitude=pointing_altitude, UV_on = False, nadir_on = False, comment = comment)
-                            CCD_settings['CCD_48']['TEXPMS'] = 0
-                            CCD_settings['CCD_64']['TEXPMS'] = 0
-                            Macros.Operational_Limb_Pointing_macro(root, t*timestep+relativeTime, CCD_settings, 
-                                                                   pointing_altitude=pointing_altitude, comment = comment)
-                            
-                            
-                            Logger.debug(current_state)
-                            Logger.debug('current_time: '+str(current_time))
-                            Logger.debug('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
-                            Logger.debug('lat_LP [degrees]: '+str(lat_LP[t]))
-                            Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
-                            Logger.debug('')
-                            #IR_day(root,str(t+relativeTime),pointing_altitude, comment = comment)
-                            
-                            
-                        
-                        
-                    #Check latitude
-                    if( abs(lat_LP[t]) > lat and current_state != "NLC_day_UV_on"):
-                        
-                        #Check dusk/dawn and latitude boundaries
-                        if( (sun_angle[t] > MATS_nadir_eclipse_angle and sun_angle[t-1] < MATS_nadir_eclipse_angle) or
-                           (abs(lat_LP[t]) > lat and abs(lat_LP[t-1]) < lat) ):
-                            
-                            Logger.debug('')
-                            current_state = "NLC_day_UV_on"
-                            comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                            #Macros.Mode1_macro(root, t*timestep+relativeTime, pointing_altitude=pointing_altitude, UV_on = True, nadir_on = False, comment = comment)
-                            CCD_settings['CCD_48']['TEXPMS'] = TEXPMS_UV
-                            CCD_settings['CCD_64']['TEXPMS'] = 0
-                            Macros.Operational_Limb_Pointing_macro(root, t*timestep+relativeTime, CCD_settings, 
-                                                                   pointing_altitude=pointing_altitude, comment = comment)
-                            
-                            
-                            Logger.debug(current_state)
-                            Logger.debug('current_time: '+str(current_time))
-                            Logger.debug('lat_MATS [degrees]: '+str(lat_MATS[t]/pi*180))
-                            Logger.debug('lat_LP [degrees]: '+str(lat_LP[t]))
-                            Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
-                            Logger.debug('')
-                            #Mode1_macro(root,str(t+relativeTime),pointing_altitude, comment = comment)
-                            
-                            
-                
-                
-                ############### End of SCI-mode operation planner #################
-                
     
 
 #######################################################################################
@@ -515,7 +364,7 @@ def XML_generator_Mode2(root, date, duration, relativeTime, params = {}):
     params = params_checker(params,settings)
     
     timestep = params['timestep']
-    TEXPMS_nadir = CCD_settings['CCD_64']['TEXPMS']
+    TEXPMS_nadir = CCD_settings['CCDSEL_64']['TEXPMS']
     
     log_timestep = params['log_timestep']
     Logger.debug('log_timestep [s]: '+str(log_timestep))
@@ -561,7 +410,7 @@ def XML_generator_Mode2(root, date, duration, relativeTime, params = {}):
                 current_state = "IR_night"
                 comment = current_state+': '+str(params)
                 #Macros.Mode1_macro(root,t*timestep+relativeTime, pointing_altitude=pointing_altitude, nadir_on = True, comment = comment)
-                CCD_settings['CCD_64']['TEXPMS'] = TEXPMS_nadir
+                CCD_settings['CCDSEL_64']['TEXPMS'] = TEXPMS_nadir
                 Macros.Operational_Limb_Pointing_macro(root, t*timestep+relativeTime, CCD_settings, 
                                                        pointing_altitude=pointing_altitude, comment = comment)
                 
@@ -569,7 +418,7 @@ def XML_generator_Mode2(root, date, duration, relativeTime, params = {}):
                 current_state = "IR_day"
                 comment = current_state+': '+str(params)
                 #Macros.Mode1_macro(root,t*timestep+relativeTime, pointing_altitude=pointing_altitude, nadir_on = False, comment = comment)
-                CCD_settings['CCD_64']['TEXPMS'] = 0
+                CCD_settings['CCDSEL_64']['TEXPMS'] = 0
                 Macros.Operational_Limb_Pointing_macro(root, t*timestep+relativeTime, CCD_settings, 
                                                        pointing_altitude=pointing_altitude, comment = comment)
         
@@ -592,7 +441,7 @@ def XML_generator_Mode2(root, date, duration, relativeTime, params = {}):
                     current_state = "IR_night"
                     comment = current_state+': '+str(params)
                     #Macros.Mode1_macro(root, t*timestep+relativeTime, pointing_altitude=pointing_altitude, nadir_on = True, comment = comment)
-                    CCD_settings['CCD_64']['TEXPMS'] = TEXPMS_nadir
+                    CCD_settings['CCDSEL_64']['TEXPMS'] = TEXPMS_nadir
                     Macros.Operational_Limb_Pointing_macro(root, t*timestep+relativeTime, CCD_settings, 
                                                            pointing_altitude=pointing_altitude, comment = comment)
                     
@@ -611,7 +460,7 @@ def XML_generator_Mode2(root, date, duration, relativeTime, params = {}):
                     current_state = "IR_day"
                     comment = current_state+': '+str(params)
                     #Macros.Mode1_macro(root, t*timestep+relativeTime, pointing_altitude=pointing_altitude, nadir_on = False, comment = comment)
-                    CCD_settings['CCD_64']['TEXPMS'] = 0
+                    CCD_settings['CCDSEL_64']['TEXPMS'] = 0
                     Macros.Operational_Limb_Pointing_macro(root, t*timestep+relativeTime, CCD_settings, 
                                                            pointing_altitude=pointing_altitude, comment = comment)
                     
@@ -671,9 +520,12 @@ def XML_generator_Mode100(root, date, duration, relativeTime, params = {}):
     "Schedule macros for steadily increasing pointing altitudes and exposure times"
     for pointing_altitude in pointing_altitudes:
         mode_relativeTime = relativeTime - initial_relativeTime
-        CCD_settings['CCD_48']['TEXPMS'] = ExpTimeUV + x * ExpTime_step
-        CCD_settings['CCD_9']['TEXPMS'] = ExpTimeIR + x * ExpTime_step
-        CCD_settings['CCD_6']['TEXPMS'] = ExpTimeIR + x * ExpTime_step
+        CCD_settings['CCDSEL_16']['TEXPMS'] = ExpTimeUV + x * ExpTime_step
+        CCD_settings['CCDSEL_32']['TEXPMS'] = ExpTimeUV + x * ExpTime_step
+        CCD_settings['CCDSEL_1']['TEXPMS'] = ExpTimeIR + x * ExpTime_step
+        CCD_settings['CCDSEL_8']['TEXPMS'] = ExpTimeIR + x * ExpTime_step
+        CCD_settings['CCDSEL_2']['TEXPMS'] = ExpTimeIR + x * ExpTime_step
+        CCD_settings['CCDSEL_4']['TEXPMS'] = ExpTimeIR + x * ExpTime_step
         
         if(mode_relativeTime > duration and duration_flag == 0):
             Logger.warning('Warning!! The scheduled time for '+Mode_name+' has ran out.')
@@ -746,7 +598,7 @@ def XML_generator_Mode12X(root, date, duration, relativeTime,
     
     Snapshot_relativeTime = relativeTime + params['freeze_start'] + params['SnapshotTime']
     
-    FreezeTime = utc_to_onboardTime(freeze_start_utc, Timeline_settings)
+    FreezeTime = utc_to_onboardTime(freeze_start_utc, Timeline_settings['GPS_epoch'], Timeline_settings['leapSeconds'])
     
     FreezeDuration = params['freeze_duration']
     
@@ -833,9 +685,12 @@ def XML_generator_Mode122(root, date, duration, relativeTime,
     CCD_settings = OPT_Config_File.CCD_macro_settings('BinnedCalibration')
     ExpTimeUV= params['Exp_Time_UV']
     ExpTimeIR = params['Exp_Time_IR']
-    CCD_settings['CCD_48']['TEXPMS'] = ExpTimeUV
-    CCD_settings['CCD_9']['TEXPMS'] = ExpTimeIR
-    CCD_settings['CCD_6']['TEXPMS'] = ExpTimeIR
+    CCD_settings['CCDSEL_16']['TEXPMS'] = ExpTimeUV
+    CCD_settings['CCDSEL_32']['TEXPMS'] = ExpTimeUV
+    CCD_settings['CCDSEL_1']['TEXPMS'] = ExpTimeIR
+    CCD_settings['CCDSEL_8']['TEXPMS'] = ExpTimeIR
+    CCD_settings['CCDSEL_2']['TEXPMS'] = ExpTimeIR
+    CCD_settings['CCDSEL_4']['TEXPMS'] = ExpTimeIR
     
     XML_generator_Mode12X(root, date, duration, relativeTime, 
                         params = params, CCD_settings = CCD_settings)
@@ -864,9 +719,12 @@ def XML_generator_Mode123(root, date, duration, relativeTime,
     CCD_settings = OPT_Config_File.CCD_macro_settings('LowPixel')
     ExpTimeUV= params['Exp_Time_UV']
     ExpTimeIR = params['Exp_Time_IR']
-    CCD_settings['CCD_48']['TEXPMS'] = ExpTimeUV
-    CCD_settings['CCD_9']['TEXPMS'] = ExpTimeIR
-    CCD_settings['CCD_6']['TEXPMS'] = ExpTimeIR
+    CCD_settings['CCDSEL_16']['TEXPMS'] = ExpTimeUV
+    CCD_settings['CCDSEL_32']['TEXPMS'] = ExpTimeUV
+    CCD_settings['CCDSEL_1']['TEXPMS'] = ExpTimeIR
+    CCD_settings['CCDSEL_8']['TEXPMS'] = ExpTimeIR
+    CCD_settings['CCDSEL_2']['TEXPMS'] = ExpTimeIR
+    CCD_settings['CCDSEL_4']['TEXPMS'] = ExpTimeIR
     
     XML_generator_Mode12X(root, date, duration, relativeTime, 
                         params = params, CCD_settings = CCD_settings)
@@ -974,9 +832,12 @@ def XML_generator_Mode132_133(root, date, duration, relativeTime,
     
     for ExpTimeUV,ExpTimeIR in zip( params['Exp_Times_UV'], params['Exp_Times_IR'] ):
         
-        CCD_settings['CCD_48']['TEXPMS'] = ExpTimeUV
-        CCD_settings['CCD_9']['TEXPMS'] = ExpTimeIR
-        CCD_settings['CCD_6']['TEXPMS'] = ExpTimeIR
+        CCD_settings['CCDSEL_16']['TEXPMS'] = ExpTimeUV
+        CCD_settings['CCDSEL_32']['TEXPMS'] = ExpTimeUV
+        CCD_settings['CCDSEL_1']['TEXPMS'] = ExpTimeIR
+        CCD_settings['CCDSEL_8']['TEXPMS'] = ExpTimeIR
+        CCD_settings['CCDSEL_2']['TEXPMS'] = ExpTimeIR
+        CCD_settings['CCDSEL_4']['TEXPMS'] = ExpTimeIR
         relativeTime = Macros.Operational_Limb_Pointing_macro(root, round(relativeTime,2), CCD_settings, 
                                   pointing_altitude = pointing_altitude, comment = comment)
         

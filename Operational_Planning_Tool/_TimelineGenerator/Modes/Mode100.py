@@ -27,9 +27,9 @@ def Mode100(Occupied_Timeline):
     
     """
     
-    initial_date = date_calculator()
+    initialDate, endDate = date_calculator()
     
-    Occupied_Timeline, comment = date_select(Occupied_Timeline, initial_date)
+    Occupied_Timeline, comment = date_select(Occupied_Timeline, initialDate, endDate)
     
     
     return Occupied_Timeline, comment
@@ -42,22 +42,34 @@ def Mode100(Occupied_Timeline):
 
 
 def date_calculator():
-    """Subfunction, Returns the initially requested date for the Mode to be scheduled.
+    """Subfunction, Returns the requested initial date and a end for the Mode to be scheduled.
     
     Returns:
-        (ephem.Date): initial_date
+        (tuple): tuple containing:
+            (ephem.Date): initialDate
+            (ephem.Date): endDate
     
     """
     
+    Timeline_settings = OPT_Config_File.Timeline_settings()
+    Settings = OPT_Config_File.Mode100_settings()
     
-    if( OPT_Config_File.Mode100_settings()['start_date'] != '0' ):
-        initial_date = ephem.Date(OPT_Config_File.Mode100_settings()['start_date'])
+    if( Settings['start_date'] != '0' ):
+        initialDate = ephem.Date(Settings['start_date'])
         Logger.info('Mode specific start_date used as initial date')
     else:
         Logger.info('Timeline start_date used as initial date')
-        initial_date = ephem.Date(OPT_Config_File.Timeline_settings()['start_date'])
+        initialDate = ephem.Date(Timeline_settings['start_date'])
     
-    return initial_date
+    number_of_CMDs = 6
+    number_of_altitudes = int( (Settings['pointing_altitude_to'] - Settings['pointing_altitude_from']) / Settings['pointing_altitude_interval'] + 1 )
+    
+    duration = (Settings['pointing_duration'] + Timeline_settings['pointing_stabilization'] + number_of_CMDs) * number_of_altitudes
+    
+    endDate = ephem.Date(initialDate + ephem.second*(Timeline_settings['mode_separation'] + duration) )
+    
+    
+    return initialDate, endDate
 
 
 
@@ -66,12 +78,12 @@ def date_calculator():
 
 
 
-def date_select(Occupied_Timeline, initial_date):
-    """Subfunction, Checks if the initially requested date is available and post-pones it until available if occupied.
+def date_select(Occupied_Timeline, initialDate, endDate):
+    """Subfunction, Checks if the requested initial date is available and post-pones it until available if occupied.
     
     Arguments:
         Occupied_Timeline (:obj:`dict` of :obj:`list`): Dictionary with keys equal to planned and scheduled Modes together with their start and end time in a list. The list is empty if the Mode is unscheduled.
-        initial_date (ephem.Date): The initially requested date for the Mode.
+        initialDate (ephem.Date): The initially requested date for the Mode.
         
     Returns:
         (tuple): tuple containing:
@@ -81,21 +93,10 @@ def date_select(Occupied_Timeline, initial_date):
     """
     
     
-    settings = OPT_Config_File.Mode100_settings()
-    
-    date = initial_date
-    
-    number_of_CMDs = 6
-    number_of_altitudes = int( (settings['pointing_altitude_to'] - settings['pointing_altitude_from']) / settings['pointing_altitude_interval'] + 1 )
-    
-    duration = (settings['pointing_duration'] + OPT_Config_File.Timeline_settings()['pointing_stabilization'] + number_of_CMDs) * number_of_altitudes
-    
-    endDate = ephem.Date(initial_date + ephem.second*(OPT_Config_File.Timeline_settings()['mode_separation'] + duration) )
-    
     
     ############### Start of availability schedueler ##########################
     
-    date, endDate, iterations = scheduler(Occupied_Timeline, date, endDate)
+    date, endDate, iterations = scheduler(Occupied_Timeline, initialDate, endDate)
                 
     ############### End of availability schedueler ##########################
     

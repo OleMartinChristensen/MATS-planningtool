@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Contains functions that return settings for the Operational Planning Tool. The Config file used is set 
+"""Contains functions that return settings for the Operational Planning Tool. A ConfigFile must be chosen
 by calling *Operational_Planning_Tool.Set_ConfigFile()* and must be visible in *sys.path*.
     
 """
@@ -124,12 +124,11 @@ def Timeline_settings():
     Keys:
         'start_date': Sets the starting date of the timeline as a str, (example: '2018/9/3 08:00:40')). \n
         'duration': Sets the duration in seconds of the timeline. (int) \n
-        'leap_seconds': Sets the amount of leap seconds for GPS time to be used. (int) \n
+        'leapSeconds': Sets the amount of leap seconds for GPS time to be used. (int) \n
         'GPS_epoch': Sets the epoch of the GPS time as a str, (example: '1980/1/6'). \n
         
         'Mode1_2_5_minDuration': Minimum amount of time needed (inbetween scheduled Modes) for the scheduling of Modes 1-6 [s]. \n
-        'mode_separation': Time in seconds for an added buffer inbetween schedules Modes and PayloadCMDs in the Science Mode Timeline when determining their duration. 
-        Is also used in Library.scheduler to postpone Modes if their scheduled date is occupied. (int) \n
+        'mode_separation': Time in seconds for an added buffer when determining the duration of a Mode/CMD.(int) \n
         'CMD_duration': Sets the amount of time scheduled for separate PayloadCMDs using *Timeline_gen*. (int) \n
         
         'yaw_correction': If yaw correction will be used for the duration of the timeline. (bool) \n
@@ -147,7 +146,7 @@ def Timeline_settings():
         (:obj:`dict`): timeline_settings
     '''
     timeline_settings = {'start_date': _Globals.StartTime, 'duration': 1*4*3600, 
-                       'leap_seconds': 18, 'GPS_epoch': '1980/1/6', 'Mode1_2_5_minDuration': 300, 'mode_separation': 60,
+                       'leapSeconds': 18, 'GPS_epoch': '1980/1/6', 'Mode1_2_5_minDuration': 300, 'mode_separation': 60,
                        'CMD_duration': 30, 'yaw_correction': True, 'yaw_amplitude': -3.8, 'yaw_phase': -20, 'Schedule_Mode5': False, 'LP_pointing_altitude': 92500, 
                        'command_separation': 1, 'pointing_stabilization': 60, 'CCDSYNC_ExtraOffset': 50, 'CCDSYNC_ExtraIntervalTime': 200}
     
@@ -160,8 +159,8 @@ def Mode1_2_settings():
     
     Keys:
         'lat': Sets in degrees the latitude (+ and -) that the LP crosses that causes the UV exposure to swith on/off (applies to Mode1). (int) \n
-        'log_timestep': Sets the frequency of data being logged [s]. (int) \n
-        'timestep': Sets the timestep [s] of the XML generator simulation of Mode1-2. (int)
+        'log_timestep': Sets the frequency of data being logged [s]. Only determines how much of simulated data is logged. (int) \n
+        'timestep': Sets the timestep [s] of the XML generator simulation of Mode1-2. Will impact accuracy of command generation (int)
         
     Returns:
         (:obj:`dict`): settings
@@ -236,8 +235,8 @@ def Mode120_settings():
         'V_offset': Sets the V-offset of the star (when pointing towards pointing_altitude) for when the attitude freeze command is scheduled. (int) \n
         'H_offset': Sets the maximum H-offset angle from the optical axis in degrees that determines if stars are available. (int) \n
         'Vmag': Sets the Johnson V magnitude of stars to be considered (as a string expression, example '<2'). \n
-        'timestep': Sets timestep used in simulation [s]. (int) \n
-        'log_timestep': Sets the frequency of data being logged [s]. (int) \n
+        'timestep': Sets timestep used in scheduling simulation [s]. Will impact scheduling accuracy. (int) \n
+        'log_timestep': Sets the frequency of data being logged [s]. Only determines how much of simulated data is logged. (int) \n
         'automatic': Sets if the mode date is to be calculated or user provided. True for calculated or False for user provided. (bool) \n
         'start_date': Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). Note! only applies if automatic is set to False. \n
         'mode_duration': Sets the scheduled duration of the Mode in seconds. If set to 0 it is calculated. (int) \n
@@ -272,9 +271,9 @@ def Mode121_122_123_settings():
         'H_FOV': Sets full Horizontal FOV of the Limb instrument in degrees. \n
         'V_FOV': Sets full Vertical FOV of the Limb instrument in degrees. \n
         'Vmag': Sets the Johnson V magnitude of stars to be considered (as a string expression, example '<2'). \n
-        'timestep': sets timestep used in simulation [s]. \n
-        'TimeSkip': Sets the amount of days to skip ahead after one complete orbit is simulated. \n
-        'log_timestep': Sets the frequency of data being logged [s]. \n
+        'timestep': Set timestep used in scheduling simulation [s]. Will impact scheduling accuracy. \n
+        'TimeSkip': Set the amount of days to skip ahead after one complete orbit is simulated. \n
+        'log_timestep': Sets the frequency of data being logged [s]. Only determines how much of simulated data is logged. \n
         'automatic': Sets if the mode date is to be calculated or user provided. True for calculated or False for user provided. \n
         'mode_duration': Sets the scheduled duration of the Mode in seconds. If set to 0 it is calculated. \n
         'freeze_start': Sets in seconds the time from start of the Mode to when the attitude freezes. \n
@@ -365,8 +364,8 @@ def Mode124_settings():
         'pointing_altitude': Sets in meters the altitude of the pointing command. \n
         'V_offset': Sets the V-offset of the Moon (when pointing towards pointing_altitude) for when the attitude freeze command is scheduled. \n
         'H_offset': Sets the maximum H-offset angle from the optical axis in degrees that determines if the Moon is available. \n
-        'timestep': Sets in seconds the timestep of the simulation when larger timeskips (Moon determined far out of sight) are not made. \n
-        'log_timestep': Sets the frequency of data being logged [s]. \n
+        'timestep': Sets in seconds the timestep scheduling simulation [s]. Will impact scheduling accuracy. \n
+        'log_timestep': Sets the frequency of data being logged [s]. Only determines how much of simulated data is logged. \n
         'automatic': Sets if the mode date is to be calculated or user provided. True for calculated or False for user provided. \n
         'start_date': Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). Note! only applies if automatic is set to False. \n
         'mode_duration': Sets the scheduled duration of the Mode in seconds. If set to 0 it is calculated. \n
@@ -588,90 +587,161 @@ def CCDBIAS_settings():
 
 
 def CCD_macro_settings(CCDMacroSelect):
+    '''Returns CCD settings for specific macro as a dict.
     
-    CCD_settings = {'CCD_48': {}, 'CCD_9': {}, 'CCD_6': {}, 'CCD_64': {} }
+    Each key in the output represents settings for a corresponding CCDSEL argument. 
+    
+    **Keys:**
+        'CCDSEL_16': Represents settings for UV1 (CCD5) \n
+        'CCDSEL_32': Represents settings for UV2 (CCD6) \n
+        'CCDSEL_1': Represents settings for IR1 (CCD1) \n
+        'CCDSEL_8': Represents settings for IR2 (CCD4) \n
+        'CCDSEL_2': Represents settings for IR4 (CCD2) \n
+        'CCDSEL_4': Represents settings for IR3 (CCD3) \n
+        'CCDSEL_64': Represents settings for Nadir (CCD6) \n
+        
+    Returns:
+        (:obj:`dict`): parameters
+    
+    '''
+    
+    CCD_settings = {'CCDSEL_16': {}, 'CCDSEL_32': {}, 'CCDSEL_1': {}, 'CCDSEL_8': {}, 'CCDSEL_2': {}, 'CCDSEL_4': {}, 'CCDSEL_64': {} }
     
     if( CCDMacroSelect == 'CustomBinning'):
-        CCD_settings['CCD_48'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 90, 'TEXPMS': 0, 'GAIN': 0, 'NFLUSH': 1023, 
+        CCD_settings['CCDSEL_16'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 90, 'TEXPMS': 0, 'GAIN': 0, 'NFLUSH': 1023, 
                                 'NRSKIP': 0, 'NRBIN': 2, 'NROW': 255, 'NCSKIP': 0, 'NCBIN': 40, 'NCOL': 50, 'NCBINFPGA': 0, 'SIGMODE': 0}
         
-        CCD_settings['CCD_9'] = {'PWR': 1, 'WDW': 4, 'JPEGQ': 90, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
+        CCD_settings['CCDSEL_32'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 90, 'TEXPMS': 0, 'GAIN': 0, 'NFLUSH': 1023, 
+                                'NRSKIP': 0, 'NRBIN': 2, 'NROW': 255, 'NCSKIP': 0, 'NCBIN': 40, 'NCOL': 50, 'NCBINFPGA': 0, 'SIGMODE': 0}
+        
+        CCD_settings['CCDSEL_1'] = {'PWR': 1, 'WDW': 4, 'JPEGQ': 90, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
                                 'NRSKIP': 0, 'NRBIN': 3, 'NROW': 170, 'NCSKIP': 0, 'NCBIN': 80, 'NCOL': 24, 'NCBINFPGA': 0, 'SIGMODE': 1}
         
-        CCD_settings['CCD_6'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 90, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
+        CCD_settings['CCDSEL_8'] = {'PWR': 1, 'WDW': 4, 'JPEGQ': 90, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
+                                'NRSKIP': 0, 'NRBIN': 3, 'NROW': 170, 'NCSKIP': 0, 'NCBIN': 80, 'NCOL': 24, 'NCBINFPGA': 0, 'SIGMODE': 1}
+        
+        CCD_settings['CCDSEL_2'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 90, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
                                 'NRSKIP': 0, 'NRBIN': 6, 'NROW': 85, 'NCSKIP': 0, 'NCBIN': 200, 'NCOL': 8, 'NCBINFPGA': 0, 'SIGMODE': 1}
         
-        CCD_settings['CCD_64'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 90, 'TEXPMS': 1500, 'GAIN': 0, 'NFLUSH': 1023, 
+        CCD_settings['CCDSEL_4'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 90, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
+                                'NRSKIP': 0, 'NRBIN': 6, 'NROW': 85, 'NCSKIP': 0, 'NCBIN': 200, 'NCOL': 8, 'NCBINFPGA': 0, 'SIGMODE': 1}
+        
+        CCD_settings['CCDSEL_64'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 90, 'TEXPMS': 1500, 'GAIN': 0, 'NFLUSH': 1023, 
                                 'NRSKIP': 0, 'NRBIN': 50, 'NROW': 8, 'NCSKIP': 0, 'NCBIN': 50, 'NCOL': 32, 'NCBINFPGA': 0, 'SIGMODE': 1}
     
     
     elif( CCDMacroSelect == 'HighResUV'):
-        CCD_settings['CCD_48'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 90, 'TEXPMS': 3000, 'GAIN': 0, 'NFLUSH': 1023, 
+        CCD_settings['CCDSEL_16'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 90, 'TEXPMS': 3000, 'GAIN': 0, 'NFLUSH': 1023, 
                                  'NRSKIP': 0, 'NRBIN': 2, 'NROW': 255, 'NCSKIP': 0, 'NCBIN': 40, 'NCOL': 50, 'NCBINFPGA': 0, 'SIGMODE': 0}
         
-        CCD_settings['CCD_9'] = {'PWR': 1, 'WDW': 4, 'JPEGQ': 90, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
+        CCD_settings['CCDSEL_32'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 90, 'TEXPMS': 3000, 'GAIN': 0, 'NFLUSH': 1023, 
+                                 'NRSKIP': 0, 'NRBIN': 2, 'NROW': 255, 'NCSKIP': 0, 'NCBIN': 40, 'NCOL': 50, 'NCBINFPGA': 0, 'SIGMODE': 0}
+        
+        CCD_settings['CCDSEL_1'] = {'PWR': 1, 'WDW': 4, 'JPEGQ': 90, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
                                 'NRSKIP': 0, 'NRBIN': 3, 'NROW': 170, 'NCSKIP': 0, 'NCBIN': 80, 'NCOL': 24, 'NCBINFPGA': 0, 'SIGMODE': 1}
         
-        CCD_settings['CCD_6'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 90, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
+        CCD_settings['CCDSEL_8'] = {'PWR': 1, 'WDW': 4, 'JPEGQ': 90, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
+                                'NRSKIP': 0, 'NRBIN': 3, 'NROW': 170, 'NCSKIP': 0, 'NCBIN': 80, 'NCOL': 24, 'NCBINFPGA': 0, 'SIGMODE': 1}
+        
+        CCD_settings['CCDSEL_2'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 90, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
                                 'NRSKIP': 0, 'NRBIN': 6, 'NROW': 85, 'NCSKIP': 0, 'NCBIN': 200, 'NCOL': 8, 'NCBINFPGA': 0, 'SIGMODE': 1}
         
-        CCD_settings['CCD_64'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 90, 'TEXPMS': 1500, 'GAIN': 0, 'NFLUSH': 1023, 
+        CCD_settings['CCDSEL_4'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 90, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
+                                'NRSKIP': 0, 'NRBIN': 6, 'NROW': 85, 'NCSKIP': 0, 'NCBIN': 200, 'NCOL': 8, 'NCBINFPGA': 0, 'SIGMODE': 1}
+        
+        CCD_settings['CCDSEL_64'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 90, 'TEXPMS': 1500, 'GAIN': 0, 'NFLUSH': 1023, 
                                  'NRSKIP': 0, 'NRBIN': 63, 'NROW': 8, 'NCSKIP': 0, 'NCBIN': 63, 'NCOL': 31, 'NCBINFPGA': 0, 'SIGMODE': 1}
         
         
     elif( CCDMacroSelect == 'HighResIR'):
-        CCD_settings['CCD_48'] = {'PWR': 0, 'WDW': 128, 'JPEGQ': 90, 'TEXPMS': 0, 'GAIN': 0, 'NFLUSH': 1023, 
+        CCD_settings['CCDSEL_16'] = {'PWR': 0, 'WDW': 128, 'JPEGQ': 90, 'TEXPMS': 0, 'GAIN': 0, 'NFLUSH': 1023, 
                                  'NRSKIP': 0, 'NRBIN': 2, 'NROW': 255, 'NCSKIP': 0, 'NCBIN': 40, 'NCOL': 50, 'NCBINFPGA': 0, 'SIGMODE': 0}
         
-        CCD_settings['CCD_9'] = {'PWR': 1, 'WDW': 4, 'JPEGQ': 90, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
+        CCD_settings['CCDSEL_32'] = {'PWR': 0, 'WDW': 128, 'JPEGQ': 90, 'TEXPMS': 0, 'GAIN': 0, 'NFLUSH': 1023, 
+                                 'NRSKIP': 0, 'NRBIN': 2, 'NROW': 255, 'NCSKIP': 0, 'NCBIN': 40, 'NCOL': 50, 'NCBINFPGA': 0, 'SIGMODE': 0}
+        
+        CCD_settings['CCDSEL_1'] = {'PWR': 1, 'WDW': 4, 'JPEGQ': 90, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
                                 'NRSKIP': 0, 'NRBIN': 2, 'NROW': 255, 'NCSKIP': 0, 'NCBIN': 40, 'NCOL': 50, 'NCBINFPGA': 0, 'SIGMODE': 1}
         
-        CCD_settings['CCD_6'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 90, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
+        CCD_settings['CCDSEL_8'] = {'PWR': 1, 'WDW': 4, 'JPEGQ': 90, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
+                                'NRSKIP': 0, 'NRBIN': 2, 'NROW': 255, 'NCSKIP': 0, 'NCBIN': 40, 'NCOL': 50, 'NCBINFPGA': 0, 'SIGMODE': 1}
+        
+        CCD_settings['CCDSEL_2'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 90, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
                                 'NRSKIP': 0, 'NRBIN': 6, 'NROW': 85, 'NCSKIP': 0, 'NCBIN': 200, 'NCOL': 8, 'NCBINFPGA': 0, 'SIGMODE': 1}
         
-        CCD_settings['CCD_64'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 90, 'TEXPMS': 1500, 'GAIN': 0, 'NFLUSH': 1023, 
+        CCD_settings['CCDSEL_4'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 90, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
+                                'NRSKIP': 0, 'NRBIN': 6, 'NROW': 85, 'NCSKIP': 0, 'NCBIN': 200, 'NCOL': 8, 'NCBINFPGA': 0, 'SIGMODE': 1}
+        
+        CCD_settings['CCDSEL_64'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 90, 'TEXPMS': 1500, 'GAIN': 0, 'NFLUSH': 1023, 
                                  'NRSKIP': 0, 'NRBIN': 36, 'NROW': 14, 'NCSKIP': 0, 'NCBIN': 36, 'NCOL': 55, 'NCBINFPGA': 0, 'SIGMODE': 1}
         
         
     elif( CCDMacroSelect == 'BinnedCalibration'):
-        CCD_settings['CCD_48'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 90, 'TEXPMS': 0, 'GAIN': 0, 'NFLUSH': 1023, 
+        CCD_settings['CCDSEL_16'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 90, 'TEXPMS': 0, 'GAIN': 0, 'NFLUSH': 1023, 
                                  'NRSKIP': 0, 'NRBIN': 2, 'NROW': 255, 'NCSKIP': 0, 'NCBIN': 40, 'NCOL': 50, 'NCBINFPGA': 0, 'SIGMODE': 0}
         
-        CCD_settings['CCD_9'] = {'PWR': 1, 'WDW': 4, 'JPEGQ': 90, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
+        CCD_settings['CCDSEL_32'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 90, 'TEXPMS': 0, 'GAIN': 0, 'NFLUSH': 1023, 
+                                 'NRSKIP': 0, 'NRBIN': 2, 'NROW': 255, 'NCSKIP': 0, 'NCBIN': 40, 'NCOL': 50, 'NCBINFPGA': 0, 'SIGMODE': 0}
+        
+        CCD_settings['CCDSEL_1'] = {'PWR': 1, 'WDW': 4, 'JPEGQ': 90, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
                                 'NRSKIP': 0, 'NRBIN': 2, 'NROW': 255, 'NCSKIP': 0, 'NCBIN': 40, 'NCOL': 50, 'NCBINFPGA': 0, 'SIGMODE': 1}
         
-        CCD_settings['CCD_6'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 90, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
+        CCD_settings['CCDSEL_8'] = {'PWR': 1, 'WDW': 4, 'JPEGQ': 90, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
+                                'NRSKIP': 0, 'NRBIN': 2, 'NROW': 255, 'NCSKIP': 0, 'NCBIN': 40, 'NCOL': 50, 'NCBINFPGA': 0, 'SIGMODE': 1}
+        
+        CCD_settings['CCDSEL_2'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 90, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
                                 'NRSKIP': 0, 'NRBIN': 6, 'NROW': 85, 'NCSKIP': 0, 'NCBIN': 200, 'NCOL': 8, 'NCBINFPGA': 0, 'SIGMODE': 1}
         
-        CCD_settings['CCD_64'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 90, 'TEXPMS': 0, 'GAIN': 0, 'NFLUSH': 1023, 
+        CCD_settings['CCDSEL_4'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 90, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
+                                'NRSKIP': 0, 'NRBIN': 6, 'NROW': 85, 'NCSKIP': 0, 'NCBIN': 200, 'NCOL': 8, 'NCBINFPGA': 0, 'SIGMODE': 1}
+        
+        CCD_settings['CCDSEL_64'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 90, 'TEXPMS': 0, 'GAIN': 0, 'NFLUSH': 1023, 
                                 'NRSKIP': 0, 'NRBIN': 36, 'NROW': 14, 'NCSKIP': 0, 'NCBIN': 36, 'NCOL': 55, 'NCBINFPGA': 0, 'SIGMODE': 1}
         
         
     elif( CCDMacroSelect == 'FullReadout'):
-        CCD_settings['CCD_48'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 110, 'TEXPMS': 3000, 'GAIN': 0, 'NFLUSH': 1023, 
+        CCD_settings['CCDSEL_16'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 110, 'TEXPMS': 3000, 'GAIN': 0, 'NFLUSH': 1023, 
                                 'NRSKIP': 0, 'NRBIN': 1, 'NROW': 511, 'NCSKIP': 0, 'NCBIN': 1, 'NCOL': 2046, 'NCBINFPGA': 0, 'SIGMODE': 0}
         
-        CCD_settings['CCD_9'] = {'PWR': 1, 'WDW': 4, 'JPEGQ': 90, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
+        CCD_settings['CCDSEL_32'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 110, 'TEXPMS': 3000, 'GAIN': 0, 'NFLUSH': 1023, 
+                                'NRSKIP': 0, 'NRBIN': 1, 'NROW': 511, 'NCSKIP': 0, 'NCBIN': 1, 'NCOL': 2046, 'NCBINFPGA': 0, 'SIGMODE': 0}
+        
+        CCD_settings['CCDSEL_1'] = {'PWR': 1, 'WDW': 4, 'JPEGQ': 90, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
                                 'NRSKIP': 0, 'NRBIN': 1, 'NROW': 511, 'NCSKIP': 0, 'NCBIN': 1, 'NCOL': 2046, 'NCBINFPGA': 0, 'SIGMODE': 1}
         
-        CCD_settings['CCD_6'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 110, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
+        CCD_settings['CCDSEL_8'] = {'PWR': 1, 'WDW': 4, 'JPEGQ': 90, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
                                 'NRSKIP': 0, 'NRBIN': 1, 'NROW': 511, 'NCSKIP': 0, 'NCBIN': 1, 'NCOL': 2046, 'NCBINFPGA': 0, 'SIGMODE': 1}
         
-        CCD_settings['CCD_64'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 90, 'TEXPMS': 0, 'GAIN': 0, 'NFLUSH': 1023, 
+        CCD_settings['CCDSEL_2'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 110, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
+                                'NRSKIP': 0, 'NRBIN': 1, 'NROW': 511, 'NCSKIP': 0, 'NCBIN': 1, 'NCOL': 2046, 'NCBINFPGA': 0, 'SIGMODE': 1}
+        
+        CCD_settings['CCDSEL_4'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 110, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
+                                'NRSKIP': 0, 'NRBIN': 1, 'NROW': 511, 'NCSKIP': 0, 'NCBIN': 1, 'NCOL': 2046, 'NCBINFPGA': 0, 'SIGMODE': 1}
+        
+        CCD_settings['CCDSEL_64'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 90, 'TEXPMS': 0, 'GAIN': 0, 'NFLUSH': 1023, 
                                  'NRSKIP': 0, 'NRBIN': 1, 'NROW': 511, 'NCSKIP': 0, 'NCBIN': 1, 'NCOL': 2046, 'NCBINFPGA': 0, 'SIGMODE': 1}
         
         
     elif( CCDMacroSelect == 'LowPixel'):
-        CCD_settings['CCD_48'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 110, 'TEXPMS': 3000, 'GAIN': 0, 'NFLUSH': 1023, 
+        CCD_settings['CCDSEL_16'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 110, 'TEXPMS': 3000, 'GAIN': 0, 'NFLUSH': 1023, 
                                  'NRSKIP': 0, 'NRBIN': 63, 'NROW': 7, 'NCSKIP': 0, 'NCBIN': 255, 'NCOL': 7, 'NCBINFPGA': 0, 'SIGMODE': 0}
         
-        CCD_settings['CCD_9'] = {'PWR': 1, 'WDW': 4, 'JPEGQ': 90, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
+        CCD_settings['CCDSEL_32'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 110, 'TEXPMS': 3000, 'GAIN': 0, 'NFLUSH': 1023, 
+                                 'NRSKIP': 0, 'NRBIN': 63, 'NROW': 7, 'NCSKIP': 0, 'NCBIN': 255, 'NCOL': 7, 'NCBINFPGA': 0, 'SIGMODE': 0}
+        
+        CCD_settings['CCDSEL_1'] = {'PWR': 1, 'WDW': 4, 'JPEGQ': 90, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
                                 'NRSKIP': 0, 'NRBIN': 63, 'NROW': 7, 'NCSKIP': 0, 'NCBIN': 255, 'NCOL': 7, 'NCBINFPGA': 0, 'SIGMODE': 1}
         
-        CCD_settings['CCD_6'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 110, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
+        CCD_settings['CCDSEL_8'] = {'PWR': 1, 'WDW': 4, 'JPEGQ': 90, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
                                 'NRSKIP': 0, 'NRBIN': 63, 'NROW': 7, 'NCSKIP': 0, 'NCBIN': 255, 'NCOL': 7, 'NCBINFPGA': 0, 'SIGMODE': 1}
         
-        CCD_settings['CCD_64'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 90, 'TEXPMS': 1500, 'GAIN': 0, 'NFLUSH': 1023, 
+        CCD_settings['CCDSEL_2'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 110, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
+                                'NRSKIP': 0, 'NRBIN': 63, 'NROW': 7, 'NCSKIP': 0, 'NCBIN': 255, 'NCOL': 7, 'NCBINFPGA': 0, 'SIGMODE': 1}
+        
+        CCD_settings['CCDSEL_4'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 110, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
+                                'NRSKIP': 0, 'NRBIN': 63, 'NROW': 7, 'NCSKIP': 0, 'NCBIN': 255, 'NCOL': 7, 'NCBINFPGA': 0, 'SIGMODE': 1}
+        
+        CCD_settings['CCDSEL_64'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 90, 'TEXPMS': 1500, 'GAIN': 0, 'NFLUSH': 1023, 
                                  'NRSKIP': 0, 'NRBIN': 63, 'NROW': 7, 'NCSKIP': 0, 'NCBIN': 255, 'NCOL': 7, 'NCBINFPGA': 0, 'SIGMODE': 1}
         
         
@@ -706,6 +776,6 @@ def FreezeDuration_calculator(pointing_altitude1, pointing_altitude2):
     
     #The time it takes for the orbital position angle to change by the same amount as
     #the angle between the pointing axes
-    FreezeDuration = round(MATS_P*(pitch_angle_difference)/360,1)
+    FreezeDuration = int(round(MATS_P*(pitch_angle_difference)/360,0))
     
     return FreezeDuration

@@ -138,256 +138,84 @@ def date_calculator(Settings):
     "Loop and calculate the relevant angle of each star to each direction of MATS's FOV"
     while(current_time < timeline_start+ephem.second*duration):
         
+        if( t*timestep % log_timestep == 0):
+            LogFlag = True
+        else:
+            LogFlag = False
     
         Satellite_dict = Satellite_Simulator( 
-                    MATS_skyfield, current_time, Timeline_settings, pointing_altitude, timestep, t, log_timestep )
+                    MATS_skyfield, current_time, Timeline_settings, pointing_altitude, LogFlag )
         
-        MATS_P[t] = Satellite_dict['OrbitalPeriod']
-        lat_MATS[t] =  Satellite_dict['Latitude']
-        long_MATS[t] =  Satellite_dict['Longitude']
+        MATS_P[t] = Satellite_dict['OrbitalPeriod [s]']
+        lat_MATS[t] =  Satellite_dict['Latitude [degrees]']
+        long_MATS[t] =  Satellite_dict['Longitude [degrees]']
         optical_axis[t] = Satellite_dict['OpticalAxis']
-        Dec_optical_axis[t] = Satellite_dict['Dec_OpticalAxis']
-        RA_optical_axis[t] = Satellite_dict['RA_OpticalAxis']
+        Dec_optical_axis[t] = Satellite_dict['Dec_OpticalAxis [degrees]']
+        RA_optical_axis[t] = Satellite_dict['RA_OpticalAxis [degrees]']
         r_H_offset_normal[t] = Satellite_dict['Normal2H_offset']
         r_V_offset_normal[t] = Satellite_dict['Normal2V_offset']
         
         
-        """
-        MATS.compute(current_time, epoch='2000/01/01 11:58:55.816')
+        ############# End of Calculations of orbital and pointing vectors #####
         
         
+        "Add current date to date_magnitude_array"
+        date_magnitude_array[t,0] = current_time 
+        "Add optical axis Dec and RA to date_magnitude_array"
+        date_magnitude_array[t,2] = Dec_optical_axis[t]
+        date_magnitude_array[t,3] = RA_optical_axis[t]
         
-        (lat_MATS[t],long_MATS[t],altitude_MATS[t],a_ra_MATS[t],a_dec_MATS[t])= (
-        MATS.sublat,MATS.sublong,MATS.elevation/1000,MATS.a_ra,MATS.a_dec)
+        ###################### Star-mapper ####################################
         
-        R = lat_2_R(lat_MATS[t]) #WGS84 radius from latitude of MATS
-        MATS_distance = R + altitude_MATS[t]
-        
-        z_MATS[t] = sin(a_dec_MATS[t])*(MATS_distance)
-        x_MATS[t] = cos(a_dec_MATS[t])*(MATS_distance)* cos(a_ra_MATS[t])
-        y_MATS[t] = cos(a_dec_MATS[t])*(MATS_distance)* sin(a_ra_MATS[t])
-       
-        r_MATS[t,0:3] = [x_MATS[t], y_MATS[t], z_MATS[t]]
-        """
-        
-        """
-        current_time_datetime = ephem.Date(current_time).datetime()
-        year = current_time_datetime.year
-        month = current_time_datetime.month
-        day = current_time_datetime.day
-        hour = current_time_datetime.hour
-        minute = current_time_datetime.minute
-        second = current_time_datetime.second + current_time_datetime.microsecond/1000000
-        
-        current_time_skyfield = ts.utc(year, month, day, hour, minute, second)
-        
-        MATS_geo = MATS_skyfield.at(current_time_skyfield)
-        r_MATS[t] = MATS_geo.position.km
-        MATS_distance = MATS_geo.distance().km
-        MATS_subpoint = MATS_geo.subpoint()
-        lat_MATS[t] = MATS_subpoint.latitude.radians
-        long_MATS[t] = MATS_subpoint.longitude.radians
-        altitude_MATS[t] = MATS_subpoint.elevation.km
-        
-        #Semi-Major axis of MATS, assuming circular orbit
-        MATS_p[t] = norm(r_MATS[t,0:3])
-        
-        #Orbital Period of MATS
-        MATS_P[t] = 2*pi*sqrt(MATS_p[t]**3/U)
-        
-        r_MATS_unit_vector[t] = r_MATS[t] / MATS_p[t]
+        "Check position of stars relevant to pointing direction"
+        for x in range(ROWS):
             
-        
-        
-        #Initial Estimated pitch or elevation angle for MATS pointing
-        if(t == 0):
-            pitch_sensor_array[t]= array(arccos((R_mean+pointing_altitude)/(MATS_distance))/pi*180)
-            pitch_sensor = pitch_sensor_array[t][0]
-            time_between_LP_and_MATS = MATS_P[t][0]*pitch_sensor/360
-            timesteps_between_LP_and_MATS = int(time_between_LP_and_MATS / timestep)
-        
-        if( (t*timestep % log_timestep == 0 or t == 1) and t != 0 ):
-            Logger.debug('')
-            
-            Logger.debug('t (loop iteration number): '+str(t))
-            Logger.debug('Current time: '+str(current_time))
-            Logger.debug('Semimajor axis in km: '+str(MATS_p[t]))
-            Logger.debug('Orbital Period in s: '+str(MATS_P[t]))
-            Logger.debug('Vector to MATS [km]: '+str(r_MATS[t,0:3]))
-            Logger.debug('Latitude in degrees: '+str(lat_MATS[t]/pi*180))
-            Logger.debug('Longitude in degrees: '+str(long_MATS[t]/pi*180))
-            Logger.debug('Altitude in km: '+str(altitude_MATS[t]))
-            Logger.debug('MATS_distance [km]: '+str(MATS_distance))
+            "Skip star if it is not visible during this epoch"
+            if(stars[x].name in skip_star_list):
+                continue
                 
-        if(t != 0):
-            
-            # More accurate estimation of lat of LP using the position of MATS at a previous time
-            if( t >= timesteps_between_LP_and_MATS):
-                lat_LP = lat_MATS[t-timesteps_between_LP_and_MATS]
-                R_earth_LP = lat_2_R(lat_LP)
-            else:
-                date_of_MATSlat_is_equal_2_current_LPlat = ephem.Date(current_time - ephem.second * timesteps_between_LP_and_MATS * timestep).datetime()
-                lat_LP = lat_calculator( MATS_skyfield, date_of_MATSlat_is_equal_2_current_LPlat )
-                R_earth_LP = lat_2_R(lat_LP)
-            '''
-            if( t >= timesteps_between_pitch_and_MATS):
-                abs_lat_pitchPoint = abs(lat_MATS[t-timesteps_between_pitch_and_MATS])
-                R_earth_pitchPoint = lat_2_R(abs_lat_pitchPoint)
-            else:
-                date_of_MATSlat_is_equal_2_current_pitchPointlat = ephem.Date(current_time - ephem.second * timesteps_between_LP_and_MATS * timestep)
-                lat_LP = abs( lat_MATS_calculator( date_of_MATSlat_is_equal_2_current_LPlat ) )
-                R_earth_LP = lat_2_R(lat_LP)
-            '''
-            '''
-            if( abs(lat_MATS[t])-abs(lat_MATS[t-1]) > 0 ): #Moving towards poles meaning LP is equatorwards compared to MATS
-                lat_LP = abs(lat_MATS[t])-pitch_sensor/180*pi #absolute value of estimated latitude of LP in radians
-                R_earth_LP = lat_2_R(lat_LP) #Estimated WGS84 radius of LP from latitude of MATS
-            else:
-                lat_LP = abs(lat_MATS[t])+pitch_sensor/180*pi #absolute value of estimated latitude of LP in radians
-                R_earth_LP = lat_2_R(lat_LP) #Estimated WGS84 radius of LP from latitude of MATS
-            '''
-            # More accurate estimation of pitch angle of MATS using R_earth_LP instead of R_mean
-            pitch_LP_array[t]= array(arccos((R_earth_LP+LP_altitude)/(MATS_distance))/pi*180)
-            pitch_LP = pitch_LP_array[t][0]
-            
-            pitch_sensor_array[t]= array(arccos((R_earth_LP+pointing_altitude)/(MATS_distance))/pi*180)
-            pitch_sensor = pitch_sensor_array[t][0]
             
             
-            ############# Calculations of orbital and pointing vectors ############
-            "Vector normal to the orbital plane of MATS"
-            normal_orbit[t,0:3] = cross(r_MATS[t],r_MATS[t-1])
-            normal_orbit[t,0:3] = normal_orbit[t,0:3] / norm(normal_orbit[t,0:3])
+            "Project 'star vectors' ontop pointing H-offset and V-offset plane"
+            stars_r_V_offset_plane[x] = stars_r[0][x] - (dot(stars_r[0][x],r_V_offset_normal[t,0:3]) * r_V_offset_normal[t,0:3])
             
-            if( yaw_correction == True):
-                "Calculate intersection between the orbital plane and the equator"
-                ascending_node = cross(normal_orbit[t,0:3], celestial_eq_normal)
+            stars_r_H_offset_plane[x] = stars_r[0][x] - (dot(stars_r[0][x],r_H_offset_normal[t]) * r_H_offset_normal[t]) 
+            
+            "Dot product to get the Vertical and Horizontal angle offset of the star in the FOV"
+            stars_vert_offset[t][x] = arccos(dot(optical_axis[t],stars_r_V_offset_plane[x]) / (norm(optical_axis[t]) * norm(stars_r_V_offset_plane[x]))) /pi*180
+            stars_hori_offset[t][x] = arccos(dot(optical_axis[t],stars_r_H_offset_plane[x]) / (norm(optical_axis[t]) * norm(stars_r_H_offset_plane[x]))) /pi*180
+            
+            
+            
+            "For first loop of stars, make exception list for stars not visible during this epoch"
+            if( t == 1 ):
                 
-                arg_of_lat = arccos( dot(ascending_node, r_MATS[t,0:3]) / norm(r_MATS[t,0:3]) / norm(ascending_node) ) /pi*180
+                "To be able to skip stars far outside the orbital plane of MATS"
+                angle_between_orbital_plane_and_star[t][x] = arccos( dot(stars_r[0][x], stars_r_V_offset_plane[x]) / norm(stars_r_V_offset_plane[x])) /pi*180
                 
-                "To determine if MATS is moving towards the ascending node"
-                if( dot(cross( ascending_node, r_MATS[t,0:3]), normal_orbit[t,0:3]) >= 0 ):
-                    arg_of_lat = 360 - arg_of_lat
-                    
-                yaw_offset_angle = Timeline_settings['yaw_amplitude'] * cos( arg_of_lat/180*pi - pitch_LP/180*pi + Timeline_settings['yaw_phase']/180*pi )
-                yaw_offset_angle = yaw_offset_angle[0]
-                
-                if( t*timestep % log_timestep == 0 or t == 1 ):
-                    Logger.debug('ascending_node: '+str(ascending_node))
-                    Logger.debug('arg_of_lat [degrees]: '+str(arg_of_lat))
-                    Logger.debug('yaw_offset_angle [degrees]: '+str(yaw_offset_angle))
-                
-            elif( yaw_correction == False):
-                yaw_offset_angle = 0
-            
-            
-            "Rotate 'vector to MATS', to represent pointing direction, includes vertical offset change (Parallax is negligable)"
-            rot_mat = rot_arbit(pi/2+(pitch_sensor)/180*pi, normal_orbit[t,0:3])
-            optical_axis[t,0:3] = (rot_mat @ r_MATS[t] )
-            
-            
-            "Rotate yaw of pointing direction, meaning to rotate around the vector to MATS"
-            rot_mat = rot_arbit(-yaw_offset_angle/180*pi, r_MATS_unit_vector[t,0:3])
-            optical_axis[t,0:3] = (rot_mat @ optical_axis[t,0:3] )
-            optical_axis_unit_vector[t,0:3] = optical_axis[t,0:3]/norm(optical_axis[t,0:3])
-            
-            
-            '''Rotate 'vector to MATS', to represent vector normal to satellite H-offset plane,
-            which will be used to project stars onto it which allows the H-offset of stars to be found'''
-            rot_mat = rot_arbit((pitch_sensor)/180*pi, normal_orbit[t,0:3])
-            r_H_offset_normal[t,0:3] = ( rot_mat @ r_MATS[t] )
-            r_H_offset_normal[t,0:3] = r_H_offset_normal[t,0:3] / norm(r_H_offset_normal[t,0:3])
-            
-            "If pointing direction has a Yaw defined, Rotate yaw of normal to pointing direction H-offset plane, meaning to rotate around the vector to MATS"
-            rot_mat = rot_arbit(-yaw_offset_angle/180*pi, r_MATS_unit_vector[t,0:3])
-            r_H_offset_normal[t,0:3] = (rot_mat @ r_H_offset_normal[t,0:3])
-            r_H_offset_normal[t,0:3] = r_H_offset_normal[t,0:3]/norm(r_H_offset_normal[t,0:3])
-            
-            "Rotate orbital plane normal to make it into pointing V-offset plane normal"
-            r_V_offset_normal[t,0:3] = (rot_mat @ normal_orbit[t,0:3])
-            r_V_offset_normal[t,0:3] = r_V_offset_normal[t,0:3]/norm(r_V_offset_normal[t,0:3])
-            
-            "Calculate Dec and RA of optical axis (disregarding parallax)"
-            Dec = arctan(  optical_axis[t,2] / sqrt(optical_axis[t,0]**2 + optical_axis[t,1]**2) ) /pi * 180
-            Ra = arccos( dot( [1,0,0], [optical_axis[t,0],optical_axis[t,1],0] ) / norm([optical_axis[t,0],optical_axis[t,1],0]) ) / pi * 180
-            if( optical_axis[t,1] < 0 ):
-                Ra = 360-Ra
-            
-            if( t*timestep % log_timestep == 0 or t == 1 ):
-                Logger.debug('Current time: '+str(current_time))
-                Logger.debug('R_earth_LP [km]: '+str(R_earth_LP))
-                
-                Logger.debug('Pitch in degrees: '+str(pitch_sensor))
-                Logger.debug('Latitude of LP: '+str(lat_LP/pi*180))
-                Logger.debug('Optical Axis: '+str(optical_axis_unit_vector[t,0:3]))
-                #Logger.debug('Pointing direction of FOV2: '+str(optical_axis_unit_vector2[t,0:3]))
-                Logger.debug('Orthogonal direction to H-offset plane: '+str(r_H_offset_normal[t,0:3]))
-                Logger.debug('Orthogonal direction to V-offset plane: '+str(r_V_offset_normal[t,0:3]))
-                Logger.debug('Orthogonal direction to the orbital plane: '+str(normal_orbit[t,0:3]))
-                Logger.debug('')
-            
-            """
-            ############# End of Calculations of orbital and pointing vectors #####
-            
-        if(t != 0):
-            
-            "Add current date to date_magnitude_array"
-            date_magnitude_array[t-1,0] = current_time 
-            "Add optical axis Dec and RA to date_magnitude_array"
-            date_magnitude_array[t-1,2] = Dec_optical_axis[t]
-            date_magnitude_array[t-1,3] = RA_optical_axis[t]
-            
-            ###################### Star-mapper ####################################
-            
-            "Check position of stars relevant to pointing direction"
-            for x in range(ROWS):
-                
-                "Skip star if it is not visible during this epoch"
-                if(stars[x].name in skip_star_list):
+                if( abs(angle_between_orbital_plane_and_star[t][x]) > H_FOV/2+(duration*2)/(365*24*3600)*360):
+                    Logger.debug('Skip star: '+stars[x].name+', with angle_between_orbital_plane_and_star of: '+str(angle_between_orbital_plane_and_star[t][x])+' degrees')
+                    skip_star_list.append(stars[x].name)
                     continue
+            
+            
+            "Check if star is in FOV"
+            if( abs(stars_vert_offset[t][x]) < V_FOV/2 and abs(stars_hori_offset[t][x]) < H_FOV/2):
+                #print('Star number:',stars[x].name,'is visible at',stars_vert_offset[t][x],'degrees VFOV and', \
+                     #stars_hori_offset[t][x],'degrees HFOV','during',ephem.Date(current_time))
+                
+                if( t % log_timestep == 0 or t == 1 ):
+                    Logger.debug('Current time: '+str(current_time))
+                    Logger.debug('Star: '+stars[x].name+', with H-offset: '+str(stars_hori_offset[t][x])+' V-offset: '+str(stars_vert_offset[t][x])+' in degrees is visible')
+                
+                "Check if it is the brightest star spotted in the current FOV at the current date, and if so, replace the current value"
+                if( stars[x].mag < date_magnitude_array[t,1] ):
+                    date_magnitude_array[t,1] = stars[x].mag
                     
                 
+                star_counter = star_counter + 1
                 
-                "Project 'star vectors' ontop pointing H-offset and V-offset plane"
-                stars_r_V_offset_plane[x] = stars_r[0][x] - (dot(stars_r[0][x],r_V_offset_normal[t,0:3]) * r_V_offset_normal[t,0:3])
-                
-                stars_r_H_offset_plane[x] = stars_r[0][x] - (dot(stars_r[0][x],r_H_offset_normal[t]) * r_H_offset_normal[t]) 
-                
-                "Dot product to get the Vertical and Horizontal angle offset of the star in the FOV"
-                stars_vert_offset[t][x] = arccos(dot(optical_axis[t],stars_r_V_offset_plane[x]) / (norm(optical_axis[t]) * norm(stars_r_V_offset_plane[x]))) /pi*180
-                stars_hori_offset[t][x] = arccos(dot(optical_axis[t],stars_r_H_offset_plane[x]) / (norm(optical_axis[t]) * norm(stars_r_H_offset_plane[x]))) /pi*180
-                
-                
-                
-                "For first loop of stars, make exception list for stars not visible during this epoch"
-                if( t == 1 ):
-                    
-                    "To be able to skip stars far outside the orbital plane of MATS"
-                    angle_between_orbital_plane_and_star[t][x] = arccos( dot(stars_r[0][x], stars_r_V_offset_plane[x]) / norm(stars_r_V_offset_plane[x])) /pi*180
-                    
-                    if( abs(angle_between_orbital_plane_and_star[t][x]) > H_FOV/2+(duration*2)/(365*24*3600)*360):
-                        Logger.debug('Skip star: '+stars[x].name+', with angle_between_orbital_plane_and_star of: '+str(angle_between_orbital_plane_and_star[t][x])+' degrees')
-                        skip_star_list.append(stars[x].name)
-                        continue
-                
-                
-                "Check if star is in FOV"
-                if( abs(stars_vert_offset[t][x]) < V_FOV/2 and abs(stars_hori_offset[t][x]) < H_FOV/2):
-                    #print('Star number:',stars[x].name,'is visible at',stars_vert_offset[t][x],'degrees VFOV and', \
-                         #stars_hori_offset[t][x],'degrees HFOV','during',ephem.Date(current_time))
-                    
-                    if( t % log_timestep == 0 or t == 1 ):
-                        Logger.debug('Current time: '+str(current_time))
-                        Logger.debug('Star: '+stars[x].name+', with H-offset: '+str(stars_hori_offset[t][x])+' V-offset: '+str(stars_vert_offset[t][x])+' in degrees is visible')
-                    
-                    "Check if it is the brightest star spotted in the current FOV at the current date, and if so, replace the current value"
-                    if( stars[x].mag < date_magnitude_array[t-1,1] ):
-                        date_magnitude_array[t-1,1] = stars[x].mag
-                        
-                    
-                    star_counter = star_counter + 1
-                    
-            ######################### End of star_mapper #############################
+        ######################### End of star_mapper #############################
         
         "Increment time with timestep or jump ahead in time if a whole orbit was completed"
         if( (current_time - initial_time)/ephem.second > (timeskip/ephem.second * time_skip_counter + MATS_P[t] * (time_skip_counter+1)) ):
