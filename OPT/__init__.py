@@ -82,6 +82,7 @@ def Copy_ConfigFile(Config_File_Name):
     
     Config_File_Name = Config_File_Name+'.py'
     
+    """
     #Make copy of the original Config File if no Config File is present.
     if(os.path.isfile(ConfigFile) == False):
         shutil.copyfile(Original_ConfigFile, ConfigFile)
@@ -93,6 +94,7 @@ def Copy_ConfigFile(Config_File_Name):
             shutil.copyfile(Original_ConfigFile, ConfigFile)
         elif( answer == 'n'):
             pass
+    """
     
     if(os.path.isfile(Config_File_Name) == False):
         shutil.copyfile(ConfigFile, Config_File_Name)
