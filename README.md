@@ -8,7 +8,7 @@ OPT (Operational_Planning_Tool) requires at least Python 3.7.3 and these package
     scipy = Version: >= 1.3.0
     lxml = Version: >= 4.3.3
     astroquery, Version: >= 0.3.9, astropy
-    skyfield, Version: = 1.10, pypi
+    skyfield, Version: = 1.10
 	astropy, Version >= 3.2.1, astropy
     
 It is recommended to install these packages in a conda environment using conda and to use "Spyder" as an scientific environment.
