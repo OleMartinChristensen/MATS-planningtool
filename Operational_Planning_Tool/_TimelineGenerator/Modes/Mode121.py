@@ -7,7 +7,7 @@ Part of Timeline_generator, as part of OPT.
 
 import importlib
 
-from Operational_Planning_Tool import _Globals
+from OPT import _Globals
 from .Mode121_122_123 import date_calculator, date_select
 
 OPT_Config_File = importlib.import_module(_Globals.Config_File)

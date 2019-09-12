@@ -1,0 +1,298 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="python 3.7">
+  <head>
+    <meta charset="utf-8" />
+    <title>OPT package &#8212; Operational_Planning_Tool  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="OPT" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-OPT">
+<span id="opt-package"></span><h1>OPT package<a class="headerlink" href="#module-OPT" title="Permalink to this headline">¶</a></h1>
+<p>Contain the functions that together constitute the Operational_Planning_Tool (OPT). These functions are:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Copy_ConfigFile</p></li>
+<li><p>Set_ConfigFile</p></li>
+<li><p>CheckConfigFile</p></li>
+<li><p>Timeline_gen</p></li>
+<li><p>XML_gen</p></li>
+<li><p>Timeline_analyzer</p></li>
+<li><p>Timeline_Plotter</p></li>
+</ul>
+</div></blockquote>
+<dl>
+<dt><strong>Abbreviations:</strong></dt><dd><p>CMD = Command</p>
+<p>FOV = Field of View</p>
+<p>OPT = Operational Planning Tool</p>
+</dd>
+</dl>
+<p><strong>Description:</strong>
+<em>Operational_Planning_Tool</em> uses a special .py file as a <em>Configuration File</em>. An example of a <em>Configuration_File</em> is located in the Operational_Planning_Tool and is called <em>_ConfigFile.py</em>.</p>
+<p>Create your own <em>Configuration File</em> with an appropriate name by running <em>Copy_ConfigFile</em> with a chosen name as an input.
+<em>Copy_ConfigFile</em> makes a copy of <em>_ConfigFile.py</em>. You can then modify the settings in your copy.</p>
+<p>Your <em>Configuration File</em> and its date must be chosen by running <em>Set_ConfigFile</em>.</p>
+<p>The objective of <em>Operational_Planning_Tool</em> is to create a timeline constituting of planned Science Modes and some available stand-alone Commands (specified in &quot;Science Modes for MATS&quot; document).
+A <em>Science Mode Timeline</em>, as it is called, is created by running <em>Timeline_gen</em>. Remember to edit and choose your <em>Configuration File</em> by running <em>Set_ConfigFile</em>.</p>
+<p>The created <em>Science Mode Timeline</em> can be converted into Payload and Platform Commands (as specified in the &quot;Innosat Payload Timeline XML Definition&quot; document)
+by running <em>XML_gen</em> with the <em>Science Mode Timeline</em> as the input.</p>
+<p>The <em>Science Mode Timeline</em> can also be simulated and and plotted by running <em>Timeline_Plotter</em> with the <em>Science Mode Timeline</em> as the input.
+<em>Timeline_Plotter</em> can also optionally plot a special kind of .h5 data-files, created by OHB SWEDEN.</p>
+<p>Note: A <em>Science Mode Timeline</em> usually contains settings that are taken from the chosen <em>Configuration File</em> when the <em>Science Mode Timeline</em> was created.
+Any time a function uses a <em>Science Mode Timeline</em> as an input, these settings will be given priority over any similar settings stated in the currently chosen <em>Configuration File</em>.</p>
+<p><em>Check_ConfigFile</em> is used to check if the values stated in the chosen <em>Configuration File</em> are plausible.</p>
+<p>All generated output files are saved in a folder called 'Output' in the working directory.
+Generated logs are saved in folders created in the working directory.</p>
+<p class="rubric">Examples</p>
+<p>import OPT</p>
+<p>OPT.Copy_ConfigFile('OPT_Config_File')</p>
+<p>OPT.Set_ConfigFile('OPT_Config_File', '2019/09/05 08:00:00')</p>
+<p>OPT.CheckConfigFile()</p>
+<p>OPT.Timeline_gen()</p>
+<p>OPT.XML_gen('Output/Science_Mode_Timeline__OPT_Config_File.json')</p>
+<p>Data_MATS, Data_LP, Time, Time_OHB  = OPT.Timeline_Plotter('Output/Science_Mode_Timeline__OPT_Config_File.json')</p>
+<p>Science Modes are separated into 2 different areas, <em>Operational Science Modes</em> (Mode 1,2,5) and <em>Calibration Modes</em>.</p>
+<p><em>Calibration Modes</em> are scheduled at specific points of time and are usually only scheduled one time per <em>Science Mode Timeline</em>.
+<em>Operational Science Modes</em> (Mode 1,2,5) are scheduled wherever time is available (after the scheduling of <em>Calibration Modes</em>) and only 1 <em>Operational Science Mode</em> is scheduled per Timeline.</p>
+<dl class="function">
+<dt id="OPT.CheckConfigFile">
+<code class="descclassname">OPT.</code><code class="descname">CheckConfigFile</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#CheckConfigFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.CheckConfigFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Checks the values of the settings in the <em>Configuration File</em> chosen with <em>Set_ConfigFile</em>.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="OPT.Copy_ConfigFile">
+<code class="descclassname">OPT.</code><code class="descname">Copy_ConfigFile</code><span class="sig-paren">(</span><em>Config_File_Name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#Copy_ConfigFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.Copy_ConfigFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Makes a copy of the <em>_ConfigFile</em> located in <em>Operational_Planning_Tool</em>.</p>
+<p>The copy is created in the working directory of the user call and can be freely modified.
+Do not forget to also use <em>Set_ConfigFile</em> to choose your specific copy.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>Config_File_Name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- The name of the newly created copy of the <em>_ConfigFile</em> (excluding <em>.py</em>).</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="OPT.Data_Plotter">
+<code class="descclassname">OPT.</code><code class="descname">Data_Plotter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#Data_Plotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.Data_Plotter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Invokes the <em>Data_Plotter</em> program part of <em>Operational_Planning_Tool</em>.</p>
+<p>Simulates the position and attitude of MATS during normal operation and compares it to
+the actual positional and attitude data given in a data set. Plots both the simulated data and given data.</p>
+<p>Settings for the operation of the program are stated in the chosen <em>Configuration File</em>, set by <em>Set_ConfigFile</em>.</p>
+<p>Arguments:</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="OPT.Set_ConfigFile">
+<code class="descclassname">OPT.</code><code class="descname">Set_ConfigFile</code><span class="sig-paren">(</span><em>Config_File_Name</em>, <em>Date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#Set_ConfigFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.Set_ConfigFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the StartTime for OPT, and the name of the <em>.py</em> file that is to be used as a <em>Configuration file</em> for OPT.</p>
+<p>The <em>Configuration file</em> chosen must be visible in sys.path.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Config_File_Name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- The name of the Config File to be used (excluding .py).</p></li>
+<li><p><strong>Date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- The start time and date for the Operational Planning Tool (yyyy/mm/dd hh:mm:ss).</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="OPT.Timeline_Plotter">
+<code class="descclassname">OPT.</code><code class="descname">Timeline_Plotter</code><span class="sig-paren">(</span><em>Science_Mode_Path</em>, <em>OHB_H5_Path=''</em>, <em>Timestep=16</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#Timeline_Plotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.Timeline_Plotter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Invokes the <em>Timeline_Plotter</em> program part of <em>Operational_Planning_Tool</em>.</p>
+<p>Simulates the position and attitude of MATS from a given Science Mode Timeline and also optionally compares it to
+positional and attitude data given in a .h5 data set, located at <em>OHB_H5_Path</em>. Plots both the simulated data and given data.</p>
+<p>Settings for the operation of the program are stated in the chosen <em>Configuration File</em>.
+Settings stated in the <em>Science Mode Timeline</em> override settings given in the chosen <em>Configuration file</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Science_Mode_Path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Path to the Science Mode Timeline to be plotted.</p></li>
+<li><p><strong>OHB_H5_Path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- <em>Optional</em>. Path to the .h5 file containing position, time, and attitude data.</p></li>
+<li><p><strong>Timestep</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- <em>Optional</em>. The chosen timestep of the simulation [s].</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>tuple containing:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p><strong>Data_MATS</strong> (<em>dict</em>): Dictionary containing lists of simulated data of MATS.</p></li>
+<li><p><strong>Data_LP</strong> (<em>dict</em>): Dictionary containing lists of simulated data of LP.</p></li>
+<li><p><strong>Time</strong> (<em>list</em>): List containing timestamps of the simulated data in Data_MATS and Data_LP.</p></li>
+<li><p><strong>Time_OHB</strong> (<em>list</em>): List containing timestamps of the plotted data in .h5 file.</p></li>
+</ul>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)">tuple</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="OPT.Timeline_analyzer">
+<code class="descclassname">OPT.</code><code class="descname">Timeline_analyzer</code><span class="sig-paren">(</span><em>science_mode_timeline_path</em>, <em>date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#Timeline_analyzer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.Timeline_analyzer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Invokes the Timeline_analyser program part of Operational Planning Tool.</p>
+<p>Searches a Science Mode Timeline json file for a given date and returns the scheduled mode and its parameters&quot;</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>science_mode_timeline_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- path to the .json file containing the Science Mode Timeline</p></li>
+<li><p><strong>date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- A given date and time ('2019/09/05 12:09:25')</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><p>tuple containing:</p>
+<blockquote>
+<div><p><strong>Mode</strong> (<em>str</em>): The currently scheduled Mode.</p>
+<p><strong>Parameters</strong> (<em>dict</em>): The parameters of the Mode.</p>
+</div></blockquote>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)">tuple</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="OPT.Timeline_gen">
+<code class="descclassname">OPT.</code><code class="descname">Timeline_gen</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#Timeline_gen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.Timeline_gen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Invokes the Timeline generator part of Operational Planning Tool.</p>
+<p>Creates a <em>Science Mode Timeline</em> as a .json file.</p>
+<p>Predicts and schedueles Science Modes and separate payload CMDs into a list containing run dates and settings used for each Mode/CMD, and saves it to a .json file in /Output.</p>
+<p>The Modes and CMDs to be scheduled are listed in <em>Modes_priority</em> in the chosen <em>Configuration File</em>.</p>
+<p><em>Operational Science Modes</em> (example: Mode 1,2,5) are scheduled separately wherever time is available at the end of the program.</p>
+<p>Settings for the operation of the program are stated in the <em>Configuration File</em> set by <em>Set_ConfigFile</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="OPT.XML_gen">
+<code class="descclassname">OPT.</code><code class="descname">XML_gen</code><span class="sig-paren">(</span><em>science_mode_timeline_path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#XML_gen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.XML_gen" title="Permalink to this definition">¶</a></dt>
+<dd><p>Invokes the XML generator program part of Operational Planning Tool for MATS.</p>
+<p>Converts a <em>Science Mode Timeline</em>  (.json file) containing a list of scheduled Science Modes/CMDs/Tests into Payload and Plattoform commands and saves them as a .xml command file.</p>
+<p>Settings for the operation of the program are stated in the chosen <em>Configuration File</em>, set by <em>Set_ConfigFile</em>.
+Settings given in the <em>Science Mode Timeline</em> override the settings given in the chosen <em>Configuration file</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>science_mode_timeline_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Path to the .json file containing the Science Mode Timeline.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Operational_Planning_Tool</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">OPT package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">OPT</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, David Skånberg.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/OPT.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -15,8 +15,8 @@ Part of Timeline_generator, as part of OPT.
 import logging, sys, importlib
 import ephem
 
-from Operational_Planning_Tool._Library import scheduler
-from Operational_Planning_Tool import _Globals
+from OPT._Library import scheduler
+from OPT import _Globals
 
 OPT_Config_File = importlib.import_module(_Globals.Config_File)
 Logger = logging.getLogger(OPT_Config_File.Logger_name())

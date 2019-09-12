@@ -12,8 +12,8 @@ from astroquery.vizier import Vizier
 import skyfield.api
 
 
-from Operational_Planning_Tool._Library import deg2HMS, scheduler, Satellite_Simulator
-from Operational_Planning_Tool import _Globals
+from OPT._Library import deg2HMS, scheduler, Satellite_Simulator
+from OPT import _Globals
 
 OPT_Config_File = importlib.import_module(_Globals.Config_File)
 Logger = logging.getLogger(OPT_Config_File.Logger_name())
@@ -211,7 +211,7 @@ def Mode120_date_calculator():
                 LogFlag = False
             
             Satellite_dict = Satellite_Simulator( 
-                    MATS_skyfield, current_time, Timeline_settings, pointing_altitude, LogFlag )
+                    MATS_skyfield, current_time, Timeline_settings, pointing_altitude, LogFlag, Logger )
             
             MATS_P[t] = Satellite_dict['OrbitalPeriod [s]']
             lat_MATS[t] =  Satellite_dict['Latitude [degrees]']
@@ -384,6 +384,7 @@ def Mode120_date_select(Occupied_Timeline, dates):
     """
     
     Mode120_settings = OPT_Config_File.Mode120_settings()
+    Timeline_settings = OPT_Config_File.Timeline_settings()
     
     automatic = Mode120_settings['automatic']
     
@@ -396,7 +397,7 @@ def Mode120_date_select(Occupied_Timeline, dates):
         
         ############### Start of availability schedueler ##########################
         
-        date, endDate, iterations = scheduler(Occupied_Timeline, dates, endDate)
+        StartDate, endDate, iterations = scheduler(Occupied_Timeline, dates, endDate)
         
         ############### End of availability schedueler ##########################
         
@@ -404,8 +405,6 @@ def Mode120_date_select(Occupied_Timeline, dates):
             Logger.warning('User Specified date was occupied and got postponed!!')
             #input()
             
-            
-        Occupied_Timeline['Mode120'].append( (date, endDate) )
         Mode120_comment = 'Mode120 scheduled using a user given date, the date got postponed '+str(iterations)+' times'
         
         
@@ -477,14 +476,14 @@ def Mode120_date_select(Occupied_Timeline, dates):
             #then next smallest if 2nd iterations needed and so on
             x = star_H_offset_abs.index(star_H_offset_sorted[iterations])
             
-            Mode120_date = star_date[x]
+            StartDate = star_date[x]
             
-            Mode120_date = ephem.Date(ephem.Date(Mode120_date)-ephem.second*(Mode120_settings['freeze_start']))
+            StartDate = ephem.Date(ephem.Date(StartDate)-ephem.second*(Mode120_settings['freeze_start']))
             
-            Mode120_endDate = ephem.Date(Mode120_date+ephem.second*Mode120_settings['mode_duration'])
+            endDate = ephem.Date(StartDate+ephem.second* (Mode120_settings['freeze_start'] + Mode120_settings['freeze_duration'] + Timeline_settings['mode_separation']) )
             
             "Check that the scheduled date is not before the start of the timeline"
-            if( Mode120_date < ephem.Date(OPT_Config_File.Timeline_settings()['start_date']) ):
+            if( StartDate < ephem.Date(OPT_Config_File.Timeline_settings()['start_date']) ):
                 iterations = iterations + 1
                 restart = True
                 continue
@@ -496,21 +495,23 @@ def Mode120_date_select(Occupied_Timeline, dates):
                 else:
                     "Extract the start and end date of each instance of a scheduled mode"
                     for busy_date in busy_dates:
-                        if( busy_date[0] <= Mode120_date <= busy_date[1] or 
-                               busy_date[0] <= Mode120_endDate <= busy_date[1] or
-                           (Mode120_date < busy_date[0] and Mode120_endDate > busy_date[1])):
+                        if( busy_date[0] <= StartDate <= busy_date[1] or 
+                               busy_date[0] <= endDate <= busy_date[1] or
+                           (StartDate < busy_date[0] and endDate > busy_date[1])):
                             
                             iterations = iterations + 1
                             restart = True
                             break
         
         
-        Occupied_Timeline['Mode120'].append( (Mode120_date, Mode120_endDate) )
+        
         
         Mode120_comment = ('Star name:'+star_name[x]+', V-offset: '+str(star_V_offset[x])+', H-offset: '+str(star_H_offset[x])+', V-mag: '+str(star_mag[x])+', Number of times date changed: '+str(iterations)
             +', MATS (long,lat) in degrees = ('+str(long_MATS[x])+', '+str(lat_MATS[x])+'), optical-axis Dec (J2000 ICRS): '+str(Dec_optical_axis[x])+'), optical-axis RA (J2000 ICRS): '+str(RA_optical_axis[x])+
         '), star Dec (J2000 ICRS): '+str(dates[x]['Dec'])+', star RA (J2000 ICRS): '+str(dates[x]['RA']))
         
+    
+    Occupied_Timeline['Mode120'].append( (StartDate, endDate) )
     
     return Occupied_Timeline, Mode120_comment
     

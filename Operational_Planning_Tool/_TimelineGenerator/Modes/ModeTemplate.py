@@ -3,82 +3,44 @@
 Created on Thu Mar 14 10:35:32 2019
 
 Template for a new Mode where 'X' is exchanged for the number or name of the mode. 
-The Mode is scheduled at the start of the timeline as defined in OPT_Config_File.Timeline_settings
+The Mode is here scheduled at the start of the timeline.
+
+For *Timeline_gen* to be able to find and schedule this mode, this function must be imported in the *Modes_Header* module.
+Remember to also add the name of this Mode into the *Scheduling_priority* function, in the *Configuration_File*.
 
 @author: David
 """
 
 
-import ephem, sys, logging
+import ephem, sys, logging, importlib
 
-from Operational_Planning_Tool._Library import scheduler
-from OPT_Config_File import Timeline_settings, Logger_name
+from OPT._Library import scheduler
+from OPT import _Globals
 
-Logger = logging.getLogger(Logger_name())
+OPT_Config_File = importlib.import_module(_Globals.Config_File)
+Logger = logging.getLogger(OPT_Config_File.Logger_name())
 
 
 def ModeX(Occupied_Timeline):
     
-    initial_date = date_calculator()
+    "Plan to schedule the Mode at the start of the timeline"
+    initial_StartDate = ephem.Date(OPT_Config_File.Timeline_settings()['start_date'])
     
-    Occupied_Timeline, comment = date_select(Occupied_Timeline, initial_date)
+    "Set a duration of the Mode in seconds, which in turns sets the endDate"
+    duration = 600
+    #duration = OPT_Config_File.ModeX_settings()['duration']
+    endDate = ephem.Date(initial_StartDate + ephem.second*duration)
     
-    
-    return Occupied_Timeline, comment
-    
-
-
-##################################################################################################
-##################################################################################################
-
-
-
-def date_calculator():
-    
-    
-    
-    if( ModeX_settings()['start_date'] != '0' ):
-        initial_date = ephem.Date(ModeX_settings()['start_date'])
-        Logger.info('Mode specific start_date used as initial date')
-    else:
-        Logger.info('Timeline start_date used as initial date')
-        initial_date = ephem.Date(Timeline_settings()['start_date'])
-    
-    return initial_date
-
-
-
-##################################################################################################
-##################################################################################################
-
-
-
-def date_select(Occupied_Timeline, initial_date):
-    
-    
-    
-    date = initial_date
-    
-    try:
-        Logger.info('Mode specific mode_duration used as initial date')
-        endDate = ephem.Date(initial_date + ephem.second*Timeline_settings()['mode_separation'] +
-                             ephem.second*ModeX_settings()['mode_duration'])
-    except:
-        Logger.info('Timeline mode_duration used as initial date')
-        endDate = ephem.Date(initial_date + ephem.second*Timeline_settings()['mode_separation'] +
-                             ephem.second*Timeline_settings()['mode_duration'])
-    
-    ############### Start of availability schedueler ##########################
-    
-    date, endDate, iterations = scheduler(Occupied_Timeline, date, endDate)
-                
-    ############### End of availability schedueler ##########################
+    "Check if the planned initial_StartDate is available and postpone until available"
+    startDate, endDate, iterations = scheduler(Occupied_Timeline, initial_StartDate, endDate)
     
     comment = 'Number of times date postponed: ' + str(iterations)
     
-    "Get the name of the parent function, which is always defined as the name of the mode"
-    Mode_name = sys._getframe(1).f_code.co_name
+    "Get the name of the function, which is always also the name of the mode"
+    Mode_name = sys._getframe(0).f_code.co_name
     
-    Occupied_Timeline[Mode_name].append((date,endDate))
+    Occupied_Timeline[Mode_name].append((startDate,endDate))
     
     return Occupied_Timeline, comment
+    
+

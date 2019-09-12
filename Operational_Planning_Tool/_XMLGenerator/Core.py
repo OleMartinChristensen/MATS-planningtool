@@ -1,16 +1,16 @@
 # -*- coding: utf-8 -*-
 """Creates the base of the XML-tree and calculates initial values such as the 
 start and end time and also duration of the timeline. Then goes through the 
-supplied Science Mode Timeline List chronologically and calls for the corresponding function. \n
+supplied Science Mode Timeline List chronologically and calls for the corresponding function in one of the modules located in the *Modes_and_Tests* package. \n
 
-Mode/Test/CMD specific settings given in the Science Mode Timeline List will overirde the use of the same settings stated in set *Configuration File*.
+Any settings given in the *Science Mode Timeline* file will overide the use of the same settings stated in set *Configuration File*.
 
 """
 
 from lxml import etree
 import ephem, logging, sys, time, os, json, importlib, datetime
 
-from Operational_Planning_Tool import _Globals, _Library
+from OPT import _Globals, _Library
 OPT_Config_File = importlib.import_module(_Globals.Config_File)
 #from OPT_Config_File import Timeline_settings, initialConditions, Logger_name, Version
 from .Modes_and_Tests import MODES, Tests, SeparateCmds
@@ -21,8 +21,9 @@ Logger = logging.getLogger(OPT_Config_File.Logger_name())
 def XML_generator(SCIMOD_Path):
     """The core function of the XML_gen program.
     
-    Takes a Science Mode Timeline and converts it into Commands. If settings are stated for a scheduled mode; 
-    these will overwrite any values set in the set *Configuration File*
+    Reads a *Science Mode Timeline* .json file. Then chronologically goes though the *Science Mode Timeline*, calling for the *XML_generator_select* function.
+    Any settings stated in the *Science Mode Timeline* will override any similar ones given in the set *Configuration File*.
+    Also calls for XML_Initial_Basis_Creator to setup a XML tree which will be used to write CMDs to.
     
     Arguments:
         SCIMOD_Path (str): A string containing the path to the Science Mode Timeline .json file.
@@ -41,7 +42,7 @@ def XML_generator(SCIMOD_Path):
     
     
     ############# Set up Logger #################################
-    _Library.SetupLogger()
+    _Library.SetupLogger(OPT_Config_File.Logger_name())
     
     
     Logger.info('Start of Program')
@@ -148,6 +149,10 @@ def XML_Initial_Basis_Creator(timeline_start,timeline_duration, SCIMOD_Path):
         latestStartingDate (ephem.Date): Latest Starting date of the Timeline. On the form of the ephem.Date class.
         timeline_duration (int): Duration of the timeline [s].
         SCIMOD_Path (str): The path as a string to the Science Mode Timeline .json file used in this run.
+    
+    Returns:
+        (lxml.etree.Element): The basis of the XML tree created with lxml.
+    
     '''
     
     TimelineStart_Tuple = timeline_start.tuple()

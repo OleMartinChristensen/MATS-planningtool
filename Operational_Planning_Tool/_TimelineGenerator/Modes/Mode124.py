@@ -9,8 +9,8 @@ Part of Timeline_generator, as part of OPT.
 import ephem, sys, logging, importlib, skyfield.api
 from pylab import cross, dot, zeros, sqrt, norm, pi, arccos, arctan
 
-from Operational_Planning_Tool._Library import Satellite_Simulator, scheduler
-from Operational_Planning_Tool import _Globals
+from OPT._Library import Satellite_Simulator, scheduler
+from OPT import _Globals
 
 OPT_Config_File = importlib.import_module(_Globals.Config_File)
 Logger = logging.getLogger(OPT_Config_File.Logger_name())
@@ -51,9 +51,9 @@ def date_calculator():
     Determines when the Moon is entering the FOV at an vertical offset-angle equal to *#V-offset* and also being 
     located at a horizontal off-set angle equal to less than *#H-offset* when pointing at an LP altitude equal to *#pointing_altitude*. \n
     
-    A timeskip equal to 1/2 an orbit of MATS is applied after a successful spotting of the Moon. \n
+    A timeskip equal to 1/2 an orbit of MATS is applied after a successful spotting of the Moon to save processing time. \n
     
-    Timeskips equal to the time it takes for the Moon orbital position to change by *#H-offset* degrees are also applied if the Moon is 
+    A timeskip equal to the time it takes for the Moon orbital position to change by *#H-offset*/4 degrees are also applied if the Moon is 
     determined to be at an horizontal off-set angle larger then the horizontal FOV of the instrument, equal to *#HFOV*. \n
     
     (# as defined in the *Configuration File*). \n
@@ -169,7 +169,7 @@ def date_calculator():
                 LogFlag = False
             
             Satellite_dict = Satellite_Simulator( 
-                    MATS_skyfield, current_time, Timeline_settings, pointing_altitude, LogFlag )
+                    MATS_skyfield, current_time, Timeline_settings, pointing_altitude, LogFlag, Logger )
             
             r_MATS[t] = Satellite_dict['Position [km]']
             MATS_P[t] = Satellite_dict['OrbitalPeriod [s]']
@@ -373,7 +373,7 @@ def date_select(Occupied_Timeline, dates):
     "Either schedules a user provided date or filters and schedules calculated dates"
     if( automatic == False ):
         
-        endDate = ephem.Date(dates+ephem.second*Mode124_settings['mode_duration'])
+        endDate = ephem.Date(dates+ephem.second* (Mode124_settings['freeze_start'] + Mode124_settings['freeze_duration'] + OPT_Config_File.Timeline_settings()['mode_separation']) )
         
         ############### Start of availability schedueler ##########################
         
@@ -386,7 +386,6 @@ def date_select(Occupied_Timeline, dates):
             #input()
             
             
-        Occupied_Timeline['Mode124'].append( (date, endDate) )
         comment = 'Mode124 scheduled using a user given date, the date got postponed '+str(iterations)+' times'
         
         
@@ -434,7 +433,7 @@ def date_select(Occupied_Timeline, dates):
             
             date = ephem.Date(ephem.Date(date)-ephem.second*(Mode124_settings['freeze_start']))
             
-            endDate = ephem.Date(date+ephem.second*Mode124_settings['mode_duration'])
+            endDate = ephem.Date(date+ephem.second*(Mode124_settings['freeze_start'] + Mode124_settings['freeze_duration'] + OPT_Config_File.Timeline_settings()['mode_separation']) )
             
             #Check that the scheduled date is not before the start of the timeline
             if( date < ephem.Date(OPT_Config_File.Timeline_settings()['start_date']) ):
@@ -458,12 +457,12 @@ def date_select(Occupied_Timeline, dates):
                             restart = True
                             break
             
-        Occupied_Timeline['Mode124'].append( (date, endDate) )
-        
         comment = ('V-offset: '+str(Moon_V_offset[x])+' H-offset: '+str(Moon_H_offset[x])+', Number of times date changed: '+str(iterations)+
                                           ', MATS (long,lat) in degrees = ('+str(Moon_long[x])+', '+str(Moon_lat[x])+'), Moon Dec (J2000) [degrees]: '+
                                           str(dates[x]['Dec'])+', Moon RA (J2000) [degrees]: '+str(dates[x]['RA'])+', Dec = '+str(dates[x]['Dec FOV'])+
                                           ', RA = '+str(dates[x]['RA FOV']))
         
+    
+    Occupied_Timeline['Mode124'].append( (date, endDate) )
     
     return Occupied_Timeline, comment

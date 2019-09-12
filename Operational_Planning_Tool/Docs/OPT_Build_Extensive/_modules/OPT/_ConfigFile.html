@@ -1,0 +1,882 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="python 3.7">
+  <head>
+    <meta charset="utf-8" />
+    <title>OPT._ConfigFile &#8212; Operational_Planning_Tool  documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for OPT._ConfigFile</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;Contains functions that return settings for the Operational Planning Tool. A ConfigFile must be chosen</span>
+<span class="sd">by calling *OPT.Set_ConfigFile()* and must be visible in *sys.path*.</span>
+<span class="sd">    </span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span> <span class="nn">pylab</span> <span class="k">import</span> <span class="n">pi</span><span class="p">,</span> <span class="n">arccos</span>
+<span class="kn">from</span> <span class="nn">OPT</span> <span class="k">import</span> <span class="n">_Globals</span><span class="p">,</span> <span class="n">_Library</span>
+
+
+<div class="viewcode-block" id="Logger_name"><a class="viewcode-back" href="../../OPT.html#OPT._ConfigFile.Logger_name">[docs]</a><span class="k">def</span> <span class="nf">Logger_name</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Returns the name of the shared logger.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (str): Logger_name</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    
+    <span class="n">Logger_name</span> <span class="o">=</span> <span class="s2">&quot;OPT_logger&quot;</span>
+    
+    <span class="k">return</span> <span class="n">Logger_name</span></div>
+
+
+<div class="viewcode-block" id="Version"><a class="viewcode-back" href="../../OPT.html#OPT._ConfigFile.Version">[docs]</a><span class="k">def</span> <span class="nf">Version</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;&#39;Returns the version ID of this Configuration File.</span>
+<span class="sd">    </span>
+<span class="sd">    The version ID should only be changed when the default *Configuration File*, _ConfigFile in OPT, is changed.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (str): version_name </span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">version_ID</span> <span class="o">=</span> <span class="s1">&#39;Original&#39;</span>
+    <span class="k">return</span> <span class="n">version_ID</span></div>
+
+
+<div class="viewcode-block" id="Scheduling_priority"><a class="viewcode-back" href="../../OPT.html#OPT._ConfigFile.Scheduling_priority">[docs]</a><span class="k">def</span> <span class="nf">Scheduling_priority</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Returns the Modes (except *Operational Science Modes* (Mode 1,2,5)) and CMDs planned to be schedueled in a *Science Mode Timeline* using *Timeline_gen*.</span>
+<span class="sd">    </span>
+<span class="sd">    **Available choices are:** \n</span>
+<span class="sd">    </span>
+<span class="sd">        - &#39;PWRTOGGLE&#39;,</span>
+<span class="sd">        - &#39;CCDFlushBadColumns&#39;,</span>
+<span class="sd">        - &#39;CCDBadColumn&#39;,</span>
+<span class="sd">        - &#39;PM&#39;,</span>
+<span class="sd">        - &#39;CCDBIAS&#39;, </span>
+<span class="sd">        - &#39;Mode100&#39;, </span>
+<span class="sd">        - &#39;Mode110&#39;, </span>
+<span class="sd">        - &#39;Mode120&#39;, </span>
+<span class="sd">        - &#39;Mode121&#39;, </span>
+<span class="sd">        - &#39;Mode122&#39;, </span>
+<span class="sd">        - &#39;Mode123&#39;, </span>
+<span class="sd">        - &#39;Mode124&#39;, </span>
+<span class="sd">        - &#39;Mode131&#39;, </span>
+<span class="sd">        - &#39;Mode132&#39;, </span>
+<span class="sd">        - &#39;Mode133&#39;, </span>
+<span class="sd">        - &#39;Mode130&#39;, </span>
+<span class="sd">        - &#39;Mode134&#39;</span>
+<span class="sd">     </span>
+<span class="sd">    The order of which the Modes/CMDs appear is also their priority order (top-down).</span>
+<span class="sd">    The name must be equal to the name of a function imported in the *_Timeline_generator.Modes.Modes_Header* module.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (:obj:`list` of :obj:`str`): Modes_priority</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">Modes_priority</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">&#39;PWRTOGGLE&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;CCDFlushBadColumns&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;CCDBadColumn&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;PM&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Mode130&#39;</span><span class="p">,</span> 
+            <span class="s1">&#39;Mode124&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Mode120&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Mode123&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Mode121&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Mode110&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Mode100&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Mode132&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Mode122&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Mode131&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Mode134&#39;</span><span class="p">]</span>
+    
+    <span class="k">return</span> <span class="n">Modes_priority</span></div>
+
+
+<div class="viewcode-block" id="getTLE"><a class="viewcode-back" href="../../OPT.html#OPT._ConfigFile.getTLE">[docs]</a><span class="k">def</span> <span class="nf">getTLE</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Returns the TLE as two strings in a list.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (:obj:`list` of :obj:`str`): First Element is the first TLE row, and the second Element is the second row.</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">TLE1</span> <span class="o">=</span> <span class="s1">&#39;1 26702U 01007A   18231.91993126  .00000590  00000-0  00000-0 0  9994&#39;</span>
+    <span class="n">TLE2</span><span class="o">=</span> <span class="s1">&#39;2 26702 97.61000 65.95030 0000001 0.000001 359.9590 14.97700580100  4&#39;</span>
+    <span class="c1">#TLE1 = &#39;1 26702U 01007A   09264.68474097 +.00000336 +00000-0 +35288-4 0  9993&#39;</span>
+    <span class="c1">#TLE2 = &#39;2 26702 097.7067 283.5904 0004656 126.2204 233.9434 14.95755636467886&#39;</span>
+    
+    <span class="s2">&quot;OHB TLE&quot;</span>
+    <span class="n">TLE1</span> <span class="o">=</span> <span class="s1">&#39;1 54321U 19100G   20172.75043981 0.00000000  00000-0  75180-4 0  0014&#39;</span>
+    <span class="n">TLE2</span> <span class="o">=</span> <span class="s1">&#39;2 54321  97.7044   6.9210 0014595 313.2372  91.8750 14.93194142000010&#39;</span>
+    
+    <span class="s2">&quot;OHB TLE timeshifted by 2 sec&quot;</span>
+    <span class="c1">#TLE1 = &#39;1 54321U 19100G   20172.75041666 0.00000000  00000-0  75180-4 0  0012&#39;</span>
+    <span class="c1">#TLE2 = &#39;2 54321  97.7044   6.9210 0014595 313.2372  91.8750 14.93194142000010&#39;</span>
+    
+    
+    <span class="k">return</span> <span class="p">[</span><span class="n">TLE1</span><span class="p">,</span> <span class="n">TLE2</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="initialConditions"><a class="viewcode-back" href="../../OPT.html#OPT._ConfigFile.initialConditions">[docs]</a><span class="k">def</span> <span class="nf">initialConditions</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Returns the values for the initialConditions container in the XML-file.</span>
+<span class="sd">    </span>
+<span class="sd">    initialCondition container defined in &quot;InnoSat Payload Timeline XML Definition&quot; Document</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (:obj:`dict` of :obj:`dict` of :obj:`str`): InitialConditions </span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">InitialConditions</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;spacecraft&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;mode&#39;</span><span class="p">:</span> <span class="s1">&#39;Normal&#39;</span><span class="p">,</span> <span class="s1">&#39;acs&#39;</span><span class="p">:</span> <span class="s1">&#39;Normal&#39;</span><span class="p">},</span> <span class="s1">&#39;payload&#39;</span><span class="p">:</span> <span class="p">{</span> <span class="s1">&#39;power&#39;</span><span class="p">:</span> <span class="s1">&#39;On&#39;</span> <span class="p">,</span> <span class="s1">&#39;mode&#39;</span><span class="p">:</span> <span class="s1">&#39;&#39;</span><span class="p">}</span> <span class="p">}</span>
+    <span class="k">return</span> <span class="n">InitialConditions</span></div>
+
+
+<div class="viewcode-block" id="Timeline_settings"><a class="viewcode-back" href="../../OPT.html#OPT._ConfigFile.Timeline_settings">[docs]</a><span class="k">def</span> <span class="nf">Timeline_settings</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Returns settings related to a *Science Mode Timeline* as a whole.</span>
+<span class="sd">    </span>
+<span class="sd">    **Keys:**</span>
+<span class="sd">        &#39;start_date&#39;: Is usually set to *_Globals.StartTime*, where *_Globals.StartTime* is set by running *Set_ConfigFile*. Sets the starting date of the timeline (str), (example: &#39;2018/9/3 08:00:40&#39;).  \n</span>
+<span class="sd">        &#39;duration&#39;: Sets the duration [s] of the timeline. Will drastically change the runtime of *Timeline_gen*. A runtime of around 15 min is estimated for a duration of 1 week (int) \n</span>
+<span class="sd">        &#39;leapSeconds&#39;: Sets the amount of leap seconds for GPS time conversion. (int) \n</span>
+<span class="sd">        &#39;GPS_epoch&#39;: Sets the epoch of the GPS time as a str, (example: &#39;1980/1/6&#39;). This should not be changed! \n</span>
+<span class="sd">        </span>
+<span class="sd">        &#39;Mode1_2_5_minDuration&#39;: Minimum amount of available time needed, inbetween scheduled Modes/CMDs in a *Science Mode Timeline*, for the scheduling of *Operational Science Modes* when running *Timeline_gen* [s]. \n</span>
+<span class="sd">        &#39;mode_separation&#39;: Time in seconds for an added buffer when determining the duration of a Mode/CMD to make sure there is enough time to run each Command. Should be larger than the number of CMDs in any macro multiplied by Timeline_settings[&#39;command_separation&#39;]. (int) \n</span>
+<span class="sd">        &#39;CMD_duration&#39;: Sets the amount of time scheduled for separate PayloadCMDs when using *Timeline_gen*. (int) \n</span>
+<span class="sd">        </span>
+<span class="sd">        &#39;yaw_correction&#39;: Determines if yaw correction shall be used for the duration of the timeline. (bool) \n</span>
+<span class="sd">        &#39;yaw_amplitude&#39;: Amplitude of the yaw function (float). \n</span>
+<span class="sd">        &#39;yaw_phase&#39;: Phase of the yaw function (float). \n</span>
+<span class="sd">        &#39;Schedule_Mode5&#39;: Determines if Mode5 shall be scheduled using *Timline_gen*. Set to *True* if Mode5 shall be used and scheduled as the *Operational Science Mode*, set to *False* for Mode1-2. (bool) \n</span>
+<span class="sd">        &#39;LP_pointing_altitude&#39;: Sets altitude of LP in meters for the timeline. Used to set the pointing altitude of *Operational Science Modes* and to calculate the duration of attitude freezes.  (int) \n</span>
+<span class="sd">        </span>
+<span class="sd">        &#39;command_separation&#39;: Changes the separation in time [s] between commands that are scheduled in *XML_gen*. If set too large without increasing Timeline_settings[&#39;command_separation&#39;], it is possible that not enough time is scheduled for the duration of Modes, causing Modes to overlap in time. (float) \n</span>
+<span class="sd">        &#39;pointing_stabilization&#39;: The maximum time it takes for an attitude change to stabilize [s]. Used before scheduling certain Commands in *XML_gen* to make sure that the attitude has been stabilized after running *TC_acfLimbPointingAltitudeOffset*. Also impact the estimated duration of Science Modes in *Timeline_gen*. (int) \n</span>
+<span class="sd">        &#39;CCDSYNC_ExtraOffset&#39;: Extra offset time [ms] that is added to an estimated ReadoutTime when calculating TEXPIOFS for the CCD Synchronize CMD. (int) \n</span>
+<span class="sd">        &#39;CCDSYNC_ExtraIntervalTime&#39;: Extra time [ms] that is added to the calculated Exposure Interval Time when calculating arguments for the CCD Synchronize CMD. (int) \n</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (:obj:`dict`): Timeline_settings</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="n">_Globals</span><span class="o">.</span><span class="n">StartTime</span><span class="p">,</span> <span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="o">*</span><span class="mi">4</span><span class="o">*</span><span class="mi">3600</span><span class="p">,</span> 
+                       <span class="s1">&#39;leapSeconds&#39;</span><span class="p">:</span> <span class="mi">18</span><span class="p">,</span> <span class="s1">&#39;GPS_epoch&#39;</span><span class="p">:</span> <span class="s1">&#39;1980/1/6&#39;</span><span class="p">,</span> <span class="s1">&#39;Mode1_2_5_minDuration&#39;</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span> <span class="s1">&#39;mode_separation&#39;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span>
+                       <span class="s1">&#39;CMD_duration&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span> <span class="s1">&#39;yaw_correction&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;yaw_amplitude&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">3.8</span><span class="p">,</span> <span class="s1">&#39;yaw_phase&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">20</span><span class="p">,</span> <span class="s1">&#39;Schedule_Mode5&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span> <span class="s1">&#39;LP_pointing_altitude&#39;</span><span class="p">:</span> <span class="mi">92500</span><span class="p">,</span> 
+                       <span class="s1">&#39;command_separation&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;pointing_stabilization&#39;</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span> <span class="s1">&#39;CCDSYNC_ExtraOffset&#39;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span> <span class="s1">&#39;CCDSYNC_ExtraIntervalTime&#39;</span><span class="p">:</span> <span class="mi">200</span><span class="p">}</span>
+    
+    
+    <span class="k">return</span> <span class="n">Timeline_settings</span></div>
+
+
+<div class="viewcode-block" id="Operational_Science_Mode_settings"><a class="viewcode-back" href="../../OPT.html#OPT._ConfigFile.Operational_Science_Mode_settings">[docs]</a><span class="k">def</span> <span class="nf">Operational_Science_Mode_settings</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Returns settings related to Operational Science Modes (Mode1, 2, and 5).</span>
+<span class="sd">    </span>
+<span class="sd">    **Keys:**</span>
+<span class="sd">        &#39;lat&#39;: Sets in degrees the latitude (+ and -) that the LP crosses that causes the UV exposure to swith on/off (applies only to Mode1). (int) \n</span>
+<span class="sd">        &#39;log_timestep&#39;: Sets the frequency of data being logged [s] for Mode1-2. Only determines how much of simulated data is logged for debugging purposes. (int) \n</span>
+<span class="sd">        &#39;timestep&#39;: Sets the timestep [s] of the XML generator simulation of Mode1-2. Will impact accuracy of command generation (int)</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (:obj:`dict`): settings</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;lat&#39;</span><span class="p">:</span> <span class="mi">45</span><span class="p">,</span> <span class="s1">&#39;log_timestep&#39;</span><span class="p">:</span> <span class="mi">800</span><span class="p">,</span> <span class="s1">&#39;timestep&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">settings</span></div>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">def Mode5_settings():</span>
+<span class="sd">    &#39;&#39;&#39;Returns settings related to Mode5.</span>
+<span class="sd">    </span>
+<span class="sd">    **Keys in returned dict:**</span>
+<span class="sd">        &#39;pointing_altitude&#39;: Sets in meters the altitude of the pointing command. If set to 0, Timeline_settings[&#39;LP_pointing_altitude&#39;] will be used (int) </span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (:obj:`dict`): settings</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    </span>
+<span class="sd">    settings = {&#39;pointing_altitude&#39;: 110000}</span>
+<span class="sd">    </span>
+<span class="sd">    return settings</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Mode100_settings"><a class="viewcode-back" href="../../OPT.html#OPT._ConfigFile.Mode100_settings">[docs]</a><span class="k">def</span> <span class="nf">Mode100_settings</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Returns settings related to Mode100.</span>
+<span class="sd">    </span>
+<span class="sd">    **Keys in returned dict:**</span>
+<span class="sd">        &#39;pointing_altitude_from&#39;: Sets in meters the starting altitude. (int) \n</span>
+<span class="sd">        &#39;pointing_altitude_to&#39;: Sets in meters the ending altitude. (int) \n</span>
+<span class="sd">        &#39;pointing_altitude_interval&#39;: Sets in meters the interval size of each succesive pointing. (int) \n</span>
+<span class="sd">        &#39;pointing_duration&#39;: Sets the time [s] from attitude stabilization until next pointing command. (int) \n</span>
+<span class="sd">        &#39;Exp_Time_IR&#39;: Sets starting exposure time [ms] as a integer. \n</span>
+<span class="sd">        &#39;Exp_Time_UV&#39;: Sets starting exposure time [ms] as a integer. \n</span>
+<span class="sd">        &#39;ExpTime_step&#39;: Sets in ms the interval size of both ExpTimeUV and ExpTimeIR for each succesive pointing. (int) \n</span>
+<span class="sd">        &#39;start_date&#39;: Sets the scheduled date for the mode as a str, (example: &#39;2018/9/3 08:00:40&#39;). If the date is set to &#39;0&#39;, Timeline start_date will be used.</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (:obj:`dict`): settings</span>
+<span class="sd">            </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;pointing_altitude_from&#39;</span><span class="p">:</span> <span class="mi">40000</span><span class="p">,</span> <span class="s1">&#39;pointing_altitude_to&#39;</span><span class="p">:</span> <span class="mi">150000</span><span class="p">,</span> 
+                <span class="s1">&#39;pointing_altitude_interval&#39;</span><span class="p">:</span> <span class="mi">5000</span><span class="p">,</span> <span class="s1">&#39;pointing_duration&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span> <span class="s1">&#39;Exp_Time_UV&#39;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span> 
+                <span class="s1">&#39;Exp_Time_IR&#39;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span> <span class="s1">&#39;ExpTime_step&#39;</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span>  <span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;0&#39;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">settings</span></div>
+
+
+<div class="viewcode-block" id="Mode110_settings"><a class="viewcode-back" href="../../OPT.html#OPT._ConfigFile.Mode110_settings">[docs]</a><span class="k">def</span> <span class="nf">Mode110_settings</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Returns settings related to Mode110.</span>
+<span class="sd">    </span>
+<span class="sd">    **Keys in returned dict:**</span>
+<span class="sd">        &#39;pointing_altitude_from&#39;: Sets in meters the starting altitude of the sweep. (int) \n</span>
+<span class="sd">        &#39;pointing_altitude_to&#39;: Sets in meters the ending altitude of the sweep. (int) \n</span>
+<span class="sd">        &#39;sweep_rate&#39;: Sets the rate of the sweep in m/s. (int) \n</span>
+<span class="sd">        &#39;start_date&#39;: Sets the scheduled date for the mode as a str, (example: &#39;2018/9/3 08:00:40&#39;). If the date is set to &#39;0&#39;, Timeline_settings[&#39;start_date&#39;] will be used.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (:obj:`dict`): settings</span>
+<span class="sd">        </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;pointing_altitude_from&#39;</span><span class="p">:</span> <span class="mi">40000</span><span class="p">,</span> <span class="s1">&#39;pointing_altitude_to&#39;</span><span class="p">:</span> <span class="mi">150000</span><span class="p">,</span> <span class="s1">&#39;sweep_rate&#39;</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span> <span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;0&#39;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">settings</span></div>
+
+
+<div class="viewcode-block" id="Mode120_settings"><a class="viewcode-back" href="../../OPT.html#OPT._ConfigFile.Mode120_settings">[docs]</a><span class="k">def</span> <span class="nf">Mode120_settings</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Returns settings related to Mode120.</span>
+<span class="sd">    </span>
+<span class="sd">    **Keys in returned dict:**</span>
+<span class="sd">        &#39;pointing_altitude&#39;: Sets in meters the altitude of the pointing command. (int) \n</span>
+<span class="sd">        &#39;V_offset&#39;: Used only in *Timeline_gen*. Sets the Vertical-offset angle (position in FOV) in degrees for the star, when the attitude freeze command is scheduled. (int) \n</span>
+<span class="sd">        &#39;H_offset&#39;: Used only in *Timeline_gen*. Sets the maximum Horizontal-offset angle in degrees that determines if stars are visible. (int) \n</span>
+<span class="sd">        &#39;Vmag&#39;: Used only in *Timeline_gen*. Sets the Johnson V magnitude of stars to be considered (as a string expression, example &#39;&lt;2&#39;). \n</span>
+<span class="sd">        &#39;timestep&#39;: Used only in *Timeline_gen*. Sets timestep used in scheduling simulation [s]. Will impact scheduling accuracy. (int) \n</span>
+<span class="sd">        &#39;log_timestep&#39;: Sets the timestep of data being logged [s]. Only determines how much of simulated data is logged for debugging purposes.. (int) \n</span>
+<span class="sd">        &#39;automatic&#39;: Used only in *Timeline_gen*. Sets if &#39;start_date&#39; will be calculated or user provided. True for calculated and False for user provided. (bool) \n</span>
+<span class="sd">        &#39;start_date&#39;: Used only in *Timeline_gen*. Sets the scheduled date for the mode as a str, (example: &#39;2018/9/3 08:00:40&#39;). Note! only applies if automatic is set to False. \n</span>
+<span class="sd">        &#39;freeze_start&#39;: Sets in seconds the time from start of the Mode to when the attitude freezes. (int) \n</span>
+<span class="sd">        &#39;freeze_duration&#39;: Sets in seconds the duration of the attitude freeze. If set to 0, it will be estimated to a </span>
+<span class="sd">        value corresponding to the attitude being frozen until realigned with *Timeline_settings[&#39;LP_pointing_altitude&#39;]* (Normally around 50 s). (int) \n</span>
+<span class="sd">        &#39;SnapshotTime&#39;: Sets in seconds the time, from the start of the attitude freeze, to when the first Snapshot is taken. (int) \n</span>
+<span class="sd">        &#39;SnapshotSpacing&#39;: Sets in seconds the time inbetween Snapshots with individual CCDs. (int)</span>
+<span class="sd">        </span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (:obj:`dict`): settings</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;pointing_altitude&#39;</span><span class="p">:</span> <span class="mi">235000</span><span class="p">,</span> <span class="s1">&#39;V_offset&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;H_offset&#39;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span> <span class="s1">&#39;Vmag&#39;</span><span class="p">:</span> <span class="s1">&#39;&lt;2&#39;</span><span class="p">,</span> <span class="s1">&#39;timestep&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span><span class="s1">&#39;log_timestep&#39;</span><span class="p">:</span> <span class="mi">3600</span><span class="p">,</span> 
+                      <span class="s1">&#39;automatic&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2019&#39;</span><span class="p">,</span> <span class="s1">&#39;freeze_start&#39;</span><span class="p">:</span> <span class="mi">120</span><span class="p">,</span> 
+                      <span class="s1">&#39;freeze_duration&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SnapshotTime&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;SnapshotSpacing&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
+    
+    <span class="k">if</span><span class="p">(</span> <span class="n">settings</span><span class="p">[</span><span class="s1">&#39;freeze_duration&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="n">settings</span><span class="p">[</span><span class="s1">&#39;freeze_duration&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_Library</span><span class="o">.</span><span class="n">FreezeDuration_calculator</span><span class="p">(</span> <span class="n">Timeline_settings</span><span class="p">()[</span><span class="s1">&#39;LP_pointing_altitude&#39;</span><span class="p">],</span> <span class="n">settings</span><span class="p">[</span><span class="s1">&#39;pointing_altitude&#39;</span><span class="p">],</span> <span class="n">getTLE</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+    
+    <span class="k">return</span> <span class="n">settings</span></div>
+
+
+<div class="viewcode-block" id="Mode121_122_123_settings"><a class="viewcode-back" href="../../OPT.html#OPT._ConfigFile.Mode121_122_123_settings">[docs]</a><span class="k">def</span> <span class="nf">Mode121_122_123_settings</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Returns settings shared between Mode121-123.</span>
+<span class="sd">    </span>
+<span class="sd">    **Keys in returned dict:**</span>
+<span class="sd">        &#39;pointing_altitude&#39;: Sets in meters the altitude of the pointing command. (int) \n</span>
+<span class="sd">        &#39;H_FOV&#39;: Used only in *Timeline_gen*. Sets full Horizontal FOV of the Limb instrument in degrees. Used to determine if stars are visible. (float) \n</span>
+<span class="sd">        &#39;V_FOV&#39;: Used only in *Timeline_gen*. Sets full Vertical FOV of the Limb instrument in degrees. Used to determine if stars are visible. (float) \n</span>
+<span class="sd">        &#39;Vmag&#39;: Used only in *Timeline_gen*. Sets the Johnson V magnitude of stars to be considered (as a string expression, example &#39;&lt;2&#39;). \n</span>
+<span class="sd">        &#39;timestep&#39;: Used only in *Timeline_gen*. Set timestep used in scheduling simulation [s]. Will impact scheduling accuracy. (int) \n</span>
+<span class="sd">        &#39;TimeSkip&#39;: Used only in *Timeline_gen*. Set the amount of days to skip ahead after one complete orbit is simulated. (float) \n</span>
+<span class="sd">        &#39;log_timestep&#39;: Sets the timestep of data being logged [s]. Only determines how much of simulated data is logged for debugging purposes. (int) \n</span>
+<span class="sd">        &#39;freeze_start&#39;: Sets in seconds, the time from start of the Mode to when the attitude freezes. (int) \n</span>
+<span class="sd">        &#39;freeze_duration&#39;: Sets in seconds the duration of the attitude freeze. If set to 0, it will be estimated to a </span>
+<span class="sd">        value corresponding to the attitude being frozen until realigned with *Timeline_settings[&#39;LP_pointing_altitude&#39;]* (Normally around 50 s). (int) \n</span>
+<span class="sd">        &#39;SnapshotTime&#39;: Sets in seconds the time, from the start of the attitude freeze, to when the first Snapshot is taken. (int) \n</span>
+<span class="sd">        &#39;SnapshotSpacing&#39;: Sets in seconds the time inbetween Snapshots with individual CCDs. (int)</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (:obj:`dict`): settings</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;pointing_altitude&#39;</span><span class="p">:</span> <span class="mi">235000</span><span class="p">,</span> <span class="s1">&#39;H_FOV&#39;</span><span class="p">:</span> <span class="mf">5.67</span><span class="p">,</span> <span class="s1">&#39;V_FOV&#39;</span><span class="p">:</span> <span class="mf">0.91</span><span class="p">,</span> <span class="s1">&#39;Vmag&#39;</span><span class="p">:</span> <span class="s1">&#39;&lt;4&#39;</span><span class="p">,</span> <span class="s1">&#39;timestep&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;TimeSkip&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;log_timestep&#39;</span><span class="p">:</span> <span class="mi">3600</span><span class="p">,</span> 
+                      <span class="s1">&#39;automatic&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;freeze_start&#39;</span><span class="p">:</span> <span class="mi">120</span><span class="p">,</span> 
+                      <span class="s1">&#39;freeze_duration&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SnapshotTime&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;SnapshotSpacing&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
+    
+    <span class="k">if</span><span class="p">(</span> <span class="n">settings</span><span class="p">[</span><span class="s1">&#39;freeze_duration&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="n">settings</span><span class="p">[</span><span class="s1">&#39;freeze_duration&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_Library</span><span class="o">.</span><span class="n">FreezeDuration_calculator</span><span class="p">(</span> <span class="n">Timeline_settings</span><span class="p">()[</span><span class="s1">&#39;LP_pointing_altitude&#39;</span><span class="p">],</span> <span class="n">settings</span><span class="p">[</span><span class="s1">&#39;pointing_altitude&#39;</span><span class="p">],</span> <span class="n">getTLE</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+    
+    
+    <span class="k">return</span> <span class="n">settings</span></div>
+
+
+<div class="viewcode-block" id="Mode121_settings"><a class="viewcode-back" href="../../OPT.html#OPT._ConfigFile.Mode121_settings">[docs]</a><span class="k">def</span> <span class="nf">Mode121_settings</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Returns settings related to Mode121.</span>
+<span class="sd">    </span>
+<span class="sd">    **Keys in returned dict:**</span>
+<span class="sd">        &#39;start_date&#39;: Sets the scheduled date for the mode as a str, (example: &#39;2018/9/3 08:00:40&#39;). Note! only applies if automatic is set to False. \n</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (:obj:`dict`): settings</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    
+    <span class="n">Settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2019&#39;</span><span class="p">}</span>
+    <span class="n">CommonSettings</span> <span class="o">=</span> <span class="n">Mode121_122_123_settings</span><span class="p">()</span>
+    
+    <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">CommonSettings</span><span class="p">,</span> <span class="o">**</span><span class="n">Settings</span><span class="p">}</span>
+    
+    <span class="k">return</span> <span class="n">settings</span></div>
+
+
+<div class="viewcode-block" id="Mode122_settings"><a class="viewcode-back" href="../../OPT.html#OPT._ConfigFile.Mode122_settings">[docs]</a><span class="k">def</span> <span class="nf">Mode122_settings</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Returns settings related to Mode122.</span>
+<span class="sd">    </span>
+<span class="sd">    **Keys in returned dict:**</span>
+<span class="sd">        &#39;start_date&#39;: Sets the scheduled date for the mode as a str, (example: &#39;2018/9/3 08:00:40&#39;). Note! only applies if automatic is set to False. \n</span>
+<span class="sd">        &#39;Exp_Time_IR&#39;: Sets exposure time [ms] of the IR CCDs. (int) \n</span>
+<span class="sd">        &#39;Exp_Time_UV&#39;: Sets exposure time [ms] of the UV CCDs. (int) \n</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (:obj:`dict`): settings</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    
+    <span class="n">Settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2019&#39;</span><span class="p">,</span> <span class="s1">&#39;Exp_Time_IR&#39;</span><span class="p">:</span> <span class="mi">5000</span><span class="p">,</span> <span class="s1">&#39;Exp_Time_UV&#39;</span><span class="p">:</span> <span class="mi">3000</span><span class="p">}</span>
+    <span class="n">CommonSettings</span> <span class="o">=</span> <span class="n">Mode121_122_123_settings</span><span class="p">()</span>
+    
+    <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">CommonSettings</span><span class="p">,</span> <span class="o">**</span><span class="n">Settings</span><span class="p">}</span>
+    
+    <span class="k">return</span> <span class="n">settings</span></div>
+
+
+<div class="viewcode-block" id="Mode123_settings"><a class="viewcode-back" href="../../OPT.html#OPT._ConfigFile.Mode123_settings">[docs]</a><span class="k">def</span> <span class="nf">Mode123_settings</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Returns settings related to Mode123.</span>
+<span class="sd">    </span>
+<span class="sd">    **Keys in returned dict:**</span>
+<span class="sd">        &#39;start_date&#39;: Sets the scheduled date for the mode as a str, (example: &#39;2018/9/3 08:00:40&#39;). Note! only applies if automatic is set to False. \n</span>
+<span class="sd">        &#39;Exp_Time_IR&#39;: Sets exposure time [ms] of the IR CCDs. (int) \n</span>
+<span class="sd">        &#39;Exp_Time_UV&#39;: Sets exposure time [ms] of the UV CCDs. (int) \n</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (:obj:`dict`): settings</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    
+    <span class="n">Settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2019&#39;</span><span class="p">,</span> <span class="s1">&#39;Exp_Time_IR&#39;</span><span class="p">:</span> <span class="mi">5000</span><span class="p">,</span> <span class="s1">&#39;Exp_Time_UV&#39;</span><span class="p">:</span> <span class="mi">3000</span><span class="p">}</span>
+    <span class="n">CommonSettings</span> <span class="o">=</span> <span class="n">Mode121_122_123_settings</span><span class="p">()</span>
+    
+    <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">CommonSettings</span><span class="p">,</span> <span class="o">**</span><span class="n">Settings</span><span class="p">}</span>
+    
+    <span class="k">return</span> <span class="n">settings</span></div>
+    
+
+
+<div class="viewcode-block" id="Mode124_settings"><a class="viewcode-back" href="../../OPT.html#OPT._ConfigFile.Mode124_settings">[docs]</a><span class="k">def</span> <span class="nf">Mode124_settings</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Returns settings related to Mode124.</span>
+<span class="sd">    </span>
+<span class="sd">    **Keys in returned dict:**</span>
+<span class="sd">        &#39;pointing_altitude&#39;: Sets in meters the altitude of the pointing command. (int) \n</span>
+<span class="sd">        &#39;V_offset&#39;: Used only in *Timeline_gen*. Sets the Vertical-offset angle (position in FOV) in degrees for the star , when the attitude freeze command is scheduled. (float) \n</span>
+<span class="sd">        &#39;H_offset&#39;: Used only in *Timeline_gen*. Sets the maximum H-offset angle from the optical axis in degrees that determines if the Moon is available. (float) \n</span>
+<span class="sd">        &#39;timestep&#39;:  Used only in *Timeline_gen*. Sets in seconds the timestep during scheduling simulation [s]. Will impact scheduling accuracy. (int) \n</span>
+<span class="sd">        &#39;log_timestep&#39;: Sets the timestep of data being logged [s]. Only determines how much of simulated data is logged for debugging purposes. (int) \n</span>
+<span class="sd">        &#39;automatic&#39;:  Used only in *Timeline_gen*. Sets if the mode date is to be calculated or user provided. True for calculated or False for user provided. (bool) \n</span>
+<span class="sd">        &#39;start_date&#39;:  Used only in *Timeline_gen*. Sets the scheduled date for the mode as a str, (example: &#39;2018/9/3 08:00:40&#39;). Note! only applies if automatic is set to False. \n</span>
+<span class="sd">        &#39;freeze_start&#39;: Sets in seconds the time from start of the Mode to when the attitude freeze command is scheduled. (int) \n</span>
+<span class="sd">        &#39;freeze_duration&#39;: Sets in seconds the duration of the attitude freeze. If set to 0, it will be estimated to a </span>
+<span class="sd">        value corresponding to the attitude being frozen until realigned with *Timeline_settings[&#39;LP_pointing_altitude&#39;]*. (int) \n</span>
+<span class="sd">        &#39;SnapshotTime&#39;: Sets in seconds the time, from the start of the attitude freeze, to when the first Snapshot is taken. (int) \n</span>
+<span class="sd">        &#39;SnapshotSpacing&#39;: Sets in seconds the time inbetween Snapshots with individual CCDs. (int)</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (:obj:`dict`): settings</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;pointing_altitude&#39;</span><span class="p">:</span> <span class="mi">235000</span><span class="p">,</span> <span class="s1">&#39;V_offset&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;H_offset&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="o">+</span><span class="mf">2.5</span><span class="p">,</span> <span class="s1">&#39;timestep&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;log_timestep&#39;</span><span class="p">:</span> <span class="mi">1200</span><span class="p">,</span> 
+                      <span class="s1">&#39;automatic&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;2019&#39;</span><span class="p">,</span> <span class="s1">&#39;freeze_start&#39;</span><span class="p">:</span> <span class="mi">120</span><span class="p">,</span> <span class="s1">&#39;freeze_duration&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> 
+                      <span class="s1">&#39;SnapshotTime&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;SnapshotSpacing&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
+    
+    <span class="k">if</span><span class="p">(</span> <span class="n">settings</span><span class="p">[</span><span class="s1">&#39;freeze_duration&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="n">settings</span><span class="p">[</span><span class="s1">&#39;freeze_duration&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_Library</span><span class="o">.</span><span class="n">FreezeDuration_calculator</span><span class="p">(</span> <span class="n">Timeline_settings</span><span class="p">()[</span><span class="s1">&#39;LP_pointing_altitude&#39;</span><span class="p">],</span> <span class="n">settings</span><span class="p">[</span><span class="s1">&#39;pointing_altitude&#39;</span><span class="p">],</span> <span class="n">getTLE</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+    
+    <span class="k">return</span> <span class="n">settings</span></div>
+
+
+<div class="viewcode-block" id="Mode130_settings"><a class="viewcode-back" href="../../OPT.html#OPT._ConfigFile.Mode130_settings">[docs]</a><span class="k">def</span> <span class="nf">Mode130_settings</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Returns settings related to Mode130.</span>
+<span class="sd">    </span>
+<span class="sd">    **Keys in returned dict:**</span>
+<span class="sd">        &#39;pointing_altitude&#39;: Sets in meters the altitude of the pointing command. (int) \n</span>
+<span class="sd">        &#39;SnapshotSpacing&#39;: Sets in seconds the time inbetween Snapshots with individual CCDs. (int) \n</span>
+<span class="sd">        &#39;start_date&#39;: Sets the scheduled date for the mode as a str, (example: &#39;2018/9/3 08:00:40&#39;). If the date is set to &#39;0&#39;, Timeline start_date will be used.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (:obj:`dict`): settings</span>
+<span class="sd">        </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;pointing_altitude&#39;</span><span class="p">:</span> <span class="mi">235000</span><span class="p">,</span> <span class="s1">&#39;SnapshotSpacing&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;0&#39;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">settings</span></div>
+
+
+<div class="viewcode-block" id="Mode131_settings"><a class="viewcode-back" href="../../OPT.html#OPT._ConfigFile.Mode131_settings">[docs]</a><span class="k">def</span> <span class="nf">Mode131_settings</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Returns settings related to Mode131.</span>
+<span class="sd">    </span>
+<span class="sd">    **Keys in returned dict:**</span>
+<span class="sd">        &#39;pointing_altitude&#39;: Sets in meters the altitude of the pointing command. (int) \n</span>
+<span class="sd">        &#39;Exposure_Interval&#39;: Sets in ms the Exposure Interval Time of the CCD Command. Recommended to be at least 60000 to support FullReadout in Operational Mode. (int) \n</span>
+<span class="sd">        &#39;mode_duration&#39;: Sets the scheduled duration of the Mode in seconds. (int) \n</span>
+<span class="sd">        &#39;start_date&#39;: Sets the scheduled date for the mode as a str, (example: &#39;2018/9/3 08:00:40&#39;). If the date is set to &#39;0&#39;, Timeline start_date will be used.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (:obj:`dict`): settings</span>
+<span class="sd">        </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;pointing_altitude&#39;</span><span class="p">:</span> <span class="mi">235000</span><span class="p">,</span> <span class="s1">&#39;Exposure_Interval&#39;</span><span class="p">:</span> <span class="mi">70000</span><span class="p">,</span> <span class="s1">&#39;mode_duration&#39;</span><span class="p">:</span> <span class="mi">120</span><span class="p">,</span> <span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;0&#39;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">settings</span></div>
+
+
+<div class="viewcode-block" id="Mode132_settings"><a class="viewcode-back" href="../../OPT.html#OPT._ConfigFile.Mode132_settings">[docs]</a><span class="k">def</span> <span class="nf">Mode132_settings</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Returns settings related to Mode132.</span>
+<span class="sd">    </span>
+<span class="sd">    **Keys in returned dict:**</span>
+<span class="sd">        &#39;pointing_altitude&#39;: Sets in meters the altitude of the pointing command. (int) \n</span>
+<span class="sd">        &#39;start_date&#39;: Sets the scheduled date for the mode as a str, (example: &#39;2018/9/3 08:00:40&#39;). If the date is set to &#39;0&#39;, Timeline start_date will be used. \n</span>
+<span class="sd">        &#39;Exp_Times_IR&#39;: Sets exposure times [ms] as a list of integers. Shall have equal length to &#39;Exp_Times_UV&#39;.  \n</span>
+<span class="sd">        &#39;Exp_Times_UV&#39;: Sets exposure times [ms] as a list of integers. Shall have equal length to &#39;Exp_Times_IR&#39;. \n</span>
+<span class="sd">        &#39;session_duration&#39;: Sets the duration [s] of each session using the different exposure times in *Exp_Times*. (int)</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (:obj:`dict`): settings</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;pointing_altitude&#39;</span><span class="p">:</span> <span class="mi">235000</span><span class="p">,</span> <span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;Exp_Times_IR&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">5000</span><span class="p">,</span> <span class="mi">10000</span><span class="p">,</span> <span class="mi">20000</span><span class="p">],</span>
+                <span class="s1">&#39;Exp_Times_UV&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">5000</span><span class="p">,</span> <span class="mi">10000</span><span class="p">,</span> <span class="mi">20000</span><span class="p">],</span> <span class="s1">&#39;session_duration&#39;</span><span class="p">:</span> <span class="mi">120</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">settings</span></div>
+
+
+<div class="viewcode-block" id="Mode133_settings"><a class="viewcode-back" href="../../OPT.html#OPT._ConfigFile.Mode133_settings">[docs]</a><span class="k">def</span> <span class="nf">Mode133_settings</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Returns settings related to Mode133.</span>
+<span class="sd">    </span>
+<span class="sd">    **Keys in returned dict:**</span>
+<span class="sd">        &#39;pointing_altitude&#39;: Sets in meters the altitude of the pointing command. (int) \n</span>
+<span class="sd">        &#39;start_date&#39;: Sets the scheduled date for the mode as a str, (example: &#39;2018/9/3 08:00:40&#39;). If the date is set to &#39;0&#39;, Timeline start_date will be used. \n</span>
+<span class="sd">        &#39;Exp_Times_IR&#39;: Sets exposure times [ms] as a list of integers. Shall have equal length to &#39;Exp_Times_UV&#39;.  \n</span>
+<span class="sd">        &#39;Exp_Times_UV&#39;: Sets exposure times [ms] as a list of integers. Shall have equal length to &#39;Exp_Times_IR&#39;. \n</span>
+<span class="sd">        &#39;session_duration&#39;: Sets the duration [s] of each session using the different exposure times in *Exp_Times_UV* and *Exp_Times_IR*. (int)</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (:obj:`dict`): settings</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;pointing_altitude&#39;</span><span class="p">:</span> <span class="mi">235000</span><span class="p">,</span> <span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span>  <span class="s1">&#39;Exp_Times_IR&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">5000</span><span class="p">,</span> <span class="mi">10000</span><span class="p">,</span> <span class="mi">20000</span><span class="p">],</span>
+                <span class="s1">&#39;Exp_Times_UV&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">5000</span><span class="p">,</span> <span class="mi">10000</span><span class="p">,</span> <span class="mi">20000</span><span class="p">],</span> <span class="s1">&#39;session_duration&#39;</span><span class="p">:</span> <span class="mi">120</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">settings</span></div>
+
+<div class="viewcode-block" id="Mode134_settings"><a class="viewcode-back" href="../../OPT.html#OPT._ConfigFile.Mode134_settings">[docs]</a><span class="k">def</span> <span class="nf">Mode134_settings</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Returns settings related to Mode134.</span>
+<span class="sd">    </span>
+<span class="sd">    **Keys in returned dict:**</span>
+<span class="sd">        &#39;pointing_altitude&#39;: Sets in meters the altitude of the pointing command. (int) \n</span>
+<span class="sd">        &#39;mode_duration&#39;: Sets the scheduled duration of the Mode in seconds. (int) \n</span>
+<span class="sd">        &#39;start_date&#39;: Sets the scheduled date for the mode as a str, (example: &#39;2018/9/3 08:00:40&#39;). If the date is set to &#39;0&#39;, Timeline start_date will be used.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (:obj:`dict`): settings</span>
+<span class="sd">        </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;pointing_altitude&#39;</span><span class="p">:</span> <span class="mi">110000</span><span class="p">,</span> <span class="s1">&#39;mode_duration&#39;</span><span class="p">:</span> <span class="mi">900</span><span class="p">,</span> <span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;0&#39;</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">settings</span></div>
+    
+
+
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">def Mode201_settings():</span>
+<span class="sd">    &#39;&#39;&#39;Returns settings related to Mode201.</span>
+<span class="sd">    </span>
+<span class="sd">    **Keys in returned dict:**</span>
+<span class="sd">        &#39;pointing_altitude&#39;: Sets in meters the altitude of the pointing command. \n</span>
+<span class="sd">        &#39;mode_duration&#39;: Sets the scheduled duration of the Mode in seconds. \n</span>
+<span class="sd">        &#39;start_date&#39;: Sets the scheduled date for the mode as a str, (example: &#39;2018/9/3 08:00:40&#39;). If the date is set to &#39;0&#39;, Timeline start_date will be used.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (:obj:`dict`): settings</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    settings = {&#39;pointing_altitude&#39;: 70000, &#39;mode_duration&#39;: 600, &#39;start_date&#39;: &#39;0&#39;}</span>
+<span class="sd">    return settings</span>
+
+
+
+<span class="sd">def Mode203_settings():</span>
+<span class="sd">    &#39;&#39;&#39;Returns settings related to Mode203.</span>
+<span class="sd">    </span>
+<span class="sd">    **Keys in returned dict:**</span>
+<span class="sd">        &#39;pitch&#39;: Sets the pitch axis maneuver.</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        settings (:obj:`dict`)</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    settings = {&#39;pitch&#39;: 180}</span>
+<span class="sd">    return settings</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<div class="viewcode-block" id="PWRTOGGLE_settings"><a class="viewcode-back" href="../../OPT.html#OPT._ConfigFile.PWRTOGGLE_settings">[docs]</a><span class="k">def</span> <span class="nf">PWRTOGGLE_settings</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Returns settings related to the PWRTOGGLE CMD.</span>
+<span class="sd">    </span>
+<span class="sd">    **Keys in returned dict:**</span>
+<span class="sd">        &#39;CONST&#39;: Magic Constant (int).</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (:obj:`dict`): settings</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;CONST&#39;</span><span class="p">:</span> <span class="mi">165</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">settings</span></div>
+
+<div class="viewcode-block" id="CCDFlushBadColumns_settings"><a class="viewcode-back" href="../../OPT.html#OPT._ConfigFile.CCDFlushBadColumns_settings">[docs]</a><span class="k">def</span> <span class="nf">CCDFlushBadColumns_settings</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Returns settings related to the CCDFlushBadColumns CMD.</span>
+<span class="sd">    </span>
+<span class="sd">    **Keys in returned dict:**</span>
+<span class="sd">        &#39;CCDSEL&#39;: CCD select, 1 bit for each CCD (1..127). (int)</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (:obj:`dict`): settings</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;CCDSEL&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">settings</span></div>
+
+<div class="viewcode-block" id="CCDBadColumn_settings"><a class="viewcode-back" href="../../OPT.html#OPT._ConfigFile.CCDBadColumn_settings">[docs]</a><span class="k">def</span> <span class="nf">CCDBadColumn_settings</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Returns settings related to CCDBadColumn CMD.</span>
+<span class="sd">    </span>
+<span class="sd">    **Keys in returned dict:**</span>
+<span class="sd">        &#39;CCDSEL&#39;: CCD select, 1 bit for each CCD (1..127). (int) \n</span>
+<span class="sd">        &#39;NBC&#39;: Number of uint16 in BC as a uint16. Big Endian. Maximum number is 63. (int) \n</span>
+<span class="sd">        &#39;BC&#39;: Bad Columns as a list of uint16 (4..2047).</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (:obj:`dict`): settings</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;CCDSEL&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;NBC&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;BC&#39;</span><span class="p">:</span> <span class="p">[]}</span>
+    <span class="k">return</span> <span class="n">settings</span></div>
+
+<div class="viewcode-block" id="PM_settings"><a class="viewcode-back" href="../../OPT.html#OPT._ConfigFile.PM_settings">[docs]</a><span class="k">def</span> <span class="nf">PM_settings</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Returns settings related to the PM (photometer) CMD.</span>
+<span class="sd">    </span>
+<span class="sd">    **Keys in returned dict:**</span>
+<span class="sd">        &#39;TEXPMS&#39;: Exposure time [ms] for the photometer (int) \n</span>
+<span class="sd">        &#39;TEXPIMS&#39;: Exposure interval time [ms] for the photometer (int)</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (:obj:`dict`): settings</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">:</span> <span class="mi">1500</span><span class="p">,</span> <span class="s1">&#39;TEXPIMS&#39;</span><span class="p">:</span> <span class="mi">2000</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">settings</span></div>
+
+<div class="viewcode-block" id="CCDBIAS_settings"><a class="viewcode-back" href="../../OPT.html#OPT._ConfigFile.CCDBIAS_settings">[docs]</a><span class="k">def</span> <span class="nf">CCDBIAS_settings</span><span class="p">():</span>
+    <span class="sd">&#39;&#39;&#39;Returns settings related to the CCDBIAS CMD.</span>
+<span class="sd">    </span>
+<span class="sd">    **Keys in returned dict:**</span>
+<span class="sd">        &#39;CCDSEL&#39;: CCD select, 1 bit for each CCD (1..127). (int) \n</span>
+<span class="sd">        &#39;VGATE&#39;: 8-bit value representing a Voltage (int) \n</span>
+<span class="sd">        &#39;VSUBST&#39;: 8-bit value representing a Voltage (int) \n</span>
+<span class="sd">        &#39;VRD&#39;: 8-bit value representing a Voltage (int) \n</span>
+<span class="sd">        &#39;VOD&#39;: 8-bit value representing a Voltage (int) \n</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (:obj:`dict`): settings</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;CCDSEL&#39;</span><span class="p">:</span> <span class="mi">127</span><span class="p">,</span> <span class="s1">&#39;VGATE&#39;</span><span class="p">:</span> <span class="mi">127</span><span class="p">,</span> <span class="s1">&#39;VSUBST&#39;</span><span class="p">:</span> <span class="mi">127</span><span class="p">,</span> <span class="s1">&#39;VRD&#39;</span><span class="p">:</span> <span class="mi">127</span><span class="p">,</span> <span class="s1">&#39;VOD&#39;</span><span class="p">:</span> <span class="mi">127</span><span class="p">}</span>
+    <span class="k">return</span> <span class="n">settings</span></div>
+
+
+
+<div class="viewcode-block" id="CCD_macro_settings"><a class="viewcode-back" href="../../OPT.html#OPT._ConfigFile.CCD_macro_settings">[docs]</a><span class="k">def</span> <span class="nf">CCD_macro_settings</span><span class="p">(</span><span class="n">CCDMacroSelect</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;Returns CCD settings for a specific macro.</span>
+<span class="sd">    </span>
+<span class="sd">    Each key in the output represents settings for a corresponding CCDSEL argument. </span>
+<span class="sd">    </span>
+<span class="sd">    **Keys in returned dict:**</span>
+<span class="sd">        &#39;CCDSEL_16&#39;: Represents settings for UV1 (CCD5) \n</span>
+<span class="sd">        &#39;CCDSEL_32&#39;: Represents settings for UV2 (CCD6) \n</span>
+<span class="sd">        &#39;CCDSEL_1&#39;: Represents settings for IR1 (CCD1) \n</span>
+<span class="sd">        &#39;CCDSEL_8&#39;: Represents settings for IR2 (CCD4) \n</span>
+<span class="sd">        &#39;CCDSEL_2&#39;: Represents settings for IR4 (CCD2) \n</span>
+<span class="sd">        &#39;CCDSEL_4&#39;: Represents settings for IR3 (CCD3) \n</span>
+<span class="sd">        &#39;CCDSEL_64&#39;: Represents settings for Nadir (CCD6) \n</span>
+<span class="sd">        </span>
+<span class="sd">        </span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        CCDMacroSelect (str): Specifies for which CCD macro, settings are returned for. &#39;CustomBinning&#39;, &#39;HighResUV&#39;, &#39;HighResIR&#39;, &#39;BinnedCalibration&#39;, &#39;FullReadout&#39;, &#39;LowPixel&#39;.</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (:obj:`dict`): CCD_settings</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    
+    <span class="n">CCD_settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;CCDSEL_16&#39;</span><span class="p">:</span> <span class="p">{},</span> <span class="s1">&#39;CCDSEL_32&#39;</span><span class="p">:</span> <span class="p">{},</span> <span class="s1">&#39;CCDSEL_1&#39;</span><span class="p">:</span> <span class="p">{},</span> <span class="s1">&#39;CCDSEL_8&#39;</span><span class="p">:</span> <span class="p">{},</span> <span class="s1">&#39;CCDSEL_2&#39;</span><span class="p">:</span> <span class="p">{},</span> <span class="s1">&#39;CCDSEL_4&#39;</span><span class="p">:</span> <span class="p">{},</span> <span class="s1">&#39;CCDSEL_64&#39;</span><span class="p">:</span> <span class="p">{}</span> <span class="p">}</span>
+    
+    <span class="k">if</span><span class="p">(</span> <span class="n">CCDMacroSelect</span> <span class="o">==</span> <span class="s1">&#39;CustomBinning&#39;</span><span class="p">):</span>
+        <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_16&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PWR&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;WDW&#39;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span> <span class="s1">&#39;JPEGQ&#39;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="s1">&#39;TEXPMS&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;GAIN&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NFLUSH&#39;</span><span class="p">:</span> <span class="mi">1023</span><span class="p">,</span> 
+                                <span class="s1">&#39;NRSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NRBIN&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;NROW&#39;</span><span class="p">:</span> <span class="mi">255</span><span class="p">,</span> <span class="s1">&#39;NCSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NCBIN&#39;</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span> <span class="s1">&#39;NCOL&#39;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span> <span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SIGMODE&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+        
+        <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_32&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PWR&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;WDW&#39;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span> <span class="s1">&#39;JPEGQ&#39;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="s1">&#39;TEXPMS&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;GAIN&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NFLUSH&#39;</span><span class="p">:</span> <span class="mi">1023</span><span class="p">,</span> 
+                                <span class="s1">&#39;NRSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NRBIN&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;NROW&#39;</span><span class="p">:</span> <span class="mi">255</span><span class="p">,</span> <span class="s1">&#39;NCSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NCBIN&#39;</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span> <span class="s1">&#39;NCOL&#39;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span> <span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SIGMODE&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+        
+        <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PWR&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;WDW&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;JPEGQ&#39;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="s1">&#39;TEXPMS&#39;</span><span class="p">:</span> <span class="mi">5000</span><span class="p">,</span> <span class="s1">&#39;GAIN&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NFLUSH&#39;</span><span class="p">:</span> <span class="mi">1023</span><span class="p">,</span> 
+                                <span class="s1">&#39;NRSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NRBIN&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;NROW&#39;</span><span class="p">:</span> <span class="mi">170</span><span class="p">,</span> <span class="s1">&#39;NCSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NCBIN&#39;</span><span class="p">:</span> <span class="mi">80</span><span class="p">,</span> <span class="s1">&#39;NCOL&#39;</span><span class="p">:</span> <span class="mi">24</span><span class="p">,</span> <span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SIGMODE&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+        
+        <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_8&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PWR&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;WDW&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;JPEGQ&#39;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="s1">&#39;TEXPMS&#39;</span><span class="p">:</span> <span class="mi">5000</span><span class="p">,</span> <span class="s1">&#39;GAIN&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NFLUSH&#39;</span><span class="p">:</span> <span class="mi">1023</span><span class="p">,</span> 
+                                <span class="s1">&#39;NRSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NRBIN&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;NROW&#39;</span><span class="p">:</span> <span class="mi">170</span><span class="p">,</span> <span class="s1">&#39;NCSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NCBIN&#39;</span><span class="p">:</span> <span class="mi">80</span><span class="p">,</span> <span class="s1">&#39;NCOL&#39;</span><span class="p">:</span> <span class="mi">24</span><span class="p">,</span> <span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SIGMODE&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+        
+        <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PWR&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;WDW&#39;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span> <span class="s1">&#39;JPEGQ&#39;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="s1">&#39;TEXPMS&#39;</span><span class="p">:</span> <span class="mi">5000</span><span class="p">,</span> <span class="s1">&#39;GAIN&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NFLUSH&#39;</span><span class="p">:</span> <span class="mi">1023</span><span class="p">,</span> 
+                                <span class="s1">&#39;NRSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NRBIN&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s1">&#39;NROW&#39;</span><span class="p">:</span> <span class="mi">85</span><span class="p">,</span> <span class="s1">&#39;NCSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NCBIN&#39;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span> <span class="s1">&#39;NCOL&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span> <span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SIGMODE&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+        
+        <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_4&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PWR&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;WDW&#39;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span> <span class="s1">&#39;JPEGQ&#39;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="s1">&#39;TEXPMS&#39;</span><span class="p">:</span> <span class="mi">5000</span><span class="p">,</span> <span class="s1">&#39;GAIN&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NFLUSH&#39;</span><span class="p">:</span> <span class="mi">1023</span><span class="p">,</span> 
+                                <span class="s1">&#39;NRSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NRBIN&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s1">&#39;NROW&#39;</span><span class="p">:</span> <span class="mi">85</span><span class="p">,</span> <span class="s1">&#39;NCSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NCBIN&#39;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span> <span class="s1">&#39;NCOL&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span> <span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SIGMODE&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+        
+        <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_64&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PWR&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;WDW&#39;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span> <span class="s1">&#39;JPEGQ&#39;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="s1">&#39;TEXPMS&#39;</span><span class="p">:</span> <span class="mi">1500</span><span class="p">,</span> <span class="s1">&#39;GAIN&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NFLUSH&#39;</span><span class="p">:</span> <span class="mi">1023</span><span class="p">,</span> 
+                                <span class="s1">&#39;NRSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NRBIN&#39;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span> <span class="s1">&#39;NROW&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span> <span class="s1">&#39;NCSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NCBIN&#39;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span> <span class="s1">&#39;NCOL&#39;</span><span class="p">:</span> <span class="mi">32</span><span class="p">,</span> <span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SIGMODE&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+    
+    
+    <span class="k">elif</span><span class="p">(</span> <span class="n">CCDMacroSelect</span> <span class="o">==</span> <span class="s1">&#39;HighResUV&#39;</span><span class="p">):</span>
+        <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_16&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PWR&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;WDW&#39;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span> <span class="s1">&#39;JPEGQ&#39;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="s1">&#39;TEXPMS&#39;</span><span class="p">:</span> <span class="mi">3000</span><span class="p">,</span> <span class="s1">&#39;GAIN&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NFLUSH&#39;</span><span class="p">:</span> <span class="mi">1023</span><span class="p">,</span> 
+                                 <span class="s1">&#39;NRSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NRBIN&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;NROW&#39;</span><span class="p">:</span> <span class="mi">255</span><span class="p">,</span> <span class="s1">&#39;NCSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NCBIN&#39;</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span> <span class="s1">&#39;NCOL&#39;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span> <span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SIGMODE&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+        
+        <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_32&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PWR&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;WDW&#39;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span> <span class="s1">&#39;JPEGQ&#39;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="s1">&#39;TEXPMS&#39;</span><span class="p">:</span> <span class="mi">3000</span><span class="p">,</span> <span class="s1">&#39;GAIN&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NFLUSH&#39;</span><span class="p">:</span> <span class="mi">1023</span><span class="p">,</span> 
+                                 <span class="s1">&#39;NRSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NRBIN&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;NROW&#39;</span><span class="p">:</span> <span class="mi">255</span><span class="p">,</span> <span class="s1">&#39;NCSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NCBIN&#39;</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span> <span class="s1">&#39;NCOL&#39;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span> <span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SIGMODE&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+        
+        <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PWR&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;WDW&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;JPEGQ&#39;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="s1">&#39;TEXPMS&#39;</span><span class="p">:</span> <span class="mi">5000</span><span class="p">,</span> <span class="s1">&#39;GAIN&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NFLUSH&#39;</span><span class="p">:</span> <span class="mi">1023</span><span class="p">,</span> 
+                                <span class="s1">&#39;NRSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NRBIN&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;NROW&#39;</span><span class="p">:</span> <span class="mi">170</span><span class="p">,</span> <span class="s1">&#39;NCSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NCBIN&#39;</span><span class="p">:</span> <span class="mi">80</span><span class="p">,</span> <span class="s1">&#39;NCOL&#39;</span><span class="p">:</span> <span class="mi">24</span><span class="p">,</span> <span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SIGMODE&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+        
+        <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_8&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PWR&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;WDW&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;JPEGQ&#39;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="s1">&#39;TEXPMS&#39;</span><span class="p">:</span> <span class="mi">5000</span><span class="p">,</span> <span class="s1">&#39;GAIN&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NFLUSH&#39;</span><span class="p">:</span> <span class="mi">1023</span><span class="p">,</span> 
+                                <span class="s1">&#39;NRSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NRBIN&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;NROW&#39;</span><span class="p">:</span> <span class="mi">170</span><span class="p">,</span> <span class="s1">&#39;NCSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NCBIN&#39;</span><span class="p">:</span> <span class="mi">80</span><span class="p">,</span> <span class="s1">&#39;NCOL&#39;</span><span class="p">:</span> <span class="mi">24</span><span class="p">,</span> <span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SIGMODE&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+        
+        <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PWR&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;WDW&#39;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span> <span class="s1">&#39;JPEGQ&#39;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="s1">&#39;TEXPMS&#39;</span><span class="p">:</span> <span class="mi">5000</span><span class="p">,</span> <span class="s1">&#39;GAIN&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NFLUSH&#39;</span><span class="p">:</span> <span class="mi">1023</span><span class="p">,</span> 
+                                <span class="s1">&#39;NRSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NRBIN&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s1">&#39;NROW&#39;</span><span class="p">:</span> <span class="mi">85</span><span class="p">,</span> <span class="s1">&#39;NCSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NCBIN&#39;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span> <span class="s1">&#39;NCOL&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span> <span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SIGMODE&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+        
+        <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_4&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PWR&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;WDW&#39;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span> <span class="s1">&#39;JPEGQ&#39;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="s1">&#39;TEXPMS&#39;</span><span class="p">:</span> <span class="mi">5000</span><span class="p">,</span> <span class="s1">&#39;GAIN&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NFLUSH&#39;</span><span class="p">:</span> <span class="mi">1023</span><span class="p">,</span> 
+                                <span class="s1">&#39;NRSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NRBIN&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s1">&#39;NROW&#39;</span><span class="p">:</span> <span class="mi">85</span><span class="p">,</span> <span class="s1">&#39;NCSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NCBIN&#39;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span> <span class="s1">&#39;NCOL&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span> <span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SIGMODE&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+        
+        <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_64&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PWR&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;WDW&#39;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span> <span class="s1">&#39;JPEGQ&#39;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="s1">&#39;TEXPMS&#39;</span><span class="p">:</span> <span class="mi">1500</span><span class="p">,</span> <span class="s1">&#39;GAIN&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NFLUSH&#39;</span><span class="p">:</span> <span class="mi">1023</span><span class="p">,</span> 
+                                 <span class="s1">&#39;NRSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NRBIN&#39;</span><span class="p">:</span> <span class="mi">63</span><span class="p">,</span> <span class="s1">&#39;NROW&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span> <span class="s1">&#39;NCSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NCBIN&#39;</span><span class="p">:</span> <span class="mi">63</span><span class="p">,</span> <span class="s1">&#39;NCOL&#39;</span><span class="p">:</span> <span class="mi">31</span><span class="p">,</span> <span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SIGMODE&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+        
+        
+    <span class="k">elif</span><span class="p">(</span> <span class="n">CCDMacroSelect</span> <span class="o">==</span> <span class="s1">&#39;HighResIR&#39;</span><span class="p">):</span>
+        <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_16&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PWR&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;WDW&#39;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span> <span class="s1">&#39;JPEGQ&#39;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="s1">&#39;TEXPMS&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;GAIN&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NFLUSH&#39;</span><span class="p">:</span> <span class="mi">1023</span><span class="p">,</span> 
+                                 <span class="s1">&#39;NRSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NRBIN&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;NROW&#39;</span><span class="p">:</span> <span class="mi">255</span><span class="p">,</span> <span class="s1">&#39;NCSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NCBIN&#39;</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span> <span class="s1">&#39;NCOL&#39;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span> <span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SIGMODE&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+        
+        <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_32&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PWR&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;WDW&#39;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span> <span class="s1">&#39;JPEGQ&#39;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="s1">&#39;TEXPMS&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;GAIN&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NFLUSH&#39;</span><span class="p">:</span> <span class="mi">1023</span><span class="p">,</span> 
+                                 <span class="s1">&#39;NRSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NRBIN&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;NROW&#39;</span><span class="p">:</span> <span class="mi">255</span><span class="p">,</span> <span class="s1">&#39;NCSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NCBIN&#39;</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span> <span class="s1">&#39;NCOL&#39;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span> <span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SIGMODE&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+        
+        <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PWR&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;WDW&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;JPEGQ&#39;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="s1">&#39;TEXPMS&#39;</span><span class="p">:</span> <span class="mi">5000</span><span class="p">,</span> <span class="s1">&#39;GAIN&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NFLUSH&#39;</span><span class="p">:</span> <span class="mi">1023</span><span class="p">,</span> 
+                                <span class="s1">&#39;NRSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NRBIN&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;NROW&#39;</span><span class="p">:</span> <span class="mi">255</span><span class="p">,</span> <span class="s1">&#39;NCSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NCBIN&#39;</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span> <span class="s1">&#39;NCOL&#39;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span> <span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SIGMODE&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+        
+        <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_8&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PWR&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;WDW&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;JPEGQ&#39;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="s1">&#39;TEXPMS&#39;</span><span class="p">:</span> <span class="mi">5000</span><span class="p">,</span> <span class="s1">&#39;GAIN&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NFLUSH&#39;</span><span class="p">:</span> <span class="mi">1023</span><span class="p">,</span> 
+                                <span class="s1">&#39;NRSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NRBIN&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;NROW&#39;</span><span class="p">:</span> <span class="mi">255</span><span class="p">,</span> <span class="s1">&#39;NCSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NCBIN&#39;</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span> <span class="s1">&#39;NCOL&#39;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span> <span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SIGMODE&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+        
+        <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PWR&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;WDW&#39;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span> <span class="s1">&#39;JPEGQ&#39;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="s1">&#39;TEXPMS&#39;</span><span class="p">:</span> <span class="mi">5000</span><span class="p">,</span> <span class="s1">&#39;GAIN&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NFLUSH&#39;</span><span class="p">:</span> <span class="mi">1023</span><span class="p">,</span> 
+                                <span class="s1">&#39;NRSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NRBIN&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s1">&#39;NROW&#39;</span><span class="p">:</span> <span class="mi">85</span><span class="p">,</span> <span class="s1">&#39;NCSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NCBIN&#39;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span> <span class="s1">&#39;NCOL&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span> <span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SIGMODE&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+        
+        <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_4&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PWR&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;WDW&#39;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span> <span class="s1">&#39;JPEGQ&#39;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="s1">&#39;TEXPMS&#39;</span><span class="p">:</span> <span class="mi">5000</span><span class="p">,</span> <span class="s1">&#39;GAIN&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NFLUSH&#39;</span><span class="p">:</span> <span class="mi">1023</span><span class="p">,</span> 
+                                <span class="s1">&#39;NRSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NRBIN&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s1">&#39;NROW&#39;</span><span class="p">:</span> <span class="mi">85</span><span class="p">,</span> <span class="s1">&#39;NCSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NCBIN&#39;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span> <span class="s1">&#39;NCOL&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span> <span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SIGMODE&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+        
+        <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_64&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PWR&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;WDW&#39;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span> <span class="s1">&#39;JPEGQ&#39;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="s1">&#39;TEXPMS&#39;</span><span class="p">:</span> <span class="mi">1500</span><span class="p">,</span> <span class="s1">&#39;GAIN&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NFLUSH&#39;</span><span class="p">:</span> <span class="mi">1023</span><span class="p">,</span> 
+                                 <span class="s1">&#39;NRSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NRBIN&#39;</span><span class="p">:</span> <span class="mi">36</span><span class="p">,</span> <span class="s1">&#39;NROW&#39;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span> <span class="s1">&#39;NCSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NCBIN&#39;</span><span class="p">:</span> <span class="mi">36</span><span class="p">,</span> <span class="s1">&#39;NCOL&#39;</span><span class="p">:</span> <span class="mi">55</span><span class="p">,</span> <span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SIGMODE&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+        
+        
+    <span class="k">elif</span><span class="p">(</span> <span class="n">CCDMacroSelect</span> <span class="o">==</span> <span class="s1">&#39;BinnedCalibration&#39;</span><span class="p">):</span>
+        <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_16&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PWR&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;WDW&#39;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span> <span class="s1">&#39;JPEGQ&#39;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="s1">&#39;TEXPMS&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;GAIN&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NFLUSH&#39;</span><span class="p">:</span> <span class="mi">1023</span><span class="p">,</span> 
+                                 <span class="s1">&#39;NRSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NRBIN&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;NROW&#39;</span><span class="p">:</span> <span class="mi">255</span><span class="p">,</span> <span class="s1">&#39;NCSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NCBIN&#39;</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span> <span class="s1">&#39;NCOL&#39;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span> <span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SIGMODE&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+        
+        <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_32&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PWR&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;WDW&#39;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span> <span class="s1">&#39;JPEGQ&#39;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="s1">&#39;TEXPMS&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;GAIN&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NFLUSH&#39;</span><span class="p">:</span> <span class="mi">1023</span><span class="p">,</span> 
+                                 <span class="s1">&#39;NRSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NRBIN&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;NROW&#39;</span><span class="p">:</span> <span class="mi">255</span><span class="p">,</span> <span class="s1">&#39;NCSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NCBIN&#39;</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span> <span class="s1">&#39;NCOL&#39;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span> <span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SIGMODE&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+        
+        <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PWR&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;WDW&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;JPEGQ&#39;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="s1">&#39;TEXPMS&#39;</span><span class="p">:</span> <span class="mi">5000</span><span class="p">,</span> <span class="s1">&#39;GAIN&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NFLUSH&#39;</span><span class="p">:</span> <span class="mi">1023</span><span class="p">,</span> 
+                                <span class="s1">&#39;NRSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NRBIN&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;NROW&#39;</span><span class="p">:</span> <span class="mi">255</span><span class="p">,</span> <span class="s1">&#39;NCSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NCBIN&#39;</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span> <span class="s1">&#39;NCOL&#39;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span> <span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SIGMODE&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+        
+        <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_8&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PWR&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;WDW&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;JPEGQ&#39;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="s1">&#39;TEXPMS&#39;</span><span class="p">:</span> <span class="mi">5000</span><span class="p">,</span> <span class="s1">&#39;GAIN&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NFLUSH&#39;</span><span class="p">:</span> <span class="mi">1023</span><span class="p">,</span> 
+                                <span class="s1">&#39;NRSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NRBIN&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;NROW&#39;</span><span class="p">:</span> <span class="mi">255</span><span class="p">,</span> <span class="s1">&#39;NCSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NCBIN&#39;</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span> <span class="s1">&#39;NCOL&#39;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span> <span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SIGMODE&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+        
+        <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PWR&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;WDW&#39;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span> <span class="s1">&#39;JPEGQ&#39;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="s1">&#39;TEXPMS&#39;</span><span class="p">:</span> <span class="mi">5000</span><span class="p">,</span> <span class="s1">&#39;GAIN&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NFLUSH&#39;</span><span class="p">:</span> <span class="mi">1023</span><span class="p">,</span> 
+                                <span class="s1">&#39;NRSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NRBIN&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s1">&#39;NROW&#39;</span><span class="p">:</span> <span class="mi">85</span><span class="p">,</span> <span class="s1">&#39;NCSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NCBIN&#39;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span> <span class="s1">&#39;NCOL&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span> <span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SIGMODE&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+        
+        <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_4&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PWR&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;WDW&#39;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span> <span class="s1">&#39;JPEGQ&#39;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="s1">&#39;TEXPMS&#39;</span><span class="p">:</span> <span class="mi">5000</span><span class="p">,</span> <span class="s1">&#39;GAIN&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NFLUSH&#39;</span><span class="p">:</span> <span class="mi">1023</span><span class="p">,</span> 
+                                <span class="s1">&#39;NRSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NRBIN&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s1">&#39;NROW&#39;</span><span class="p">:</span> <span class="mi">85</span><span class="p">,</span> <span class="s1">&#39;NCSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NCBIN&#39;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span> <span class="s1">&#39;NCOL&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span> <span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SIGMODE&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+        
+        <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_64&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PWR&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;WDW&#39;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span> <span class="s1">&#39;JPEGQ&#39;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="s1">&#39;TEXPMS&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;GAIN&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NFLUSH&#39;</span><span class="p">:</span> <span class="mi">1023</span><span class="p">,</span> 
+                                <span class="s1">&#39;NRSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NRBIN&#39;</span><span class="p">:</span> <span class="mi">36</span><span class="p">,</span> <span class="s1">&#39;NROW&#39;</span><span class="p">:</span> <span class="mi">14</span><span class="p">,</span> <span class="s1">&#39;NCSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NCBIN&#39;</span><span class="p">:</span> <span class="mi">36</span><span class="p">,</span> <span class="s1">&#39;NCOL&#39;</span><span class="p">:</span> <span class="mi">55</span><span class="p">,</span> <span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SIGMODE&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+        
+        
+    <span class="k">elif</span><span class="p">(</span> <span class="n">CCDMacroSelect</span> <span class="o">==</span> <span class="s1">&#39;FullReadout&#39;</span><span class="p">):</span>
+        <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_16&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PWR&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;WDW&#39;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span> <span class="s1">&#39;JPEGQ&#39;</span><span class="p">:</span> <span class="mi">110</span><span class="p">,</span> <span class="s1">&#39;TEXPMS&#39;</span><span class="p">:</span> <span class="mi">3000</span><span class="p">,</span> <span class="s1">&#39;GAIN&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NFLUSH&#39;</span><span class="p">:</span> <span class="mi">1023</span><span class="p">,</span> 
+                                <span class="s1">&#39;NRSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NRBIN&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;NROW&#39;</span><span class="p">:</span> <span class="mi">511</span><span class="p">,</span> <span class="s1">&#39;NCSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NCBIN&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;NCOL&#39;</span><span class="p">:</span> <span class="mi">2046</span><span class="p">,</span> <span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SIGMODE&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+        
+        <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_32&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PWR&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;WDW&#39;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span> <span class="s1">&#39;JPEGQ&#39;</span><span class="p">:</span> <span class="mi">110</span><span class="p">,</span> <span class="s1">&#39;TEXPMS&#39;</span><span class="p">:</span> <span class="mi">3000</span><span class="p">,</span> <span class="s1">&#39;GAIN&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NFLUSH&#39;</span><span class="p">:</span> <span class="mi">1023</span><span class="p">,</span> 
+                                <span class="s1">&#39;NRSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NRBIN&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;NROW&#39;</span><span class="p">:</span> <span class="mi">511</span><span class="p">,</span> <span class="s1">&#39;NCSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NCBIN&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;NCOL&#39;</span><span class="p">:</span> <span class="mi">2046</span><span class="p">,</span> <span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SIGMODE&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+        
+        <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PWR&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;WDW&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;JPEGQ&#39;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="s1">&#39;TEXPMS&#39;</span><span class="p">:</span> <span class="mi">5000</span><span class="p">,</span> <span class="s1">&#39;GAIN&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NFLUSH&#39;</span><span class="p">:</span> <span class="mi">1023</span><span class="p">,</span> 
+                                <span class="s1">&#39;NRSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NRBIN&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;NROW&#39;</span><span class="p">:</span> <span class="mi">511</span><span class="p">,</span> <span class="s1">&#39;NCSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NCBIN&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;NCOL&#39;</span><span class="p">:</span> <span class="mi">2046</span><span class="p">,</span> <span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SIGMODE&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+        
+        <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_8&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PWR&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;WDW&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;JPEGQ&#39;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="s1">&#39;TEXPMS&#39;</span><span class="p">:</span> <span class="mi">5000</span><span class="p">,</span> <span class="s1">&#39;GAIN&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NFLUSH&#39;</span><span class="p">:</span> <span class="mi">1023</span><span class="p">,</span> 
+                                <span class="s1">&#39;NRSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NRBIN&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;NROW&#39;</span><span class="p">:</span> <span class="mi">511</span><span class="p">,</span> <span class="s1">&#39;NCSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NCBIN&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;NCOL&#39;</span><span class="p">:</span> <span class="mi">2046</span><span class="p">,</span> <span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SIGMODE&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+        
+        <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PWR&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;WDW&#39;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span> <span class="s1">&#39;JPEGQ&#39;</span><span class="p">:</span> <span class="mi">110</span><span class="p">,</span> <span class="s1">&#39;TEXPMS&#39;</span><span class="p">:</span> <span class="mi">5000</span><span class="p">,</span> <span class="s1">&#39;GAIN&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NFLUSH&#39;</span><span class="p">:</span> <span class="mi">1023</span><span class="p">,</span> 
+                                <span class="s1">&#39;NRSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NRBIN&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;NROW&#39;</span><span class="p">:</span> <span class="mi">511</span><span class="p">,</span> <span class="s1">&#39;NCSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NCBIN&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;NCOL&#39;</span><span class="p">:</span> <span class="mi">2046</span><span class="p">,</span> <span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SIGMODE&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+        
+        <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_4&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PWR&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;WDW&#39;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span> <span class="s1">&#39;JPEGQ&#39;</span><span class="p">:</span> <span class="mi">110</span><span class="p">,</span> <span class="s1">&#39;TEXPMS&#39;</span><span class="p">:</span> <span class="mi">5000</span><span class="p">,</span> <span class="s1">&#39;GAIN&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NFLUSH&#39;</span><span class="p">:</span> <span class="mi">1023</span><span class="p">,</span> 
+                                <span class="s1">&#39;NRSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NRBIN&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;NROW&#39;</span><span class="p">:</span> <span class="mi">511</span><span class="p">,</span> <span class="s1">&#39;NCSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NCBIN&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;NCOL&#39;</span><span class="p">:</span> <span class="mi">2046</span><span class="p">,</span> <span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SIGMODE&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+        
+        <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_64&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PWR&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;WDW&#39;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span> <span class="s1">&#39;JPEGQ&#39;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="s1">&#39;TEXPMS&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;GAIN&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NFLUSH&#39;</span><span class="p">:</span> <span class="mi">1023</span><span class="p">,</span> 
+                                 <span class="s1">&#39;NRSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NRBIN&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;NROW&#39;</span><span class="p">:</span> <span class="mi">511</span><span class="p">,</span> <span class="s1">&#39;NCSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NCBIN&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;NCOL&#39;</span><span class="p">:</span> <span class="mi">2046</span><span class="p">,</span> <span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SIGMODE&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+        
+        
+    <span class="k">elif</span><span class="p">(</span> <span class="n">CCDMacroSelect</span> <span class="o">==</span> <span class="s1">&#39;LowPixel&#39;</span><span class="p">):</span>
+        <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_16&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PWR&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;WDW&#39;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span> <span class="s1">&#39;JPEGQ&#39;</span><span class="p">:</span> <span class="mi">110</span><span class="p">,</span> <span class="s1">&#39;TEXPMS&#39;</span><span class="p">:</span> <span class="mi">3000</span><span class="p">,</span> <span class="s1">&#39;GAIN&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NFLUSH&#39;</span><span class="p">:</span> <span class="mi">1023</span><span class="p">,</span> 
+                                 <span class="s1">&#39;NRSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NRBIN&#39;</span><span class="p">:</span> <span class="mi">63</span><span class="p">,</span> <span class="s1">&#39;NROW&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span> <span class="s1">&#39;NCSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NCBIN&#39;</span><span class="p">:</span> <span class="mi">255</span><span class="p">,</span> <span class="s1">&#39;NCOL&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span> <span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SIGMODE&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+        
+        <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_32&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PWR&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;WDW&#39;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span> <span class="s1">&#39;JPEGQ&#39;</span><span class="p">:</span> <span class="mi">110</span><span class="p">,</span> <span class="s1">&#39;TEXPMS&#39;</span><span class="p">:</span> <span class="mi">3000</span><span class="p">,</span> <span class="s1">&#39;GAIN&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NFLUSH&#39;</span><span class="p">:</span> <span class="mi">1023</span><span class="p">,</span> 
+                                 <span class="s1">&#39;NRSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NRBIN&#39;</span><span class="p">:</span> <span class="mi">63</span><span class="p">,</span> <span class="s1">&#39;NROW&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span> <span class="s1">&#39;NCSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NCBIN&#39;</span><span class="p">:</span> <span class="mi">255</span><span class="p">,</span> <span class="s1">&#39;NCOL&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span> <span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SIGMODE&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
+        
+        <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PWR&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;WDW&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;JPEGQ&#39;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="s1">&#39;TEXPMS&#39;</span><span class="p">:</span> <span class="mi">5000</span><span class="p">,</span> <span class="s1">&#39;GAIN&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NFLUSH&#39;</span><span class="p">:</span> <span class="mi">1023</span><span class="p">,</span> 
+                                <span class="s1">&#39;NRSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NRBIN&#39;</span><span class="p">:</span> <span class="mi">63</span><span class="p">,</span> <span class="s1">&#39;NROW&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span> <span class="s1">&#39;NCSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NCBIN&#39;</span><span class="p">:</span> <span class="mi">255</span><span class="p">,</span> <span class="s1">&#39;NCOL&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span> <span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SIGMODE&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+        
+        <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_8&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PWR&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;WDW&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;JPEGQ&#39;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="s1">&#39;TEXPMS&#39;</span><span class="p">:</span> <span class="mi">5000</span><span class="p">,</span> <span class="s1">&#39;GAIN&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NFLUSH&#39;</span><span class="p">:</span> <span class="mi">1023</span><span class="p">,</span> 
+                                <span class="s1">&#39;NRSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NRBIN&#39;</span><span class="p">:</span> <span class="mi">63</span><span class="p">,</span> <span class="s1">&#39;NROW&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span> <span class="s1">&#39;NCSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NCBIN&#39;</span><span class="p">:</span> <span class="mi">255</span><span class="p">,</span> <span class="s1">&#39;NCOL&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span> <span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SIGMODE&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+        
+        <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PWR&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;WDW&#39;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span> <span class="s1">&#39;JPEGQ&#39;</span><span class="p">:</span> <span class="mi">110</span><span class="p">,</span> <span class="s1">&#39;TEXPMS&#39;</span><span class="p">:</span> <span class="mi">5000</span><span class="p">,</span> <span class="s1">&#39;GAIN&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NFLUSH&#39;</span><span class="p">:</span> <span class="mi">1023</span><span class="p">,</span> 
+                                <span class="s1">&#39;NRSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NRBIN&#39;</span><span class="p">:</span> <span class="mi">63</span><span class="p">,</span> <span class="s1">&#39;NROW&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span> <span class="s1">&#39;NCSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NCBIN&#39;</span><span class="p">:</span> <span class="mi">255</span><span class="p">,</span> <span class="s1">&#39;NCOL&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span> <span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SIGMODE&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+        
+        <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_4&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PWR&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;WDW&#39;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span> <span class="s1">&#39;JPEGQ&#39;</span><span class="p">:</span> <span class="mi">110</span><span class="p">,</span> <span class="s1">&#39;TEXPMS&#39;</span><span class="p">:</span> <span class="mi">5000</span><span class="p">,</span> <span class="s1">&#39;GAIN&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NFLUSH&#39;</span><span class="p">:</span> <span class="mi">1023</span><span class="p">,</span> 
+                                <span class="s1">&#39;NRSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NRBIN&#39;</span><span class="p">:</span> <span class="mi">63</span><span class="p">,</span> <span class="s1">&#39;NROW&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span> <span class="s1">&#39;NCSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NCBIN&#39;</span><span class="p">:</span> <span class="mi">255</span><span class="p">,</span> <span class="s1">&#39;NCOL&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span> <span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SIGMODE&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+        
+        <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_64&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;PWR&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;WDW&#39;</span><span class="p">:</span> <span class="mi">128</span><span class="p">,</span> <span class="s1">&#39;JPEGQ&#39;</span><span class="p">:</span> <span class="mi">90</span><span class="p">,</span> <span class="s1">&#39;TEXPMS&#39;</span><span class="p">:</span> <span class="mi">1500</span><span class="p">,</span> <span class="s1">&#39;GAIN&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NFLUSH&#39;</span><span class="p">:</span> <span class="mi">1023</span><span class="p">,</span> 
+                                 <span class="s1">&#39;NRSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NRBIN&#39;</span><span class="p">:</span> <span class="mi">63</span><span class="p">,</span> <span class="s1">&#39;NROW&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span> <span class="s1">&#39;NCSKIP&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;NCBIN&#39;</span><span class="p">:</span> <span class="mi">255</span><span class="p">,</span> <span class="s1">&#39;NCOL&#39;</span><span class="p">:</span> <span class="mi">7</span><span class="p">,</span> <span class="s1">&#39;NCBINFPGA&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SIGMODE&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
+        
+        
+    <span class="k">return</span> <span class="n">CCD_settings</span></div>
+        
+        
+
+<span class="c1">#################################################################################</span>
+<span class="c1">#################################################################################</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">def FreezeDuration_calculator(pointing_altitude1, pointing_altitude2):</span>
+<span class="sd">    &#39;&#39;&#39;Function that calculates the angle between two tangential altitudes and then calculates</span>
+<span class="sd">    the time it takes for orbital position angle of a satellite in a circular orbit to change by the same amount.</span>
+<span class="sd">    </span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        pointing_altitude1 (int): First tangential pointing altitude in m</span>
+<span class="sd">        pointing_altitude2 (int): Second tangential pointing altitude in m</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (int): FreezeDuration, Time [s] it takes for the satellites orbital position angle to change </span>
+<span class="sd">        by the same amount as the angle between the two tangential pointing altitudes as seen from the satellite.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+<span class="sd">    </span>
+<span class="sd">    TLE2 = getTLE()[1] #Orbits per day</span>
+<span class="sd">    U = 398600.4418 #Earth gravitational parameter</span>
+<span class="sd">    MATS_P = 24*3600/float(TLE2[52:63]) #Orbital Period of MATS [s]</span>
+<span class="sd">    MATS_p = ((MATS_P/2/pi)**2*U)**(1/3) #Semi-major axis of MATS assuming circular orbit [km]</span>
+<span class="sd">    R_mean = 6371 #Mean Earth radius [km]</span>
+<span class="sd">    pitch1 = arccos((R_mean+pointing_altitude1/1000)/(MATS_p))/pi*180</span>
+<span class="sd">    pitch2 = arccos((R_mean+pointing_altitude2/1000 )/(MATS_p))/pi*180</span>
+<span class="sd">    pitch_angle_difference = abs(pitch1 - pitch2)</span>
+<span class="sd">    </span>
+<span class="sd">    #The time it takes for the orbital position angle to change by the same amount as</span>
+<span class="sd">    #the angle between the pointing axes</span>
+<span class="sd">    FreezeDuration = int(round(MATS_P*(pitch_angle_difference)/360,0))</span>
+<span class="sd">    </span>
+<span class="sd">    return FreezeDuration</span>
+<span class="sd">&quot;&quot;&quot;</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">Operational_Planning_Tool</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../OPT.html">OPT package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  <li><a href="../OPT.html">OPT</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, David Skånberg.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -5,11 +5,11 @@
 import ephem, importlib, time, logging, os, sys, skyfield.api
 from pylab import cos, sin, cross, dot, arctan, sqrt, array, arccos, pi, floor, around, norm
 
-from Operational_Planning_Tool import _Globals, _MATS_coordinates
+from OPT import _Globals, _MATS_coordinates
 
 timescale_skyfield = skyfield.api.load.timescale()
-OPT_Config_File = importlib.import_module(_Globals.Config_File)
-Logger = logging.getLogger(OPT_Config_File.Logger_name())
+#OPT_Config_File = importlib.import_module(_Globals.Config_File)
+#Logger = logging.getLogger(OPT_Config_File.Logger_name())
 
 def rot_arbit(angle, u_v):
     """Takes an angle in radians and a unit vector and outputs a rotation matrix around that vector
@@ -107,7 +107,7 @@ def lat_2_R( lat ):
 
 
 def lat_calculator( Satellite_skyfield, date ):
-    ''' Function that calculates the latitude of a skyfield object
+    ''' Function that calculates the latitude of a skyfield object at a certain date
     
     Mainly used to approximate the latitude of a LP as the LP is close to being in the same orbital plane.
     
@@ -191,7 +191,7 @@ def scheduler(Occupied_Timeline, date, endDate):
     return date, endDate, iterations
 
 
-def params_checker(dict1, dict2):
+def params_checker(dict1, dict2, Logger = None):
     """Function which compares the keys of two dictionaries and outputs a new dictionary. 
     
     A dict_new will be created containing all the keys and values of dict2. Then for any keys that 
@@ -200,15 +200,17 @@ def params_checker(dict1, dict2):
     WARNING! All keys in dict1 must also exist in dict2.
     
     Arguments:
-        dict1 (dict): 
+        dict1 (dict):
         dict2 (dict): 
+        Logger (:obj:`logging.Logger`): Logger used to log the result. 
     
     Returns:
         (dict): dict_new
         
     """
     
-    Logger.debug('params from Science Mode List: '+str(dict1))
+    
+    
     
     "Check if optional params were given"
     if( dict1 != dict2):
@@ -219,10 +221,13 @@ def params_checker(dict1, dict2):
     else:
         dict_new = dict1
     
-    Logger.debug('params after params_checker function: '+str(dict_new))
-    Logger.info('params used: '+str(dict_new))
+    if( Logger != None ):
+        Logger.debug('params from Science Mode List: '+str(dict1))
+        Logger.debug('params after params_checker function: '+str(dict_new))
+        Logger.info('params used: '+str(dict_new))
     
     return dict_new
+
 
 def utc_to_onboardTime(utc_date, GPS_epoch, leapSeconds):
     """Function which converts a date in utc into onboard time in seconds.
@@ -250,17 +255,17 @@ def utc_to_onboardTime(utc_date, GPS_epoch, leapSeconds):
     
     return onboardTime
 
-def SetupLogger():
+def SetupLogger(LoggerName):
     """Removes previous handlers and sets up a logger with both a file handler and a stream handler.
     
     Arguments:
-        None
+        LoggerName (str): 
     
     Returns:
         None
     """
     
-    Logger = logging.getLogger(OPT_Config_File.Logger_name())
+    Logger = logging.getLogger(LoggerName)
     name = sys._getframe(1).f_code.co_name
     ######## Try to Create a directory for storage of Logs #######
     try:
@@ -604,7 +609,7 @@ def SyncArgCalculator(CCD_settings, ExtraOffset, ExtraIntervalTime):
     return CCDSEL, NCCD, TEXPIOFS, TEXPIMS
 
 
-def Satellite_Simulator( Satellite_skyfield, SimulationTime, Timeline_settings, pointing_altitude, LogFlag ):
+def Satellite_Simulator( Satellite_skyfield, SimulationTime, Timeline_settings, pointing_altitude, LogFlag = False, Logger = None ):
     """Simulates a single point in time for a Satellite using Skyfield and also the pointing of the satellite.
     
     Arguments:
@@ -613,6 +618,7 @@ def Satellite_Simulator( Satellite_skyfield, SimulationTime, Timeline_settings, 
         Timeline_settings (dict): A dictionary containing relevant settings to the simulation.
         pointing_altitude (float): Contains the pointing altitude of the simulation [km].
         LogFlag (bool): If data from the simulation shall be logged.
+        Logger (:obj:`logging.Logger`): Logger used to log the result from the simulation if LogFlag == True.
         
     Returns:
         (dict): Dictionary containing simulated data.
@@ -740,7 +746,7 @@ def Satellite_Simulator( Satellite_skyfield, SimulationTime, Timeline_settings, 
     if( optical_axis[1] < 0 ):
         RA_optical_axis = 360-RA_optical_axis
     
-    if( LogFlag == True):
+    if( LogFlag == True and Logger != None):
         Logger.debug('')
         
         Logger.debug('SimulationTime time: '+str(SimulationTime))
@@ -773,3 +779,32 @@ def Satellite_Simulator( Satellite_skyfield, SimulationTime, Timeline_settings, 
     
     #return r_Satellite, lat_Satellite, long_Satellite, alt_Satellite, optical_axis_unit_vector, Dec_optical_axis, RA_optical_axis, r_H_offset_normal, r_V_offset_normal, orbital_period 
     return Satellite_dict
+
+
+def FreezeDuration_calculator(pointing_altitude1, pointing_altitude2, TLE2):
+    '''Function that calculates the angle between two tangential altitudes and then calculates
+    the time it takes for orbital position angle of a satellite in a circular orbit to change by the same amount.
+    
+    Arguments:
+        pointing_altitude1 (int): First tangential pointing altitude in m
+        pointing_altitude2 (int): Second tangential pointing altitude in m
+        TLE2 (str): Second row of a TLE.
+        
+    Returns:
+        (int): FreezeDuration, Time [s] it takes for the satellites orbital position angle to change 
+        by the same amount as the angle between the two tangential pointing altitudes as seen from the satellite.
+    '''
+    
+    U = 398600.4418 #Earth gravitational parameter
+    MATS_P = 24*3600/float(TLE2[52:63]) #Orbital Period of MATS [s]
+    MATS_p = ((MATS_P/2/pi)**2*U)**(1/3) #Semi-major axis of MATS assuming circular orbit [km]
+    R_mean = 6371 #Mean Earth radius [km]
+    pitch1 = arccos((R_mean+pointing_altitude1/1000)/(MATS_p))/pi*180
+    pitch2 = arccos((R_mean+pointing_altitude2/1000 )/(MATS_p))/pi*180
+    pitch_angle_difference = abs(pitch1 - pitch2)
+    
+    #The time it takes for the orbital position angle to change by the same amount as
+    #the angle between the pointing axes
+    FreezeDuration = int(round(MATS_P*(pitch_angle_difference)/360,0))
+    
+    return FreezeDuration

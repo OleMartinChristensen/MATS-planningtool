@@ -1,0 +1,517 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="python 3.7">
+  <head>
+    <meta charset="utf-8" />
+    <title>OPT._XMLGenerator.Modes_and_Tests.Tests &#8212; Operational_Planning_Tool  documentation</title>
+    <link rel="stylesheet" href="../../../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../../../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../../../" src="../../../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../../../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+   
+  <link rel="stylesheet" href="../../../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for OPT._XMLGenerator.Modes_and_Tests.Tests</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Created on Fri Mar 22 12:34:33 2019</span>
+
+<span class="sd">Generates and calculates parameters for each Test, and converts them to strings,</span>
+<span class="sd">then calls for macros, which will generate commands in the XML-file.</span>
+
+<span class="sd">Functions on the form &quot;XML_generator_X&quot;, where the last X is any Test:</span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        root =  XML tree structure. Main container object for the ElementTree API. lxml.etree.Element class \n</span>
+<span class="sd">        date = Starting date of the Test. On the form of the ephem.Date class. \n</span>
+<span class="sd">        duration = The duration of the Test [s] as an integer class. \n</span>
+<span class="sd">        relativeTime = The starting time of the Test with regard to the start of the timeline [s] as an integer class. \n</span>
+<span class="sd">        params = Dictionary containing the parameters of the Test given in the Science_Mode_Timeline. \n</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+
+<span class="sd">When creating new Test functions it is crucial that the function name is</span>
+<span class="sd">XML_generator_Test_name, where Test_name is the same as the string used in the Science Mode Timeline</span>
+
+<span class="sd">@author: David</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">ephem</span><span class="o">,</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">importlib</span>
+<span class="kn">from</span> <span class="nn">pylab</span> <span class="k">import</span> <span class="n">dot</span><span class="p">,</span> <span class="n">arccos</span><span class="p">,</span> <span class="n">zeros</span><span class="p">,</span> <span class="n">pi</span><span class="p">,</span> <span class="n">sin</span><span class="p">,</span> <span class="n">cos</span><span class="p">,</span> <span class="n">arctan</span><span class="p">,</span> <span class="n">cross</span><span class="p">,</span> <span class="n">norm</span><span class="p">,</span> <span class="n">sqrt</span>
+
+<span class="kn">from</span> <span class="nn">OPT</span> <span class="k">import</span> <span class="n">_Globals</span>
+
+<span class="n">OPT_Config_File</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">_Globals</span><span class="o">.</span><span class="n">Config_File</span><span class="p">)</span>
+<span class="c1">#from OPT_Config_File import Logger_name, Timeline_settings, getTLE</span>
+<span class="kn">from</span> <span class="nn">OPT._Library</span> <span class="k">import</span> <span class="n">rot_arbit</span>
+<span class="kn">from</span> <span class="nn">.Macros_Commands</span> <span class="k">import</span> <span class="n">Macros</span>
+
+<span class="n">Logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Logger_name</span><span class="p">())</span>
+
+<div class="viewcode-block" id="XML_generator_Limb_functional_test"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.Tests.XML_generator_Limb_functional_test">[docs]</a><span class="k">def</span> <span class="nf">XML_generator_Limb_functional_test</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;ExpTimes&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">16</span><span class="p">]}):</span>
+    <span class="sd">&quot;&quot;&quot;Limb_functional_test. </span>
+<span class="sd">    </span>
+<span class="sd">    Schedules Limb_functional_test with defined parameters and simulates MATS propagation from TLE.</span>
+<span class="sd">    Scheduling of all daylight and nighttime commands are separated timewise and all commands for one of the two is scheduled first.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    
+    
+    <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;params from Science Mode List: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">))</span>
+    <span class="c1">#params = params_checker(params,Mode=X=_settings)</span>
+    
+    <span class="n">log_timestep</span> <span class="o">=</span> <span class="mi">500</span>
+    <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;log_timestep [s]: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">log_timestep</span><span class="p">))</span>
+    
+    <span class="n">duration_flag</span> <span class="o">=</span> <span class="mi">0</span>
+    
+    <span class="n">JPEGQs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;101&#39;</span><span class="p">,</span><span class="s1">&#39;95&#39;</span><span class="p">]</span>
+    
+    <span class="n">ExpTimes</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;ExpTimes&#39;</span><span class="p">]</span>
+    
+    <span class="n">initial_relativeTime</span> <span class="o">=</span> <span class="n">relativeTime</span>
+    
+    <span class="k">for</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Day&#39;</span><span class="p">,</span> <span class="s1">&#39;Night&#39;</span><span class="p">]:</span>
+        
+        <span class="s2">&quot;Altitudes that defines the LP&quot;</span>
+        <span class="k">for</span> <span class="n">altitude</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">50000</span><span class="p">,</span><span class="mi">70000</span><span class="p">,</span><span class="mi">90000</span><span class="p">,</span><span class="mi">110000</span><span class="p">,</span><span class="mi">130000</span><span class="p">,</span><span class="mi">160000</span><span class="p">,</span><span class="mi">200000</span><span class="p">]:</span>
+            
+            <span class="k">for</span> <span class="n">JPEGQ</span> <span class="ow">in</span> <span class="n">JPEGQs</span><span class="p">:</span>
+                
+                <span class="k">for</span> <span class="n">ExpTime</span> <span class="ow">in</span> <span class="n">ExpTimes</span><span class="p">:</span>
+                    
+                    <span class="c1">############################################################################</span>
+                    <span class="c1">########################## Orbit simulator #################################</span>
+                    <span class="c1">############################################################################</span>
+                    
+                    <span class="n">Sun</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Sun</span><span class="p">(</span><span class="n">date</span><span class="p">)</span>
+                    <span class="n">MATS</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">readtle</span><span class="p">(</span><span class="s1">&#39;MATS&#39;</span><span class="p">,</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">getTLE</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">getTLE</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+                    
+                    <span class="s2">&quot;Pre-allocate space&quot;</span>
+                    <span class="n">lat_MATS</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">duration</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+                    <span class="n">lat_LP</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">duration</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+                    <span class="n">sun_angle</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">duration</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+                    <span class="n">altitude_MATS</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">duration</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+                    <span class="n">a_ra_MATS</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">duration</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+                    <span class="n">a_dec_MATS</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">duration</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+                    <span class="n">x_MATS</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">duration</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+                    <span class="n">y_MATS</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">duration</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+                    <span class="n">z_MATS</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">duration</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+                    <span class="n">r_MATS</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">duration</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+                    <span class="n">r_LP_direction</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">duration</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+                    <span class="n">normal_orbital</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">duration</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+                    <span class="n">orbangle_between_LP_MATS_array</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">duration</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+                    
+                    <span class="n">g_ra_Sun</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">duration</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+                    <span class="n">g_dec_Sun</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">duration</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+                    <span class="n">x_Sun</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">duration</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+                    <span class="n">y_Sun</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">duration</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+                    <span class="n">z_Sun</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">duration</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+                    <span class="n">r_Sun_direction</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">duration</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+                    
+                    <span class="n">R_mean</span> <span class="o">=</span> <span class="mi">6371</span>
+                    <span class="n">altitude_km</span> <span class="o">=</span> <span class="n">altitude</span><span class="o">/</span><span class="mi">1000</span>
+                    
+                    <span class="c1">#lat = params[&#39;lat&#39;]/180*pi</span>
+                    <span class="n">lat</span> <span class="o">=</span> <span class="mi">30</span><span class="o">/</span><span class="mi">180</span><span class="o">*</span><span class="n">pi</span>
+                    
+                    <span class="s2">&quot;Estimation of the angle [degrees] between the sun and the FOV position when it enters eclipse&quot;</span>
+                    <span class="n">LP_eclipse_angle</span> <span class="o">=</span> <span class="n">arccos</span><span class="p">(</span><span class="n">R_mean</span><span class="o">/</span><span class="p">(</span><span class="n">R_mean</span><span class="o">+</span><span class="n">altitude_km</span><span class="p">))</span><span class="o">/</span><span class="n">pi</span><span class="o">*</span><span class="mi">180</span> <span class="o">+</span> <span class="mi">90</span>
+                    
+                    <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+                    <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;LP_eclipse_angle : &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">LP_eclipse_angle</span><span class="p">))</span>
+                    
+                    <span class="n">timestep</span> <span class="o">=</span> <span class="mi">4</span>
+                    <span class="n">t</span><span class="o">=</span><span class="mi">0</span>
+                    
+                    <span class="s2">&quot;Calculate the current angle between MATS and the Sun and the latitude of the LP&quot;</span>
+                    <span class="s2">&quot;and Loop until it is either day or night and the right latitude&quot;</span>
+                    <span class="k">while</span><span class="p">(</span><span class="kc">True</span><span class="p">):</span>
+                        
+                        <span class="n">mode_relativeTime</span> <span class="o">=</span> <span class="n">relativeTime</span> <span class="o">-</span> <span class="n">initial_relativeTime</span>
+                        <span class="n">current_time</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">date</span><span class="o">+</span><span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="n">mode_relativeTime</span><span class="p">)</span>
+                        
+                        <span class="k">if</span><span class="p">(</span><span class="n">mode_relativeTime</span> <span class="o">&gt;</span> <span class="n">duration</span> <span class="ow">and</span> <span class="n">duration_flag</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+                            <span class="n">Logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Warning!! The scheduled time for the Test has ran out.&#39;</span><span class="p">)</span>
+                            <span class="c1">#input(&#39;Enter anything to continue:\n&#39;)</span>
+                            <span class="n">duration_flag</span> <span class="o">=</span> <span class="mi">1</span>
+                        
+                        <span class="n">MATS</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">current_time</span><span class="p">)</span>
+                        
+                        
+                        <span class="p">(</span><span class="n">lat_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">],</span><span class="n">altitude_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">],</span><span class="n">a_ra_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">],</span><span class="n">a_dec_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">])</span><span class="o">=</span> <span class="p">(</span>
+                        <span class="n">MATS</span><span class="o">.</span><span class="n">sublat</span><span class="p">,</span><span class="n">MATS</span><span class="o">.</span><span class="n">elevation</span><span class="o">/</span><span class="mi">1000</span><span class="p">,</span><span class="n">MATS</span><span class="o">.</span><span class="n">a_ra</span><span class="p">,</span><span class="n">MATS</span><span class="o">.</span><span class="n">a_dec</span><span class="p">)</span>
+                        
+                        <span class="n">z_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">sin</span><span class="p">(</span><span class="n">a_dec_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="n">altitude_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">+</span><span class="n">R_mean</span><span class="p">)</span>
+                        <span class="n">x_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">cos</span><span class="p">(</span><span class="n">a_dec_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="n">altitude_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">+</span><span class="n">R_mean</span><span class="p">)</span><span class="o">*</span> <span class="n">cos</span><span class="p">(</span><span class="n">a_ra_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">])</span>
+                        <span class="n">y_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">cos</span><span class="p">(</span><span class="n">a_dec_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="n">altitude_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">+</span><span class="n">R_mean</span><span class="p">)</span><span class="o">*</span> <span class="n">sin</span><span class="p">(</span><span class="n">a_ra_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">])</span>
+                       
+                        <span class="n">r_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">x_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">y_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">z_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">]]</span>
+                        
+                        <span class="n">orbangle_between_LP_MATS_array</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">=</span> <span class="n">arccos</span><span class="p">((</span><span class="n">R_mean</span><span class="o">+</span><span class="n">altitude</span><span class="o">/</span><span class="mi">1000</span><span class="p">)</span><span class="o">/</span><span class="p">(</span><span class="n">R_mean</span><span class="o">+</span><span class="n">altitude_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">]))</span><span class="o">/</span><span class="n">pi</span><span class="o">*</span><span class="mi">180</span>
+                        <span class="n">orbangle_between_LP_MATS</span> <span class="o">=</span> <span class="n">orbangle_between_LP_MATS_array</span><span class="p">[</span><span class="n">t</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                        
+                        <span class="n">Sun</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">current_time</span><span class="p">)</span>
+                        
+                        <span class="p">(</span><span class="n">g_ra_Sun</span><span class="p">[</span><span class="n">t</span><span class="p">],</span><span class="n">g_dec_Sun</span><span class="p">[</span><span class="n">t</span><span class="p">])</span><span class="o">=</span> <span class="p">(</span><span class="n">Sun</span><span class="o">.</span><span class="n">g_ra</span><span class="p">,</span><span class="n">Sun</span><span class="o">.</span><span class="n">g_dec</span><span class="p">)</span>
+                        
+                        <span class="n">z_Sun</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">sin</span><span class="p">(</span><span class="n">g_dec_Sun</span><span class="p">[</span><span class="n">t</span><span class="p">])</span>
+                        <span class="n">x_Sun</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">cos</span><span class="p">(</span><span class="n">g_dec_Sun</span><span class="p">[</span><span class="n">t</span><span class="p">])</span><span class="o">*</span> <span class="n">cos</span><span class="p">(</span><span class="n">g_ra_Sun</span><span class="p">[</span><span class="n">t</span><span class="p">])</span>
+                        <span class="n">y_Sun</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">cos</span><span class="p">(</span><span class="n">g_dec_Sun</span><span class="p">[</span><span class="n">t</span><span class="p">])</span><span class="o">*</span> <span class="n">sin</span><span class="p">(</span><span class="n">g_ra_Sun</span><span class="p">[</span><span class="n">t</span><span class="p">])</span>
+                       
+                        <span class="n">r_Sun_direction</span><span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">x_Sun</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">y_Sun</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">z_Sun</span><span class="p">[</span><span class="n">t</span><span class="p">]]</span>
+                        
+                        
+                        <span class="k">if</span><span class="p">(</span> <span class="n">t</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
+                            <span class="s2">&quot;Vector normal to the orbital plane of MATS&quot;</span>
+                            <span class="n">normal_orbital</span><span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">cross</span><span class="p">(</span><span class="n">r_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">],</span><span class="n">r_MATS</span><span class="p">[</span><span class="n">t</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+                            <span class="n">normal_orbital</span><span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">normal_orbital</span><span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">/</span> <span class="n">norm</span><span class="p">(</span><span class="n">normal_orbital</span><span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span>
+                            
+                            <span class="s2">&quot;Rotate &#39;vector to MATS&#39;, to represent pointing direction, includes vertical offset change (Parallax is negligable)&quot;</span>
+                            <span class="n">rot_mat</span> <span class="o">=</span> <span class="n">rot_arbit</span><span class="p">(</span><span class="n">orbangle_between_LP_MATS</span><span class="o">/</span><span class="mi">180</span><span class="o">*</span><span class="n">pi</span><span class="p">,</span> <span class="n">normal_orbital</span><span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span>
+                            <span class="n">r_LP_direction</span><span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">rot_mat</span> <span class="o">@</span> <span class="n">r_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">]</span>
+                            
+                            <span class="s2">&quot;Estimate latitude by calculating angle between xy-plane vector and z-vector&quot;</span>
+                            <span class="n">r_LP__direction_xy</span> <span class="o">=</span> <span class="n">sqrt</span><span class="p">(</span><span class="n">r_LP_direction</span><span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="o">+</span><span class="n">r_LP_direction</span><span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span>
+                            <span class="n">lat_LP</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">arctan</span><span class="p">(</span><span class="n">r_LP_direction</span><span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="o">/</span><span class="n">r_LP__direction_xy</span><span class="p">)</span>
+                            
+                            <span class="s2">&quot;Calculate angle between LP and the Sun&quot;</span>
+                            <span class="n">sun_angle</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">arccos</span><span class="p">(</span><span class="n">dot</span><span class="p">(</span><span class="n">r_Sun_direction</span><span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">],</span><span class="n">r_LP_direction</span><span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span><span class="o">/</span><span class="n">norm</span><span class="p">(</span><span class="n">r_LP_direction</span><span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">]))</span><span class="o">/</span><span class="n">pi</span><span class="o">*</span><span class="mi">180</span>
+                            
+                            
+                            <span class="k">if</span><span class="p">(</span> <span class="p">(</span><span class="n">sun_angle</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">LP_eclipse_angle</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">lat_LP</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">&lt;=</span> <span class="n">lat</span> <span class="ow">and</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;Day&#39;</span> <span class="p">)</span> <span class="ow">or</span> 
+                               <span class="p">(</span><span class="n">sun_angle</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">LP_eclipse_angle</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">lat_LP</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">&lt;=</span> <span class="n">lat</span> <span class="ow">and</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;Night&#39;</span> <span class="p">)):</span>
+                                
+                                <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;!!Break of Loop!!&#39;</span><span class="p">)</span>
+                                <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Loop Counter (t): &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+                                <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;current_time: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">current_time</span><span class="p">))</span>
+                                <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;lat_MATS [degrees]: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">lat_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">/</span><span class="n">pi</span><span class="o">*</span><span class="mi">180</span><span class="p">))</span>
+                                <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;lat_LP [degrees]: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">lat_LP</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">/</span><span class="n">pi</span><span class="o">*</span><span class="mi">180</span><span class="p">))</span>
+                                <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;sun_angle [degrees]: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">sun_angle</span><span class="p">[</span><span class="n">t</span><span class="p">]))</span>
+                                <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;mode: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">mode</span><span class="p">))</span>
+                                <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+                                
+                                <span class="n">Mode_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>
+                                <span class="n">comment</span> <span class="o">=</span> <span class="n">Mode_name</span><span class="o">+</span><span class="s1">&#39;, &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+                                <span class="k">break</span>
+                            
+                            <span class="k">elif</span><span class="p">(</span> <span class="n">t</span><span class="o">*</span><span class="n">timestep</span> <span class="o">%</span> <span class="n">log_timestep</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">t</span> <span class="o">==</span> <span class="mi">1</span><span class="p">):</span>
+                                <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+                                <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;current_time: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">current_time</span><span class="p">))</span>
+                                <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;lat_MATS [degrees]: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">lat_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">/</span><span class="n">pi</span><span class="o">*</span><span class="mi">180</span><span class="p">))</span>
+                                <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;lat_LP [degrees]: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">lat_LP</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">/</span><span class="n">pi</span><span class="o">*</span><span class="mi">180</span><span class="p">))</span>
+                                <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;sun_angle [degrees]: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">sun_angle</span><span class="p">[</span><span class="n">t</span><span class="p">]))</span>
+                                <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;mode: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">mode</span><span class="p">))</span>
+                                <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+                            
+                            
+                        <span class="s2">&quot;Increase Loop counter&quot;</span>
+                        <span class="n">t</span><span class="o">=</span> <span class="n">t</span><span class="o">+</span><span class="mi">1</span>
+                        
+                        <span class="s2">&quot;Timestep for propagation of MATS&quot;</span>
+                        <span class="n">relativeTime</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">relativeTime</span> <span class="o">+</span> <span class="n">timestep</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+                        
+                            
+                    <span class="c1">############################################################################</span>
+                    <span class="c1">########################## End of Orbit simulator ##########################</span>
+                    <span class="c1">############################################################################</span>
+                    
+                    <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Limb_functional_test_macro: relativeTime = &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">relativeTime</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, pointing_altitude = &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">altitude</span><span class="p">)</span><span class="o">+</span>
+                                <span class="s1">&#39;, ExpTime = &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">ExpTime</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, JPEGQ = &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">JPEGQ</span><span class="p">))</span>
+                    
+                    <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">Macros</span><span class="o">.</span><span class="n">Limb_functional_test_macro</span><span class="p">(</span><span class="n">root</span> <span class="o">=</span> <span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">relativeTime</span><span class="p">),</span> 
+                                               <span class="n">pointing_altitude</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">altitude</span><span class="p">),</span> <span class="n">ExpTime</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">ExpTime</span><span class="p">),</span> 
+                                               <span class="n">JPEGQ</span> <span class="o">=</span> <span class="n">JPEGQ</span><span class="p">,</span> <span class="n">comment</span><span class="o">=</span><span class="n">comment</span><span class="p">)</span>
+                    
+                    <span class="s2">&quot;Postpone next command until at least the end of ExpTime&quot;</span>
+                    <span class="n">relativeTime</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">relativeTime</span><span class="p">)</span> <span class="o">+</span> <span class="n">ExpTime</span><span class="o">/</span><span class="mi">1000</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span></div>
+                
+    
+
+<span class="c1">#############################################################################################</span>
+
+
+
+<div class="viewcode-block" id="XML_generator_Photometer_test_1"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.Tests.XML_generator_Photometer_test_1">[docs]</a><span class="k">def</span> <span class="nf">XML_generator_Photometer_test_1</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;ExpTimes&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">16</span><span class="p">]}):</span>
+    <span class="sd">&quot;&quot;&quot;Photometer_test_1</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    
+    <span class="c1">#params = params_checker(params,Mode=X=_settings)</span>
+    
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    MATS = ephem.readtle(&#39;MATS&#39;, OPT_Config_File.getTLE()[0], OPT_Config_File.getTLE()[1])</span>
+<span class="sd">    MATS.compute(date)</span>
+<span class="sd">    MATS_altitude = MATS.elevation/1000</span>
+<span class="sd">    U = 398600.4418 #Earth gravitational parameter</span>
+<span class="sd">    </span>
+<span class="sd">    #Semi-Major axis of MATS, assuming circular orbit</span>
+<span class="sd">    #MATS_p = norm(r_MATS[t,0:3])</span>
+<span class="sd">    MATS_p = 2*(MATS_altitude+6371)</span>
+<span class="sd">    </span>
+<span class="sd">    #Orbital Period of MATS</span>
+<span class="sd">    MATS_P = 2*pi*sqrt(MATS_p**3/U)</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    
+    <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    
+    <span class="n">ExpTimes</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;ExpTimes&#39;</span><span class="p">]</span>
+    
+    <span class="n">initial_relativeTime</span> <span class="o">=</span> <span class="n">relativeTime</span>
+    
+    <span class="n">Photometer_test_1_duration</span> <span class="o">=</span> <span class="n">duration</span>
+    
+    <span class="k">while</span><span class="p">(</span> <span class="kc">True</span> <span class="p">):</span>
+        <span class="n">mode_relativeTime</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">relativeTime</span> <span class="o">-</span> <span class="n">initial_relativeTime</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span>
+        
+        <span class="k">if</span><span class="p">(</span> <span class="n">mode_relativeTime</span> <span class="o">&gt;=</span> <span class="n">Photometer_test_1_duration</span><span class="p">):</span>
+            <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;End of Photometer_test_1&#39;</span><span class="p">)</span>
+            <span class="k">break</span>
+            
+        <span class="k">for</span> <span class="n">ExpTime</span> <span class="ow">in</span> <span class="n">ExpTimes</span><span class="p">:</span>
+            <span class="n">ExpInt</span> <span class="o">=</span> <span class="n">ExpTime</span> <span class="o">+</span><span class="mi">1</span>
+            
+            <span class="n">Mode_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>
+            <span class="n">comment</span> <span class="o">=</span> <span class="n">Mode_name</span><span class="o">+</span><span class="s1">&#39;, &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+            
+            <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Photometer_test_1_macro: relativeTime = &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">relativeTime</span><span class="p">)</span><span class="o">+</span>
+                                <span class="s1">&#39;, ExpTime = &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">ExpTime</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, ExpInt = &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">ExpInt</span><span class="p">))</span>
+            <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">Macros</span><span class="o">.</span><span class="n">Photometer_test_1_macro</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">relativeTime</span><span class="p">),</span> <span class="n">ExpTime</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">ExpTime</span><span class="p">),</span> <span class="n">ExpInt</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">ExpInt</span><span class="p">),</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">)</span>
+            
+            <span class="s2">&quot;Postpone Next PM settings&quot;</span>
+            <span class="n">relativeTime</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">relativeTime</span><span class="p">)</span> <span class="o">+</span> <span class="mi">120</span><span class="o">-</span><span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Timeline_settings</span><span class="p">()[</span><span class="s1">&#39;command_separation&#39;</span><span class="p">],</span><span class="mi">2</span><span class="p">)</span></div>
+            
+
+
+
+
+<span class="c1">##############################################################################################</span>
+
+
+<span class="c1">##############################################################################################</span>
+
+
+
+<div class="viewcode-block" id="XML_generator_Nadir_functional_test"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.Tests.XML_generator_Nadir_functional_test">[docs]</a><span class="k">def</span> <span class="nf">XML_generator_Nadir_functional_test</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;ExpTimes&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">16</span><span class="p">]}):</span>
+    <span class="sd">&quot;&quot;&quot;Nadir_functional_test</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    
+    <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;params from Science Mode List: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">))</span>
+    <span class="c1">#params = params_checker(params,Mode=X=_settings)</span>
+    
+    <span class="n">log_timestep</span> <span class="o">=</span> <span class="mi">100</span>
+    <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;log_timestep [s]: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">log_timestep</span><span class="p">))</span>
+    
+    <span class="n">duration_flag</span> <span class="o">=</span> <span class="mi">0</span>
+    
+    <span class="n">JPEGQs</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;101&#39;</span><span class="p">,</span><span class="s1">&#39;95&#39;</span><span class="p">]</span>
+    
+    <span class="n">altitude</span> <span class="o">=</span> <span class="mi">92500</span>
+    
+    <span class="n">ExpTimes</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;ExpTimes&#39;</span><span class="p">]</span>
+    
+    <span class="n">initial_relativeTime</span> <span class="o">=</span> <span class="n">relativeTime</span>
+    
+    <span class="k">for</span> <span class="n">mode</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;Day&#39;</span><span class="p">,</span> <span class="s1">&#39;Night&#39;</span><span class="p">]:</span>
+        
+        <span class="k">for</span> <span class="n">JPEGQ</span> <span class="ow">in</span> <span class="n">JPEGQs</span><span class="p">:</span>
+            
+            <span class="k">for</span> <span class="n">ExpTime</span> <span class="ow">in</span> <span class="n">ExpTimes</span><span class="p">:</span>
+                
+                <span class="c1">############################################################################</span>
+                <span class="c1">########################## Orbit simulator #################################</span>
+                <span class="c1">############################################################################</span>
+                
+                <span class="n">Sun</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Sun</span><span class="p">(</span><span class="n">date</span><span class="p">)</span>
+                <span class="n">MATS</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">readtle</span><span class="p">(</span><span class="s1">&#39;MATS&#39;</span><span class="p">,</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">getTLE</span><span class="p">()[</span><span class="mi">0</span><span class="p">],</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">getTLE</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
+                
+                <span class="s2">&quot;Pre-allocate space&quot;</span>
+                <span class="n">lat_MATS</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">duration</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+                <span class="n">sun_angle</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">duration</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+                <span class="n">altitude_MATS</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">duration</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+                <span class="n">a_ra_MATS</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">duration</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+                <span class="n">a_dec_MATS</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">duration</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+                <span class="n">x_MATS</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">duration</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+                <span class="n">y_MATS</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">duration</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+                <span class="n">z_MATS</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">duration</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+                <span class="n">r_MATS</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">duration</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+                
+                <span class="n">R_mean</span> <span class="o">=</span> <span class="mi">6371</span>
+                <span class="n">altitude_km</span> <span class="o">=</span> <span class="n">altitude</span><span class="o">/</span><span class="mi">1000</span>
+                
+                <span class="c1">#Estimation of the angle [degrees] between the sun and the FOV position when it enters eclipse</span>
+                <span class="n">nadir_eclipse_angle</span> <span class="o">=</span> <span class="n">arccos</span><span class="p">(</span><span class="n">R_mean</span><span class="o">/</span><span class="p">(</span><span class="n">R_mean</span><span class="o">+</span><span class="n">altitude_km</span><span class="p">))</span><span class="o">/</span><span class="n">pi</span><span class="o">*</span><span class="mi">180</span> <span class="o">+</span> <span class="mi">90</span>
+                
+                <span class="c1">#lat = params[&#39;lat&#39;]/180*pi</span>
+                <span class="n">lat</span> <span class="o">=</span> <span class="mi">30</span><span class="o">/</span><span class="mi">180</span><span class="o">*</span><span class="n">pi</span>
+                
+                <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+                <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;nadir_eclipse_angle : &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">nadir_eclipse_angle</span><span class="p">))</span>
+                
+                <span class="n">t</span><span class="o">=</span><span class="mi">0</span>
+                <span class="n">timestep</span> <span class="o">=</span> <span class="mi">4</span>
+                
+                <span class="s2">&quot;Calculate the current angle between MATS and the Sun&quot;</span>
+                <span class="s2">&quot;and Loop until it is either day or night and the right latitude&quot;</span>
+                <span class="k">while</span><span class="p">(</span><span class="kc">True</span><span class="p">):</span>
+                    
+                    <span class="n">mode_relativeTime</span> <span class="o">=</span> <span class="n">relativeTime</span> <span class="o">-</span> <span class="n">initial_relativeTime</span>
+                    <span class="n">current_time</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">date</span><span class="o">+</span><span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="n">mode_relativeTime</span><span class="p">)</span>
+                    
+                    <span class="k">if</span><span class="p">(</span><span class="n">mode_relativeTime</span> <span class="o">&gt;</span> <span class="n">duration</span> <span class="ow">and</span> <span class="n">duration_flag</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+                        <span class="n">Logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Warning!! The scheduled time for the Test has ran out.&#39;</span><span class="p">)</span>
+                        <span class="c1">#input(&#39;Enter anything to continue:\n&#39;)</span>
+                        <span class="n">duration_flag</span> <span class="o">=</span> <span class="mi">1</span>
+                    
+                    <span class="n">MATS</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">current_time</span><span class="p">)</span>
+                    
+                    <span class="p">(</span><span class="n">lat_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">],</span><span class="n">altitude_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">],</span><span class="n">a_ra_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">],</span><span class="n">a_dec_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">])</span><span class="o">=</span> <span class="p">(</span>
+                    <span class="n">MATS</span><span class="o">.</span><span class="n">sublat</span><span class="p">,</span><span class="n">MATS</span><span class="o">.</span><span class="n">elevation</span><span class="o">/</span><span class="mi">1000</span><span class="p">,</span><span class="n">MATS</span><span class="o">.</span><span class="n">a_ra</span><span class="p">,</span><span class="n">MATS</span><span class="o">.</span><span class="n">a_dec</span><span class="p">)</span>
+                    
+                    <span class="n">z_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">sin</span><span class="p">(</span><span class="n">a_dec_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="n">altitude_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">+</span><span class="n">R_mean</span><span class="p">)</span>
+                    <span class="n">x_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">cos</span><span class="p">(</span><span class="n">a_dec_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="n">altitude_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">+</span><span class="n">R_mean</span><span class="p">)</span><span class="o">*</span> <span class="n">cos</span><span class="p">(</span><span class="n">a_ra_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">])</span>
+                    <span class="n">y_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">cos</span><span class="p">(</span><span class="n">a_dec_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="n">altitude_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">+</span><span class="n">R_mean</span><span class="p">)</span><span class="o">*</span> <span class="n">sin</span><span class="p">(</span><span class="n">a_ra_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">])</span>
+                   
+                    <span class="n">r_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">x_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">y_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">z_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">]]</span>
+                    
+                    <span class="n">sun_angle</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">separation</span><span class="p">(</span><span class="n">Sun</span><span class="p">,</span><span class="n">MATS</span><span class="p">)</span><span class="o">/</span><span class="n">pi</span><span class="o">*</span><span class="mi">180</span>
+                    
+                    
+                    <span class="k">if</span><span class="p">(</span> <span class="n">t</span><span class="o">*</span><span class="n">timestep</span> <span class="o">%</span> <span class="n">log_timestep</span> <span class="o">==</span> <span class="mi">0</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">t</span> <span class="o">==</span> <span class="mi">1</span><span class="p">):</span>
+                        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+                        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;current_time: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">current_time</span><span class="p">))</span>
+                        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;lat_MATS [degrees]: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">lat_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">/</span><span class="n">pi</span><span class="o">*</span><span class="mi">180</span><span class="p">))</span>
+                        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;sun_angle [degrees]: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">sun_angle</span><span class="p">[</span><span class="n">t</span><span class="p">]))</span>
+                        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;mode: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">mode</span><span class="p">))</span>
+                        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+                    
+                    <span class="k">if</span><span class="p">(</span> <span class="p">(</span><span class="n">sun_angle</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">nadir_eclipse_angle</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">lat_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">&lt;=</span> <span class="n">lat</span> <span class="ow">and</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;Day&#39;</span> <span class="p">)</span> <span class="ow">or</span> 
+                       <span class="p">(</span><span class="n">sun_angle</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">nadir_eclipse_angle</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">lat_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">&lt;=</span> <span class="n">lat</span> <span class="ow">and</span> <span class="n">mode</span> <span class="o">==</span> <span class="s1">&#39;Night&#39;</span> <span class="p">)):</span>
+                        
+                        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;!!Break of Loop!!&#39;</span><span class="p">)</span>
+                        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Loop Counter (t): &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="p">))</span>
+                        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;current_time: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">current_time</span><span class="p">))</span>
+                        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;lat_MATS [degrees]: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">lat_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">/</span><span class="n">pi</span><span class="o">*</span><span class="mi">180</span><span class="p">))</span>
+                        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;sun_angle [degrees]: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">sun_angle</span><span class="p">[</span><span class="n">t</span><span class="p">]))</span>
+                        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;mode: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">mode</span><span class="p">))</span>
+                        
+                        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+                        <span class="k">break</span>
+                        
+                        
+                    <span class="s2">&quot;Increase Loop counter&quot;</span>
+                    <span class="n">t</span><span class="o">=</span> <span class="n">t</span><span class="o">+</span><span class="mi">1</span>
+                    
+                    <span class="s2">&quot;Timestep for propagation of MATS&quot;</span>
+                    <span class="n">relativeTime</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">relativeTime</span> <span class="o">+</span> <span class="n">timestep</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
+                    
+                        
+                <span class="c1">############################################################################</span>
+                <span class="c1">########################## End of Orbit simulator ##########################</span>
+                <span class="c1">############################################################################</span>
+                
+                <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Limb_functional_test_macro: relativeTime = &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">relativeTime</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, pointing_altitude = &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">altitude</span><span class="p">)</span><span class="o">+</span>
+                            <span class="s1">&#39;, ExpTime = &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">ExpTime</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, JPEGQ = &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">JPEGQ</span><span class="p">))</span>
+                
+                <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">Macros</span><span class="o">.</span><span class="n">Nadir_functional_test_macro</span><span class="p">(</span><span class="n">root</span> <span class="o">=</span> <span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">relativeTime</span><span class="p">),</span> 
+                                           <span class="n">pointing_altitude</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">altitude</span><span class="p">),</span> <span class="n">ExpTime</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">ExpTime</span><span class="p">),</span> 
+                                           <span class="n">JPEGQ</span> <span class="o">=</span> <span class="n">JPEGQ</span><span class="p">)</span>
+                
+                
+                <span class="s2">&quot;Postpone next command until at least the end of ExpTime&quot;</span>
+                <span class="n">relativeTime</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">relativeTime</span><span class="p">)</span> <span class="o">+</span> <span class="n">ExpTime</span><span class="o">/</span><span class="mi">1000</span><span class="p">,</span><span class="mi">2</span><span class="p">)</span></div>
+
+
+
+<span class="c1">#######################################################################################################</span>
+
+
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../../../index.html">Operational_Planning_Tool</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../../OPT.html">OPT package</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../../../index.html">Documentation overview</a><ul>
+  <li><a href="../../../index.html">Module code</a><ul>
+  <li><a href="../../../OPT.html">OPT</a><ul>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, David Skånberg.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

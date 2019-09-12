@@ -10,8 +10,8 @@ import ephem, skyfield.api
 from pylab import array, cos, sin, dot, zeros, norm, pi, arccos, floor
 from astroquery.vizier import Vizier
 
-from Operational_Planning_Tool._Library import Satellite_Simulator, deg2HMS
-from Operational_Planning_Tool import _Globals, _MATS_coordinates
+from OPT._Library import Satellite_Simulator, deg2HMS
+from OPT import _Globals, _MATS_coordinates
 
 OPT_Config_File = importlib.import_module(_Globals.Config_File)
 Logger = logging.getLogger(OPT_Config_File.Logger_name())
@@ -20,10 +20,11 @@ Logger = logging.getLogger(OPT_Config_File.Logger_name())
 def date_calculator(Settings):
     """Simulates MATS FOV and stars.
     
-    Simuates MATS FOV and visible stars for one orbit then skips ahead for *Timeskip* amount of days (as defined in the *Configuration File*). 
+    Simuates MATS FOV and visible stars for one orbit then skips ahead for *Settings['Timeskip']* amount of days (as defined in the *Configuration File*). 
     Saves the date, pointing RA and Dec, and the magnitude of the brightest visible star at each timestep.
     
     Arguments:
+        Settings (dict): Dictionary containing settings for this simulation.
         
     Returns:
         (array): Array containing date in first column and brightest magnitude visible in the second. Contains current Dec and RA in 3rd and 4th column respectively.
@@ -144,7 +145,7 @@ def date_calculator(Settings):
             LogFlag = False
     
         Satellite_dict = Satellite_Simulator( 
-                    MATS_skyfield, current_time, Timeline_settings, pointing_altitude, LogFlag )
+                    MATS_skyfield, current_time, Timeline_settings, pointing_altitude, LogFlag, Logger )
         
         MATS_P[t] = Satellite_dict['OrbitalPeriod [s]']
         lat_MATS[t] =  Satellite_dict['Latitude [degrees]']
@@ -262,6 +263,7 @@ def date_select(Occupied_Timeline, date_magnitude_array, settings):
     
     Logger.info('Start of filtering function')
     
+    Timeline_settings = OPT_Config_File.Timeline_settings()
     
     "Get the name of the parent function, which is always defined as the name of the mode"
     Mode_name = sys._getframe(1).f_code.co_name
@@ -291,7 +293,7 @@ def date_select(Occupied_Timeline, date_magnitude_array, settings):
             return Occupied_Timeline, comment
         
         date = ephem.Date(ephem.Date(date_max_mag)-ephem.second*(settings['freeze_start']))
-        endDate = ephem.Date(date+ephem.second*settings['mode_duration'])
+        endDate = ephem.Date(date+ephem.second* (settings['freeze_start'] + settings['freeze_duration'] + Timeline_settings['mode_separation']) )
         
         "Extract the start and end date of each scheduled mode"
         for busy_dates in Occupied_Timeline.values():

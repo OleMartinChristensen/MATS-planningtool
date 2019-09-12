@@ -1,7 +1,7 @@
-Operational_Planning_Tool
-=========================
+OPT
+===
 
 .. toctree::
    :maxdepth: 4
 
-   Operational_Planning_Tool
+   OPT

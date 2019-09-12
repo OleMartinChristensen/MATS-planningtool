@@ -7,7 +7,7 @@ Created on Mon Jun  3 12:18:10 2019
 
 import sys
 
-import Operational_Planning_Tool as OPT
+import OPT
 
 if( __name__ == '__main__'):
     #a = sys.argv(3)

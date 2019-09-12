@@ -1,0 +1,521 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="python 3.7">
+  <head>
+    <meta charset="utf-8" />
+    <title>OPT._XMLGenerator.Modes_and_Tests.Macros_Commands package &#8212; Operational_Planning_Tool  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="OPT._XMLGenerator.Modes_and_Tests package" href="OPT._XMLGenerator.Modes_and_Tests.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-OPT._XMLGenerator.Modes_and_Tests.Macros_Commands">
+<span id="opt-xmlgenerator-modes-and-tests-macros-commands-package"></span><h1>OPT._XMLGenerator.Modes_and_Tests.Macros_Commands package<a class="headerlink" href="#module-OPT._XMLGenerator.Modes_and_Tests.Macros_Commands" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands">
+<span id="opt-xmlgenerator-modes-and-tests-macros-commands-commands-module"></span><h2>OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands module<a class="headerlink" href="#module-OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands" title="Permalink to this headline">¶</a></h2>
+<p>Contain Command functions. Each Command function represent a CMD listed in the &quot;InnoSat Payload Timeline XML Definition&quot; document.</p>
+<p>Add commands to the XML-tree as specified in &quot;InnoSat Payload Timeline XML Definition&quot; document.
+Also checks if parameters given are valid for the CMDs.</p>
+<p>Each Command function has these inputs/outputs in common.</p>
+<blockquote>
+<div><dl>
+<dt><strong>Arguments:</strong></dt><dd><p><strong>root</strong> (<em>lxml.etree.Element</em>):  XML tree structure. Main container object for the ElementTree API.</p>
+<p><strong>relativeTime</strong> (<em>int</em>): The <em>relativeTime</em> of the CMD with regard to the start of the timeline [s].</p>
+<p><strong>CMD specific parameters</strong>: A number of CMD specific parameters as defined in &quot;InnoSat Payload Timeline XML Definition&quot; document for each corresponding command.</p>
+<p><strong>comment</strong> (<em>str</em>): A comment regarding the CMD.</p>
+</dd>
+<dt><strong>Returns:</strong></dt><dd><p><strong>incremented_time</strong> (<em>int</em>) = The scheduled relativeTime of the command increased by a number equal to <em>Timeline.settings()['command_separation']</em>.
+This to prevent the command buffer on the satellite from overloading. Note: When <em>TC_acfLimbPointingAltitudeOffset</em> is scheduled with Rate = '0', relativeTime is increased by <a href="#id1"><span class="problematic" id="id2">*</span></a>Timeline_settings['pointing_stabilization'].</p>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="function">
+<dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_acfLimbPointingAltitudeOffset">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.</code><code class="descname">TC_acfLimbPointingAltitudeOffset</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>Initial=92500</em>, <em>Final=92500</em>, <em>Rate=0</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Commands.html#TC_acfLimbPointingAltitudeOffset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_acfLimbPointingAltitudeOffset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Schedules Pointing Command unless the desired attitude is already set and Rate = 0.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_affArgFreezeDuration">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.</code><code class="descname">TC_affArgFreezeDuration</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>FreezeDuration</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Commands.html#TC_affArgFreezeDuration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_affArgFreezeDuration" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_affArgFreezeStart">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.</code><code class="descname">TC_affArgFreezeStart</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>StartTime</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Commands.html#TC_affArgFreezeStart"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_affArgFreezeStart" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_pafCCDBIAS">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.</code><code class="descname">TC_pafCCDBIAS</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>CCDSEL</em>, <em>VGATE</em>, <em>VSUBST</em>, <em>VRD</em>, <em>VOD</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Commands.html#TC_pafCCDBIAS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_pafCCDBIAS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_pafCCDBadColumn">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.</code><code class="descname">TC_pafCCDBadColumn</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>CCDSEL</em>, <em>NBC</em>, <em>BC</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Commands.html#TC_pafCCDBadColumn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_pafCCDBadColumn" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_pafCCDFlushBadColumns">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.</code><code class="descname">TC_pafCCDFlushBadColumns</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>CCDSEL</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Commands.html#TC_pafCCDFlushBadColumns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_pafCCDFlushBadColumns" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_pafCCDMain">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.</code><code class="descname">TC_pafCCDMain</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>CCDSEL</em>, <em>PWR</em>, <em>ExpInterval</em>, <em>ExpTime</em>, <em>NRSKIP=0</em>, <em>NRBIN=1</em>, <em>NROW=1</em>, <em>NCBIN=1</em>, <em>NCOL=1</em>, <em>WDW=128</em>, <em>JPEGQ=90</em>, <em>SYNC=0</em>, <em>NCBINFPGA=0</em>, <em>SIGMODE=1</em>, <em>GAIN=0</em>, <em>NFLUSH=1023</em>, <em>NCSKIP=0</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Commands.html#TC_pafCCDMain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_pafCCDMain" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_pafCCDSnapshot">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.</code><code class="descname">TC_pafCCDSnapshot</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>CCDSEL</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Commands.html#TC_pafCCDSnapshot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_pafCCDSnapshot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_pafCCDSynchronize">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.</code><code class="descname">TC_pafCCDSynchronize</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>CCDSEL</em>, <em>NCCD</em>, <em>TEXPIOFS</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Commands.html#TC_pafCCDSynchronize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_pafCCDSynchronize" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_pafCCDTRANSPARENTCMD">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.</code><code class="descname">TC_pafCCDTRANSPARENTCMD</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>CCDSEL</em>, <em>CHAR</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Commands.html#TC_pafCCDTRANSPARENTCMD"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_pafCCDTRANSPARENTCMD" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_pafDbg">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.</code><code class="descname">TC_pafDbg</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>CCDSEL</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Commands.html#TC_pafDbg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_pafDbg" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_pafHTR">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.</code><code class="descname">TC_pafHTR</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>HTRSEL</em>, <em>SET</em>, <em>P</em>, <em>I</em>, <em>D</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Commands.html#TC_pafHTR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_pafHTR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_pafMode">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.</code><code class="descname">TC_pafMode</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>mode</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Commands.html#TC_pafMode"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_pafMode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_pafPM">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.</code><code class="descname">TC_pafPM</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>TEXPMS=1500</em>, <em>TEXPIMS=2000</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Commands.html#TC_pafPM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_pafPM" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_pafPWRToggle">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.</code><code class="descname">TC_pafPWRToggle</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>CONST=165</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Commands.html#TC_pafPWRToggle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_pafPWRToggle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_pafUpload">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.</code><code class="descname">TC_pafUpload</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>PINDEX=0</em>, <em>PTOTAL=0</em>, <em>WFLASH=0</em>, <em>NIMG=0</em>, <em>IMG=[]</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Commands.html#TC_pafUpload"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_pafUpload" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</div>
+<div class="section" id="module-OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros">
+<span id="opt-xmlgenerator-modes-and-tests-macros-commands-macros-module"></span><h2>OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros module<a class="headerlink" href="#module-OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros" title="Permalink to this headline">¶</a></h2>
+<p>Contains Macro functions, that in calls for Command functions located in the <em>Commands</em> module.</p>
+<p>Macros consists of frequently used combinations of Commands.</p>
+<dl class="function">
+<dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.CCD_macro">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.</code><code class="descname">CCD_macro</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>CCD_settings</em>, <em>TEXPIMS=60000</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Macros.html#CCD_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.CCD_macro" title="Permalink to this definition">¶</a></dt>
+<dd><p>Macro that corresponds to configurating the settings of the CCDs.</p>
+<p>The settings are set for each corresponding CCDSEL argument.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> (<em>lxml.etree._Element</em>) -- XML tree structure. Main container object for the ElementTree API.</p></li>
+<li><p><strong>relativeTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) -- The relative starting time of the macro with regard to the start of the timeline [s]</p></li>
+<li><p><strong>CCD_settings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of int) -- A dict containing settings for the CCDs.</p></li>
+<li><p><strong>TEXPIMS</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- ExposureIntervalTime for the CCDs in ms.</p></li>
+<li><p><strong>comment</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- A comment for the macro. Will be printed in the genereated XML-file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Time in seconds equal to the input &quot;relativeTime&quot; with added delay from the scheduling of commands.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>relativeTime (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.FullReadout_Operational_Limb_Pointing_macro">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.</code><code class="descname">FullReadout_Operational_Limb_Pointing_macro</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>CCD_settings</em>, <em>pointing_altitude</em>, <em>TEXPIMS</em>, <em>comment</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Macros.html#FullReadout_Operational_Limb_Pointing_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.FullReadout_Operational_Limb_Pointing_macro" title="Permalink to this definition">¶</a></dt>
+<dd><p>Macro that corresponds to pointing towards a Limb altitude in Operational Mode.</p>
+<p>Has an dedicated set Exposure Interval to prevent CRB-crashes when transferring very large images.</p>
+<ol class="arabic simple">
+<li><p>Set Payload to idle mode</p></li>
+<li><p>Point the satellite to a limb altitide.</p></li>
+<li><p>Start Photometers.</p></li>
+<li><p>Run CCD Synchronize Command with calculated settings.</p></li>
+<li><p>Run CCD Commands with given settings.</p></li>
+<li><p>Set Payload to operational mode</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> (<em>lxml.etree._Element</em>) -- XML tree structure. Main container object for the ElementTree API.</p></li>
+<li><p><strong>relativeTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) -- The relative starting time of the macro with regard to the start of the timeline [s]</p></li>
+<li><p><strong>CCD_settings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of int) -- Settings for the CCDs.</p></li>
+<li><p><strong>pointing_altitude</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- The altitude of the tangential point [m].</p></li>
+<li><p><strong>TEXPIMS</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- Exposure Interval [ms]. Note! Must be set very large when handling large images, at least 60000ms.</p></li>
+<li><p><strong>comment</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- A comment for the macro. Will be printed in the genereated XML-file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Time in seconds equal to the input &quot;relativeTime&quot; with added delay from the scheduling of commands.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>relativeTime (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.Limb_functional_test_macro">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.</code><code class="descname">Limb_functional_test_macro</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>pointing_altitude</em>, <em>ExpTime</em>, <em>JPEGQ</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Macros.html#Limb_functional_test_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.Limb_functional_test_macro" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> (<em>lxml.etree._Element</em>) -- XML tree structure. Main container object for the ElementTree API.</p></li>
+<li><p><strong>relativeTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) -- The relative starting time of the macro with regard to the start of the timeline [s]</p></li>
+<li><p><strong>pointing_altitude</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- The altitude of the tangential point [m].</p></li>
+<li><p><strong>ExpTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- Exposure time in ms</p></li>
+<li><p><strong>JPEGQ</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- The JPEG quality in %</p></li>
+<li><p><strong>comment</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- A comment for the macro. Will be printed in the genereated XML-file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Time in seconds equal to the input &quot;relativeTime&quot; with added delay from the scheduling of commands.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>relativeTime (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.Nadir_functional_test_macro">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.</code><code class="descname">Nadir_functional_test_macro</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>pointing_altitude</em>, <em>ExpTime</em>, <em>JPEGQ</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Macros.html#Nadir_functional_test_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.Nadir_functional_test_macro" title="Permalink to this definition">¶</a></dt>
+<dd><p>Nadir_functional_test</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> (<em>lxml.etree._Element</em>) -- XML tree structure. Main container object for the ElementTree API.</p></li>
+<li><p><strong>relativeTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) -- The relative starting time of the macro with regard to the start of the timeline [s]</p></li>
+<li><p><strong>pointing_altitude</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- The altitude of the tangential point [m].</p></li>
+<li><p><strong>ExpTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- Exposure time in ms</p></li>
+<li><p><strong>JPEGQ</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- The JPEG quality in %</p></li>
+<li><p><strong>comment</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- A comment for the macro. Will be printed in the genereated XML-file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Time in seconds equal to the input &quot;relativeTime&quot; with added delay from the scheduling of commands.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>relativeTime (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.Operational_Limb_Pointing_macro">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.</code><code class="descname">Operational_Limb_Pointing_macro</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>CCD_settings</em>, <em>pointing_altitude</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Macros.html#Operational_Limb_Pointing_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.Operational_Limb_Pointing_macro" title="Permalink to this definition">¶</a></dt>
+<dd><p>Macro that corresponds to pointing towards a Limb altitude in Operational Mode.</p>
+<ol class="arabic simple">
+<li><p>Set Payload to idle mode</p></li>
+<li><p>Point the satellite to a limb altitide.</p></li>
+<li><p>Start Photometers</p></li>
+<li><p>Run CCD Synchronize Command with calculated settings.</p></li>
+<li><p>Run CCD Commands with given settings.</p></li>
+<li><p>Set Payload to operational mode</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> (<em>lxml.etree._Element</em>) -- XML tree structure. Main container object for the ElementTree API.</p></li>
+<li><p><strong>relativeTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) -- The relative starting time of the macro with regard to the start of the timeline [s]</p></li>
+<li><p><strong>CCD_settings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of int) -- Settings for the CCDs.</p></li>
+<li><p><strong>pointing_altitude</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- The altitude of the tangential point [m].</p></li>
+<li><p><strong>comment</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- A comment for the macro. Will be printed in the genereated XML-file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Time in seconds equal to the input &quot;relativeTime&quot; with added delay from the scheduling of commands.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>relativeTime (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.Operational_Sweep_macro">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.</code><code class="descname">Operational_Sweep_macro</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>CCD_settings</em>, <em>pointing_altitude_from</em>, <em>pointing_altitude_to</em>, <em>sweep_rate</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Macros.html#Operational_Sweep_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.Operational_Sweep_macro" title="Permalink to this definition">¶</a></dt>
+<dd><p>Macro that corresponds to performing a sweep while in Operational Mode.</p>
+<ol class="arabic simple">
+<li><p>Set Payload to idle mode</p></li>
+<li><p>Point the satellite to a limb altitide.</p></li>
+<li><p>Start Photometers</p></li>
+<li><p>Run CCD Synchronize Command with calculated settings.</p></li>
+<li><p>Run CCD Commands with given settings.</p></li>
+<li><p>Set Payload to operational mode.</p></li>
+<li><p>Start Sweep of satellite.</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> (<em>lxml.etree._Element</em>) -- XML tree structure. Main container object for the ElementTree API.</p></li>
+<li><p><strong>relativeTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) -- The relative starting time of the macro with regard to the start of the timeline [s]</p></li>
+<li><p><strong>CCD_settings</strong> (<em>dict of dict of int</em>) -- Settings for the CCDs.</p></li>
+<li><p><strong>pointing_altitude_from</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- The altitude in meters from which to start the sweep</p></li>
+<li><p><strong>pointing_altitude_from</strong> -- The altitude in meters where the sweep will end</p></li>
+<li><p><strong>sweep_rate</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- The rate of the sweep in m/s.</p></li>
+<li><p><strong>comment</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- A comment for the macro. Will be printed in the genereated XML-file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Time in seconds equal to the input &quot;relativeTime&quot; with added delay from the scheduling of commands.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>relativeTime (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.PWRTOGGLE_macro">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.</code><code class="descname">PWRTOGGLE_macro</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>CONST</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Macros.html#PWRTOGGLE_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.PWRTOGGLE_macro" title="Permalink to this definition">¶</a></dt>
+<dd><p>Macro that corresponds to the PWRTOGGLE CMD.</p>
+<p>Switches off all CCDs before PWRTOGGLING</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> (<em>lxml.etree._Element</em>) -- XML tree structure. Main container object for the ElementTree API.</p></li>
+<li><p><strong>relativeTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) -- The relative starting time of the macro with regard to the start of the timeline [s]</p></li>
+<li><p><strong>CONST</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- Magical constant.</p></li>
+<li><p><strong>comment</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- A comment for the macro. Will be printed in the genereated XML-file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Time in seconds equal to the input &quot;relativeTime&quot; with added delay from the scheduling of commands.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>relativeTime (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.Photometer_test_1_macro">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.</code><code class="descname">Photometer_test_1_macro</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>ExpTime</em>, <em>ExpInt</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Macros.html#Photometer_test_1_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.Photometer_test_1_macro" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> (<em>lxml.etree._Element</em>) -- XML tree structure. Main container object for the ElementTree API.</p></li>
+<li><p><strong>relativeTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) -- The relative starting time of the macro with regard to the start of the timeline [s]</p></li>
+<li><p><strong>ExpTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- Exposure time in ms</p></li>
+<li><p><strong>ExpInt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- Exposure interval in ms</p></li>
+<li><p><strong>comment</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- A comment for the macro. Will be printed in the genereated XML-file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Time in seconds equal to the input &quot;relativeTime&quot; with added delay from the scheduling of commands.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>relativeTime (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.Snapshot_Inertial_macro">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.</code><code class="descname">Snapshot_Inertial_macro</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>CCD_settings</em>, <em>FreezeTime</em>, <em>FreezeDuration</em>, <em>pointing_altitude</em>, <em>LP_pointing_altitude</em>, <em>SnapshotSpacing</em>, <em>Snapshot_relativeTime</em>, <em>comment</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Macros.html#Snapshot_Inertial_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.Snapshot_Inertial_macro" title="Permalink to this definition">¶</a></dt>
+<dd><p>Macro that corresponds to pointing towards an Inertial direction and take a Snapshot with all the CCDs (except Nadir).</p>
+<ol class="arabic simple">
+<li><p>Set Payload to idle mode</p></li>
+<li><p>Point the satellite to <em>pointing_altitude</em>.</p></li>
+<li><p>Run CCD Commands with given settings.</p></li>
+<li><p>Run ArgFreezeStart Command with <em>FreezeTime</em>.</p></li>
+<li><p>Run ArgFreezeDuration Command with <em>FreezeDuration</em>.</p></li>
+<li><p>Take a Snapshot with each CCD (except Nadir) starting at <em>Snapshot_relativeTime</em> with a spacing of <em>SnapshotSpacing</em>.</p></li>
+<li><p>Point the satellite to <em>LP_pointing_altitude</em>.</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> (<em>lxml.etree._Element</em>) -- XML tree structure. Main container object for the ElementTree API.</p></li>
+<li><p><strong>relativeTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) -- The relative starting time of the macro with regard to the start of the timeline [s]</p></li>
+<li><p><strong>CCD_settings</strong> (<em>dict of dict of int</em>) -- Settings for the CCDs.</p></li>
+<li><p><strong>FreezeTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) -- Start time of attitude freeze command in on-board time [s].</p></li>
+<li><p><strong>FreezeDuration</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- Duration of freeze [s].</p></li>
+<li><p><strong>pointing_altitude</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- The altitude of the tangential point [m].</p></li>
+<li><p><strong>LP_pointing_altitude</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- The altitude of the LP [m].</p></li>
+<li><p><strong>SnapshotSpacing</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- The time in seconds inbetween snapshots of individual CCDs.</p></li>
+<li><p><strong>Snapshot_relativeTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) -- The relativeTime (time from start of timeline) at which the first Snapshot is taken.</p></li>
+<li><p><strong>comment</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- A comment for the macro. Will be printed in the genereated XML-file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Time in seconds equal to the input &quot;relativeTime&quot; with added delay from the scheduling of commands.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>relativeTime (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.Snapshot_Limb_Pointing_macro">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.</code><code class="descname">Snapshot_Limb_Pointing_macro</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>CCD_settings</em>, <em>pointing_altitude</em>, <em>SnapshotSpacing</em>, <em>comment</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Macros.html#Snapshot_Limb_Pointing_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.Snapshot_Limb_Pointing_macro" title="Permalink to this definition">¶</a></dt>
+<dd><p>Macro that corresponds to pointing towards a Limb altitude and taking a Snapshot with each CCD (except Nadir).</p>
+<ol class="arabic simple">
+<li><p>Set Payload to idle mode</p></li>
+<li><p>Point the satellite to <em>pointing_altitude</em>.</p></li>
+<li><p>Run CCD Commands with given settings.</p></li>
+<li><p>Take a Snapshot with each CCD (except Nadir) with a spacing of <em>SnapshotSpacing</em>.</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> (<em>lxml.etree._Element</em>) -- XML tree structure. Main container object for the ElementTree API.</p></li>
+<li><p><strong>relativeTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) -- The relative starting time of the macro with regard to the start of the timeline [s]</p></li>
+<li><p><strong>CCD_settings</strong> (<em>dict of dict of int</em>) -- Settings for the CCDs.</p></li>
+<li><p><strong>pointing_altitude</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- The altitude of the tangential point [m].</p></li>
+<li><p><strong>SnapshotSpacing</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- The time in seconds inbetween snapshots of individual CCDs.</p></li>
+<li><p><strong>comment</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- A comment for the macro. Will be printed in the genereated XML-file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Time in seconds equal to the input &quot;relativeTime&quot; with added delay from the scheduling of commands.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>relativeTime (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Operational_Planning_Tool</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="OPT.html">OPT package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="OPT.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="OPT._CheckConfigFile.html">OPT._CheckConfigFile package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="OPT._DataPlotter.html">OPT._DataPlotter package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="OPT._TimelineAnalyzer.html">OPT._TimelineAnalyzer package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="OPT._TimelineGenerator.html">OPT._TimelineGenerator package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="OPT._Timeline_Plotter.html">OPT._Timeline_Plotter package</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="OPT._XMLGenerator.html">OPT._XMLGenerator package</a><ul class="current">
+<li class="toctree-l4 current"><a class="reference internal" href="OPT._XMLGenerator.html#subpackages">Subpackages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="OPT._XMLGenerator.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="OPT._XMLGenerator.html#module-OPT._XMLGenerator.Core">OPT._XMLGenerator.Core module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="OPT.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="OPT.html#module-OPT._ConfigFile">OPT._ConfigFile module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="OPT.html#module-OPT._Globals">OPT._Globals module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="OPT.html#module-OPT._Library">OPT._Library module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="OPT.html#module-OPT._MATS_coordinates">OPT._MATS_coordinates module</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="OPT.html">OPT package</a><ul>
+  <li><a href="OPT._XMLGenerator.html">OPT._XMLGenerator package</a><ul>
+  <li><a href="OPT._XMLGenerator.Modes_and_Tests.html">OPT._XMLGenerator.Modes_and_Tests package</a><ul>
+      <li>Previous: <a href="OPT._XMLGenerator.Modes_and_Tests.html" title="previous chapter">OPT._XMLGenerator.Modes_and_Tests package</a></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, David Skånberg.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

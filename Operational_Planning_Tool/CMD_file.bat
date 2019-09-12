@@ -1,14 +1,14 @@
 $ conda install -c anaconda ephem
 
-$ conda install -c conda-forge matplotlib 
+$ conda install -c conda-forge matplotlib=3.1.1 
 
 $ conda install -c anaconda scipy 
 
 $ conda install -c anaconda lxml
 
-$ conda install astropy
+$ conda install astropy=3.2.1
 
-$ conda install -c astropy astroquery
+$ conda install -c astropy astroquery=0.3.9
 
 $ conda install pip
 

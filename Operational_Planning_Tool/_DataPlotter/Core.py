@@ -11,7 +11,7 @@ from pylab import sin, pi, cos, cross, array, arccos, arctan, dot, tan, norm, tr
 import ephem, logging, csv, os, sys, importlib, h5py, skyfield.api
 import datetime as DT
 
-from Operational_Planning_Tool import _Library, _MATS_coordinates, _Globals
+from OPT import _Library, _MATS_coordinates, _Globals
 
 #import OPT_Config_File
 
@@ -47,9 +47,9 @@ def Data_Plotter():
     timestep = 10 #In seconds
     duration = Timeline_settings['duration']
     timesteps = int(floor(duration / timestep))+1
-    timesteps = 300
+    timesteps = 600
     #timesteps = 10000
-    start_from = 6000
+    start_from = 3000
     #start_from = 0
     date = ephem.Date(Timeline_settings['start_date'])
     
@@ -119,7 +119,7 @@ def Data_Plotter():
         current_time[t] = ephem.Date(date+ephem.second*(timestep*t+start_from))
         
         Satellite_dict = _Library.Satellite_Simulator( 
-                    MATS_skyfield, ephem.Date(current_time[t]), Timeline_settings, pointing_altitude, LogFlag )
+                    MATS_skyfield, ephem.Date(current_time[t]), Timeline_settings, pointing_altitude, LogFlag, Logger )
         
         
         r_MATS[t] = Satellite_dict['Position [km]']
@@ -259,7 +259,8 @@ def Data_Plotter():
     z_axis_SLOF_STK = zeros((timesteps,3))
     x_axis_SLOF_STK = zeros((timesteps,3))
     
-    with open('tle-54321_54321 Data_handlin_OHB_TLE.csv') as csv_file:
+    with open('tle-54321_54321_ICRF_183244.csv') as csv_file:
+    #with open('tle-54321_54321 Data_handlin_OHB_TLE.csv') as csv_file:
     #with open('OHB_timeshifted2sTLE_ICRF_addedEOP.csv') as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
         interestingrows=[row for idx, row in enumerate(csv_reader) if idx in range(start_from,100000)]
@@ -807,7 +808,7 @@ def Data_Plotter():
     ###################################
     
     figure()
-    plot_date(current_time_MPL[1:],lat_MATS[1:]/pi*180, markersize = 1, label = 'Predicted')
+    plot_date(current_time_MPL[1:],lat_MATS[1:], markersize = 1, label = 'Predicted')
     plot_date(current_time_MPL[1:], lat_MATS_STK[1:], markersize = 1, label = 'STK-Data')
     plot_date(current_time_MPL_OHB[1:], lat_MATS_OHB[1:], markersize = 1, label = 'OHB-Data')
     xlabel('Date')
@@ -815,14 +816,14 @@ def Data_Plotter():
     legend()
     
     figure()
-    plot_date(current_time_MPL[1:],abs(lat_MATS_STK[1:]-lat_MATS[1:]/pi*180), markersize = 1, label = 'Prediction vs STK')
+    plot_date(current_time_MPL[1:],abs(lat_MATS_STK[1:]-lat_MATS[1:]), markersize = 1, label = 'Prediction vs STK')
     plot_date(current_time_MPL_OHB[1:],abs(lat_MATS_OHB[1:]-lat_MATS[1:]/pi*180), markersize = 1, label = 'Prediction vs OHB')
     xlabel('Date')
     ylabel('Absolute error in Latitude of MATS in degrees')
     legend()
     
     figure()
-    plot_date(current_time_MPL[1:],long_MATS[1:]/pi*180, markersize = 1, label = 'Predicted')
+    plot_date(current_time_MPL[1:],long_MATS[1:], markersize = 1, label = 'Predicted')
     plot_date(current_time_MPL[1:], long_MATS_STK[1:], markersize = 1, label = 'STK-Data')
     plot_date(current_time_MPL_OHB[1:], long_MATS_OHB[1:], markersize = 1, label = 'OHB-Data')
     xlabel('Date')
@@ -830,8 +831,8 @@ def Data_Plotter():
     legend()
     
     figure()
-    plot_date(current_time_MPL[1:],abs(long_MATS_STK[1:]-long_MATS[1:]/pi*180), markersize = 1, label = 'Prediction vs STK')
-    plot_date(current_time_MPL_OHB[1:],abs(long_MATS_OHB[1:]-long_MATS[1:]/pi*180), markersize = 1, label = 'Prediction vs OHB')
+    plot_date(current_time_MPL[1:],abs(long_MATS_STK[1:]-long_MATS[1:]), markersize = 1, label = 'Prediction vs STK')
+    plot_date(current_time_MPL_OHB[1:],abs(long_MATS_OHB[1:]-long_MATS[1:]), markersize = 1, label = 'Prediction vs OHB')
     xlabel('Date')
     ylabel('Absolute error in Longitude of MATS in degrees')
     legend()

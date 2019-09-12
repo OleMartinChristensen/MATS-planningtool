@@ -2,25 +2,7 @@
 """
 Created on Fri Nov  2 14:57:28 2018
 
-The *Timeline_generator* part of the *Operational_Planning_Tool* which purpose is to automatically generate a
-mission timeline from settings defined in the *Configuration File*. The generated timeline consists of
-Science Modes and separate CMDs together with their planned start/end dates, settings, and comments, 
-expressed as a list in chronological order. \n
 
-Timeline_generator has a setable priority for the scheduling of modes and CMDs, 
-which can be seen in the order of the modes in the list fetched from the 
-function Scheduling_priority in the *Configuration File*. \n
-
-For each mode/CMD, one at a time, an appropriate date is calculated, or
-a predetermined date is already set in the *Configuration File*. A dictionary (Occupied_Timeline) 
-keeps track of the planned runtime of all Modes, this to prevent colliding scheduling. \n
-
-Mode1,2,5 are known as Operational Science Modes.
-These modes will fill out time left available after the scheduling of the rest of the modes, 
-set in *Scheduling_priority*.
-
-If calculated starting dates for modes are occupied, they will be changed  
-depending on a specialized filtering process (mode 120, 200...), or postponed until time is available (mode 130, 131...).
 
 @author: David
 """
@@ -29,13 +11,13 @@ import json, logging, sys, time, os, ephem, importlib
 
 
 from .Modes import Modes_Header
-from Operational_Planning_Tool import _Globals, _Library
+from OPT import _Globals, _Library
 
 OPT_Config_File = importlib.import_module(_Globals.Config_File)
 Logger = logging.getLogger(OPT_Config_File.Logger_name())
 
 def Timeline_generator():
-    """The core function of the Timeline_gen program.
+    """The core function of the *Timeline_gen* program, part of Operational Planning Tool.
         
     Returns:
         None
@@ -51,7 +33,7 @@ def Timeline_generator():
     
     
     ############# Set up Logger #################################
-    _Library.SetupLogger()
+    _Library.SetupLogger(OPT_Config_File.Logger_name())
     
     Logger.info('Start of program')
     
@@ -215,15 +197,14 @@ def Timeline_generator():
             Config_File = getattr(OPT_Config_File,x[2]+'_settings')()
         except AttributeError:
             
-            if( Timeline_settings['Schedule_Mode5'] == False and (x[2] == 'Mode1' or 
-               x[2] == 'Mode2') ):
+            if(  x[2] == 'Mode1' or x[2] == 'Mode2' or x[2] == 'Mode5' ):
                 
-                Config_File = getattr(OPT_Config_File,'Mode1_2_settings')()
+                Config_File = getattr(OPT_Config_File,'Operational_Science_Mode_settings')()
                 
             else:
                     Logger.error('No Config function for '+x[2])
                     Config_File = []
-                    raise NameError
+                    
             
                 
         #SCIMOD_Timeline.append([ x[2],str(x[0]), str(x[1]),{},x[3] ])

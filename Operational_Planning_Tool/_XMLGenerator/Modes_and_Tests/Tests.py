@@ -25,12 +25,12 @@ XML_generator_Test_name, where Test_name is the same as the string used in the S
 import ephem, logging, sys, importlib
 from pylab import dot, arccos, zeros, pi, sin, cos, arctan, cross, norm, sqrt
 
-from Operational_Planning_Tool import _Globals
+from OPT import _Globals
 
 OPT_Config_File = importlib.import_module(_Globals.Config_File)
 #from OPT_Config_File import Logger_name, Timeline_settings, getTLE
-from Operational_Planning_Tool._Library import rot_arbit
-from .Macros import Macros
+from OPT._Library import rot_arbit
+from .Macros_Commands import Macros
 
 Logger = logging.getLogger(OPT_Config_File.Logger_name())
 

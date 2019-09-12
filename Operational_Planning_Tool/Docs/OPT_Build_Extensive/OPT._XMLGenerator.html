@@ -1,0 +1,244 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="python 3.7">
+  <head>
+    <meta charset="utf-8" />
+    <title>OPT._XMLGenerator package &#8212; Operational_Planning_Tool  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="OPT._XMLGenerator.Modes_and_Tests package" href="OPT._XMLGenerator.Modes_and_Tests.html" />
+    <link rel="prev" title="OPT._Timeline_Plotter package" href="OPT._Timeline_Plotter.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="module-OPT._XMLGenerator">
+<span id="opt-xmlgenerator-package"></span><h1>OPT._XMLGenerator package<a class="headerlink" href="#module-OPT._XMLGenerator" title="Permalink to this headline">¶</a></h1>
+<p>The <em>XML_gen</em> part of the <em>Operational_Planning_Tool</em> which purpose is to convert a
+<em>Science Mode Timeline</em> .json file into a XML file, containing Payload and Platform CMDs.</p>
+<p>Any settings given in the <em>Science Mode Timeline</em> file will overide the use of the same settings stated in the set <em>Configuration File</em>.</p>
+<p>All CMDs are stated in the &quot;InnoSat Payload Timeline XML Defintion&quot; document.</p>
+<p><em>XML_gen</em> goes through the <em>Science Mode Timeline</em> chronologically and calls for functions from the modules inside the <em>Modes_and_Tests</em> package.</p>
+<p>These functions then uses the settings given in the <em>Science Mode Timeline</em> or in the set <em>Configuration File</em> to calculate parameters to be used by their CMDs.</p>
+<p>Then they either call directly for a Command function, located in the <em>Commands</em> module, inside the <em>Macros_Commands</em> package, or call for a Macro function located in the <em>Macros</em> module, inside the <em>Macros_Commands</em> package.</p>
+<p>A Macro is a combination of commonly used CMDs. For more information seee the <em>Macros</em> module inside the <em>Macros_Commands</em> package.</p>
+<p><strong>Adding your own Mode:</strong></p>
+<p>To add your own Mode to be converted into CMDs using <em>XML_gen</em> you need to follow these steps:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>Go into the <em>Modes</em> module, inside the <em>Modes_and_Tests</em> package. At the bottom you should find a Mode template function called &quot;XML_generator_X&quot;. Copy this function. Replace the X for the name of your Mode.</p></li>
+<li><p>Calculate or define any appropriate parameters for your Mode's CMDs/Macros.</p></li>
+<li><p>Now use these parameters to add any calls for Macros/Command functions located in the modules inside the <em>Macros_Commands</em> package. By default there is a call for the <em>TC_acfLimbPointingAltitudeOffset</em> CMD as an example, you can remove this.</p></li>
+<li><p>It is recommended (but not necessary) to also give the new Mode its own &quot;Configuration function&quot; inside the <em>_ConfigFile</em>. This function will hold tuneable settings for the Mode, such as pointing altitude for the <em>TC_acfLimbPointingAltitudeOffset</em> CMD.</p></li>
+</ul>
+</div></blockquote>
+<p>You should now have working Mode in XML_gen. Feel free to check the other Modes defined in the <em>MODES</em> module to understand how they are implemented. There are also some outcommented lines of code which you might find useful when defining your Mode.
+These outcommented rows of code calls for Mode and CCD settings from the <em>Configuration File</em>, and by using <em>params_checker</em> it compares the Mode settings to the Mode settings given in the <em>Science Mode Timeline</em>. Lastly there is a outcommented call for a Macro called <em>Operational_Limb_Pointing_macro</em>.</p>
+<div class="section" id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="OPT._XMLGenerator.Modes_and_Tests.html">OPT._XMLGenerator.Modes_and_Tests package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="OPT._XMLGenerator.Modes_and_Tests.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.html">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.html#module-OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.html#module-OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="OPT._XMLGenerator.Modes_and_Tests.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="OPT._XMLGenerator.Modes_and_Tests.html#module-OPT._XMLGenerator.Modes_and_Tests.MODES">OPT._XMLGenerator.Modes_and_Tests.MODES module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="OPT._XMLGenerator.Modes_and_Tests.html#module-OPT._XMLGenerator.Modes_and_Tests.SeparateCmds">OPT._XMLGenerator.Modes_and_Tests.SeparateCmds module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="OPT._XMLGenerator.Modes_and_Tests.html#module-OPT._XMLGenerator.Modes_and_Tests.Tests">OPT._XMLGenerator.Modes_and_Tests.Tests module</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-OPT._XMLGenerator.Core">
+<span id="opt-xmlgenerator-core-module"></span><h2>OPT._XMLGenerator.Core module<a class="headerlink" href="#module-OPT._XMLGenerator.Core" title="Permalink to this headline">¶</a></h2>
+<p>Creates the base of the XML-tree and calculates initial values such as the
+start and end time and also duration of the timeline. Then goes through the
+supplied Science Mode Timeline List chronologically and calls for the corresponding function in one of the modules located in the <em>Modes_and_Tests</em> package.</p>
+<p>Any settings given in the <em>Science Mode Timeline</em> file will overide the use of the same settings stated in set <em>Configuration File</em>.</p>
+<dl class="function">
+<dt id="OPT._XMLGenerator.Core.XML_Initial_Basis_Creator">
+<code class="descclassname">OPT._XMLGenerator.Core.</code><code class="descname">XML_Initial_Basis_Creator</code><span class="sig-paren">(</span><em>timeline_start</em>, <em>timeline_duration</em>, <em>SCIMOD_Path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Core.html#XML_Initial_Basis_Creator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Core.XML_Initial_Basis_Creator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Subfunction, Construct Basis of XML document and adds the description container.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>earliestStartingDate</strong> (<em>ephem.Date</em>) -- Earliest Starting date of the Timeline. On the form of the ephem.Date class.</p></li>
+<li><p><strong>latestStartingDate</strong> (<em>ephem.Date</em>) -- Latest Starting date of the Timeline. On the form of the ephem.Date class.</p></li>
+<li><p><strong>timeline_duration</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- Duration of the timeline [s].</p></li>
+<li><p><strong>SCIMOD_Path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- The path as a string to the Science Mode Timeline .json file used in this run.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The basis of the XML tree created with lxml.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(lxml.etree.Element)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="OPT._XMLGenerator.Core.XML_generator">
+<code class="descclassname">OPT._XMLGenerator.Core.</code><code class="descname">XML_generator</code><span class="sig-paren">(</span><em>SCIMOD_Path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Core.html#XML_generator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Core.XML_generator" title="Permalink to this definition">¶</a></dt>
+<dd><p>The core function of the XML_gen program.</p>
+<p>Reads a <em>Science Mode Timeline</em> .json file. Then chronologically goes though the <em>Science Mode Timeline</em>, calling for the <em>XML_generator_select</em> function.
+Any settings stated in the <em>Science Mode Timeline</em> will override any similar ones given in the set <em>Configuration File</em>.
+Also calls for XML_Initial_Basis_Creator to setup a XML tree which will be used to write CMDs to.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>SCIMOD_Path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- A string containing the path to the Science Mode Timeline .json file.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="OPT._XMLGenerator.Core.XML_generator_select">
+<code class="descclassname">OPT._XMLGenerator.Core.</code><code class="descname">XML_generator_select</code><span class="sig-paren">(</span><em>mode</em>, <em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Core.html#XML_generator_select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Core.XML_generator_select" title="Permalink to this definition">¶</a></dt>
+<dd><p>Subfunction, Selects corresponding mode, test or CMD function in the package <em>Modes_and_Tests</em> from the variable <em>mode</em>.</p>
+<p>Calls for any function named <em>XML_generator_XXX</em> where XXX is the string in the input <em>name</em>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- The name of the of the mode or test as a string. The name in the XML_generator_name function in OPT_XML_generator_MODES</p></li>
+<li><p><strong>root</strong> (<em>lxml.etree.Element</em>) -- XML tree structure. Main container object for the ElementTree API.</p></li>
+<li><p><strong>date</strong> (<em>ephem.Date</em>) -- </p></li>
+<li><p><strong>duration</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- </p></li>
+<li><p><strong>relativeTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- </p></li>
+<li><p><strong>params</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) -- </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Operational_Planning_Tool</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="OPT.html">OPT package</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="OPT.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="OPT._CheckConfigFile.html">OPT._CheckConfigFile package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="OPT._DataPlotter.html">OPT._DataPlotter package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="OPT._TimelineAnalyzer.html">OPT._TimelineAnalyzer package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="OPT._TimelineGenerator.html">OPT._TimelineGenerator package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="OPT._Timeline_Plotter.html">OPT._Timeline_Plotter package</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">OPT._XMLGenerator package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#subpackages">Subpackages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#module-OPT._XMLGenerator.Core">OPT._XMLGenerator.Core module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="OPT.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="OPT.html#module-OPT._ConfigFile">OPT._ConfigFile module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="OPT.html#module-OPT._Globals">OPT._Globals module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="OPT.html#module-OPT._Library">OPT._Library module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="OPT.html#module-OPT._MATS_coordinates">OPT._MATS_coordinates module</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  <li><a href="OPT.html">OPT package</a><ul>
+      <li>Previous: <a href="OPT._Timeline_Plotter.html" title="previous chapter">OPT._Timeline_Plotter package</a></li>
+      <li>Next: <a href="OPT._XMLGenerator.Modes_and_Tests.html" title="next chapter">OPT._XMLGenerator.Modes_and_Tests package</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, David Skånberg.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/OPT._XMLGenerator.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

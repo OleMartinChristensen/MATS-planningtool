@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Searches a Science Mode Timeline json file for a given date and returns the scheduled mode and its parameter.
-As part of the Operational Planning Tool.
+Searches a *Science Mode Timeline* .json file for a given date and returns the scheduled mode and its settings.
+A part of the Operational Planning Tool.
 """
 
 import ephem, json, os
@@ -13,9 +13,11 @@ def Timeline_analyzer(science_mode_timeline_path, date):
         science_mode_timeline_path (str): path to the .json file containing the Science Mode Timeline
         date (str): A given date and time ('2019/09/05 12:09:25')
         
-    Output:
-        Mode (str): The currently scheduled Mode.
-        Parameters (dict): The parameters of the Mode.
+    Returns:
+        (tuple): tuple containing:
+            
+            **Mode** (*str*): The Mode scheduled at the given date.
+            **Settings** (*dict*): The settings of the Mode.
         
     '''
     
@@ -32,6 +34,10 @@ def Timeline_analyzer(science_mode_timeline_path, date):
         date = ephem.Date(date)
         
         for x in range(len(Mode_Timeline)):
+            
+            if( Mode_Timeline[x][0] == 'Timeline_settings' ):
+                continue
+            
             start_date = ephem.Date(Mode_Timeline[x][1])
             end_date = ephem.Date(Mode_Timeline[x][2])
             
@@ -40,9 +46,9 @@ def Timeline_analyzer(science_mode_timeline_path, date):
             
             if( date >= start_date and (date < end_date or date < next_start_date) ):
                 Mode = Mode_Timeline[x][0]
-                Parameters = Mode_Timeline[x][3]
+                Settings = Mode_Timeline[x][3]
                 break
             elif( x == len(Mode_Timeline)-1 ):
                 raise ValueError('No mode scheduled during that date')
                 
-        return Mode, Parameters
+        return Mode, Settings

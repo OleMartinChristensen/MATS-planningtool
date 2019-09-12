@@ -1,14 +1,14 @@
 # MATS-planningtool
 Mission planning tool for the MATS satellite
 
-Operational_Planning_Tool requires at least Python 3.7.3 and these packages:
+OPT (Operational_Planning_Tool) requires at least Python 3.7.3 and these packages:
     
     ephem = Version: >= 3.7.6.0
     matplotlib = Version: >= 3.1.0
     scipy = Version: >= 1.3.0
     lxml = Version: >= 4.3.3
     astroquery, Version: >= 0.3.9, astropy
-    skyfield, Version: >= 1.10, pypi
+    skyfield, Version: = 1.10, pypi
 	astropy, Version >= 3.2.1, astropy
     
 It is recommended to install these packages in a conda environment using conda and to use "Spyder" as an scientific environment.
@@ -28,15 +28,15 @@ Tool may already be installed (scipy for example). Miniconda comes with no prein
 
 $ conda install -c anaconda ephem
 
-$ conda install -c conda-forge matplotlib 
+$ conda install -c conda-forge matplotlib=3.1.1 
 
 $ conda install -c anaconda scipy 
 
 $ conda install -c anaconda lxml
 
-$ conda install astropy
+$ conda install astropy=3.2.1
 
-$ conda install -c astropy astroquery
+$ conda install -c astropy astroquery=0.3.9
 
 $ conda install pip
 
@@ -51,18 +51,18 @@ $ conda list
 
 $ conda install spyder
 
-6. Run Spyder and create a project (found at the toolbar at the top). Place the Operational_Planning_Tool package in the working directory of the project.
+6. Run Spyder and create a project (found at the toolbar at the top). Place the OPT (Operational_Planning_Tool) package in the working directory of the project.
 
-The Operational_Planning_Tool package can be put anywhere in *sys.path* but it is easiest to put it in the working directory
+The OPT (Operational_Planning_Tool) package can be put anywhere in *sys.path* but it is easiest to put it in the working directory
 of the Spyder project, as that directory is automatically part of the PYTHONPATH which is part of *sys.path*.
 
 7. Finally try to execute these lines in Spyder (either in the IPython console or as part of a script).
 
-    import Operational_Planning_Tool as OPT
+    import OPT
     
     OPT.Copy_ConfigFile('OPT_Config_File')
     
-    OPT.Set_ConfigFile('OPT_Config_File', '2019/09/05 08:00:00')
+    OPT.Set_ConfigFile('OPT_Config_File', '2020/09/05 08:00:00')
     
     OPT.CheckConfigFile()
     
@@ -70,6 +70,6 @@ of the Spyder project, as that directory is automatically part of the PYTHONPATH
     
     OPT.XML_gen('Output/Science_Mode_Timeline__OPT_Config_File.json')
 	
-	Data_MATS, Data_LP, Time, Time_OHB  = OPT.Timeline_Plotter('Output\Science_Mode_Timeline__OPT_Config_File.json')
+	Data_MATS, Data_LP, Time, Time_OHB  = OPT.Timeline_Plotter('Output/Science_Mode_Timeline__OPT_Config_File.json')
 
-See further documentation found under "Docs" in Operational_Planning_Tool to learn how to use the Operational_Planning_Tool package.
+See further documentation found under "Docs" in OPT (Operational_Planning_Tool) to learn how to use the OPT package.

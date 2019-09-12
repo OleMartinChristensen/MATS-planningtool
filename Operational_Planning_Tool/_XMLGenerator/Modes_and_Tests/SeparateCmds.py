@@ -22,10 +22,9 @@ Functions on the form "XML_generator_X", where the last X is any CMD:
 
 import logging, importlib
 
-from .Macros.Commands import Commands
-from .Macros import Macros
-from Operational_Planning_Tool._Library import params_checker
-from Operational_Planning_Tool import _Globals
+from .Macros_Commands import Commands, Macros
+from OPT._Library import params_checker
+from OPT import _Globals
 
 OPT_Config_File = importlib.import_module(_Globals.Config_File)
 
