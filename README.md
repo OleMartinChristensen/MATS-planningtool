@@ -56,6 +56,8 @@ $ conda install spyder
 The OPT (Operational_Planning_Tool) package can be put anywhere in *sys.path* but it is easiest to put it in the working directory
 of the Spyder project, as that directory is automatically part of the PYTHONPATH which is part of *sys.path*.
 
+7. Allow plots created with python to be printed in separate windows. Go to tools/preferences in Spyder. Then in the preferences window, select "IPython Console". Go to Graphics. In the dropdown menu of "Graphics backend" select automatic.
+
 7. Finally try to execute these lines in Spyder (either in the IPython console or as part of a script).
 
     import OPT
