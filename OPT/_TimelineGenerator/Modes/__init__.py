@@ -1,9 +1,11 @@
 #
-"""Contains modules which correspond to the scheduling of each Mode.
+"""Contains modules which correspond to the scheduling of each Mode. 
+
+Schedules and calculates duration of modes.
 
 The top or core function of each module is the only one called from higher levels.
 The name of the core function in each Mode specific module must be equal to the name 
-of the Mode as stated in OPT_Config_File.Modes_priority(). 
+of the Mode as stated in *Modes_priority* found in the *Configuration File*.  \n
 
 The core function may call two other functions inside the same module, date_calculator() and date_select.
 date_calculator returns calculated or chosen dates (1 or many).

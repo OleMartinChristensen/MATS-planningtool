@@ -34,7 +34,7 @@
             
   <div class="section" id="module-OPT">
 <span id="opt-package"></span><h1>OPT package<a class="headerlink" href="#module-OPT" title="Permalink to this headline">¶</a></h1>
-<p>Contain the functions that together constitute the Operational_Planning_Tool (OPT). These functions are:</p>
+<p>Make sure to read the &quot;Science Modes for MATS&quot; document (at least Version 3.1). The programs (functions) that together constitute the Operational_Planning_Tool (OPT) are:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Copy_ConfigFile</p></li>
@@ -53,13 +53,14 @@
 </dd>
 </dl>
 <p><strong>Description:</strong>
-<em>Operational_Planning_Tool</em> uses a special .py file as a <em>Configuration File</em>. An example of a <em>Configuration_File</em> is located in the Operational_Planning_Tool and is called <em>_ConfigFile.py</em>.</p>
+<em>Operational_Planning_Tool</em> uses a hiearchy structure with a procedural programming paradigm. Meaning that only the top level functions (the ones mentioned above) are supposed to be called by a user.</p>
+<p><em>Operational_Planning_Tool</em> uses a special .py file as a <em>Configuration File</em>, meaning that the settings inside the <em>Configuration File</em> dictate the operation of the program (unless the same settings are explicitly stated in the input of a function, see <em>XML_gen</em> and <em>Timeline_Plotter</em>). An example of a <em>Configuration_File</em> with default values is located in the Operational_Planning_Tool and is called <em>_ConfigFile.py</em>.</p>
 <p>Create your own <em>Configuration File</em> with an appropriate name by running <em>Copy_ConfigFile</em> with a chosen name as an input.
-<em>Copy_ConfigFile</em> makes a copy of <em>_ConfigFile.py</em>. You can then modify the settings in your copy.</p>
+<em>Copy_ConfigFile</em> makes a copy of <em>_ConfigFile.py</em>. The settings in your copy is modified manually in a text editor.</p>
 <p>Your <em>Configuration File</em> and its date must be chosen by running <em>Set_ConfigFile</em>.</p>
-<p>The objective of <em>Operational_Planning_Tool</em> is to create a timeline constituting of planned Science Modes and some available stand-alone Commands (specified in &quot;Science Modes for MATS&quot; document).
+<p>The objective of <em>Operational_Planning_Tool</em> is to create a file consisting of planned Science Modes and Commands with timestamps (specified in &quot;Science Modes for MATS&quot; document).
 A <em>Science Mode Timeline</em>, as it is called, is created by running <em>Timeline_gen</em>. Remember to edit and choose your <em>Configuration File</em> by running <em>Set_ConfigFile</em>.</p>
-<p>The created <em>Science Mode Timeline</em> can be converted into Payload and Platform Commands (as specified in the &quot;Innosat Payload Timeline XML Definition&quot; document)
+<p>The created <em>Science Mode Timeline</em> can be converted into a XML-file containing Payload and Platform Commands (formatted as specified in the &quot;Innosat Payload Timeline XML Definition&quot; document)
 by running <em>XML_gen</em> with the <em>Science Mode Timeline</em> as the input.</p>
 <p>The <em>Science Mode Timeline</em> can also be simulated and and plotted by running <em>Timeline_Plotter</em> with the <em>Science Mode Timeline</em> as the input.
 <em>Timeline_Plotter</em> can also optionally plot a special kind of .h5 data-files, created by OHB SWEDEN.</p>
@@ -68,16 +69,23 @@ Any time a function uses a <em>Science Mode Timeline</em> as an input, these set
 <p><em>Check_ConfigFile</em> is used to check if the values stated in the chosen <em>Configuration File</em> are plausible.</p>
 <p>All generated output files are saved in a folder called 'Output' in the working directory.
 Generated logs are saved in folders created in the working directory.</p>
-<p class="rubric">Examples</p>
+<p class="rubric">Example</p>
 <p>import OPT</p>
-<p>OPT.Copy_ConfigFile('OPT_Config_File')</p>
-<p>OPT.Set_ConfigFile('OPT_Config_File', '2019/09/05 08:00:00')</p>
-<p>OPT.CheckConfigFile()</p>
-<p>OPT.Timeline_gen()</p>
-<p>OPT.XML_gen('Output/Science_Mode_Timeline__OPT_Config_File.json')</p>
-<p>Data_MATS, Data_LP, Time, Time_OHB  = OPT.Timeline_Plotter('Output/Science_Mode_Timeline__OPT_Config_File.json')</p>
+<p>#Creates a new Configuration File named OPT_Config_File.
+OPT.Copy_ConfigFile('OPT_Config_File')</p>
+<p>#Optionally change any settings in OPT_Config_File by using a text editor</p>
+<p>#Choose the newly created Configuration File and set the starting date.
+OPT.Set_ConfigFile('OPT_Config_File', '2019/09/05 08:00:00')</p>
+<p>#Sanity check for values in the chosen Configuration File.
+OPT.CheckConfigFile()</p>
+<p>#Creates a Science Mode Timeline specified by settings given in the chosen Configuration File.
+OPT.Timeline_gen()</p>
+<p>#Converts the created Science Mode Timeline into an XML-file.
+OPT.XML_gen('Output/Science_Mode_Timeline__OPT_Config_File.json')</p>
+<p>#Plots the Science Mode Timeline.
+Data_MATS, Data_LP, Time, Time_OHB  = OPT.Timeline_Plotter('Output/Science_Mode_Timeline__OPT_Config_File.json')</p>
 <p>Science Modes are separated into 2 different areas, <em>Operational Science Modes</em> (Mode 1,2,5) and <em>Calibration Modes</em>.</p>
-<p><em>Calibration Modes</em> are scheduled at specific points of time and are usually only scheduled one time per <em>Science Mode Timeline</em>.
+<p><em>Calibration Modes</em> are scheduled at specific points of time and are usually only scheduled once per <em>Science Mode Timeline</em>.
 <em>Operational Science Modes</em> (Mode 1,2,5) are scheduled wherever time is available (after the scheduling of <em>Calibration Modes</em>) and only 1 <em>Operational Science Mode</em> is scheduled per Timeline.</p>
 <dl class="function">
 <dt id="OPT.CheckConfigFile">
@@ -119,7 +127,7 @@ the actual positional and attitude data given in a data set. Plots both the simu
 <dl class="function">
 <dt id="OPT.Set_ConfigFile">
 <code class="descclassname">OPT.</code><code class="descname">Set_ConfigFile</code><span class="sig-paren">(</span><em>Config_File_Name</em>, <em>Date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#Set_ConfigFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.Set_ConfigFile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets the StartTime for OPT, and the name of the <em>.py</em> file that is to be used as a <em>Configuration file</em> for OPT.</p>
+<dd><p>Sets the StartTime for OPT, and the name of the <em>.py</em> file that shall be used as a <em>Configuration file</em> for OPT.</p>
 <p>The <em>Configuration file</em> chosen must be visible in sys.path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -172,7 +180,7 @@ Settings stated in the <em>Science Mode Timeline</em> override settings given in
 <dt id="OPT.Timeline_analyzer">
 <code class="descclassname">OPT.</code><code class="descname">Timeline_analyzer</code><span class="sig-paren">(</span><em>science_mode_timeline_path</em>, <em>date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#Timeline_analyzer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.Timeline_analyzer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Invokes the Timeline_analyser program part of Operational Planning Tool.</p>
-<p>Searches a Science Mode Timeline json file for a given date and returns the scheduled mode and its parameters&quot;</p>
+<p>Searches a Science Mode Timeline json file for a given date and returns the scheduled mode and its parameters</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -202,7 +210,7 @@ Settings stated in the <em>Science Mode Timeline</em> override settings given in
 <p>Predicts and schedueles Science Modes and separate payload CMDs into a list containing run dates and settings used for each Mode/CMD, and saves it to a .json file in /Output.</p>
 <p>The Modes and CMDs to be scheduled are listed in <em>Modes_priority</em> in the chosen <em>Configuration File</em>.</p>
 <p><em>Operational Science Modes</em> (example: Mode 1,2,5) are scheduled separately wherever time is available at the end of the program.</p>
-<p>Settings for the operation of the program are stated in the <em>Configuration File</em> set by <em>Set_ConfigFile</em>.</p>
+<p>Settings for the operation of the program are stated in the <em>Configuration File</em> chosen with <em>Set_ConfigFile</em>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>None</p>
@@ -380,7 +388,8 @@ by calling <em>OPT.Set_ConfigFile()</em> and must be visible in <em>sys.path</em
 <dt id="OPT._ConfigFile.CCD_macro_settings">
 <code class="descclassname">OPT._ConfigFile.</code><code class="descname">CCD_macro_settings</code><span class="sig-paren">(</span><em>CCDMacroSelect</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#CCD_macro_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.CCD_macro_settings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns CCD settings for a specific macro.</p>
-<p>Each key in the output represents settings for a corresponding CCDSEL argument.</p>
+<p>Each key in the output represents settings for a corresponding CCDSEL argument.
+TEXPIMS for the CCDs (except nadir) is not changebale as they need to be synchronized with a calculated TEXPIMS.</p>
 <dl>
 <dt><strong>Keys in returned dict:</strong></dt><dd><p>'CCDSEL_16': Represents settings for UV1 (CCD5)</p>
 <p>'CCDSEL_32': Represents settings for UV2 (CCD6)</p>
@@ -451,7 +460,9 @@ by calling <em>OPT.Set_ConfigFile()</em> and must be visible in <em>sys.path</em
 <dt><strong>Keys in returned dict:</strong></dt><dd><p>'pointing_altitude_from': Sets in meters the starting altitude of the sweep. (int)</p>
 <p>'pointing_altitude_to': Sets in meters the ending altitude of the sweep. (int)</p>
 <p>'sweep_rate': Sets the rate of the sweep in m/s. (int)</p>
-<p>'start_date': Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). If the date is set to '0', Timeline_settings['start_date'] will be used.</p>
+<p>'start_date': Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). If the date is set to '0', Timeline_settings['start_date'] will be used.
+'Exp_Time_IR': Sets exposure time [ms] of the IR CCDs. (int)</p>
+<p>'Exp_Time_UV': Sets exposure time [ms] of the UV CCDs. (int)</p>
 </dd>
 </dl>
 <dl class="field-list simple">
@@ -817,20 +828,20 @@ The name must be equal to the name of a function imported in the <em>_Timeline_g
 <dl>
 <dt><strong>Keys:</strong></dt><dd><p>'start_date': Is usually set to <em>_Globals.StartTime</em>, where <em>_Globals.StartTime</em> is set by running <em>Set_ConfigFile</em>. Sets the starting date of the timeline (str), (example: '2018/9/3 08:00:40').</p>
 <p>'duration': Sets the duration [s] of the timeline. Will drastically change the runtime of <em>Timeline_gen</em>. A runtime of around 15 min is estimated for a duration of 1 week (int)</p>
-<p>'leapSeconds': Sets the amount of leap seconds for GPS time conversion. (int)</p>
+<p>'leapSeconds': Sets the amount of leap seconds for GPS time conversion. MUST BE UPDATED EACH TIME A LEAP SECOND IS ADDED TO UTC (int).</p>
 <p>'GPS_epoch': Sets the epoch of the GPS time as a str, (example: '1980/1/6'). This should not be changed!</p>
 <p>'Mode1_2_5_minDuration': Minimum amount of available time needed, inbetween scheduled Modes/CMDs in a <em>Science Mode Timeline</em>, for the scheduling of <em>Operational Science Modes</em> when running <em>Timeline_gen</em> [s].</p>
-<p>'mode_separation': Time in seconds for an added buffer when determining the duration of a Mode/CMD to make sure there is enough time to run each Command. Should be larger than the number of CMDs in any macro multiplied by Timeline_settings['command_separation']. (int)</p>
-<p>'CMD_duration': Sets the amount of time scheduled for separate PayloadCMDs when using <em>Timeline_gen</em>. (int)</p>
-<p>'yaw_correction': Determines if yaw correction shall be used for the duration of the timeline. (bool)</p>
+<p>'mode_separation': Time in seconds for an added buffer when determining the duration of a Mode/CMD to make sure that CMDs from different Modes does not collide with each other. Must be larger than the number of CMDs in any macro multiplied by Timeline_settings['command_separation']. (int)</p>
+<p>'CMD_duration': Sets the amount of time scheduled for separate PayloadCMDs when using <em>Timeline_gen</em>. Should be large enough to allow any separate CMD to finish processing.  (int)</p>
+<p>'yaw_correction': Determines if yaw correction shall be used for the duration of the timeline. Mainly impacts simulations of MATS's pointing as when I am writing this there is no actual CMD to enable yaw-correction. (bool)</p>
 <p>'yaw_amplitude': Amplitude of the yaw function (float).</p>
 <p>'yaw_phase': Phase of the yaw function (float).</p>
-<p>'Schedule_Mode5': Determines if Mode5 shall be scheduled using <em>Timline_gen</em>. Set to <em>True</em> if Mode5 shall be used and scheduled as the <em>Operational Science Mode</em>, set to <em>False</em> for Mode1-2. (bool)</p>
-<p>'LP_pointing_altitude': Sets altitude of LP in meters for the timeline. Used to set the pointing altitude of <em>Operational Science Modes</em> and to calculate the duration of attitude freezes.  (int)</p>
-<p>'command_separation': Changes the separation in time [s] between commands that are scheduled in <em>XML_gen</em>. If set too large without increasing Timeline_settings['command_separation'], it is possible that not enough time is scheduled for the duration of Modes, causing Modes to overlap in time. (float)</p>
+<p>'Choose_Operational_Science_Mode': Set to 1, 2, or 5 to choose either Mode1, Mode2, or Mode5 as the <em>Operational Science Mode</em>. Set to 0 to schedule either Mode1 or Mode2 depending of the time of the year.
+'LP_pointing_altitude': Sets altitude of LP in meters for the timeline. Used to set the pointing altitude of <em>Operational Science Modes</em> and to calculate the duration of attitude freezes (for attitude freezes last until the pointing altitude is once again set to this value.  (int)</p>
+<p>'CMD_separation': Changes the separation in time [s] between commands that are scheduled in <em>XML_gen</em>. If set too large without increasing Timeline_settings['mode_separation'], it is possible that not enough time is scheduled for the duration of Modes, causing Modes to overlap in time. (float)</p>
 <p>'pointing_stabilization': The maximum time it takes for an attitude change to stabilize [s]. Used before scheduling certain Commands in <em>XML_gen</em> to make sure that the attitude has been stabilized after running <em>TC_acfLimbPointingAltitudeOffset</em>. Also impact the estimated duration of Science Modes in <em>Timeline_gen</em>. (int)</p>
 <p>'CCDSYNC_ExtraOffset': Extra offset time [ms] that is added to an estimated ReadoutTime when calculating TEXPIOFS for the CCD Synchronize CMD. (int)</p>
-<p>'CCDSYNC_ExtraIntervalTime': Extra time [ms] that is added to the calculated Exposure Interval Time when calculating arguments for the CCD Synchronize CMD. (int)</p>
+<p>'CCDSYNC_ExtraIntervalTime': Extra time [ms] that is added to the calculated Exposure Interval Time (for example when calculating arguments for the CCD Synchronize CMD or nadir TEXPIMS). (int)</p>
 </dd>
 </dl>
 <dl class="field-list simple">
@@ -872,33 +883,20 @@ The name must be equal to the name of a function imported in the <em>_Timeline_g
 </dl>
 </dd></dl>
 
-<dl class="function">
-<dt id="OPT._ConfigFile.initialConditions">
-<code class="descclassname">OPT._ConfigFile.</code><code class="descname">initialConditions</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#initialConditions"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.initialConditions" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the values for the initialConditions container in the XML-file.</p>
-<p>initialCondition container defined in &quot;InnoSat Payload Timeline XML Definition&quot; Document</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>InitialConditions</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>)</p>
-</dd>
-</dl>
-</dd></dl>
-
 </div>
 <div class="section" id="module-OPT._Globals">
 <span id="opt-globals-module"></span><h2>OPT._Globals module<a class="headerlink" href="#module-OPT._Globals" title="Permalink to this headline">¶</a></h2>
-<p>Globals for Operational_Planning_Tool</p>
-<p>Config_File: Contains the name of the used Configuration File as set by <em>Set_ConfigFile</em>.</p>
-<p>current_pointing: Contains the pointing altitude of the last scheduled TC_acfLimbPointingAltitudeOffset command.</p>
+<p>Globals for Operational_Planning_Tool.</p>
+<p><strong>Globals:</strong></p>
+<p>Config_File: Contains the name of the used <em>Configuration File</em> as set by <em>Set_ConfigFile</em>.</p>
 <p>StartTime = Contains the starting time and date of OPT as set by <em>Set_ConfigFile</em>.</p>
+<p>current_pointing: Only applicable to XML_generator. Contains the pointing altitude of the last scheduled <em>TC_acfLimbPointingAltitudeOffset</em> command.</p>
 <p>Timeline_settings = Only applicable to XML_generator. Contains the Timeline_settings used, set by the <em>Science Mode Timeline</em> or <em>Configuration File</em>.</p>
+<p>latestRelativeTime = Only applicable to XML_generator. The <em>relativeTime</em> of the latest scheduled CMD. Used to make sure that CMDs always are scheduled in a chronological order.</p>
 </div>
 <div class="section" id="module-OPT._Library">
 <span id="opt-library-module"></span><h2>OPT._Library module<a class="headerlink" href="#module-OPT._Library" title="Permalink to this headline">¶</a></h2>
-<p>Contains functions used by the Operational Planning Tool .</p>
+<p>Functions that are commonly used by the Operational Planning Tool.</p>
 <dl class="function">
 <dt id="OPT._Library.FreezeDuration_calculator">
 <code class="descclassname">OPT._Library.</code><code class="descname">FreezeDuration_calculator</code><span class="sig-paren">(</span><em>pointing_altitude1</em>, <em>pointing_altitude2</em>, <em>TLE2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Library.html#FreezeDuration_calculator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Library.FreezeDuration_calculator" title="Permalink to this definition">¶</a></dt>
@@ -956,6 +954,28 @@ by the same amount as the angle between the two tangential pointing altitudes as
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="OPT._Library.SunAngle">
+<code class="descclassname">OPT._Library.</code><code class="descname">SunAngle</code><span class="sig-paren">(</span><em>PositionVector</em>, <em>SimulationTime</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Library.html#SunAngle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Library.SunAngle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates angle between a position vector and the position vector of the Sun.</p>
+<p>Simulates a single point in time for the Sun observed from Earth using Skyfield and then calculates the angle between the position vector of the Sun and the given input position vector.
+Used to determine the eclipse angle of the Sun angle of the position.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>PositionVector</strong> (<em>array</em>) -- Position vector.</p></li>
+<li><p><strong>SimulationTime</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">ephem.Date</span></code>) -- The time of the simulation.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The sun angle [degrees].</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a>)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1069,8 +1089,8 @@ so the number of clock cycles exceeds the setting by 1</p>
 <dl class="function">
 <dt id="OPT._Library.lat_calculator">
 <code class="descclassname">OPT._Library.</code><code class="descname">lat_calculator</code><span class="sig-paren">(</span><em>Satellite_skyfield</em>, <em>date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Library.html#lat_calculator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Library.lat_calculator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Function that calculates the latitude of a skyfield object at a certain date</p>
-<p>Mainly used to approximate the latitude of a LP as the LP is close to being in the same orbital plane.</p>
+<dd><p>Function that calculates the latitude of a skyfield.sgp4lib.EarthSatellite object at a certain date</p>
+<p>Mainly used to approximate the latitude of the LP as the LP is close to being in the same orbital plane.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -1203,7 +1223,28 @@ exist in both dict1 and dict_new, dict_new's keys will have their values replace
 <dl class="function">
 <dt id="OPT._MATS_coordinates.ecef2tanpoint">
 <code class="descclassname">OPT._MATS_coordinates.</code><code class="descname">ecef2tanpoint</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em>, <em>dx</em>, <em>dy</em>, <em>dz</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_MATS_coordinates.html#ecef2tanpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._MATS_coordinates.ecef2tanpoint" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>This function takes a position and look vector in ECEF system and returns the tangent point
+(point closest to the ellipsiod) for the WGS-84 ellipsiod in ECEF coordinates.</p>
+<p>The algorithm used is derived by Nick Lloyd at University of Saskatchewan,
+Canada (<a class="reference external" href="mailto:nick&#46;lloyd&#37;&#52;&#48;usask&#46;ca">nick<span>&#46;</span>lloyd<span>&#64;</span>usask<span>&#46;</span>ca</a>), and is part of
+the operational code for both OSIRIS and SMR on-board- the Odin satellite.</p>
+<blockquote>
+<div><dl>
+<dt>Arguments:</dt><dd><p>x (float): ECEF X-coordinate (m)</p>
+<p>y (float): ECEF Y-coordinate (m)</p>
+<p>z (float): ECEF Z-coordinate (m)</p>
+<p>dx (float): ECEF look vector X-coordinate (m)</p>
+<p>dy (float): ECEF look vector Y-coordinate (m)</p>
+<p>dz (float): ECEF look vector Z-coordinate (m</p>
+</dd>
+<dt>Returns:</dt><dd><p>(tuple): tuple containing:</p>
+<p><strong>tx</strong> (<em>float</em>): ECEF X-coordinate of tangentpoint (m)</p>
+<p><strong>ty</strong> (<em>float</em>): ECEF Y-coordinate of tangentpoint (m)</p>
+<p><strong>tz</strong> (<em>float</em>): ECEF Z-coordinate of tangentpoint (m)</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd></dl>
 
 <dl class="function">
 <dt id="OPT._MATS_coordinates.eci2ecef">
@@ -1223,11 +1264,6 @@ exist in both dict1 and dict_new, dict_new's keys will have their values replace
 <dl class="function">
 <dt id="OPT._MATS_coordinates.los_from_tanpoint_spherical">
 <code class="descclassname">OPT._MATS_coordinates.</code><code class="descname">los_from_tanpoint_spherical</code><span class="sig-paren">(</span><em>satpos1_eci_1</em>, <em>satpos2_eci</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_MATS_coordinates.html#los_from_tanpoint_spherical"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._MATS_coordinates.los_from_tanpoint_spherical" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="OPT._MATS_coordinates.quaternion2ECEF">
-<code class="descclassname">OPT._MATS_coordinates.</code><code class="descname">quaternion2ECEF</code><span class="sig-paren">(</span><em>q</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_MATS_coordinates.html#quaternion2ECEF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._MATS_coordinates.quaternion2ECEF" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">

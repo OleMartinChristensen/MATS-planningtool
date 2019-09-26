@@ -170,21 +170,26 @@
     <span class="n">Mode1_2_5</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">Modes_Header</span><span class="p">,</span><span class="s1">&#39;Mode1_2_5&#39;</span><span class="p">)</span>
     
     
-    <span class="k">if</span><span class="p">(</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;Schedule_Mode5&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">True</span> <span class="p">):</span>
-        <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Timeline_settings[&#39;Schedule_Mode5&#39;] == True&quot;</span><span class="p">)</span>
+    <span class="k">if</span><span class="p">(</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;Choose_Operational_Science_Mode&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">5</span> <span class="p">):</span>
         <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Schedule Mode5 as an operational science mode&#39;</span><span class="p">)</span>
         
         <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;Mode5&#39;</span>
-    <span class="c1">### Check if it is NLC season ###</span>
-    <span class="k">elif</span><span class="p">(</span> <span class="n">Timeline_start_date</span><span class="o">.</span><span class="n">tuple</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">11</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">]</span> <span class="ow">or</span> 
-            <span class="p">(</span> <span class="n">Timeline_start_date</span><span class="o">.</span><span class="n">tuple</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">9</span><span class="p">]</span> <span class="ow">and</span> <span class="n">Timeline_start_date</span><span class="o">.</span><span class="n">tuple</span><span class="p">()[</span><span class="mi">2</span><span class="p">]</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span> <span class="p">)):</span>
-        
-        <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;NLC season (Mode1)&#39;</span><span class="p">)</span>
-        <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;Mode1&#39;</span> 
-    <span class="k">else</span><span class="p">:</span>
-        
-        <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Not NLC season (Mode2)&#39;</span><span class="p">)</span>
+    <span class="k">elif</span><span class="p">(</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;Choose_Operational_Science_Mode&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">):</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Schedule Mode1 as an operational science mode&#39;</span><span class="p">)</span>
+        <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;Mode1&#39;</span>
+    <span class="k">elif</span><span class="p">(</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;Choose_Operational_Science_Mode&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span> <span class="p">):</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Schedule Mode2 as an operational science mode&#39;</span><span class="p">)</span>
         <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;Mode2&#39;</span>
+    <span class="k">elif</span><span class="p">(</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;Choose_Operational_Science_Mode&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">):</span>
+        <span class="c1">### Check if it is NLC season ###</span>
+        <span class="k">if</span><span class="p">(</span> <span class="n">Timeline_start_date</span><span class="o">.</span><span class="n">tuple</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">11</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">]</span> <span class="ow">or</span> 
+                <span class="p">(</span> <span class="n">Timeline_start_date</span><span class="o">.</span><span class="n">tuple</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">9</span><span class="p">]</span> <span class="ow">and</span> <span class="n">Timeline_start_date</span><span class="o">.</span><span class="n">tuple</span><span class="p">()[</span><span class="mi">2</span><span class="p">]</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span> <span class="p">)):</span>
+            
+            <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;NLC season (Mode1)&#39;</span><span class="p">)</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;Mode1&#39;</span> 
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Not NLC season (Mode2)&#39;</span><span class="p">)</span>
+            <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;Mode2&#39;</span>
             
         
     <span class="n">Occupied_Timeline</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">mode</span><span class="p">:</span> <span class="p">[]})</span>

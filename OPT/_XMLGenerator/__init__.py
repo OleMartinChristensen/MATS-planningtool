@@ -1,5 +1,5 @@
 """The *XML_gen* part of the *Operational_Planning_Tool* which purpose is to convert a
-*Science Mode Timeline* .json file into a XML file, containing Payload and Platform CMDs. \n
+*Science Mode Timeline* .json file into a XML file, containing Payload and Platform CMDs. Uses the lmxl package to create a XML file. \n
 
 Any settings given in the *Science Mode Timeline* file will overide the use of the same settings stated in the set *Configuration File*.
 
@@ -19,7 +19,7 @@ To add your own Mode to be converted into CMDs using *XML_gen* you need to follo
 
  - Go into the *Modes* module, inside the *Modes_and_Tests* package. At the bottom you should find a Mode template function called "XML_generator_X". Copy this function. Replace the X for the name of your Mode.
  - Calculate or define any appropriate parameters for your Mode's CMDs/Macros.
- - Now use these parameters to add any calls for Macros/Command functions located in the modules inside the *Macros_Commands* package. By default there is a call for the *TC_acfLimbPointingAltitudeOffset* CMD as an example, you can remove this.
+ - Now use these parameters to add any calls for Macros/Command functions located in the modules inside the *Macros_Commands* package. By default there is a call for the *TC_acfLimbPointingAltitudeOffset* CMD and the *Operational_Limb_Pointing_macro* as an example, you can remove these.
  - It is recommended (but not necessary) to also give the new Mode its own "Configuration function" inside the *_ConfigFile*. This function will hold tuneable settings for the Mode, such as pointing altitude for the *TC_acfLimbPointingAltitudeOffset* CMD.
 
 You should now have working Mode in XML_gen. Feel free to check the other Modes defined in the *MODES* module to understand how they are implemented. There are also some outcommented lines of code which you might find useful when defining your Mode. 

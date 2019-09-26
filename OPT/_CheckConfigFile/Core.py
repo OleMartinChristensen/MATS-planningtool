@@ -54,11 +54,11 @@ def CheckConfigFile():
     if not( 15 <= Timeline_settings['mode_separation'] and type(Timeline_settings['mode_separation']) == int ):
         Logger.error('Timeline_settings["mode_separation"]')
         raise ValueError
-    if not( 1 <= Timeline_settings['command_separation'] and (type(Timeline_settings['command_separation']) == int or type(Timeline_settings['command_separation']) == float) ):
-        Logger.error('Timeline_settings["command_separation"]')
+    if not( 1 <= Timeline_settings['CMD_separation'] and (type(Timeline_settings['CMD_separation']) == int or type(Timeline_settings['CMD_separation']) == float) ):
+        Logger.error('Timeline_settings["CMD_separation"]')
         raise ValueError
-    if not( Timeline_settings['command_separation'] * 8 <= Timeline_settings['mode_separation'] ):
-        Logger.error("Timeline_settings['command_separation'] * 8 <= Timeline_settings['mode_separation']. Possibility of time separation between CMDs are too large causing CMDs from Science Modes to overlap")
+    if not( Timeline_settings['CMD_separation'] * 8 <= Timeline_settings['mode_separation'] ):
+        Logger.error("Timeline_settings['CMD_separation'] * 8 <= Timeline_settings['mode_separation']. Possibility of time separation between CMDs are too large causing CMDs from Science Modes to overlap")
         raise ValueError
     if not( 40 <= Timeline_settings['pointing_stabilization'] and type(Timeline_settings['pointing_stabilization']) == int ):
         Logger.error("Timeline_settings['pointing_stabilization']")
@@ -72,13 +72,13 @@ def CheckConfigFile():
     if not( type(Timeline_settings['yaw_correction']) == bool ):
         Logger.error("Timeline_settings['yaw_correction']")
         raise TypeError
-    if not( type(Timeline_settings['Schedule_Mode5']) == bool ):
-        Logger.error("Timeline_settings['Schedule_Mode5']")
-        raise TypeError
+    if not( Timeline_settings['Choose_Operational_Science_Mode'] in [0,1,2,5]):
+        Logger.error("Timeline_settings['Choose_Operational_Science_Mode'] != 0, 1, 2, or 5")
+        raise ValueError
     if not( type(Timeline_settings['GPS_epoch']) == str ):
         Logger.error("Timeline_settings['GPS_epoch']")
         raise TypeError
-    if not( 0 < Timeline_settings['leapSeconds'] and type(Timeline_settings['leapSeconds']) == int ):
+    if not( 0 < Timeline_settings['leapSeconds'] < 100 and type(Timeline_settings['leapSeconds']) == int ):
         Logger.error("Timeline_settings['leapSeconds']")
         raise ValueError
     if not( 0 <= abs(Timeline_settings['yaw_amplitude']) < 20 and (type(Timeline_settings['yaw_amplitude']) == int or type(Timeline_settings['yaw_amplitude']) == float) ):
@@ -151,7 +151,7 @@ def CheckConfigFile():
                 
     
     
-    if not( 10000 <= Mode120_settings['pointing_altitude'] <= 300000 and type(Mode120_settings['pointing_altitude']) == int ):
+    if not( -60000 <= Mode120_settings['pointing_altitude'] <= 230000 and type(Mode120_settings['pointing_altitude']) == int ):
         Logger.error("Mode120_settings['pointing_altitude']")
         raise ValueError
     if not( 0 < Mode120_settings['timestep'] <= 10 and type(Mode120_settings['timestep']) == int ):
@@ -187,7 +187,7 @@ def CheckConfigFile():
     
     
     
-    if not( 10000 <= Mode121_122_123_settings['pointing_altitude'] <= 300000 and type(Mode121_122_123_settings['pointing_altitude']) == int ):
+    if not( -60000 <= Mode121_122_123_settings['pointing_altitude'] <= 230000 and type(Mode121_122_123_settings['pointing_altitude']) == int ):
         Logger.error("Mode121_122_123_settings['pointing_altitude']")
         raise ValueError
     if not( 0 < Mode121_122_123_settings['timestep'] <= 10 and type(Mode121_122_123_settings['timestep']) == int ):
@@ -249,7 +249,7 @@ def CheckConfigFile():
     
     
     
-    if not( 10000 <= Mode124_settings['pointing_altitude'] <= 300000 and type(Mode124_settings['pointing_altitude']) == int ):
+    if not( -60000 <= Mode124_settings['pointing_altitude'] <= 230000 and type(Mode124_settings['pointing_altitude']) == int ):
         Logger.error("Mode124_settings['pointing_altitude']")
         raise ValueError
     if not( 0 < Mode124_settings['timestep'] <= 10 and type(Mode124_settings['timestep']) == int ):
@@ -284,29 +284,29 @@ def CheckConfigFile():
     
     
     
-    if not( Timeline_settings['command_separation'] <= Mode130_settings['SnapshotSpacing'] and type(Mode130_settings['SnapshotSpacing']) == int):
+    if not( Timeline_settings['CMD_separation'] <= Mode130_settings['SnapshotSpacing'] and type(Mode130_settings['SnapshotSpacing']) == int):
         Logger.error("Mode130_settings['mode_duration']")
         raise TypeError
-    if not( Timeline_settings['pointing_stabilization'] + Timeline_settings['command_separation'] * 8  < Mode131_settings['mode_duration'] and type(Mode131_settings['mode_duration']) == int):
+    if not( Timeline_settings['pointing_stabilization'] + Timeline_settings['CMD_separation'] * 8  < Mode131_settings['mode_duration'] and type(Mode131_settings['mode_duration']) == int):
         Logger.error("Mode131_settings['mode_duration']")
         raise TypeError
-    if not( Timeline_settings['pointing_stabilization'] + Timeline_settings['command_separation'] * 8  < Mode134_settings['mode_duration'] and type(Mode134_settings['mode_duration']) == int):
+    if not( Timeline_settings['pointing_stabilization'] + Timeline_settings['CMD_separation'] * 8  < Mode134_settings['mode_duration'] and type(Mode134_settings['mode_duration']) == int):
         Logger.error("Mode134_settings['mode_duration']")
         raise TypeError
     
-    if not( 10000 <= Mode130_settings['pointing_altitude'] <= 300000 and type(Mode130_settings['pointing_altitude']) == int ):
+    if not( -60000 <= Mode130_settings['pointing_altitude'] <= 230000 and type(Mode130_settings['pointing_altitude']) == int ):
         Logger.error("Mode130_settings['pointing_altitude']")
         raise ValueError
-    if not( 10000 <= Mode131_settings['pointing_altitude'] <= 300000 and type(Mode131_settings['pointing_altitude']) == int ):
+    if not( -60000 <= Mode131_settings['pointing_altitude'] <= 230000 and type(Mode131_settings['pointing_altitude']) == int ):
         Logger.error("Mode131_settings['pointing_altitude']")
         raise ValueError
-    if not( 10000 <= Mode132_settings['pointing_altitude'] <= 300000 and type(Mode132_settings['pointing_altitude']) == int ):
+    if not( -60000 <= Mode132_settings['pointing_altitude'] <= 230000 and type(Mode132_settings['pointing_altitude']) == int ):
         Logger.error("Mode132_settings['pointing_altitude']")
         raise ValueError
-    if not( 10000 <= Mode133_settings['pointing_altitude'] <= 300000 and type(Mode133_settings['pointing_altitude']) == int ):
+    if not( -60000 <= Mode133_settings['pointing_altitude'] <= 230000 and type(Mode133_settings['pointing_altitude']) == int ):
         Logger.error("Mode133_settings['pointing_altitude']")
         raise ValueError
-    if not( 10000 <= Mode134_settings['pointing_altitude'] <= 300000 and type(Mode134_settings['pointing_altitude']) == int ):
+    if not( -60000 <= Mode134_settings['pointing_altitude'] <= 230000 and type(Mode134_settings['pointing_altitude']) == int ):
         Logger.error("Mode134_settings['pointing_altitude']")
         raise ValueError
     
@@ -341,7 +341,7 @@ def CheckConfigFile():
         raise TypeError
     
     
-    
+    Logger.info('CheckConfigFile passed.')
     
     
     

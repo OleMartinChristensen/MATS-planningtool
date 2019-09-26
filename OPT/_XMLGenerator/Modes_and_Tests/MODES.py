@@ -2,7 +2,7 @@
 """Contain Mode functions which generates and calculates parameters for each mode, 
 then calls for Macros/Commands functions located in the *Macros_Commands* package, which will in turn write commands to the XML tree object *root*.
 
-Functions on the form "XML_generator_X", where the last X is any Mode:
+Functions on the form "X", where the last X is any Mode:
 
     **Arguments:**
         **root** (*lxml.etree.Element*):  XML tree structure. Main container object for the ElementTree API. \n
@@ -15,7 +15,7 @@ Functions on the form "XML_generator_X", where the last X is any Mode:
         None
 
 When creating new Mode functions it is crucial that the function name is
-XML_generator_Mode_name, where Mode_name is the same as the string used in the *Science Mode Timeline*
+Mode_name, where Mode_name is the same as the string used in the *Science Mode Timeline*
         
 @author: David
 """
@@ -26,18 +26,18 @@ import ephem, logging, sys, pylab, importlib, skyfield.api
 from OPT import _Globals
 
 OPT_Config_File = importlib.import_module(_Globals.Config_File)
-from OPT._Library import Satellite_Simulator, params_checker, utc_to_onboardTime
+from OPT._Library import Satellite_Simulator, params_checker, utc_to_onboardTime, SunAngle
 from .Macros_Commands import Macros, Commands
 
 Logger = logging.getLogger(OPT_Config_File.Logger_name())
 #Timeline_settings = OPT_Config_File.Timeline_settings()
 
 
-def XML_generator_Mode5(root, date, duration, relativeTime, params = {}):
-    '''Mode5, Operational_Limb_Pointing_macro
+def Mode5(root, date, duration, relativeTime, params = {}):
+    '''Mode5
     
-    Look at fixed limb altitude in operational mode.
-    CustomBinning.
+    **Macro:** Operational_Limb_Pointing_macro \n
+    **CCD_Macro:** CustomBinning \n
             
     '''
     
@@ -48,7 +48,7 @@ def XML_generator_Mode5(root, date, duration, relativeTime, params = {}):
     
     params = params_checker(params, settings, Logger)
     
-    Mode_name = sys._getframe(1).f_code.co_name.replace('XML_generator_','')
+    Mode_name = sys._getframe(1).f_code.co_name.replace('','')
     comment = Mode_name+' starting date: '+str(date)+', '+str(params)
     
     #pointing_altitude = params['pointing_altitude']
@@ -61,14 +61,16 @@ def XML_generator_Mode5(root, date, duration, relativeTime, params = {}):
 
 ############################################################################################
     
-def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
-    """Mode1, Operational_Limb_Pointing_macro.
+def Mode1(root, date, duration, relativeTime, params = {}):
+    """Mode1
     
-    Simulates MATS and the LP with or without yaw movement to be able to predict and schedule commands in the XML-file.
-    Look at fixed limb altitude in operational mode.
-    High resolution UV binning for latitudes +-lat degrees latitude polewards.
+    **Macro:** Operational_Limb_Pointing_macro \n
+    **CCD_Macro:** HighResUV \n
+    
     Disable exposure on UV channels for +-lat degrees latitude equatorwards.
     Stop/Start Nadir at dusk/dawn below MATS.
+    Simulates MATS and the LP with or without yaw movement to be able to predict and schedule commands in the XML-file.
+    
     """
     
     #from OPT_Config_File import Mode1_settings, getTLE
@@ -112,28 +114,37 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
     sun_angle = zeros((duration,1))
     lat_LP = zeros((duration,1))
     
-    R_mean = 6371000
+    R_mean = 6371000 #Radius of Earth in m
     pointing_altitude = Timeline_settings['LP_pointing_altitude']
     lat = params['lat']
     
+    heightAboveSurface = 20000 #Altitude in km where sun is deemed to reflect in atmosphere, determining night and day below satellite"
+    
+    
     #Estimation of the angle between the sun and the FOV position when it enters eclipse
-    MATS_nadir_eclipse_angle = arccos(R_mean/(R_mean+pointing_altitude))/pi*180 + 90
+    MATS_nadir_eclipse_angle = arccos(R_mean/(R_mean+heightAboveSurface))/pi*180 + 90
     
     Logger.debug('MATS_nadir_eclipse_angle : '+str(MATS_nadir_eclipse_angle))
     Logger.debug('')
     
-    ts = skyfield.api.load.timescale()
+    
     MATS_skyfield = skyfield.api.EarthSatellite(TLE[0], TLE[1])
     
-    MATS = ephem.readtle('MATS',TLE[0],TLE[1])
-    Sun = ephem.Sun()
-    
-    
+    new_relativeTime = relativeTime
+    current_time = ephem.Date(date)
     
     "Loop and calculate the relevant angle of each star to each direction of MATS's FOV"
     for t in range(int(duration/timestep)):
         
-        current_time = ephem.Date(date+ephem.second*timestep*t)
+        if( t != 0):
+            "Incremented time from scheduling CMDs"
+            CMD_scheduling_delay = (new_relativeTime-relativeTime)
+            "Increment with timestep each loop and add any added time from CMD scheduling"
+            current_time = ephem.Date( current_time + ephem.second*(timestep + CMD_scheduling_delay) )
+            #current_time = ephem.Date( current_time+ephem.second*(new_relativeTime-relativeTime) )
+            relativeTime = new_relativeTime + timestep
+        
+        new_relativeTime = relativeTime
         
         if( t*timestep % log_timestep == 0):
             LogFlag = True
@@ -149,10 +160,11 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
         optical_axis[t] = Satellite_dict['OpticalAxis']
         lat_LP[t] = Satellite_dict['EstimatedLatitude_LP [degrees]']
         
+        sun_angle[t] = SunAngle( r_MATS[t], current_time)
         
-        MATS.compute(current_time, epoch = '2000/01/01 11:58:55.816')
-        Sun.compute(current_time, epoch = '2000/01/01 11:58:55.816')
-        sun_angle[t]= ephem.separation(Sun,MATS)/pi*180
+        #MATS.compute(current_time, epoch = '2000/01/01 11:58:55.816')
+        #Sun.compute(current_time, epoch = '2000/01/01 11:58:55.816')
+        #sun_angle[t]= ephem.separation(Sun,MATS)/pi*180
         
         if( t*timestep % log_timestep == 0):
             Logger.debug('sun_angle [degrees]: '+str(sun_angle[t]))
@@ -168,21 +180,21 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
                 if( abs(lat_LP[t]) < lat):
                     current_state = "NLC_night_UV_off"
                     comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                    #Macros.Mode1_macro(root,t*timestep+relativeTime, pointing_altitude=pointing_altitude, UV_on = False, nadir_on = True, comment = comment)
+                    #new_relativeTime = Macros.Mode1_macro(root,relativeTime, pointing_altitude=pointing_altitude, UV_on = False, nadir_on = True, comment = comment)
                     CCD_settings['CCDSEL_16']['TEXPMS'] = 0
                     CCD_settings['CCDSEL_32']['TEXPMS'] = 0
                     CCD_settings['CCDSEL_64']['TEXPMS'] = TEXPMS_nadir
-                    Macros.Operational_Limb_Pointing_macro(root, t*timestep+relativeTime, CCD_settings, 
+                    new_relativeTime = Macros.Operational_Limb_Pointing_macro(root, relativeTime, CCD_settings, 
                                                                pointing_altitude=pointing_altitude, comment = comment)
                     
                 elif( abs(lat_LP[t]) > lat):
                     current_state = "NLC_night_UV_on"
                     comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                    #Macros.Mode1_macro(root,t*timestep+relativeTime, pointing_altitude=pointing_altitude, UV_on = True, nadir_on = True, comment = comment)
+                    #new_relativeTime = Macros.Mode1_macro(root,relativeTime, pointing_altitude=pointing_altitude, UV_on = True, nadir_on = True, comment = comment)
                     CCD_settings['CCDSEL_16']['TEXPMS'] = TEXPMS_16
                     CCD_settings['CCDSEL_32']['TEXPMS'] = TEXPMS_32
                     CCD_settings['CCDSEL_64']['TEXPMS'] = TEXPMS_nadir
-                    Macros.Operational_Limb_Pointing_macro(root, t*timestep+relativeTime, CCD_settings, 
+                    new_relativeTime = Macros.Operational_Limb_Pointing_macro(root, relativeTime, CCD_settings, 
                                                                pointing_altitude=pointing_altitude, comment = comment)
                     
                     
@@ -191,21 +203,21 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
                 if( abs(lat_LP[t]) < lat):
                     current_state = "NLC_day_UV_off"
                     comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                    #Macros.Mode1_macro(root,t*timestep+relativeTime,pointing_altitude, UV_on = False, nadir_on = False, comment = comment)
+                    #new_relativeTime = Macros.Mode1_macro(root,relativeTime,pointing_altitude, UV_on = False, nadir_on = False, comment = comment)
                     CCD_settings['CCDSEL_16']['TEXPMS'] = 0
                     CCD_settings['CCDSEL_32']['TEXPMS'] = 0
                     CCD_settings['CCDSEL_64']['TEXPMS'] = 0
-                    Macros.Operational_Limb_Pointing_macro(root, t*timestep+relativeTime, CCD_settings, 
+                    new_relativeTime = Macros.Operational_Limb_Pointing_macro(root, relativeTime, CCD_settings, 
                                                                pointing_altitude=pointing_altitude, comment = comment)
                     
                 elif( abs(lat_LP[t]) > lat):
                     current_state = "NLC_day_UV_on"
                     comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                    #Macros.Mode1_macro(root,t*timestep+relativeTime,pointing_altitude, UV_on = True, nadir_on = False, comment = comment)
+                    #new_relativeTime = Macros.Mode1_macro(root,relativeTime,pointing_altitude, UV_on = True, nadir_on = False, comment = comment)
                     CCD_settings['CCDSEL_16']['TEXPMS'] = TEXPMS_16
                     CCD_settings['CCDSEL_32']['TEXPMS'] = TEXPMS_32
                     CCD_settings['CCDSEL_64']['TEXPMS'] = 0
-                    Macros.Operational_Limb_Pointing_macro(root, t*timestep+relativeTime, CCD_settings, 
+                    new_relativeTime = Macros.Operational_Limb_Pointing_macro(root, relativeTime, CCD_settings, 
                                                                pointing_altitude=pointing_altitude, comment = comment)
                     
                     
@@ -232,11 +244,11 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
                         Logger.debug('')
                         current_state = "NLC_night_UV_off"
                         comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                        #Macros.Mode1_macro(root, t*timestep+relativeTime, pointing_altitude, UV_on = False, nadir_on = True, comment = comment)
+                        #new_relativeTime = Macros.Mode1_macro(root, relativeTime, pointing_altitude, UV_on = False, nadir_on = True, comment = comment)
                         CCD_settings['CCDSEL_16']['TEXPMS'] = 0
                         CCD_settings['CCDSEL_32']['TEXPMS'] = 0
                         CCD_settings['CCDSEL_64']['TEXPMS'] = TEXPMS_nadir
-                        Macros.Operational_Limb_Pointing_macro(root, t*timestep+relativeTime, CCD_settings, 
+                        new_relativeTime = Macros.Operational_Limb_Pointing_macro(root, relativeTime, CCD_settings, 
                                                                pointing_altitude=pointing_altitude, comment = comment)
                         
                         Logger.debug(current_state)
@@ -259,11 +271,11 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
                         Logger.debug('')
                         current_state = "NLC_night_UV_on"
                         comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                        #Macros.Mode1_macro(root, t*timestep+relativeTime, pointing_altitude=pointing_altitude, UV_on = True, nadir_on = True, comment = comment)
+                        #new_relativeTime = Macros.Mode1_macro(root, relativeTime, pointing_altitude=pointing_altitude, UV_on = True, nadir_on = True, comment = comment)
                         CCD_settings['CCDSEL_16']['TEXPMS'] = TEXPMS_16
                         CCD_settings['CCDSEL_32']['TEXPMS'] = TEXPMS_32
                         CCD_settings['CCDSEL_64']['TEXPMS'] = TEXPMS_nadir
-                        Macros.Operational_Limb_Pointing_macro(root, t*timestep+relativeTime, CCD_settings, 
+                        new_relativeTime = Macros.Operational_Limb_Pointing_macro(root, relativeTime, CCD_settings, 
                                                                pointing_altitude=pointing_altitude, comment = comment)
                         
                         Logger.debug(current_state)
@@ -290,11 +302,11 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
                         Logger.debug('')
                         current_state = "NLC_day_UV_off"
                         comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                        #Macros.Mode1_macro(root, t*timestep+relativeTime, pointing_altitude=pointing_altitude, UV_on = False, nadir_on = False, comment = comment)
+                        #new_relativeTime = Macros.Mode1_macro(root, relativeTime, pointing_altitude=pointing_altitude, UV_on = False, nadir_on = False, comment = comment)
                         CCD_settings['CCDSEL_16']['TEXPMS'] = 0
                         CCD_settings['CCDSEL_32']['TEXPMS'] = 0
                         CCD_settings['CCDSEL_64']['TEXPMS'] = 0
-                        Macros.Operational_Limb_Pointing_macro(root, t*timestep+relativeTime, CCD_settings, 
+                        new_relativeTime = Macros.Operational_Limb_Pointing_macro(root, relativeTime, CCD_settings, 
                                                                pointing_altitude=pointing_altitude, comment = comment)
                         
                         
@@ -319,11 +331,11 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
                         Logger.debug('')
                         current_state = "NLC_day_UV_on"
                         comment = current_state+': '+str(current_time)+', parameters: '+str(params)
-                        #Macros.Mode1_macro(root, t*timestep+relativeTime, pointing_altitude=pointing_altitude, UV_on = True, nadir_on = False, comment = comment)
+                        #new_relativeTime = Macros.Mode1_macro(root, relativeTime, pointing_altitude=pointing_altitude, UV_on = True, nadir_on = False, comment = comment)
                         CCD_settings['CCDSEL_16']['TEXPMS'] = TEXPMS_16
                         CCD_settings['CCDSEL_32']['TEXPMS'] = TEXPMS_32
                         CCD_settings['CCDSEL_64']['TEXPMS'] = 0
-                        Macros.Operational_Limb_Pointing_macro(root, t*timestep+relativeTime, CCD_settings, 
+                        new_relativeTime = Macros.Operational_Limb_Pointing_macro(root, relativeTime, CCD_settings, 
                                                                pointing_altitude=pointing_altitude, comment = comment)
                         
                         
@@ -344,13 +356,14 @@ def XML_generator_Mode1(root, date, duration, relativeTime, params = {}):
 
 #######################################################################################
 
-def XML_generator_Mode2(root, date, duration, relativeTime, params = {}):
-    """Mode2, Operational_Limb_Pointing_macro.
+def Mode2(root, date, duration, relativeTime, params = {}):
+    """Mode2
     
-    Simulates MATS to be able to schedule commands in the XML-file.
-    Look at fixed limb altitude in operational mode.
-    High-resolution IR binning. 
+    **Macro**: Operational_Limb_Pointing_macro. \n
+    **CCD_Macro**: HighResIR (High-resolution IR binning). \n
+    
     Stop/Start Nadir at dusk/dawn below MATS.
+    Simulates MATS to determine when a point below MATS is at night or daytime.
     
     """
     
@@ -370,32 +383,57 @@ def XML_generator_Mode2(root, date, duration, relativeTime, params = {}):
     log_timestep = params['log_timestep']
     Logger.debug('log_timestep [s]: '+str(log_timestep))
     
-    Sun = ephem.Sun()
+    
     TLE = OPT_Config_File.getTLE()
-    MATS = ephem.readtle('MATS', TLE[0], TLE[1])
     
     
     "Pre-allocate space"
     sun_angle = zeros((duration,1))
+    r_MATS = zeros((duration,3))
     
-    
-    R_mean = 6371000
+    R_mean = 6371000 #Radius of Earth in m
     pointing_altitude = Timeline_settings['LP_pointing_altitude']
     
+    heightAboveSurface = 20000 #Altitude in m where sun is deemed to reflect in atmosphere, determining night and day below satellite"
+    
     #Estimation of the angle between the sun and the FOV position when it enters eclipse
-    MATS_nadir_eclipse_angle = arccos(R_mean/(R_mean+pointing_altitude))/pi*180 + 90
+    MATS_nadir_eclipse_angle = arccos(R_mean/(R_mean+heightAboveSurface))/pi*180 + 90
     Logger.debug('MATS_nadir_eclipse_angle : '+str(MATS_nadir_eclipse_angle))
+    
+    
+    MATS_skyfield = skyfield.api.EarthSatellite(TLE[0], TLE[1])
+    
+    new_relativeTime = relativeTime
+    current_time = ephem.Date(date)
     
     "Loop and calculate the relevant angle of each star to each direction of MATS's FOV"
     for t in range(int(duration/timestep)):
         
+        if( t != 0):
+            CMD_scheduling_delay = (new_relativeTime-relativeTime)
+            "Increment with timestep each loop and add any added time if new_relativeTime was changed"
+            current_time = ephem.Date( current_time + ephem.second*(timestep + CMD_scheduling_delay) )
+            #current_time = ephem.Date( current_time+ephem.second*(new_relativeTime-relativeTime) )
+            
+            relativeTime = new_relativeTime + timestep
         
-        current_time = ephem.Date(date+ephem.second*timestep*t)
+        new_relativeTime = relativeTime
         
-        MATS.compute(current_time, epoch = '2000/01/01 11:58:55.816')
+        #relativeTime = relativeTime + t * timestep
+        #current_time = ephem.Date(date+ephem.second*timestep*t)
         
-        Sun.compute(current_time, '2000/01/01 11:58:55.816')
-        sun_angle[t]= ephem.separation(Sun,MATS)/pi*180
+        if( t*timestep % log_timestep == 0):
+            LogFlag = True
+        else:
+            LogFlag = False
+        
+        Satellite_dict = Satellite_Simulator( 
+                    MATS_skyfield, current_time, Timeline_settings, pointing_altitude/1000, LogFlag, Logger )
+        
+        r_MATS[t] = Satellite_dict['Position [km]']
+        sun_angle[t] = SunAngle( r_MATS[t], current_time)
+        
+        
         
         if( t % log_timestep == 0):
             Logger.debug('')
@@ -410,17 +448,17 @@ def XML_generator_Mode2(root, date, duration, relativeTime, params = {}):
             if( sun_angle[t] > MATS_nadir_eclipse_angle):
                 current_state = "IR_night"
                 comment = current_state+': '+str(params)
-                #Macros.Mode1_macro(root,t*timestep+relativeTime, pointing_altitude=pointing_altitude, nadir_on = True, comment = comment)
+                #new_relativeTime = Macros.Mode1_macro(root,relativeTime, pointing_altitude=pointing_altitude, nadir_on = True, comment = comment)
                 CCD_settings['CCDSEL_64']['TEXPMS'] = TEXPMS_nadir
-                Macros.Operational_Limb_Pointing_macro(root, t*timestep+relativeTime, CCD_settings, 
+                new_relativeTime = Macros.Operational_Limb_Pointing_macro(root, relativeTime, CCD_settings, 
                                                        pointing_altitude=pointing_altitude, comment = comment)
                 
             elif( sun_angle[t] < MATS_nadir_eclipse_angle):
                 current_state = "IR_day"
                 comment = current_state+': '+str(params)
-                #Macros.Mode1_macro(root,t*timestep+relativeTime, pointing_altitude=pointing_altitude, nadir_on = False, comment = comment)
+                #new_relativeTime = Macros.Mode1_macro(root,relativeTime, pointing_altitude=pointing_altitude, nadir_on = False, comment = comment)
                 CCD_settings['CCDSEL_64']['TEXPMS'] = 0
-                Macros.Operational_Limb_Pointing_macro(root, t*timestep+relativeTime, CCD_settings, 
+                new_relativeTime = Macros.Operational_Limb_Pointing_macro(root, relativeTime, CCD_settings, 
                                                        pointing_altitude=pointing_altitude, comment = comment)
         
         ############# End of Initial Mode setup ###################################
@@ -441,9 +479,9 @@ def XML_generator_Mode2(root, date, duration, relativeTime, params = {}):
                     Logger.debug('')
                     current_state = "IR_night"
                     comment = current_state+': '+str(params)
-                    #Macros.Mode1_macro(root, t*timestep+relativeTime, pointing_altitude=pointing_altitude, nadir_on = True, comment = comment)
+                    #new_relativeTime = Macros.Mode1_macro(root, relativeTime, pointing_altitude=pointing_altitude, nadir_on = True, comment = comment)
                     CCD_settings['CCDSEL_64']['TEXPMS'] = TEXPMS_nadir
-                    Macros.Operational_Limb_Pointing_macro(root, t*timestep+relativeTime, CCD_settings, 
+                    new_relativeTime = Macros.Operational_Limb_Pointing_macro(root, relativeTime, CCD_settings, 
                                                            pointing_altitude=pointing_altitude, comment = comment)
                     
                     Logger.debug('current_time: '+str(current_time))
@@ -460,9 +498,9 @@ def XML_generator_Mode2(root, date, duration, relativeTime, params = {}):
                     Logger.debug('')
                     current_state = "IR_day"
                     comment = current_state+': '+str(params)
-                    #Macros.Mode1_macro(root, t*timestep+relativeTime, pointing_altitude=pointing_altitude, nadir_on = False, comment = comment)
+                    #new_relativeTime = Macros.Mode1_macro(root, relativeTime, pointing_altitude=pointing_altitude, nadir_on = False, comment = comment)
                     CCD_settings['CCDSEL_64']['TEXPMS'] = 0
-                    Macros.Operational_Limb_Pointing_macro(root, t*timestep+relativeTime, CCD_settings, 
+                    new_relativeTime = Macros.Operational_Limb_Pointing_macro(root, relativeTime, CCD_settings, 
                                                            pointing_altitude=pointing_altitude, comment = comment)
                     
                     Logger.debug('current_time: '+str(current_time))
@@ -480,13 +518,15 @@ def XML_generator_Mode2(root, date, duration, relativeTime, params = {}):
 
 
 
-def XML_generator_Mode100(root, date, duration, relativeTime, params = {}):
-    """ Mode100, Operational_Limb_Pointing_macro.
+def Mode100(root, date, duration, relativeTime, params = {}):
+    """ Mode100
+    
+    **Macro**: Operational_Limb_Pointing_macro. \n
+    **CCD_Macro**: BinnedCalibration with configurable exposure time of UV and IR CCDs. \n
     
     Successively point at altitudes from X-Y in Operational Mode in intervals of Z with increasing Exposure Times.
     Where X is *pointing_altitude_from*, Y is *pointing_altitude_to, and Z is *pointing_altitude_interval*.
-    All defined in OPT_Config_File.Mode100_settings. 
-    BinnedCalibration.
+    All defined in *Mode100_settings*.
     
     """
     
@@ -497,7 +537,7 @@ def XML_generator_Mode100(root, date, duration, relativeTime, params = {}):
     
     params = params_checker(params, settings, Logger)
     
-    Mode_name = sys._getframe(0).f_code.co_name.replace('XML_generator_','')
+    Mode_name = sys._getframe(0).f_code.co_name
     comment = Mode_name+' starting date: '+str(date)+', '+str(params)
     
     
@@ -548,12 +588,15 @@ def XML_generator_Mode100(root, date, duration, relativeTime, params = {}):
 
 
 
-def XML_generator_Mode110(root, date, duration, relativeTime, params = {}):
-    """Mode110, Operational_Sweep_macro.
+def Mode110(root, date, duration, relativeTime, params = {}):
+    """Mode110
+    
+    **Macro**: Operational_Sweep_macro. \n
+    **CCD_Macro**: BinnedCalibration with configurable exposure time of UV and IR CCDs. \n
+    
     
     Scan atmosphere from X to Y altitudes with a rate of Z.
-    Where X, Y, Z is defined in OPT_Config_File.Mode110_settings.
-    BinnedCalibration.
+    Where X, Y, Z is defined in *Mode110_settings*.
     
     """
     
@@ -562,7 +605,16 @@ def XML_generator_Mode110(root, date, duration, relativeTime, params = {}):
     
     params = params_checker(params, settings, Logger)
     
-    Mode_name = sys._getframe(0).f_code.co_name.replace('XML_generator_','')
+    ExpTimeUV= params['Exp_Time_UV']
+    ExpTimeIR = params['Exp_Time_IR']
+    CCD_settings['CCDSEL_16']['TEXPMS'] = ExpTimeUV
+    CCD_settings['CCDSEL_32']['TEXPMS'] = ExpTimeUV
+    CCD_settings['CCDSEL_1']['TEXPMS'] = ExpTimeIR
+    CCD_settings['CCDSEL_8']['TEXPMS'] = ExpTimeIR
+    CCD_settings['CCDSEL_2']['TEXPMS'] = ExpTimeIR
+    CCD_settings['CCDSEL_4']['TEXPMS'] = ExpTimeIR
+    
+    Mode_name = sys._getframe(0).f_code.co_name
     comment = Mode_name+' starting date: '+str(date)+', '+str(params)
     
     pointing_altitude_from = params['pointing_altitude_from']
@@ -579,9 +631,11 @@ def XML_generator_Mode110(root, date, duration, relativeTime, params = {}):
 
 #######################################################################################################
 
-def XML_generator_Mode12X(root, date, duration, relativeTime, 
+def Mode12X(root, date, duration, relativeTime, 
                        params, CCD_settings):
-    """Mode12X, where X is 1,2,3....  Snapshot_Inertial_macro.
+    """Mode12X, where X is 1,2,3....
+    
+    **Macro**: Snapshot_Inertial_macro. \n
     
     Stare at a point in inertial reference frame and take a Snapshot with each CCD except nadir.
     
@@ -589,7 +643,7 @@ def XML_generator_Mode12X(root, date, duration, relativeTime,
     
     Timeline_settings = _Globals.Timeline_settings
     
-    Mode_name = sys._getframe(1).f_code.co_name.replace('XML_generator_','')
+    Mode_name = sys._getframe(1).f_code.co_name.replace('','')
     comment = Mode_name+' starting date: '+str(date)+', '+str(params)
     
     freeze_start_utc = ephem.Date(date+ephem.second*params['freeze_start'])
@@ -618,13 +672,15 @@ def XML_generator_Mode12X(root, date, duration, relativeTime,
 ################################################################################################
 
 
-def XML_generator_Mode120(root, date, duration, relativeTime, 
+def Mode120(root, date, duration, relativeTime, 
                        params = {}):
-    """Mode120, Snapshot_Inertial_macro
+    """Mode120
+    
+    **Macro**: Snapshot_Inertial_macro. \n
+    **CCD_Macro**: FullReadout \n
     
     Stare at a point in inertial reference frame and take a Snapshot with each CCD except nadir.
     Used for star calibration.
-    Full CCD readout.
     
     """
     
@@ -633,7 +689,7 @@ def XML_generator_Mode120(root, date, duration, relativeTime,
     
     CCD_settings = OPT_Config_File.CCD_macro_settings('FullReadout')
     
-    XML_generator_Mode12X(root, date, duration, relativeTime, 
+    Mode12X(root, date, duration, relativeTime, 
                                   params = params, CCD_settings = CCD_settings)
 
 
@@ -643,12 +699,14 @@ def XML_generator_Mode120(root, date, duration, relativeTime,
 ##############################################################################################
 
 
-def XML_generator_Mode121(root, date, duration, relativeTime, 
+def Mode121(root, date, duration, relativeTime, 
                        params = {}):
-    """Mode121, Snapshot_Inertial_macro.
+    """Mode121
+    
+    **Macro**: Snapshot_Inertial_macro. \n
+    **CCD_Macro**: FullReadout \n
     
     Stare at a point in inertial reference frame and take a Snapshot with each CCD except nadir.
-    Full CCD readout.
     
     """
     
@@ -657,7 +715,7 @@ def XML_generator_Mode121(root, date, duration, relativeTime,
     
     CCD_settings = OPT_Config_File.CCD_macro_settings('FullReadout')
     
-    XML_generator_Mode12X(root, date, duration, relativeTime, 
+    Mode12X(root, date, duration, relativeTime, 
                        params = params, CCD_settings = CCD_settings)
 
 
@@ -666,12 +724,15 @@ def XML_generator_Mode121(root, date, duration, relativeTime,
 
 
 
-def XML_generator_Mode122(root, date, duration, relativeTime, 
+def Mode122(root, date, duration, relativeTime, 
                        params = {}):
-    """Mode122, Snapshot_Inertial_macro.
+    """Mode122
+    
+    **Macro**: Snapshot_Inertial_macro. \n
+    **CCD_Macro**: BinnedCalibration with configurable exposure time of UV and IR CCDs. \n
     
     Stare at a point in inertial reference frame and take a Snapshot with each CCD except nadir.
-    BinnedCalibration.
+    
     """
     
     settings = OPT_Config_File.Mode122_settings()
@@ -687,7 +748,7 @@ def XML_generator_Mode122(root, date, duration, relativeTime,
     CCD_settings['CCDSEL_2']['TEXPMS'] = ExpTimeIR
     CCD_settings['CCDSEL_4']['TEXPMS'] = ExpTimeIR
     
-    XML_generator_Mode12X(root, date, duration, relativeTime, 
+    Mode12X(root, date, duration, relativeTime, 
                         params = params, CCD_settings = CCD_settings)
     
 
@@ -698,12 +759,16 @@ def XML_generator_Mode122(root, date, duration, relativeTime,
 
 
 
-def XML_generator_Mode123(root, date, duration, relativeTime, 
+def Mode123(root, date, duration, relativeTime, 
                        params = {}):
-    """Mode123, Snapshot_Inertial_macro.
+    """Mode123
     
-    Stare at a point in inertial reference frame and take one Snapshot with each CCD except nadir.
-    Low pixel binning.
+    
+    **Macro**: Snapshot_Inertial_macro. \n
+    **CCD_Macro**: LowPixel with configurable exposure time of UV and IR CCDs. \n
+    
+    Stare at a point in inertial reference frame and take a Snapshot with each CCD except nadir.
+    
     
     """
     
@@ -720,7 +785,7 @@ def XML_generator_Mode123(root, date, duration, relativeTime,
     CCD_settings['CCDSEL_2']['TEXPMS'] = ExpTimeIR
     CCD_settings['CCDSEL_4']['TEXPMS'] = ExpTimeIR
     
-    XML_generator_Mode12X(root, date, duration, relativeTime, 
+    Mode12X(root, date, duration, relativeTime, 
                         params = params, CCD_settings = CCD_settings)
     
 
@@ -729,13 +794,15 @@ def XML_generator_Mode123(root, date, duration, relativeTime,
 ##############################################################################################
 
 
-def XML_generator_Mode124(root, date, duration, relativeTime, 
+def Mode124(root, date, duration, relativeTime, 
                        params = {}):
-    """Mode124, Snapshot_Inertial_macro.
+    """Mode124
+    
+    **Macro**: Snapshot_Inertial_macro. \n
+    **CCD_Macro**: FullReadout. \n
     
     Stare at a point in inertial reference frame and take one Snapshot with each CCD except Nadir. 
     Used for moon calibration.
-    FullReadout
     """
     
     
@@ -744,7 +811,7 @@ def XML_generator_Mode124(root, date, duration, relativeTime,
     
     CCD_settings = OPT_Config_File.CCD_macro_settings('FullReadout')
     
-    XML_generator_Mode12X(root, date, duration, relativeTime, 
+    Mode12X(root, date, duration, relativeTime, 
                         params = params, CCD_settings = CCD_settings)
 
 ##############################################################################################
@@ -754,12 +821,14 @@ def XML_generator_Mode124(root, date, duration, relativeTime,
 ################################################################################################
 
 
-def XML_generator_Mode130(root, date, duration, relativeTime, 
+def Mode130(root, date, duration, relativeTime, 
                        params = {}):
-    """Mode130, Snapshot_Limb_Pointing_macro
+    """Mode130
+    
+    **Macro**: Snapshot_Limb_Pointing_macro. \n
+    **CCD_Macro**: FullReadout. \n
     
     Look at fixed limb altitude and take Snapshots with all CCD except nadir.
-    Full CCD readout.
     """
     
     CCD_settings = OPT_Config_File.CCD_macro_settings('FullReadout')
@@ -767,7 +836,7 @@ def XML_generator_Mode130(root, date, duration, relativeTime,
     
     params = params_checker(params, settings, Logger)
     
-    Mode_name = sys._getframe(0).f_code.co_name.replace('XML_generator_','')
+    Mode_name = sys._getframe(0).f_code.co_name
     comment = Mode_name+' starting date: '+str(date)+', '+str(params)
     
     pointing_altitude = params['pointing_altitude']
@@ -782,12 +851,14 @@ def XML_generator_Mode130(root, date, duration, relativeTime,
 
 ##############################################################################################
 
-def XML_generator_Mode131(root, date, duration, relativeTime, 
+def Mode131(root, date, duration, relativeTime, 
                        params = {}):
-    """Mode131, FullReadout_Operational_Limb_Pointing_macro.
+    """Mode131
+    
+    **Macro**: FullReadout_Operational_Limb_Pointing_macro. \n
+    **CCD_Macro**: FullReadout. \n
     
     Look at fixed limb altitude in operational mode.
-    Full CCD readout.
     """
     
     CCD_settings = OPT_Config_File.CCD_macro_settings('FullReadout')
@@ -795,7 +866,7 @@ def XML_generator_Mode131(root, date, duration, relativeTime,
     
     params = params_checker(params, settings, Logger)
     
-    Mode_name = sys._getframe(0).f_code.co_name.replace('XML_generator_','')
+    Mode_name = sys._getframe(0).f_code.co_name
     comment = Mode_name+' starting date: '+str(date)+', '+str(params)
     
     pointing_altitude = params['pointing_altitude']
@@ -809,14 +880,16 @@ def XML_generator_Mode131(root, date, duration, relativeTime,
 
 ##############################################################################################
 
-def XML_generator_Mode132_133(root, date, duration, relativeTime, 
+def Mode132_133(root, date, duration, relativeTime, 
                        params, CCD_settings):
-    """Mode132 and Mode133, Operational_Limb_Pointing_macro.
+    """Mode132 and Mode133
     
-    Look at fixed limb altitude in operational mode with changing exposure times.
+    **Macro**: Operational_Limb_Pointing_macro. \n
+    
+    Look at fixed limb altitude in operational mode with a set of exposure times for UV and IR CCDs.
     """
     
-    Mode_name = sys._getframe(1).f_code.co_name.replace('XML_generator_','')
+    Mode_name = sys._getframe(1).f_code.co_name.replace('','')
     comment = Mode_name+' starting date: '+str(date)+', '+str(params)
     
     pointing_altitude = params['pointing_altitude']
@@ -840,12 +913,14 @@ def XML_generator_Mode132_133(root, date, duration, relativeTime,
 
 
 
-def XML_generator_Mode132(root, date, duration, relativeTime, 
+def Mode132(root, date, duration, relativeTime, 
                        params = {}):
-    """Mode132, Operational_Limb_Pointing_macro.
+    """Mode132
     
-    Look at fixed limb altitude in operational mode with changing exposure times.
-    BinnedCalibration.
+    **Macro**: Operational_Limb_Pointing_macro. \n
+    **CCD_Macro**: BinnedCalibration with changing exposure times for UV and IR CCDs. \n
+    
+    Look at fixed limb altitude in operational mode for a set duration with each exposure time.
     """
     
     CCD_settings = OPT_Config_File.CCD_macro_settings('BinnedCalibration')
@@ -853,7 +928,7 @@ def XML_generator_Mode132(root, date, duration, relativeTime,
     
     params = params_checker(params, settings, Logger)
     
-    XML_generator_Mode132_133(root, date, duration, relativeTime, 
+    Mode132_133(root, date, duration, relativeTime, 
                        params = params, CCD_settings = CCD_settings)
 
 
@@ -864,13 +939,14 @@ def XML_generator_Mode132(root, date, duration, relativeTime,
 
 
 
-def XML_generator_Mode133(root, date, duration, relativeTime, 
+def Mode133(root, date, duration, relativeTime, 
                        params = {}):
-    """Mode133, Operational_Limb_Pointing_macro.
+    """Mode133,
     
-    Look at fixed limb altitude in operational mode with changing exposure times.
-    Low pixel binning.
+    **Macro**: Operational_Limb_Pointing_macro. \n
+    **CCD_Macro**: LowPixel with changing exposure times for UV and IR CCDs. \n
     
+    Look at fixed limb altitude in operational mode for a set duration with each exposure time.
     """
     
     CCD_settings = OPT_Config_File.CCD_macro_settings('LowPixel')
@@ -878,7 +954,7 @@ def XML_generator_Mode133(root, date, duration, relativeTime,
     
     params = params_checker(params, settings, Logger)
     
-    XML_generator_Mode132_133(root, date, duration, relativeTime, 
+    Mode132_133(root, date, duration, relativeTime, 
                        params = params, CCD_settings = CCD_settings)
         
 
@@ -888,12 +964,14 @@ def XML_generator_Mode133(root, date, duration, relativeTime,
 
 ##############################################################################################
 
-def XML_generator_Mode134(root, date, duration, relativeTime, 
+def Mode134(root, date, duration, relativeTime, 
                        params = {}):
     """Mode134, Operational_Limb_Pointing_macro.
     
+    **Macro**: Operational_Limb_Pointing_macro. \n
+    **CCD_Macro**: CustomBinning \n
+    
     Look at fixed limb altitude in Operational Mode.
-    CustomBinning.
     """
     
     CCD_settings = OPT_Config_File.CCD_macro_settings('CustomBinning')
@@ -901,7 +979,7 @@ def XML_generator_Mode134(root, date, duration, relativeTime,
     
     params = params_checker(params, settings, Logger)
     
-    Mode_name = sys._getframe(0).f_code.co_name.replace('XML_generator_','')
+    Mode_name = sys._getframe(0).f_code.co_name
     comment = Mode_name+' starting date: '+str(date)+', '+str(params)
     
     pointing_altitude = params['pointing_altitude']
@@ -920,7 +998,7 @@ def XML_generator_Mode134(root, date, duration, relativeTime,
 ##############################################################################################
 
 
-def XML_generator_X(root, date, duration, relativeTime, params = {}):
+def X(root, date, duration, relativeTime, params = {}):
     """This is a template for a new mode or test. Exchange 'X' for the name of the new mode/test"
     
     Currently this template mode only schedules a *TC_acfLimbPointingAltitudeOffset* CMD.
@@ -929,21 +1007,21 @@ def XML_generator_X(root, date, duration, relativeTime, params = {}):
     "Calls for settings stated in the Configuration File"
     #settings = OPT_Config_File.X_settings()
     "Calls for CCD settings for a specific CCD macro, here the CCD macro is 'CustomBinning'"
-    #CCD_settings = OPT_Config_File.CCD_macro_settings('CustomBinning')
+    CCD_settings = OPT_Config_File.CCD_macro_settings('CustomBinning')
     
     "Compares settings given in the Science Mode Timeline to settings given in the Configuration File"
-    #params = params_checker(params,=X=_settings)
+    #params = params_checker(params,settings)
     
     
-    Mode_name = sys._getframe(0).f_code.co_name.replace('XML_generator_','')
+    Mode_name = sys._getframe(0).f_code.co_name
     comment = Mode_name+' starting date: '+str(date)+', '+str(params)
     
     Commands.TC_acfLimbPointingAltitudeOffset(root, round(relativeTime,2), Initial = 120000, 
                                               Final = 120000, Rate = 0, comment = comment)
     
     "A call for the macro called Operational_Limb_Pointing_macro"
-    #Macros.Operational_Limb_Pointing_macro(root, round(relativeTime,2), CCD_settings,
-    #                            pointing_altitude = 120000, comment = comment)
+    Macros.Operational_Limb_Pointing_macro(root = root, relativeTime = round(relativeTime,2), CCD_settings = CCD_settings,
+                                pointing_altitude = 120000, comment = comment)
     
     
 

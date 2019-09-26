@@ -35,7 +35,7 @@
   <div class="section" id="module-OPT._XMLGenerator">
 <span id="opt-xmlgenerator-package"></span><h1>OPT._XMLGenerator package<a class="headerlink" href="#module-OPT._XMLGenerator" title="Permalink to this headline">¶</a></h1>
 <p>The <em>XML_gen</em> part of the <em>Operational_Planning_Tool</em> which purpose is to convert a
-<em>Science Mode Timeline</em> .json file into a XML file, containing Payload and Platform CMDs.</p>
+<em>Science Mode Timeline</em> .json file into a XML file, containing Payload and Platform CMDs. Uses the lmxl package to create a XML file.</p>
 <p>Any settings given in the <em>Science Mode Timeline</em> file will overide the use of the same settings stated in the set <em>Configuration File</em>.</p>
 <p>All CMDs are stated in the &quot;InnoSat Payload Timeline XML Defintion&quot; document.</p>
 <p><em>XML_gen</em> goes through the <em>Science Mode Timeline</em> chronologically and calls for functions from the modules inside the <em>Modes_and_Tests</em> package.</p>
@@ -48,7 +48,7 @@
 <div><ul class="simple">
 <li><p>Go into the <em>Modes</em> module, inside the <em>Modes_and_Tests</em> package. At the bottom you should find a Mode template function called &quot;XML_generator_X&quot;. Copy this function. Replace the X for the name of your Mode.</p></li>
 <li><p>Calculate or define any appropriate parameters for your Mode's CMDs/Macros.</p></li>
-<li><p>Now use these parameters to add any calls for Macros/Command functions located in the modules inside the <em>Macros_Commands</em> package. By default there is a call for the <em>TC_acfLimbPointingAltitudeOffset</em> CMD as an example, you can remove this.</p></li>
+<li><p>Now use these parameters to add any calls for Macros/Command functions located in the modules inside the <em>Macros_Commands</em> package. By default there is a call for the <em>TC_acfLimbPointingAltitudeOffset</em> CMD and the <em>Operational_Limb_Pointing_macro</em> as an example, you can remove these.</p></li>
 <li><p>It is recommended (but not necessary) to also give the new Mode its own &quot;Configuration function&quot; inside the <em>_ConfigFile</em>. This function will hold tuneable settings for the Mode, such as pointing altitude for the <em>TC_acfLimbPointingAltitudeOffset</em> CMD.</p></li>
 </ul>
 </div></blockquote>
@@ -93,8 +93,7 @@ supplied Science Mode Timeline List chronologically and calls for the correspond
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>earliestStartingDate</strong> (<em>ephem.Date</em>) -- Earliest Starting date of the Timeline. On the form of the ephem.Date class.</p></li>
-<li><p><strong>latestStartingDate</strong> (<em>ephem.Date</em>) -- Latest Starting date of the Timeline. On the form of the ephem.Date class.</p></li>
+<li><p><strong>timeline_start</strong> (<em>ephem.Date</em>) -- Starting date of the Timeline. On the form of the ephem.Date class.</p></li>
 <li><p><strong>timeline_duration</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- Duration of the timeline [s].</p></li>
 <li><p><strong>SCIMOD_Path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- The path as a string to the Science Mode Timeline .json file used in this run.</p></li>
 </ul>
@@ -127,13 +126,13 @@ Also calls for XML_Initial_Basis_Creator to setup a XML tree which will be used 
 
 <dl class="function">
 <dt id="OPT._XMLGenerator.Core.XML_generator_select">
-<code class="descclassname">OPT._XMLGenerator.Core.</code><code class="descname">XML_generator_select</code><span class="sig-paren">(</span><em>mode</em>, <em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Core.html#XML_generator_select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Core.XML_generator_select" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._XMLGenerator.Core.</code><code class="descname">XML_generator_select</code><span class="sig-paren">(</span><em>name</em>, <em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Core.html#XML_generator_select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Core.XML_generator_select" title="Permalink to this definition">¶</a></dt>
 <dd><p>Subfunction, Selects corresponding mode, test or CMD function in the package <em>Modes_and_Tests</em> from the variable <em>mode</em>.</p>
-<p>Calls for any function named <em>XML_generator_XXX</em> where XXX is the string in the input <em>name</em>.</p>
+<p>Calls for any function named <em>X</em> where X is the string in the input <em>name</em>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>mode</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- The name of the of the mode or test as a string. The name in the XML_generator_name function in OPT_XML_generator_MODES</p></li>
+<li><p><strong>name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- The name of the of the mode or test as a string. The name in the XML_generator_name function in OPT_XML_generator_MODES</p></li>
 <li><p><strong>root</strong> (<em>lxml.etree.Element</em>) -- XML tree structure. Main container object for the ElementTree API.</p></li>
 <li><p><strong>date</strong> (<em>ephem.Date</em>) -- </p></li>
 <li><p><strong>duration</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- </p></li>

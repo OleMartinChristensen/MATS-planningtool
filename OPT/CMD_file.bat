@@ -12,4 +12,6 @@ $ conda install -c astropy astroquery=0.3.9
 
 $ conda install pip
 
+$ conda install -c anaconda h5py 
+
 $ conda install -c conda-forge skyfield=1.10

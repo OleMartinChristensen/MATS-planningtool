@@ -35,7 +35,7 @@
 <span class="sd">&quot;&quot;&quot;Contain Mode functions which generates and calculates parameters for each mode, </span>
 <span class="sd">then calls for Macros/Commands functions located in the *Macros_Commands* package, which will in turn write commands to the XML tree object *root*.</span>
 
-<span class="sd">Functions on the form &quot;XML_generator_X&quot;, where the last X is any Mode:</span>
+<span class="sd">Functions on the form &quot;X&quot;, where the last X is any Mode:</span>
 
 <span class="sd">    **Arguments:**</span>
 <span class="sd">        **root** (*lxml.etree.Element*):  XML tree structure. Main container object for the ElementTree API. \n</span>
@@ -48,7 +48,7 @@
 <span class="sd">        None</span>
 
 <span class="sd">When creating new Mode functions it is crucial that the function name is</span>
-<span class="sd">XML_generator_Mode_name, where Mode_name is the same as the string used in the *Science Mode Timeline*</span>
+<span class="sd">Mode_name, where Mode_name is the same as the string used in the *Science Mode Timeline*</span>
 <span class="sd">        </span>
 <span class="sd">@author: David</span>
 <span class="sd">&quot;&quot;&quot;</span>
@@ -59,18 +59,18 @@
 <span class="kn">from</span> <span class="nn">OPT</span> <span class="k">import</span> <span class="n">_Globals</span>
 
 <span class="n">OPT_Config_File</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">_Globals</span><span class="o">.</span><span class="n">Config_File</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">OPT._Library</span> <span class="k">import</span> <span class="n">Satellite_Simulator</span><span class="p">,</span> <span class="n">params_checker</span><span class="p">,</span> <span class="n">utc_to_onboardTime</span>
+<span class="kn">from</span> <span class="nn">OPT._Library</span> <span class="k">import</span> <span class="n">Satellite_Simulator</span><span class="p">,</span> <span class="n">params_checker</span><span class="p">,</span> <span class="n">utc_to_onboardTime</span><span class="p">,</span> <span class="n">SunAngle</span>
 <span class="kn">from</span> <span class="nn">.Macros_Commands</span> <span class="k">import</span> <span class="n">Macros</span><span class="p">,</span> <span class="n">Commands</span>
 
 <span class="n">Logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Logger_name</span><span class="p">())</span>
 <span class="c1">#Timeline_settings = OPT_Config_File.Timeline_settings()</span>
 
 
-<div class="viewcode-block" id="XML_generator_Mode5"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode5">[docs]</a><span class="k">def</span> <span class="nf">XML_generator_Mode5</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
-    <span class="sd">&#39;&#39;&#39;Mode5, Operational_Limb_Pointing_macro</span>
+<div class="viewcode-block" id="Mode5"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode5">[docs]</a><span class="k">def</span> <span class="nf">Mode5</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
+    <span class="sd">&#39;&#39;&#39;Mode5</span>
 <span class="sd">    </span>
-<span class="sd">    Look at fixed limb altitude in operational mode.</span>
-<span class="sd">    CustomBinning.</span>
+<span class="sd">    **Macro:** Operational_Limb_Pointing_macro \n</span>
+<span class="sd">    **CCD_Macro:** CustomBinning \n</span>
 <span class="sd">            </span>
 <span class="sd">    &#39;&#39;&#39;</span>
     
@@ -81,7 +81,7 @@
     
     <span class="n">params</span> <span class="o">=</span> <span class="n">params_checker</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">Logger</span><span class="p">)</span>
     
-    <span class="n">Mode_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;XML_generator_&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="n">Mode_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
     <span class="n">comment</span> <span class="o">=</span> <span class="n">Mode_name</span><span class="o">+</span><span class="s1">&#39; starting date: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
     
     <span class="c1">#pointing_altitude = params[&#39;pointing_altitude&#39;]</span>
@@ -94,14 +94,16 @@
 
 <span class="c1">############################################################################################</span>
     
-<div class="viewcode-block" id="XML_generator_Mode1"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode1">[docs]</a><span class="k">def</span> <span class="nf">XML_generator_Mode1</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
-    <span class="sd">&quot;&quot;&quot;Mode1, Operational_Limb_Pointing_macro.</span>
+<div class="viewcode-block" id="Mode1"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode1">[docs]</a><span class="k">def</span> <span class="nf">Mode1</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
+    <span class="sd">&quot;&quot;&quot;Mode1</span>
 <span class="sd">    </span>
-<span class="sd">    Simulates MATS and the LP with or without yaw movement to be able to predict and schedule commands in the XML-file.</span>
-<span class="sd">    Look at fixed limb altitude in operational mode.</span>
-<span class="sd">    High resolution UV binning for latitudes +-lat degrees latitude polewards.</span>
+<span class="sd">    **Macro:** Operational_Limb_Pointing_macro \n</span>
+<span class="sd">    **CCD_Macro:** HighResUV \n</span>
+<span class="sd">    </span>
 <span class="sd">    Disable exposure on UV channels for +-lat degrees latitude equatorwards.</span>
 <span class="sd">    Stop/Start Nadir at dusk/dawn below MATS.</span>
+<span class="sd">    Simulates MATS and the LP with or without yaw movement to be able to predict and schedule commands in the XML-file.</span>
+<span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
     <span class="c1">#from OPT_Config_File import Mode1_settings, getTLE</span>
@@ -145,28 +147,37 @@
     <span class="n">sun_angle</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">duration</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
     <span class="n">lat_LP</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">duration</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
     
-    <span class="n">R_mean</span> <span class="o">=</span> <span class="mi">6371000</span>
+    <span class="n">R_mean</span> <span class="o">=</span> <span class="mi">6371000</span> <span class="c1">#Radius of Earth in m</span>
     <span class="n">pointing_altitude</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;LP_pointing_altitude&#39;</span><span class="p">]</span>
     <span class="n">lat</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">]</span>
     
+    <span class="n">heightAboveSurface</span> <span class="o">=</span> <span class="mi">20000</span> <span class="c1">#Altitude in km where sun is deemed to reflect in atmosphere, determining night and day below satellite&quot;</span>
+    
+    
     <span class="c1">#Estimation of the angle between the sun and the FOV position when it enters eclipse</span>
-    <span class="n">MATS_nadir_eclipse_angle</span> <span class="o">=</span> <span class="n">arccos</span><span class="p">(</span><span class="n">R_mean</span><span class="o">/</span><span class="p">(</span><span class="n">R_mean</span><span class="o">+</span><span class="n">pointing_altitude</span><span class="p">))</span><span class="o">/</span><span class="n">pi</span><span class="o">*</span><span class="mi">180</span> <span class="o">+</span> <span class="mi">90</span>
+    <span class="n">MATS_nadir_eclipse_angle</span> <span class="o">=</span> <span class="n">arccos</span><span class="p">(</span><span class="n">R_mean</span><span class="o">/</span><span class="p">(</span><span class="n">R_mean</span><span class="o">+</span><span class="n">heightAboveSurface</span><span class="p">))</span><span class="o">/</span><span class="n">pi</span><span class="o">*</span><span class="mi">180</span> <span class="o">+</span> <span class="mi">90</span>
     
     <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;MATS_nadir_eclipse_angle : &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">MATS_nadir_eclipse_angle</span><span class="p">))</span>
     <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
     
-    <span class="n">ts</span> <span class="o">=</span> <span class="n">skyfield</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">load</span><span class="o">.</span><span class="n">timescale</span><span class="p">()</span>
+    
     <span class="n">MATS_skyfield</span> <span class="o">=</span> <span class="n">skyfield</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">EarthSatellite</span><span class="p">(</span><span class="n">TLE</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">TLE</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
     
-    <span class="n">MATS</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">readtle</span><span class="p">(</span><span class="s1">&#39;MATS&#39;</span><span class="p">,</span><span class="n">TLE</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">TLE</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
-    <span class="n">Sun</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Sun</span><span class="p">()</span>
-    
-    
+    <span class="n">new_relativeTime</span> <span class="o">=</span> <span class="n">relativeTime</span>
+    <span class="n">current_time</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">date</span><span class="p">)</span>
     
     <span class="s2">&quot;Loop and calculate the relevant angle of each star to each direction of MATS&#39;s FOV&quot;</span>
     <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">duration</span><span class="o">/</span><span class="n">timestep</span><span class="p">)):</span>
         
-        <span class="n">current_time</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">date</span><span class="o">+</span><span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="n">timestep</span><span class="o">*</span><span class="n">t</span><span class="p">)</span>
+        <span class="k">if</span><span class="p">(</span> <span class="n">t</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="s2">&quot;Incremented time from scheduling CMDs&quot;</span>
+            <span class="n">CMD_scheduling_delay</span> <span class="o">=</span> <span class="p">(</span><span class="n">new_relativeTime</span><span class="o">-</span><span class="n">relativeTime</span><span class="p">)</span>
+            <span class="s2">&quot;Increment with timestep each loop and add any added time from CMD scheduling&quot;</span>
+            <span class="n">current_time</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span> <span class="n">current_time</span> <span class="o">+</span> <span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="p">(</span><span class="n">timestep</span> <span class="o">+</span> <span class="n">CMD_scheduling_delay</span><span class="p">)</span> <span class="p">)</span>
+            <span class="c1">#current_time = ephem.Date( current_time+ephem.second*(new_relativeTime-relativeTime) )</span>
+            <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">new_relativeTime</span> <span class="o">+</span> <span class="n">timestep</span>
+        
+        <span class="n">new_relativeTime</span> <span class="o">=</span> <span class="n">relativeTime</span>
         
         <span class="k">if</span><span class="p">(</span> <span class="n">t</span><span class="o">*</span><span class="n">timestep</span> <span class="o">%</span> <span class="n">log_timestep</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
             <span class="n">LogFlag</span> <span class="o">=</span> <span class="kc">True</span>
@@ -182,10 +193,11 @@
         <span class="n">optical_axis</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">Satellite_dict</span><span class="p">[</span><span class="s1">&#39;OpticalAxis&#39;</span><span class="p">]</span>
         <span class="n">lat_LP</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">Satellite_dict</span><span class="p">[</span><span class="s1">&#39;EstimatedLatitude_LP [degrees]&#39;</span><span class="p">]</span>
         
+        <span class="n">sun_angle</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">SunAngle</span><span class="p">(</span> <span class="n">r_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">current_time</span><span class="p">)</span>
         
-        <span class="n">MATS</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">current_time</span><span class="p">,</span> <span class="n">epoch</span> <span class="o">=</span> <span class="s1">&#39;2000/01/01 11:58:55.816&#39;</span><span class="p">)</span>
-        <span class="n">Sun</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">current_time</span><span class="p">,</span> <span class="n">epoch</span> <span class="o">=</span> <span class="s1">&#39;2000/01/01 11:58:55.816&#39;</span><span class="p">)</span>
-        <span class="n">sun_angle</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">separation</span><span class="p">(</span><span class="n">Sun</span><span class="p">,</span><span class="n">MATS</span><span class="p">)</span><span class="o">/</span><span class="n">pi</span><span class="o">*</span><span class="mi">180</span>
+        <span class="c1">#MATS.compute(current_time, epoch = &#39;2000/01/01 11:58:55.816&#39;)</span>
+        <span class="c1">#Sun.compute(current_time, epoch = &#39;2000/01/01 11:58:55.816&#39;)</span>
+        <span class="c1">#sun_angle[t]= ephem.separation(Sun,MATS)/pi*180</span>
         
         <span class="k">if</span><span class="p">(</span> <span class="n">t</span><span class="o">*</span><span class="n">timestep</span> <span class="o">%</span> <span class="n">log_timestep</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
             <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;sun_angle [degrees]: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">sun_angle</span><span class="p">[</span><span class="n">t</span><span class="p">]))</span>
@@ -201,21 +213,21 @@
                 <span class="k">if</span><span class="p">(</span> <span class="nb">abs</span><span class="p">(</span><span class="n">lat_LP</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">&lt;</span> <span class="n">lat</span><span class="p">):</span>
                     <span class="n">current_state</span> <span class="o">=</span> <span class="s2">&quot;NLC_night_UV_off&quot;</span>
                     <span class="n">comment</span> <span class="o">=</span> <span class="n">current_state</span><span class="o">+</span><span class="s1">&#39;: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">current_time</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, parameters: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
-                    <span class="c1">#Macros.Mode1_macro(root,t*timestep+relativeTime, pointing_altitude=pointing_altitude, UV_on = False, nadir_on = True, comment = comment)</span>
+                    <span class="c1">#new_relativeTime = Macros.Mode1_macro(root,relativeTime, pointing_altitude=pointing_altitude, UV_on = False, nadir_on = True, comment = comment)</span>
                     <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_16&#39;</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
                     <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_32&#39;</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
                     <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_64&#39;</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">TEXPMS_nadir</span>
-                    <span class="n">Macros</span><span class="o">.</span><span class="n">Operational_Limb_Pointing_macro</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">t</span><span class="o">*</span><span class="n">timestep</span><span class="o">+</span><span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCD_settings</span><span class="p">,</span> 
+                    <span class="n">new_relativeTime</span> <span class="o">=</span> <span class="n">Macros</span><span class="o">.</span><span class="n">Operational_Limb_Pointing_macro</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCD_settings</span><span class="p">,</span> 
                                                                <span class="n">pointing_altitude</span><span class="o">=</span><span class="n">pointing_altitude</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">)</span>
                     
                 <span class="k">elif</span><span class="p">(</span> <span class="nb">abs</span><span class="p">(</span><span class="n">lat_LP</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">lat</span><span class="p">):</span>
                     <span class="n">current_state</span> <span class="o">=</span> <span class="s2">&quot;NLC_night_UV_on&quot;</span>
                     <span class="n">comment</span> <span class="o">=</span> <span class="n">current_state</span><span class="o">+</span><span class="s1">&#39;: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">current_time</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, parameters: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
-                    <span class="c1">#Macros.Mode1_macro(root,t*timestep+relativeTime, pointing_altitude=pointing_altitude, UV_on = True, nadir_on = True, comment = comment)</span>
+                    <span class="c1">#new_relativeTime = Macros.Mode1_macro(root,relativeTime, pointing_altitude=pointing_altitude, UV_on = True, nadir_on = True, comment = comment)</span>
                     <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_16&#39;</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">TEXPMS_16</span>
                     <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_32&#39;</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">TEXPMS_32</span>
                     <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_64&#39;</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">TEXPMS_nadir</span>
-                    <span class="n">Macros</span><span class="o">.</span><span class="n">Operational_Limb_Pointing_macro</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">t</span><span class="o">*</span><span class="n">timestep</span><span class="o">+</span><span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCD_settings</span><span class="p">,</span> 
+                    <span class="n">new_relativeTime</span> <span class="o">=</span> <span class="n">Macros</span><span class="o">.</span><span class="n">Operational_Limb_Pointing_macro</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCD_settings</span><span class="p">,</span> 
                                                                <span class="n">pointing_altitude</span><span class="o">=</span><span class="n">pointing_altitude</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">)</span>
                     
                     
@@ -224,21 +236,21 @@
                 <span class="k">if</span><span class="p">(</span> <span class="nb">abs</span><span class="p">(</span><span class="n">lat_LP</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">&lt;</span> <span class="n">lat</span><span class="p">):</span>
                     <span class="n">current_state</span> <span class="o">=</span> <span class="s2">&quot;NLC_day_UV_off&quot;</span>
                     <span class="n">comment</span> <span class="o">=</span> <span class="n">current_state</span><span class="o">+</span><span class="s1">&#39;: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">current_time</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, parameters: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
-                    <span class="c1">#Macros.Mode1_macro(root,t*timestep+relativeTime,pointing_altitude, UV_on = False, nadir_on = False, comment = comment)</span>
+                    <span class="c1">#new_relativeTime = Macros.Mode1_macro(root,relativeTime,pointing_altitude, UV_on = False, nadir_on = False, comment = comment)</span>
                     <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_16&#39;</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
                     <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_32&#39;</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
                     <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_64&#39;</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-                    <span class="n">Macros</span><span class="o">.</span><span class="n">Operational_Limb_Pointing_macro</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">t</span><span class="o">*</span><span class="n">timestep</span><span class="o">+</span><span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCD_settings</span><span class="p">,</span> 
+                    <span class="n">new_relativeTime</span> <span class="o">=</span> <span class="n">Macros</span><span class="o">.</span><span class="n">Operational_Limb_Pointing_macro</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCD_settings</span><span class="p">,</span> 
                                                                <span class="n">pointing_altitude</span><span class="o">=</span><span class="n">pointing_altitude</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">)</span>
                     
                 <span class="k">elif</span><span class="p">(</span> <span class="nb">abs</span><span class="p">(</span><span class="n">lat_LP</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">lat</span><span class="p">):</span>
                     <span class="n">current_state</span> <span class="o">=</span> <span class="s2">&quot;NLC_day_UV_on&quot;</span>
                     <span class="n">comment</span> <span class="o">=</span> <span class="n">current_state</span><span class="o">+</span><span class="s1">&#39;: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">current_time</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, parameters: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
-                    <span class="c1">#Macros.Mode1_macro(root,t*timestep+relativeTime,pointing_altitude, UV_on = True, nadir_on = False, comment = comment)</span>
+                    <span class="c1">#new_relativeTime = Macros.Mode1_macro(root,relativeTime,pointing_altitude, UV_on = True, nadir_on = False, comment = comment)</span>
                     <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_16&#39;</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">TEXPMS_16</span>
                     <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_32&#39;</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">TEXPMS_32</span>
                     <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_64&#39;</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-                    <span class="n">Macros</span><span class="o">.</span><span class="n">Operational_Limb_Pointing_macro</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">t</span><span class="o">*</span><span class="n">timestep</span><span class="o">+</span><span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCD_settings</span><span class="p">,</span> 
+                    <span class="n">new_relativeTime</span> <span class="o">=</span> <span class="n">Macros</span><span class="o">.</span><span class="n">Operational_Limb_Pointing_macro</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCD_settings</span><span class="p">,</span> 
                                                                <span class="n">pointing_altitude</span><span class="o">=</span><span class="n">pointing_altitude</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">)</span>
                     
                     
@@ -265,11 +277,11 @@
                         <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
                         <span class="n">current_state</span> <span class="o">=</span> <span class="s2">&quot;NLC_night_UV_off&quot;</span>
                         <span class="n">comment</span> <span class="o">=</span> <span class="n">current_state</span><span class="o">+</span><span class="s1">&#39;: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">current_time</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, parameters: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
-                        <span class="c1">#Macros.Mode1_macro(root, t*timestep+relativeTime, pointing_altitude, UV_on = False, nadir_on = True, comment = comment)</span>
+                        <span class="c1">#new_relativeTime = Macros.Mode1_macro(root, relativeTime, pointing_altitude, UV_on = False, nadir_on = True, comment = comment)</span>
                         <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_16&#39;</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
                         <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_32&#39;</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
                         <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_64&#39;</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">TEXPMS_nadir</span>
-                        <span class="n">Macros</span><span class="o">.</span><span class="n">Operational_Limb_Pointing_macro</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">t</span><span class="o">*</span><span class="n">timestep</span><span class="o">+</span><span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCD_settings</span><span class="p">,</span> 
+                        <span class="n">new_relativeTime</span> <span class="o">=</span> <span class="n">Macros</span><span class="o">.</span><span class="n">Operational_Limb_Pointing_macro</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCD_settings</span><span class="p">,</span> 
                                                                <span class="n">pointing_altitude</span><span class="o">=</span><span class="n">pointing_altitude</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">)</span>
                         
                         <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">current_state</span><span class="p">)</span>
@@ -292,11 +304,11 @@
                         <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
                         <span class="n">current_state</span> <span class="o">=</span> <span class="s2">&quot;NLC_night_UV_on&quot;</span>
                         <span class="n">comment</span> <span class="o">=</span> <span class="n">current_state</span><span class="o">+</span><span class="s1">&#39;: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">current_time</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, parameters: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
-                        <span class="c1">#Macros.Mode1_macro(root, t*timestep+relativeTime, pointing_altitude=pointing_altitude, UV_on = True, nadir_on = True, comment = comment)</span>
+                        <span class="c1">#new_relativeTime = Macros.Mode1_macro(root, relativeTime, pointing_altitude=pointing_altitude, UV_on = True, nadir_on = True, comment = comment)</span>
                         <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_16&#39;</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">TEXPMS_16</span>
                         <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_32&#39;</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">TEXPMS_32</span>
                         <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_64&#39;</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">TEXPMS_nadir</span>
-                        <span class="n">Macros</span><span class="o">.</span><span class="n">Operational_Limb_Pointing_macro</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">t</span><span class="o">*</span><span class="n">timestep</span><span class="o">+</span><span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCD_settings</span><span class="p">,</span> 
+                        <span class="n">new_relativeTime</span> <span class="o">=</span> <span class="n">Macros</span><span class="o">.</span><span class="n">Operational_Limb_Pointing_macro</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCD_settings</span><span class="p">,</span> 
                                                                <span class="n">pointing_altitude</span><span class="o">=</span><span class="n">pointing_altitude</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">)</span>
                         
                         <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">current_state</span><span class="p">)</span>
@@ -323,11 +335,11 @@
                         <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
                         <span class="n">current_state</span> <span class="o">=</span> <span class="s2">&quot;NLC_day_UV_off&quot;</span>
                         <span class="n">comment</span> <span class="o">=</span> <span class="n">current_state</span><span class="o">+</span><span class="s1">&#39;: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">current_time</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, parameters: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
-                        <span class="c1">#Macros.Mode1_macro(root, t*timestep+relativeTime, pointing_altitude=pointing_altitude, UV_on = False, nadir_on = False, comment = comment)</span>
+                        <span class="c1">#new_relativeTime = Macros.Mode1_macro(root, relativeTime, pointing_altitude=pointing_altitude, UV_on = False, nadir_on = False, comment = comment)</span>
                         <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_16&#39;</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
                         <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_32&#39;</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
                         <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_64&#39;</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-                        <span class="n">Macros</span><span class="o">.</span><span class="n">Operational_Limb_Pointing_macro</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">t</span><span class="o">*</span><span class="n">timestep</span><span class="o">+</span><span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCD_settings</span><span class="p">,</span> 
+                        <span class="n">new_relativeTime</span> <span class="o">=</span> <span class="n">Macros</span><span class="o">.</span><span class="n">Operational_Limb_Pointing_macro</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCD_settings</span><span class="p">,</span> 
                                                                <span class="n">pointing_altitude</span><span class="o">=</span><span class="n">pointing_altitude</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">)</span>
                         
                         
@@ -352,11 +364,11 @@
                         <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
                         <span class="n">current_state</span> <span class="o">=</span> <span class="s2">&quot;NLC_day_UV_on&quot;</span>
                         <span class="n">comment</span> <span class="o">=</span> <span class="n">current_state</span><span class="o">+</span><span class="s1">&#39;: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">current_time</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, parameters: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
-                        <span class="c1">#Macros.Mode1_macro(root, t*timestep+relativeTime, pointing_altitude=pointing_altitude, UV_on = True, nadir_on = False, comment = comment)</span>
+                        <span class="c1">#new_relativeTime = Macros.Mode1_macro(root, relativeTime, pointing_altitude=pointing_altitude, UV_on = True, nadir_on = False, comment = comment)</span>
                         <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_16&#39;</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">TEXPMS_16</span>
                         <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_32&#39;</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">TEXPMS_32</span>
                         <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_64&#39;</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-                        <span class="n">Macros</span><span class="o">.</span><span class="n">Operational_Limb_Pointing_macro</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">t</span><span class="o">*</span><span class="n">timestep</span><span class="o">+</span><span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCD_settings</span><span class="p">,</span> 
+                        <span class="n">new_relativeTime</span> <span class="o">=</span> <span class="n">Macros</span><span class="o">.</span><span class="n">Operational_Limb_Pointing_macro</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCD_settings</span><span class="p">,</span> 
                                                                <span class="n">pointing_altitude</span><span class="o">=</span><span class="n">pointing_altitude</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">)</span>
                         
                         
@@ -377,13 +389,14 @@
 
 <span class="c1">#######################################################################################</span>
 
-<div class="viewcode-block" id="XML_generator_Mode2"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode2">[docs]</a><span class="k">def</span> <span class="nf">XML_generator_Mode2</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
-    <span class="sd">&quot;&quot;&quot;Mode2, Operational_Limb_Pointing_macro.</span>
+<div class="viewcode-block" id="Mode2"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode2">[docs]</a><span class="k">def</span> <span class="nf">Mode2</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
+    <span class="sd">&quot;&quot;&quot;Mode2</span>
 <span class="sd">    </span>
-<span class="sd">    Simulates MATS to be able to schedule commands in the XML-file.</span>
-<span class="sd">    Look at fixed limb altitude in operational mode.</span>
-<span class="sd">    High-resolution IR binning. </span>
+<span class="sd">    **Macro**: Operational_Limb_Pointing_macro. \n</span>
+<span class="sd">    **CCD_Macro**: HighResIR (High-resolution IR binning). \n</span>
+<span class="sd">    </span>
 <span class="sd">    Stop/Start Nadir at dusk/dawn below MATS.</span>
+<span class="sd">    Simulates MATS to determine when a point below MATS is at night or daytime.</span>
 <span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
@@ -403,32 +416,57 @@
     <span class="n">log_timestep</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;log_timestep&#39;</span><span class="p">]</span>
     <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;log_timestep [s]: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">log_timestep</span><span class="p">))</span>
     
-    <span class="n">Sun</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Sun</span><span class="p">()</span>
+    
     <span class="n">TLE</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">getTLE</span><span class="p">()</span>
-    <span class="n">MATS</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">readtle</span><span class="p">(</span><span class="s1">&#39;MATS&#39;</span><span class="p">,</span> <span class="n">TLE</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">TLE</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
     
     
     <span class="s2">&quot;Pre-allocate space&quot;</span>
     <span class="n">sun_angle</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">duration</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">r_MATS</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">duration</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
     
-    
-    <span class="n">R_mean</span> <span class="o">=</span> <span class="mi">6371000</span>
+    <span class="n">R_mean</span> <span class="o">=</span> <span class="mi">6371000</span> <span class="c1">#Radius of Earth in m</span>
     <span class="n">pointing_altitude</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;LP_pointing_altitude&#39;</span><span class="p">]</span>
     
+    <span class="n">heightAboveSurface</span> <span class="o">=</span> <span class="mi">20000</span> <span class="c1">#Altitude in m where sun is deemed to reflect in atmosphere, determining night and day below satellite&quot;</span>
+    
     <span class="c1">#Estimation of the angle between the sun and the FOV position when it enters eclipse</span>
-    <span class="n">MATS_nadir_eclipse_angle</span> <span class="o">=</span> <span class="n">arccos</span><span class="p">(</span><span class="n">R_mean</span><span class="o">/</span><span class="p">(</span><span class="n">R_mean</span><span class="o">+</span><span class="n">pointing_altitude</span><span class="p">))</span><span class="o">/</span><span class="n">pi</span><span class="o">*</span><span class="mi">180</span> <span class="o">+</span> <span class="mi">90</span>
+    <span class="n">MATS_nadir_eclipse_angle</span> <span class="o">=</span> <span class="n">arccos</span><span class="p">(</span><span class="n">R_mean</span><span class="o">/</span><span class="p">(</span><span class="n">R_mean</span><span class="o">+</span><span class="n">heightAboveSurface</span><span class="p">))</span><span class="o">/</span><span class="n">pi</span><span class="o">*</span><span class="mi">180</span> <span class="o">+</span> <span class="mi">90</span>
     <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;MATS_nadir_eclipse_angle : &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">MATS_nadir_eclipse_angle</span><span class="p">))</span>
+    
+    
+    <span class="n">MATS_skyfield</span> <span class="o">=</span> <span class="n">skyfield</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">EarthSatellite</span><span class="p">(</span><span class="n">TLE</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">TLE</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    
+    <span class="n">new_relativeTime</span> <span class="o">=</span> <span class="n">relativeTime</span>
+    <span class="n">current_time</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">date</span><span class="p">)</span>
     
     <span class="s2">&quot;Loop and calculate the relevant angle of each star to each direction of MATS&#39;s FOV&quot;</span>
     <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">duration</span><span class="o">/</span><span class="n">timestep</span><span class="p">)):</span>
         
+        <span class="k">if</span><span class="p">(</span> <span class="n">t</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="n">CMD_scheduling_delay</span> <span class="o">=</span> <span class="p">(</span><span class="n">new_relativeTime</span><span class="o">-</span><span class="n">relativeTime</span><span class="p">)</span>
+            <span class="s2">&quot;Increment with timestep each loop and add any added time if new_relativeTime was changed&quot;</span>
+            <span class="n">current_time</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span> <span class="n">current_time</span> <span class="o">+</span> <span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="p">(</span><span class="n">timestep</span> <span class="o">+</span> <span class="n">CMD_scheduling_delay</span><span class="p">)</span> <span class="p">)</span>
+            <span class="c1">#current_time = ephem.Date( current_time+ephem.second*(new_relativeTime-relativeTime) )</span>
+            
+            <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">new_relativeTime</span> <span class="o">+</span> <span class="n">timestep</span>
         
-        <span class="n">current_time</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">date</span><span class="o">+</span><span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="n">timestep</span><span class="o">*</span><span class="n">t</span><span class="p">)</span>
+        <span class="n">new_relativeTime</span> <span class="o">=</span> <span class="n">relativeTime</span>
         
-        <span class="n">MATS</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">current_time</span><span class="p">,</span> <span class="n">epoch</span> <span class="o">=</span> <span class="s1">&#39;2000/01/01 11:58:55.816&#39;</span><span class="p">)</span>
+        <span class="c1">#relativeTime = relativeTime + t * timestep</span>
+        <span class="c1">#current_time = ephem.Date(date+ephem.second*timestep*t)</span>
         
-        <span class="n">Sun</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">current_time</span><span class="p">,</span> <span class="s1">&#39;2000/01/01 11:58:55.816&#39;</span><span class="p">)</span>
-        <span class="n">sun_angle</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">separation</span><span class="p">(</span><span class="n">Sun</span><span class="p">,</span><span class="n">MATS</span><span class="p">)</span><span class="o">/</span><span class="n">pi</span><span class="o">*</span><span class="mi">180</span>
+        <span class="k">if</span><span class="p">(</span> <span class="n">t</span><span class="o">*</span><span class="n">timestep</span> <span class="o">%</span> <span class="n">log_timestep</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="n">LogFlag</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">LogFlag</span> <span class="o">=</span> <span class="kc">False</span>
+        
+        <span class="n">Satellite_dict</span> <span class="o">=</span> <span class="n">Satellite_Simulator</span><span class="p">(</span> 
+                    <span class="n">MATS_skyfield</span><span class="p">,</span> <span class="n">current_time</span><span class="p">,</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">pointing_altitude</span><span class="o">/</span><span class="mi">1000</span><span class="p">,</span> <span class="n">LogFlag</span><span class="p">,</span> <span class="n">Logger</span> <span class="p">)</span>
+        
+        <span class="n">r_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">Satellite_dict</span><span class="p">[</span><span class="s1">&#39;Position [km]&#39;</span><span class="p">]</span>
+        <span class="n">sun_angle</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">SunAngle</span><span class="p">(</span> <span class="n">r_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">current_time</span><span class="p">)</span>
+        
+        
         
         <span class="k">if</span><span class="p">(</span> <span class="n">t</span> <span class="o">%</span> <span class="n">log_timestep</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
             <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
@@ -443,17 +481,17 @@
             <span class="k">if</span><span class="p">(</span> <span class="n">sun_angle</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">MATS_nadir_eclipse_angle</span><span class="p">):</span>
                 <span class="n">current_state</span> <span class="o">=</span> <span class="s2">&quot;IR_night&quot;</span>
                 <span class="n">comment</span> <span class="o">=</span> <span class="n">current_state</span><span class="o">+</span><span class="s1">&#39;: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
-                <span class="c1">#Macros.Mode1_macro(root,t*timestep+relativeTime, pointing_altitude=pointing_altitude, nadir_on = True, comment = comment)</span>
+                <span class="c1">#new_relativeTime = Macros.Mode1_macro(root,relativeTime, pointing_altitude=pointing_altitude, nadir_on = True, comment = comment)</span>
                 <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_64&#39;</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">TEXPMS_nadir</span>
-                <span class="n">Macros</span><span class="o">.</span><span class="n">Operational_Limb_Pointing_macro</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">t</span><span class="o">*</span><span class="n">timestep</span><span class="o">+</span><span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCD_settings</span><span class="p">,</span> 
+                <span class="n">new_relativeTime</span> <span class="o">=</span> <span class="n">Macros</span><span class="o">.</span><span class="n">Operational_Limb_Pointing_macro</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCD_settings</span><span class="p">,</span> 
                                                        <span class="n">pointing_altitude</span><span class="o">=</span><span class="n">pointing_altitude</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">)</span>
                 
             <span class="k">elif</span><span class="p">(</span> <span class="n">sun_angle</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">MATS_nadir_eclipse_angle</span><span class="p">):</span>
                 <span class="n">current_state</span> <span class="o">=</span> <span class="s2">&quot;IR_day&quot;</span>
                 <span class="n">comment</span> <span class="o">=</span> <span class="n">current_state</span><span class="o">+</span><span class="s1">&#39;: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
-                <span class="c1">#Macros.Mode1_macro(root,t*timestep+relativeTime, pointing_altitude=pointing_altitude, nadir_on = False, comment = comment)</span>
+                <span class="c1">#new_relativeTime = Macros.Mode1_macro(root,relativeTime, pointing_altitude=pointing_altitude, nadir_on = False, comment = comment)</span>
                 <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_64&#39;</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-                <span class="n">Macros</span><span class="o">.</span><span class="n">Operational_Limb_Pointing_macro</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">t</span><span class="o">*</span><span class="n">timestep</span><span class="o">+</span><span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCD_settings</span><span class="p">,</span> 
+                <span class="n">new_relativeTime</span> <span class="o">=</span> <span class="n">Macros</span><span class="o">.</span><span class="n">Operational_Limb_Pointing_macro</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCD_settings</span><span class="p">,</span> 
                                                        <span class="n">pointing_altitude</span><span class="o">=</span><span class="n">pointing_altitude</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">)</span>
         
         <span class="c1">############# End of Initial Mode setup ###################################</span>
@@ -474,9 +512,9 @@
                     <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
                     <span class="n">current_state</span> <span class="o">=</span> <span class="s2">&quot;IR_night&quot;</span>
                     <span class="n">comment</span> <span class="o">=</span> <span class="n">current_state</span><span class="o">+</span><span class="s1">&#39;: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
-                    <span class="c1">#Macros.Mode1_macro(root, t*timestep+relativeTime, pointing_altitude=pointing_altitude, nadir_on = True, comment = comment)</span>
+                    <span class="c1">#new_relativeTime = Macros.Mode1_macro(root, relativeTime, pointing_altitude=pointing_altitude, nadir_on = True, comment = comment)</span>
                     <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_64&#39;</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">TEXPMS_nadir</span>
-                    <span class="n">Macros</span><span class="o">.</span><span class="n">Operational_Limb_Pointing_macro</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">t</span><span class="o">*</span><span class="n">timestep</span><span class="o">+</span><span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCD_settings</span><span class="p">,</span> 
+                    <span class="n">new_relativeTime</span> <span class="o">=</span> <span class="n">Macros</span><span class="o">.</span><span class="n">Operational_Limb_Pointing_macro</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCD_settings</span><span class="p">,</span> 
                                                            <span class="n">pointing_altitude</span><span class="o">=</span><span class="n">pointing_altitude</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">)</span>
                     
                     <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;current_time: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">current_time</span><span class="p">))</span>
@@ -493,9 +531,9 @@
                     <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
                     <span class="n">current_state</span> <span class="o">=</span> <span class="s2">&quot;IR_day&quot;</span>
                     <span class="n">comment</span> <span class="o">=</span> <span class="n">current_state</span><span class="o">+</span><span class="s1">&#39;: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
-                    <span class="c1">#Macros.Mode1_macro(root, t*timestep+relativeTime, pointing_altitude=pointing_altitude, nadir_on = False, comment = comment)</span>
+                    <span class="c1">#new_relativeTime = Macros.Mode1_macro(root, relativeTime, pointing_altitude=pointing_altitude, nadir_on = False, comment = comment)</span>
                     <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_64&#39;</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-                    <span class="n">Macros</span><span class="o">.</span><span class="n">Operational_Limb_Pointing_macro</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">t</span><span class="o">*</span><span class="n">timestep</span><span class="o">+</span><span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCD_settings</span><span class="p">,</span> 
+                    <span class="n">new_relativeTime</span> <span class="o">=</span> <span class="n">Macros</span><span class="o">.</span><span class="n">Operational_Limb_Pointing_macro</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCD_settings</span><span class="p">,</span> 
                                                            <span class="n">pointing_altitude</span><span class="o">=</span><span class="n">pointing_altitude</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">)</span>
                     
                     <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;current_time: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">current_time</span><span class="p">))</span>
@@ -513,13 +551,15 @@
 
 
 
-<div class="viewcode-block" id="XML_generator_Mode100"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode100">[docs]</a><span class="k">def</span> <span class="nf">XML_generator_Mode100</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
-    <span class="sd">&quot;&quot;&quot; Mode100, Operational_Limb_Pointing_macro.</span>
+<div class="viewcode-block" id="Mode100"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode100">[docs]</a><span class="k">def</span> <span class="nf">Mode100</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
+    <span class="sd">&quot;&quot;&quot; Mode100</span>
+<span class="sd">    </span>
+<span class="sd">    **Macro**: Operational_Limb_Pointing_macro. \n</span>
+<span class="sd">    **CCD_Macro**: BinnedCalibration with configurable exposure time of UV and IR CCDs. \n</span>
 <span class="sd">    </span>
 <span class="sd">    Successively point at altitudes from X-Y in Operational Mode in intervals of Z with increasing Exposure Times.</span>
 <span class="sd">    Where X is *pointing_altitude_from*, Y is *pointing_altitude_to, and Z is *pointing_altitude_interval*.</span>
-<span class="sd">    All defined in OPT_Config_File.Mode100_settings. </span>
-<span class="sd">    BinnedCalibration.</span>
+<span class="sd">    All defined in *Mode100_settings*.</span>
 <span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
@@ -530,7 +570,7 @@
     
     <span class="n">params</span> <span class="o">=</span> <span class="n">params_checker</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">Logger</span><span class="p">)</span>
     
-    <span class="n">Mode_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;XML_generator_&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="n">Mode_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>
     <span class="n">comment</span> <span class="o">=</span> <span class="n">Mode_name</span><span class="o">+</span><span class="s1">&#39; starting date: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
     
     
@@ -581,12 +621,15 @@
 
 
 
-<div class="viewcode-block" id="XML_generator_Mode110"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode110">[docs]</a><span class="k">def</span> <span class="nf">XML_generator_Mode110</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
-    <span class="sd">&quot;&quot;&quot;Mode110, Operational_Sweep_macro.</span>
+<div class="viewcode-block" id="Mode110"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode110">[docs]</a><span class="k">def</span> <span class="nf">Mode110</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
+    <span class="sd">&quot;&quot;&quot;Mode110</span>
+<span class="sd">    </span>
+<span class="sd">    **Macro**: Operational_Sweep_macro. \n</span>
+<span class="sd">    **CCD_Macro**: BinnedCalibration with configurable exposure time of UV and IR CCDs. \n</span>
+<span class="sd">    </span>
 <span class="sd">    </span>
 <span class="sd">    Scan atmosphere from X to Y altitudes with a rate of Z.</span>
-<span class="sd">    Where X, Y, Z is defined in OPT_Config_File.Mode110_settings.</span>
-<span class="sd">    BinnedCalibration.</span>
+<span class="sd">    Where X, Y, Z is defined in *Mode110_settings*.</span>
 <span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
@@ -595,7 +638,16 @@
     
     <span class="n">params</span> <span class="o">=</span> <span class="n">params_checker</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">Logger</span><span class="p">)</span>
     
-    <span class="n">Mode_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;XML_generator_&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="n">ExpTimeUV</span><span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;Exp_Time_UV&#39;</span><span class="p">]</span>
+    <span class="n">ExpTimeIR</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;Exp_Time_IR&#39;</span><span class="p">]</span>
+    <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_16&#39;</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ExpTimeUV</span>
+    <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_32&#39;</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ExpTimeUV</span>
+    <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_1&#39;</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ExpTimeIR</span>
+    <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_8&#39;</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ExpTimeIR</span>
+    <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_2&#39;</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ExpTimeIR</span>
+    <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_4&#39;</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ExpTimeIR</span>
+    
+    <span class="n">Mode_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>
     <span class="n">comment</span> <span class="o">=</span> <span class="n">Mode_name</span><span class="o">+</span><span class="s1">&#39; starting date: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
     
     <span class="n">pointing_altitude_from</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;pointing_altitude_from&#39;</span><span class="p">]</span>
@@ -612,9 +664,11 @@
 
 <span class="c1">#######################################################################################################</span>
 
-<div class="viewcode-block" id="XML_generator_Mode12X"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode12X">[docs]</a><span class="k">def</span> <span class="nf">XML_generator_Mode12X</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
+<div class="viewcode-block" id="Mode12X"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode12X">[docs]</a><span class="k">def</span> <span class="nf">Mode12X</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
                        <span class="n">params</span><span class="p">,</span> <span class="n">CCD_settings</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Mode12X, where X is 1,2,3....  Snapshot_Inertial_macro.</span>
+    <span class="sd">&quot;&quot;&quot;Mode12X, where X is 1,2,3....</span>
+<span class="sd">    </span>
+<span class="sd">    **Macro**: Snapshot_Inertial_macro. \n</span>
 <span class="sd">    </span>
 <span class="sd">    Stare at a point in inertial reference frame and take a Snapshot with each CCD except nadir.</span>
 <span class="sd">    </span>
@@ -622,7 +676,7 @@
     
     <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">_Globals</span><span class="o">.</span><span class="n">Timeline_settings</span>
     
-    <span class="n">Mode_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;XML_generator_&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="n">Mode_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
     <span class="n">comment</span> <span class="o">=</span> <span class="n">Mode_name</span><span class="o">+</span><span class="s1">&#39; starting date: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
     
     <span class="n">freeze_start_utc</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">date</span><span class="o">+</span><span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;freeze_start&#39;</span><span class="p">])</span>
@@ -651,13 +705,15 @@
 <span class="c1">################################################################################################</span>
 
 
-<div class="viewcode-block" id="XML_generator_Mode120"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode120">[docs]</a><span class="k">def</span> <span class="nf">XML_generator_Mode120</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
+<div class="viewcode-block" id="Mode120"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode120">[docs]</a><span class="k">def</span> <span class="nf">Mode120</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
                        <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
-    <span class="sd">&quot;&quot;&quot;Mode120, Snapshot_Inertial_macro</span>
+    <span class="sd">&quot;&quot;&quot;Mode120</span>
+<span class="sd">    </span>
+<span class="sd">    **Macro**: Snapshot_Inertial_macro. \n</span>
+<span class="sd">    **CCD_Macro**: FullReadout \n</span>
 <span class="sd">    </span>
 <span class="sd">    Stare at a point in inertial reference frame and take a Snapshot with each CCD except nadir.</span>
 <span class="sd">    Used for star calibration.</span>
-<span class="sd">    Full CCD readout.</span>
 <span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
@@ -666,7 +722,7 @@
     
     <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">CCD_macro_settings</span><span class="p">(</span><span class="s1">&#39;FullReadout&#39;</span><span class="p">)</span>
     
-    <span class="n">XML_generator_Mode12X</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
+    <span class="n">Mode12X</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
                                   <span class="n">params</span> <span class="o">=</span> <span class="n">params</span><span class="p">,</span> <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">)</span></div>
 
 
@@ -676,12 +732,14 @@
 <span class="c1">##############################################################################################</span>
 
 
-<div class="viewcode-block" id="XML_generator_Mode121"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode121">[docs]</a><span class="k">def</span> <span class="nf">XML_generator_Mode121</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
+<div class="viewcode-block" id="Mode121"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode121">[docs]</a><span class="k">def</span> <span class="nf">Mode121</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
                        <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
-    <span class="sd">&quot;&quot;&quot;Mode121, Snapshot_Inertial_macro.</span>
+    <span class="sd">&quot;&quot;&quot;Mode121</span>
+<span class="sd">    </span>
+<span class="sd">    **Macro**: Snapshot_Inertial_macro. \n</span>
+<span class="sd">    **CCD_Macro**: FullReadout \n</span>
 <span class="sd">    </span>
 <span class="sd">    Stare at a point in inertial reference frame and take a Snapshot with each CCD except nadir.</span>
-<span class="sd">    Full CCD readout.</span>
 <span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
@@ -690,7 +748,7 @@
     
     <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">CCD_macro_settings</span><span class="p">(</span><span class="s1">&#39;FullReadout&#39;</span><span class="p">)</span>
     
-    <span class="n">XML_generator_Mode12X</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
+    <span class="n">Mode12X</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
                        <span class="n">params</span> <span class="o">=</span> <span class="n">params</span><span class="p">,</span> <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">)</span></div>
 
 
@@ -699,12 +757,15 @@
 
 
 
-<div class="viewcode-block" id="XML_generator_Mode122"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode122">[docs]</a><span class="k">def</span> <span class="nf">XML_generator_Mode122</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
+<div class="viewcode-block" id="Mode122"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode122">[docs]</a><span class="k">def</span> <span class="nf">Mode122</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
                        <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
-    <span class="sd">&quot;&quot;&quot;Mode122, Snapshot_Inertial_macro.</span>
+    <span class="sd">&quot;&quot;&quot;Mode122</span>
+<span class="sd">    </span>
+<span class="sd">    **Macro**: Snapshot_Inertial_macro. \n</span>
+<span class="sd">    **CCD_Macro**: BinnedCalibration with configurable exposure time of UV and IR CCDs. \n</span>
 <span class="sd">    </span>
 <span class="sd">    Stare at a point in inertial reference frame and take a Snapshot with each CCD except nadir.</span>
-<span class="sd">    BinnedCalibration.</span>
+<span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
     <span class="n">settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Mode122_settings</span><span class="p">()</span>
@@ -720,7 +781,7 @@
     <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_2&#39;</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ExpTimeIR</span>
     <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_4&#39;</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ExpTimeIR</span>
     
-    <span class="n">XML_generator_Mode12X</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
+    <span class="n">Mode12X</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
                         <span class="n">params</span> <span class="o">=</span> <span class="n">params</span><span class="p">,</span> <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">)</span></div>
     
 
@@ -731,12 +792,16 @@
 
 
 
-<div class="viewcode-block" id="XML_generator_Mode123"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode123">[docs]</a><span class="k">def</span> <span class="nf">XML_generator_Mode123</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
+<div class="viewcode-block" id="Mode123"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode123">[docs]</a><span class="k">def</span> <span class="nf">Mode123</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
                        <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
-    <span class="sd">&quot;&quot;&quot;Mode123, Snapshot_Inertial_macro.</span>
+    <span class="sd">&quot;&quot;&quot;Mode123</span>
 <span class="sd">    </span>
-<span class="sd">    Stare at a point in inertial reference frame and take one Snapshot with each CCD except nadir.</span>
-<span class="sd">    Low pixel binning.</span>
+<span class="sd">    </span>
+<span class="sd">    **Macro**: Snapshot_Inertial_macro. \n</span>
+<span class="sd">    **CCD_Macro**: LowPixel with configurable exposure time of UV and IR CCDs. \n</span>
+<span class="sd">    </span>
+<span class="sd">    Stare at a point in inertial reference frame and take a Snapshot with each CCD except nadir.</span>
+<span class="sd">    </span>
 <span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
@@ -753,7 +818,7 @@
     <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_2&#39;</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ExpTimeIR</span>
     <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_4&#39;</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ExpTimeIR</span>
     
-    <span class="n">XML_generator_Mode12X</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
+    <span class="n">Mode12X</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
                         <span class="n">params</span> <span class="o">=</span> <span class="n">params</span><span class="p">,</span> <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">)</span></div>
     
 
@@ -762,13 +827,15 @@
 <span class="c1">##############################################################################################</span>
 
 
-<div class="viewcode-block" id="XML_generator_Mode124"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode124">[docs]</a><span class="k">def</span> <span class="nf">XML_generator_Mode124</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
+<div class="viewcode-block" id="Mode124"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode124">[docs]</a><span class="k">def</span> <span class="nf">Mode124</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
                        <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
-    <span class="sd">&quot;&quot;&quot;Mode124, Snapshot_Inertial_macro.</span>
+    <span class="sd">&quot;&quot;&quot;Mode124</span>
+<span class="sd">    </span>
+<span class="sd">    **Macro**: Snapshot_Inertial_macro. \n</span>
+<span class="sd">    **CCD_Macro**: FullReadout. \n</span>
 <span class="sd">    </span>
 <span class="sd">    Stare at a point in inertial reference frame and take one Snapshot with each CCD except Nadir. </span>
 <span class="sd">    Used for moon calibration.</span>
-<span class="sd">    FullReadout</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
     
@@ -777,7 +844,7 @@
     
     <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">CCD_macro_settings</span><span class="p">(</span><span class="s1">&#39;FullReadout&#39;</span><span class="p">)</span>
     
-    <span class="n">XML_generator_Mode12X</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
+    <span class="n">Mode12X</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
                         <span class="n">params</span> <span class="o">=</span> <span class="n">params</span><span class="p">,</span> <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">)</span></div>
 
 <span class="c1">##############################################################################################</span>
@@ -787,12 +854,14 @@
 <span class="c1">################################################################################################</span>
 
 
-<div class="viewcode-block" id="XML_generator_Mode130"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode130">[docs]</a><span class="k">def</span> <span class="nf">XML_generator_Mode130</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
+<div class="viewcode-block" id="Mode130"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode130">[docs]</a><span class="k">def</span> <span class="nf">Mode130</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
                        <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
-    <span class="sd">&quot;&quot;&quot;Mode130, Snapshot_Limb_Pointing_macro</span>
+    <span class="sd">&quot;&quot;&quot;Mode130</span>
+<span class="sd">    </span>
+<span class="sd">    **Macro**: Snapshot_Limb_Pointing_macro. \n</span>
+<span class="sd">    **CCD_Macro**: FullReadout. \n</span>
 <span class="sd">    </span>
 <span class="sd">    Look at fixed limb altitude and take Snapshots with all CCD except nadir.</span>
-<span class="sd">    Full CCD readout.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
     <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">CCD_macro_settings</span><span class="p">(</span><span class="s1">&#39;FullReadout&#39;</span><span class="p">)</span>
@@ -800,7 +869,7 @@
     
     <span class="n">params</span> <span class="o">=</span> <span class="n">params_checker</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">Logger</span><span class="p">)</span>
     
-    <span class="n">Mode_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;XML_generator_&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="n">Mode_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>
     <span class="n">comment</span> <span class="o">=</span> <span class="n">Mode_name</span><span class="o">+</span><span class="s1">&#39; starting date: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
     
     <span class="n">pointing_altitude</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;pointing_altitude&#39;</span><span class="p">]</span>
@@ -815,12 +884,14 @@
 
 <span class="c1">##############################################################################################</span>
 
-<div class="viewcode-block" id="XML_generator_Mode131"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode131">[docs]</a><span class="k">def</span> <span class="nf">XML_generator_Mode131</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
+<div class="viewcode-block" id="Mode131"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode131">[docs]</a><span class="k">def</span> <span class="nf">Mode131</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
                        <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
-    <span class="sd">&quot;&quot;&quot;Mode131, FullReadout_Operational_Limb_Pointing_macro.</span>
+    <span class="sd">&quot;&quot;&quot;Mode131</span>
+<span class="sd">    </span>
+<span class="sd">    **Macro**: FullReadout_Operational_Limb_Pointing_macro. \n</span>
+<span class="sd">    **CCD_Macro**: FullReadout. \n</span>
 <span class="sd">    </span>
 <span class="sd">    Look at fixed limb altitude in operational mode.</span>
-<span class="sd">    Full CCD readout.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
     <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">CCD_macro_settings</span><span class="p">(</span><span class="s1">&#39;FullReadout&#39;</span><span class="p">)</span>
@@ -828,7 +899,7 @@
     
     <span class="n">params</span> <span class="o">=</span> <span class="n">params_checker</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">Logger</span><span class="p">)</span>
     
-    <span class="n">Mode_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;XML_generator_&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="n">Mode_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>
     <span class="n">comment</span> <span class="o">=</span> <span class="n">Mode_name</span><span class="o">+</span><span class="s1">&#39; starting date: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
     
     <span class="n">pointing_altitude</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;pointing_altitude&#39;</span><span class="p">]</span>
@@ -842,14 +913,16 @@
 
 <span class="c1">##############################################################################################</span>
 
-<div class="viewcode-block" id="XML_generator_Mode132_133"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode132_133">[docs]</a><span class="k">def</span> <span class="nf">XML_generator_Mode132_133</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
+<div class="viewcode-block" id="Mode132_133"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode132_133">[docs]</a><span class="k">def</span> <span class="nf">Mode132_133</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
                        <span class="n">params</span><span class="p">,</span> <span class="n">CCD_settings</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Mode132 and Mode133, Operational_Limb_Pointing_macro.</span>
+    <span class="sd">&quot;&quot;&quot;Mode132 and Mode133</span>
 <span class="sd">    </span>
-<span class="sd">    Look at fixed limb altitude in operational mode with changing exposure times.</span>
+<span class="sd">    **Macro**: Operational_Limb_Pointing_macro. \n</span>
+<span class="sd">    </span>
+<span class="sd">    Look at fixed limb altitude in operational mode with a set of exposure times for UV and IR CCDs.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
-    <span class="n">Mode_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;XML_generator_&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="n">Mode_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
     <span class="n">comment</span> <span class="o">=</span> <span class="n">Mode_name</span><span class="o">+</span><span class="s1">&#39; starting date: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
     
     <span class="n">pointing_altitude</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;pointing_altitude&#39;</span><span class="p">]</span>
@@ -873,12 +946,14 @@
 
 
 
-<div class="viewcode-block" id="XML_generator_Mode132"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode132">[docs]</a><span class="k">def</span> <span class="nf">XML_generator_Mode132</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
+<div class="viewcode-block" id="Mode132"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode132">[docs]</a><span class="k">def</span> <span class="nf">Mode132</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
                        <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
-    <span class="sd">&quot;&quot;&quot;Mode132, Operational_Limb_Pointing_macro.</span>
+    <span class="sd">&quot;&quot;&quot;Mode132</span>
 <span class="sd">    </span>
-<span class="sd">    Look at fixed limb altitude in operational mode with changing exposure times.</span>
-<span class="sd">    BinnedCalibration.</span>
+<span class="sd">    **Macro**: Operational_Limb_Pointing_macro. \n</span>
+<span class="sd">    **CCD_Macro**: BinnedCalibration with changing exposure times for UV and IR CCDs. \n</span>
+<span class="sd">    </span>
+<span class="sd">    Look at fixed limb altitude in operational mode for a set duration with each exposure time.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
     <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">CCD_macro_settings</span><span class="p">(</span><span class="s1">&#39;BinnedCalibration&#39;</span><span class="p">)</span>
@@ -886,7 +961,7 @@
     
     <span class="n">params</span> <span class="o">=</span> <span class="n">params_checker</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">Logger</span><span class="p">)</span>
     
-    <span class="n">XML_generator_Mode132_133</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
+    <span class="n">Mode132_133</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
                        <span class="n">params</span> <span class="o">=</span> <span class="n">params</span><span class="p">,</span> <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">)</span></div>
 
 
@@ -897,13 +972,14 @@
 
 
 
-<div class="viewcode-block" id="XML_generator_Mode133"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode133">[docs]</a><span class="k">def</span> <span class="nf">XML_generator_Mode133</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
+<div class="viewcode-block" id="Mode133"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode133">[docs]</a><span class="k">def</span> <span class="nf">Mode133</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
                        <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
-    <span class="sd">&quot;&quot;&quot;Mode133, Operational_Limb_Pointing_macro.</span>
+    <span class="sd">&quot;&quot;&quot;Mode133,</span>
 <span class="sd">    </span>
-<span class="sd">    Look at fixed limb altitude in operational mode with changing exposure times.</span>
-<span class="sd">    Low pixel binning.</span>
+<span class="sd">    **Macro**: Operational_Limb_Pointing_macro. \n</span>
+<span class="sd">    **CCD_Macro**: LowPixel with changing exposure times for UV and IR CCDs. \n</span>
 <span class="sd">    </span>
+<span class="sd">    Look at fixed limb altitude in operational mode for a set duration with each exposure time.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
     <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">CCD_macro_settings</span><span class="p">(</span><span class="s1">&#39;LowPixel&#39;</span><span class="p">)</span>
@@ -911,7 +987,7 @@
     
     <span class="n">params</span> <span class="o">=</span> <span class="n">params_checker</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">Logger</span><span class="p">)</span>
     
-    <span class="n">XML_generator_Mode132_133</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
+    <span class="n">Mode132_133</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
                        <span class="n">params</span> <span class="o">=</span> <span class="n">params</span><span class="p">,</span> <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">)</span></div>
         
 
@@ -921,12 +997,14 @@
 
 <span class="c1">##############################################################################################</span>
 
-<div class="viewcode-block" id="XML_generator_Mode134"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.XML_generator_Mode134">[docs]</a><span class="k">def</span> <span class="nf">XML_generator_Mode134</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
+<div class="viewcode-block" id="Mode134"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode134">[docs]</a><span class="k">def</span> <span class="nf">Mode134</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
                        <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
     <span class="sd">&quot;&quot;&quot;Mode134, Operational_Limb_Pointing_macro.</span>
 <span class="sd">    </span>
+<span class="sd">    **Macro**: Operational_Limb_Pointing_macro. \n</span>
+<span class="sd">    **CCD_Macro**: CustomBinning \n</span>
+<span class="sd">    </span>
 <span class="sd">    Look at fixed limb altitude in Operational Mode.</span>
-<span class="sd">    CustomBinning.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
     <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">CCD_macro_settings</span><span class="p">(</span><span class="s1">&#39;CustomBinning&#39;</span><span class="p">)</span>
@@ -934,7 +1012,7 @@
     
     <span class="n">params</span> <span class="o">=</span> <span class="n">params_checker</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">Logger</span><span class="p">)</span>
     
-    <span class="n">Mode_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;XML_generator_&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="n">Mode_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>
     <span class="n">comment</span> <span class="o">=</span> <span class="n">Mode_name</span><span class="o">+</span><span class="s1">&#39; starting date: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
     
     <span class="n">pointing_altitude</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;pointing_altitude&#39;</span><span class="p">]</span>
@@ -953,7 +1031,7 @@
 <span class="c1">##############################################################################################</span>
 
 
-<div class="viewcode-block" id="XML_generator_X"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.XML_generator_X">[docs]</a><span class="k">def</span> <span class="nf">XML_generator_X</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
+<div class="viewcode-block" id="X"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.X">[docs]</a><span class="k">def</span> <span class="nf">X</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
     <span class="sd">&quot;&quot;&quot;This is a template for a new mode or test. Exchange &#39;X&#39; for the name of the new mode/test&quot;</span>
 <span class="sd">    </span>
 <span class="sd">    Currently this template mode only schedules a *TC_acfLimbPointingAltitudeOffset* CMD.</span>
@@ -962,21 +1040,21 @@
     <span class="s2">&quot;Calls for settings stated in the Configuration File&quot;</span>
     <span class="c1">#settings = OPT_Config_File.X_settings()</span>
     <span class="s2">&quot;Calls for CCD settings for a specific CCD macro, here the CCD macro is &#39;CustomBinning&#39;&quot;</span>
-    <span class="c1">#CCD_settings = OPT_Config_File.CCD_macro_settings(&#39;CustomBinning&#39;)</span>
+    <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">CCD_macro_settings</span><span class="p">(</span><span class="s1">&#39;CustomBinning&#39;</span><span class="p">)</span>
     
     <span class="s2">&quot;Compares settings given in the Science Mode Timeline to settings given in the Configuration File&quot;</span>
-    <span class="c1">#params = params_checker(params,=X=_settings)</span>
+    <span class="c1">#params = params_checker(params,settings)</span>
     
     
-    <span class="n">Mode_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;XML_generator_&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="n">Mode_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>
     <span class="n">comment</span> <span class="o">=</span> <span class="n">Mode_name</span><span class="o">+</span><span class="s1">&#39; starting date: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
     
     <span class="n">Commands</span><span class="o">.</span><span class="n">TC_acfLimbPointingAltitudeOffset</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">relativeTime</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">Initial</span> <span class="o">=</span> <span class="mi">120000</span><span class="p">,</span> 
                                               <span class="n">Final</span> <span class="o">=</span> <span class="mi">120000</span><span class="p">,</span> <span class="n">Rate</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">)</span>
     
-    <span class="s2">&quot;A call for the macro called Operational_Limb_Pointing_macro&quot;</span></div>
-    <span class="c1">#Macros.Operational_Limb_Pointing_macro(root, round(relativeTime,2), CCD_settings,</span>
-    <span class="c1">#                            pointing_altitude = 120000, comment = comment)</span>
+    <span class="s2">&quot;A call for the macro called Operational_Limb_Pointing_macro&quot;</span>
+    <span class="n">Macros</span><span class="o">.</span><span class="n">Operational_Limb_Pointing_macro</span><span class="p">(</span><span class="n">root</span> <span class="o">=</span> <span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">relativeTime</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">,</span>
+                                <span class="n">pointing_altitude</span> <span class="o">=</span> <span class="mi">120000</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">)</span></div>
     
     
 

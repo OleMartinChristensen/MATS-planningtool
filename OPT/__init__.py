@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Contain the functions that together constitute the Operational_Planning_Tool (OPT). These functions are:
+"""Make sure to read the "Science Modes for MATS" document (at least Version 3.1). The programs (functions) that together constitute the Operational_Planning_Tool (OPT) are:
     
     - Copy_ConfigFile
     - Set_ConfigFile
@@ -15,17 +15,19 @@
     OPT = Operational Planning Tool
     
 **Description:**
-*Operational_Planning_Tool* uses a special .py file as a *Configuration File*. An example of a *Configuration_File* is located in the Operational_Planning_Tool and is called *_ConfigFile.py*.  \n
+*Operational_Planning_Tool* uses a hiearchy structure with a procedural programming paradigm. Meaning that only the top level functions (the ones mentioned above) are supposed to be called by a user. \n
+
+*Operational_Planning_Tool* uses a special .py file as a *Configuration File*, meaning that the settings inside the *Configuration File* dictate the operation of the program (unless the same settings are explicitly stated in the input of a function, see *XML_gen* and *Timeline_Plotter*). An example of a *Configuration_File* with default values is located in the Operational_Planning_Tool and is called *_ConfigFile.py*.  \n
 
 Create your own *Configuration File* with an appropriate name by running *Copy_ConfigFile* with a chosen name as an input. 
-*Copy_ConfigFile* makes a copy of *_ConfigFile.py*. You can then modify the settings in your copy. \n
+*Copy_ConfigFile* makes a copy of *_ConfigFile.py*. The settings in your copy is modified manually in a text editor. \n
 
 Your *Configuration File* and its date must be chosen by running *Set_ConfigFile*. \n
 
-The objective of *Operational_Planning_Tool* is to create a timeline constituting of planned Science Modes and some available stand-alone Commands (specified in "Science Modes for MATS" document). 
+The objective of *Operational_Planning_Tool* is to create a file consisting of planned Science Modes and Commands with timestamps (specified in "Science Modes for MATS" document). 
 A *Science Mode Timeline*, as it is called, is created by running *Timeline_gen*. Remember to edit and choose your *Configuration File* by running *Set_ConfigFile*. \n
 
-The created *Science Mode Timeline* can be converted into Payload and Platform Commands (as specified in the "Innosat Payload Timeline XML Definition" document) 
+The created *Science Mode Timeline* can be converted into a XML-file containing Payload and Platform Commands (formatted as specified in the "Innosat Payload Timeline XML Definition" document) 
 by running *XML_gen* with the *Science Mode Timeline* as the input. 
 
 The *Science Mode Timeline* can also be simulated and and plotted by running *Timeline_Plotter* with the *Science Mode Timeline* as the input. 
@@ -40,24 +42,32 @@ All generated output files are saved in a folder called 'Output' in the working 
 Generated logs are saved in folders created in the working directory.
 
 
-Examples:
+Example:
     import OPT
     
+    #Creates a new Configuration File named OPT_Config_File.
     OPT.Copy_ConfigFile('OPT_Config_File')
     
+    #Optionally change any settings in OPT_Config_File by using a text editor 
+    
+    #Choose the newly created Configuration File and set the starting date.
     OPT.Set_ConfigFile('OPT_Config_File', '2019/09/05 08:00:00')
     
+    #Sanity check for values in the chosen Configuration File.
     OPT.CheckConfigFile()
     
+    #Creates a Science Mode Timeline specified by settings given in the chosen Configuration File.
     OPT.Timeline_gen()
     
+    #Converts the created Science Mode Timeline into an XML-file.
     OPT.XML_gen('Output/Science_Mode_Timeline__OPT_Config_File.json')
     
+    #Plots the Science Mode Timeline.
     Data_MATS, Data_LP, Time, Time_OHB  = OPT.Timeline_Plotter('Output/Science_Mode_Timeline__OPT_Config_File.json')
  
 
 Science Modes are separated into 2 different areas, *Operational Science Modes* (Mode 1,2,5) and *Calibration Modes*. \n
-*Calibration Modes* are scheduled at specific points of time and are usually only scheduled one time per *Science Mode Timeline*. 
+*Calibration Modes* are scheduled at specific points of time and are usually only scheduled once per *Science Mode Timeline*. 
 *Operational Science Modes* (Mode 1,2,5) are scheduled wherever time is available (after the scheduling of *Calibration Modes*) and only 1 *Operational Science Mode* is scheduled per Timeline.
 
 """
@@ -82,7 +92,7 @@ def Copy_ConfigFile(Config_File_Name):
     
     Config_File_Name = Config_File_Name+'.py'
     
-    """
+    
     #Make copy of the original Config File if no Config File is present.
     if(os.path.isfile(ConfigFile) == False):
         shutil.copyfile(Original_ConfigFile, ConfigFile)
@@ -94,7 +104,7 @@ def Copy_ConfigFile(Config_File_Name):
             shutil.copyfile(Original_ConfigFile, ConfigFile)
         elif( answer == 'n'):
             pass
-    """
+    
     
     if(os.path.isfile(Config_File_Name) == False):
         shutil.copyfile(ConfigFile, Config_File_Name)
@@ -113,7 +123,7 @@ def Copy_ConfigFile(Config_File_Name):
 
 
 def Set_ConfigFile(Config_File_Name, Date):
-    """Sets the StartTime for OPT, and the name of the *.py* file that is to be used as a *Configuration file* for OPT.
+    """Sets the StartTime for OPT, and the name of the *.py* file that shall be used as a *Configuration file* for OPT.
     
     The *Configuration file* chosen must be visible in sys.path.
     
@@ -149,7 +159,7 @@ def Timeline_gen():
     
     *Operational Science Modes* (example: Mode 1,2,5) are scheduled separately wherever time is available at the end of the program.
     
-    Settings for the operation of the program are stated in the *Configuration File* set by *Set_ConfigFile*.
+    Settings for the operation of the program are stated in the *Configuration File* chosen with *Set_ConfigFile*.
     
     Returns:
         None
@@ -188,7 +198,7 @@ def XML_gen(science_mode_timeline_path):
 def Timeline_analyzer(science_mode_timeline_path, date):
     '''Invokes the Timeline_analyser program part of Operational Planning Tool.
     
-    Searches a Science Mode Timeline json file for a given date and returns the scheduled mode and its parameters"
+    Searches a Science Mode Timeline json file for a given date and returns the scheduled mode and its parameters
     
     Arguments:
         science_mode_timeline_path (str): path to the .json file containing the Science Mode Timeline

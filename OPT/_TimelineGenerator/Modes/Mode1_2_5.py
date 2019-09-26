@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Schedules *Operational Science Modes* wherever time is available as defined by the *Occupied_Timeline* dictionary.
 
 Part of *Timeline_gen*, as part of OPT. *Operational Science Modes* is always scheduled after the rest of the planned Modes have been scheduled. Result is saved in the Occupied_Timeline dictionary.
@@ -16,8 +15,8 @@ Logger = logging.getLogger(OPT_Config_File.Logger_name())
 def Mode1_2_5(Occupied_Timeline):
     """Core function for the scheduling of *Operational Science Modes* (Mode 1, 2, and 5).
     
+    Which Mode that will be scheduled depends on *Timeline_settings['Choose_Operational_Science_Mode']*.
     These Modes, called *Operational Science Modes*, are always scheduled last, and wherever time is available. Only one *Operational Science Mode* is scheduled for each timeline.
-    Mode5 is only scheduled if *Timeline_settings['Schedule_Mode5'] is set to *True*. Mode1 or Mode2 is scheduled depending on the time of the year, see the "Science Modes for MATS" document.
     
     Arguments:
         Occupied_Timeline (:obj:`dict` of :obj:`list): Dictionary with keys equal to planned and scheduled Modes with entries equal to with their start and end time as a list of duples.
@@ -92,18 +91,35 @@ def Mode1_2_5(Occupied_Timeline):
                 dates.append( (date, endDate) )
                 iterations = iterations + 1
                 
-            
-    if( settings['Schedule_Mode5'] == True):
+    
+    
+    if( 'Mode1' in Occupied_Timeline ):
+        Occupied_Timeline['Mode1'] = dates
+    elif( 'Mode2' in Occupied_Timeline  ):
+        Occupied_Timeline['Mode2'] = dates
+    elif( 'Mode5' in Occupied_Timeline  ):
         Occupied_Timeline['Mode5'] = dates
         
-    elif( ephem.Date(settings['start_date']).tuple()[1] in [11,12,1,2,5,6,7,8] or 
-         ( ephem.Date(settings['start_date']).tuple()[1] in [3,9] and ephem.Date(settings['start_date']).tuple()[2] in range(11) )):
-        
+    """
+    if( settings['Choose_Operational_Science_Mode'] == 0 ):
+        if( settings['Schedule_Mode5'] == True):
+            Occupied_Timeline['Mode5'] = dates
+            
+        elif( ephem.Date(settings['start_date']).tuple()[1] in [11,12,1,2,5,6,7,8] or 
+             ( ephem.Date(settings['start_date']).tuple()[1] in [3,9] and ephem.Date(settings['start_date']).tuple()[2] in range(11) )):
+            
+            Occupied_Timeline['Mode1'] = dates
+            
+        else:
+            Occupied_Timeline['Mode2'] = dates
+            
+    elif( settings['Choose_Operational_Science_Mode'] == 1 ):
         Occupied_Timeline['Mode1'] = dates
-        
-    else:
+    elif( settings['Choose_Operational_Science_Mode'] == 2 ):
         Occupied_Timeline['Mode2'] = dates
-        
+    elif( settings['Choose_Operational_Science_Mode'] == 5 ):
+        Occupied_Timeline['Mode5'] = dates
+    """
     comment = 'Number of Modes inserted: ' + str(iterations)
     
     

@@ -40,6 +40,8 @@ $ conda install -c astropy astroquery=0.3.9
 
 $ conda install pip
 
+$ conda install -c anaconda h5py 
+
 $ conda install -c conda-forge skyfield=1.10
 
 
@@ -58,7 +60,7 @@ of the Spyder project, as that directory is automatically part of the PYTHONPATH
 
 7. Allow plots created with python to be printed in separate windows. Go to tools/preferences in Spyder. Then in the preferences window, select "IPython Console". Go to Graphics. In the dropdown menu of "Graphics backend" select automatic.
 
-7. Finally try to execute these lines in Spyder (either in the IPython console or as part of a script).
+8. Finally try to execute these lines in Spyder (either in the IPython console or as part of a script).
 
     import OPT
     
@@ -74,4 +76,7 @@ of the Spyder project, as that directory is automatically part of the PYTHONPATH
 	
 	Data_MATS, Data_LP, Time, Time_OHB  = OPT.Timeline_Plotter('Output/Science_Mode_Timeline__OPT_Config_File.json')
 
-See further documentation found under "Docs" in OPT (Operational_Planning_Tool) to learn how to use the OPT package.
+See further documentation found under "Docs" in OPT (Operational_Planning_Tool) to learn how to use the OPT package. The docs are automatically generated from the source code 
+by using the python package Sphinx. The documentation is saved in *OPT_Build_Extensive* and *OPT_Build_Simplified*, where the extensive one contains documentation about every part of OPT, 
+including private modules and packages, while the simplified one only contains information about the public functions which are meant to be used by the user. To rebuild the documentation, simply 
+run the Sphinx_CMD_File.bat in the anaconda prompt.

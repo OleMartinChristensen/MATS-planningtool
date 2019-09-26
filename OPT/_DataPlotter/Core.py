@@ -33,7 +33,7 @@ def Data_Plotter():
     """
     
     ############# Set up Logger #################################
-    _Library.SetupLogger()
+    _Library.SetupLogger(OPT_Config_File.Logger_name())
     Logger = logging.getLogger(OPT_Config_File.Logger_name())
     
     Version = OPT_Config_File.Version()
@@ -259,7 +259,10 @@ def Data_Plotter():
     z_axis_SLOF_STK = zeros((timesteps,3))
     x_axis_SLOF_STK = zeros((timesteps,3))
     
-    with open('tle-54321_54321_ICRF_183244.csv') as csv_file:
+    #with open('tle-54321_54321_ICRF_2019_09_05_183244_OHB_EOP.csv') as csv_file:
+    #with open('tle-54321_54321_ICRF_2020_03_01_183244_OHB_EOP.csv') as csv_file:
+    with open('tle-54321_54321_ICRF_183244_OHB_EOP.csv') as csv_file:
+    #with open('tle-54321_54321_ICRF_183244.csv') as csv_file:
     #with open('tle-54321_54321 Data_handlin_OHB_TLE.csv') as csv_file:
     #with open('OHB_timeshifted2sTLE_ICRF_addedEOP.csv') as csv_file:
         csv_reader = csv.reader(csv_file, delimiter=',')
@@ -846,9 +849,10 @@ def Data_Plotter():
     total_r_MATS_error_OHB_STK_transformed = zeros((timesteps,1))
     
     r_MATS_error_STK_transformed_RCI = zeros((timesteps,3))
-    
     r_MATS_error_STK_transformed_ECI = abs(r_MATS*1000-r_MATS_STK*1000)
     
+    r_MATS_error_OHB_RCI = zeros((timesteps,3))
+    r_MATS_error_OHB_ECI = abs(r_MATS*1000-r_MATS_OHB*1000)
     
     r_MATS_error_STK = abs(r_MATS_ECEF*1000-r_MATS_STK_FIXED*1000)
     r_MATS_error_STK_transformed = abs(r_MATS_ECEF*1000-r_MATS_STK_ECEF)
@@ -866,7 +870,7 @@ def Data_Plotter():
         dcm_change_of_basis_RCI = R.from_dcm(change_of_basis_RCI)
         
         r_MATS_error_STK_transformed_RCI[t] =  dcm_change_of_basis_RCI.apply( r_MATS_error_STK_transformed_ECI[t])
-        
+        r_MATS_error_OHB_RCI[t] =  dcm_change_of_basis_RCI.apply( r_MATS_error_OHB_ECI[t])
         
         total_r_MATS_error_STK[t] = norm(r_MATS_error_STK[t,:])
         total_r_MATS_error_OHB[t] = norm(r_MATS_error_OHB[t,:])
@@ -876,20 +880,16 @@ def Data_Plotter():
         
     
     figure()
-    plot_date(current_time_MPL[1:],r_MATS_error_STK_transformed_RCI[1:,0], markersize = 1, label = 'Radial')
-    plot_date(current_time_MPL[1:],r_MATS_error_STK_transformed_RCI[1:,1], markersize = 1, label = 'Cross-track')
-    plot_date(current_time_MPL[1:],r_MATS_error_STK_transformed_RCI[1:,2], markersize = 1, label = 'Intrack')
-    xlabel('Date')
-    ylabel('Absolute error in ECEF position of MATS as RCI in m (prediction vs STK')
-    legend()
-    
-    figure()
     plot_date(current_time_MPL[1:],r_MATS_error_STK[1:,0], markersize = 1, label = 'x')
     plot_date(current_time_MPL[1:],r_MATS_error_STK[1:,1], markersize = 1, label = 'y')
     plot_date(current_time_MPL[1:],r_MATS_error_STK[1:,2], markersize = 1, label = 'z')
     xlabel('Date')
     ylabel('Absolute error in ECEF position of MATS in m (prediction vs STK')
     legend()
+    
+    
+    
+    
     
     figure()
     plot_date(current_time_MPL[1:],r_MATS_error_STK_transformed[1:,0], markersize = 1, label = 'x')
@@ -900,12 +900,33 @@ def Data_Plotter():
     legend()
     
     figure()
+    plot_date(current_time_MPL[1:],r_MATS_error_STK_transformed_RCI[1:,0], markersize = 1, label = 'Radial')
+    plot_date(current_time_MPL[1:],r_MATS_error_STK_transformed_RCI[1:,1], markersize = 1, label = 'Cross-track')
+    plot_date(current_time_MPL[1:],r_MATS_error_STK_transformed_RCI[1:,2], markersize = 1, label = 'Intrack')
+    xlabel('Date')
+    ylabel('Absolute error in ECEF position of MATS as RCI in m (prediction vs STK_transformed')
+    legend()
+    
+    
+    
+    
+    figure()
     plot_date(current_time_MPL[1:],r_MATS_error_OHB[1:,0], markersize = 1, label = 'x')
     plot_date(current_time_MPL[1:],r_MATS_error_OHB[1:,1], markersize = 1, label = 'y')
     plot_date(current_time_MPL[1:],r_MATS_error_OHB[1:,2], markersize = 1, label = 'z')
     xlabel('Date')
     ylabel('Absolute error in ECEF position of MATS in m (prediction vs OHB')
     legend()
+    
+    figure()
+    plot_date(current_time_MPL[1:],r_MATS_error_OHB_RCI[1:,0], markersize = 1, label = 'Radial')
+    plot_date(current_time_MPL[1:],r_MATS_error_OHB_RCI[1:,1], markersize = 1, label = 'Cross-track')
+    plot_date(current_time_MPL[1:],r_MATS_error_OHB_RCI[1:,2], markersize = 1, label = 'Intrack')
+    xlabel('Date')
+    ylabel('Absolute error in ECEF position of MATS as RCI in m (prediction vs OHB')
+    legend()
+    
+    
     
     figure()
     plot_date(current_time_MPL[1:],r_MATS_error_OHB_STK[1:,0], markersize = 1, label = 'x')
@@ -915,6 +936,9 @@ def Data_Plotter():
     ylabel('Absolute error in ECEF position of MATS in m (STK vs OHB')
     legend()
     
+    
+    
+    
     figure()
     plot_date(current_time_MPL[1:],r_MATS_error_OHB_STK_transformed[1:,0], markersize = 1, label = 'x')
     plot_date(current_time_MPL[1:],r_MATS_error_OHB_STK_transformed[1:,1], markersize = 1, label = 'y')
@@ -922,6 +946,11 @@ def Data_Plotter():
     xlabel('Date')
     ylabel('Absolute error in ECEF position of MATS in m (STK_transformed vs OHB')
     legend()
+    
+    
+    
+    
+    
     
     figure()
     plot_date(current_time_MPL[1:],total_r_MATS_error_STK[1:], markersize = 1, label = 'Prediction vs STK')
@@ -978,7 +1007,7 @@ def Data_Plotter():
     plot_date(current_time_MPL[1:], lat_LP[1:], markersize = 1, label = 'Predicted')
     plot_date(current_time_MPL[1:], lat_LP_STK[1:], markersize = 1, label = 'STK-Data')
     plot_date(current_time_MPL_OHB[1:], lat_LP_OHB[1:], markersize = 1, label = 'OHB-Data')
-    plot_date(current_time_MPL[1:], lat_LP_estimated[1:]/pi*180, markersize = 1, label = 'Estimated from latitude of MATS')
+    plot_date(current_time_MPL[1:], lat_LP_estimated[1:], markersize = 1, label = 'Estimated from latitude of MATS')
     xlabel('Date')
     ylabel('Latitude of LP in degrees')
     legend()
@@ -1058,14 +1087,14 @@ def Data_Plotter():
     plot_date(current_time_MPL[1:],Ra_STK[1:], markersize = 1, label = 'STK-Data')
     plot_date(current_time_MPL_OHB[1:],Ra_OHB[1:], markersize = 1, label = 'OHB-Data')
     xlabel('Date')
-    ylabel('Right Ascension in degrees [J2000] (Parallax assumed negligable)')
+    ylabel('Right Ascension of optical axis in degrees [J2000] (Parallax assumed negligable)')
     legend()
     
     figure()
     plot_date(current_time_MPL[1:],abs(Ra_STK[1:]-RA_optical_axis[1:]), markersize = 1, label = 'Prediction vs STK')
     plot_date(current_time_MPL[1:],abs(Ra_OHB[1:]-RA_optical_axis[1:]), markersize = 1, label = 'Prediction vs OHB')
     xlabel('Date')
-    ylabel('Absolute error in Right Ascension in degrees (STK vs predicted) [J2000] (Parallax assumed negligable)')
+    ylabel('Absolute error in Right Ascension of optical axis in degrees (STK vs predicted) [J2000] (Parallax assumed negligable)')
     legend()
     """
     figure()
@@ -1086,14 +1115,14 @@ def Data_Plotter():
     plot_date(current_time_MPL[1:],Dec_STK[1:], markersize = 1, label = 'STK-Data')
     plot_date(current_time_MPL_OHB[1:],Dec_OHB[1:], markersize = 1, label = 'OHB-Data')
     xlabel('Date')
-    ylabel('Declination in degrees [J2000] (Parallax assumed negligable)')
+    ylabel('Declination of optical axis in degrees [J2000] (Parallax assumed negligable)')
     legend()
     
     figure()
     plot_date(current_time_MPL[1:],abs(Dec_STK[1:]-Dec_optical_axis[1:]), markersize = 1, label = 'Prediction vs STK')
     plot_date(current_time_MPL_OHB[1:],abs(Dec_OHB[1:]-Dec_optical_axis[1:]), markersize = 1, label = 'Prediction vs OHB')
     xlabel('Date')
-    ylabel('Absolute error in Declination in degrees (STK vs predicted) [J2000] (Parallax assumed negligable)')
+    ylabel('Absolute error in Declination of optical axis in degrees (STK vs predicted) [J2000] (Parallax assumed negligable)')
     legend()
     """
     figure()

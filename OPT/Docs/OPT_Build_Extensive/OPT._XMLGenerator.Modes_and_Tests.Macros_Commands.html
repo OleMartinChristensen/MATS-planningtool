@@ -49,11 +49,16 @@ Also checks if parameters given are valid for the CMDs.</p>
 <p><strong>CMD specific parameters</strong>: A number of CMD specific parameters as defined in &quot;InnoSat Payload Timeline XML Definition&quot; document for each corresponding command.</p>
 <p><strong>comment</strong> (<em>str</em>): A comment regarding the CMD.</p>
 </dd>
-<dt><strong>Returns:</strong></dt><dd><p><strong>incremented_time</strong> (<em>int</em>) = The scheduled relativeTime of the command increased by a number equal to <em>Timeline.settings()['command_separation']</em>.
+<dt><strong>Returns:</strong></dt><dd><p><strong>incremented_time</strong> (<em>int</em>) = The scheduled relativeTime of the command increased by a number equal to <em>Timeline.settings()['CMD_separation']</em>.
 This to prevent the command buffer on the satellite from overloading. Note: When <em>TC_acfLimbPointingAltitudeOffset</em> is scheduled with Rate = '0', relativeTime is increased by <a href="#id1"><span class="problematic" id="id2">*</span></a>Timeline_settings['pointing_stabilization'].</p>
 </dd>
 </dl>
 </div></blockquote>
+<dl class="function">
+<dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_acfArgEnableYawComp">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.</code><code class="descname">TC_acfArgEnableYawComp</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>EnableYawComp</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Commands.html#TC_acfArgEnableYawComp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_acfArgEnableYawComp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_acfLimbPointingAltitudeOffset">
 <code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.</code><code class="descname">TC_acfLimbPointingAltitudeOffset</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>Initial=92500</em>, <em>Final=92500</em>, <em>Rate=0</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Commands.html#TC_acfLimbPointingAltitudeOffset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_acfLimbPointingAltitudeOffset" title="Permalink to this definition">¶</a></dt>
@@ -87,17 +92,17 @@ This to prevent the command buffer on the satellite from overloading. Note: When
 
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_pafCCDMain">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.</code><code class="descname">TC_pafCCDMain</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>CCDSEL</em>, <em>PWR</em>, <em>ExpInterval</em>, <em>ExpTime</em>, <em>NRSKIP=0</em>, <em>NRBIN=1</em>, <em>NROW=1</em>, <em>NCBIN=1</em>, <em>NCOL=1</em>, <em>WDW=128</em>, <em>JPEGQ=90</em>, <em>SYNC=0</em>, <em>NCBINFPGA=0</em>, <em>SIGMODE=1</em>, <em>GAIN=0</em>, <em>NFLUSH=1023</em>, <em>NCSKIP=0</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Commands.html#TC_pafCCDMain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_pafCCDMain" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.</code><code class="descname">TC_pafCCDMain</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>CCDSEL</em>, <em>PWR</em>, <em>TEXPMS</em>, <em>TEXPIMS</em>, <em>NRSKIP</em>, <em>NRBIN</em>, <em>NROW</em>, <em>NCBIN</em>, <em>NCOL</em>, <em>WDW</em>, <em>JPEGQ</em>, <em>SYNC</em>, <em>NCBINFPGA</em>, <em>SIGMODE</em>, <em>GAIN</em>, <em>NFLUSH</em>, <em>NCSKIP</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Commands.html#TC_pafCCDMain"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_pafCCDMain" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_pafCCDSYNCHRONIZE">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.</code><code class="descname">TC_pafCCDSYNCHRONIZE</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>CCDSEL</em>, <em>NCCD</em>, <em>TEXPIOFS</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Commands.html#TC_pafCCDSYNCHRONIZE"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_pafCCDSYNCHRONIZE" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_pafCCDSnapshot">
 <code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.</code><code class="descname">TC_pafCCDSnapshot</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>CCDSEL</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Commands.html#TC_pafCCDSnapshot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_pafCCDSnapshot" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="function">
-<dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_pafCCDSynchronize">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.</code><code class="descname">TC_pafCCDSynchronize</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>CCDSEL</em>, <em>NCCD</em>, <em>TEXPIOFS</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Commands.html#TC_pafCCDSynchronize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_pafCCDSynchronize" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
@@ -138,20 +143,21 @@ This to prevent the command buffer on the satellite from overloading. Note: When
 </div>
 <div class="section" id="module-OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros">
 <span id="opt-xmlgenerator-modes-and-tests-macros-commands-macros-module"></span><h2>OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros module<a class="headerlink" href="#module-OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros" title="Permalink to this headline">¶</a></h2>
-<p>Contains Macro functions, that in calls for Command functions located in the <em>Commands</em> module.</p>
+<p>Contain Macro functions, that calls for Command functions located in the <em>Commands</em> module.</p>
 <p>Macros consists of frequently used combinations of Commands.</p>
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.CCD_macro">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.</code><code class="descname">CCD_macro</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>CCD_settings</em>, <em>TEXPIMS=60000</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Macros.html#CCD_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.CCD_macro" title="Permalink to this definition">¶</a></dt>
-<dd><p>Macro that corresponds to configurating the settings of the CCDs.</p>
-<p>The settings are set for each corresponding CCDSEL argument.</p>
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.</code><code class="descname">CCD_macro</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>CCD_settings</em>, <em>TEXPIMS</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Macros.html#CCD_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.CCD_macro" title="Permalink to this definition">¶</a></dt>
+<dd><p>Macro that corresponds to configurating the settings of the CCDs</p>
+<p>Used when the Synchronization CMD is used to synchronize all the CCDs except nadir or when Snapshots are utilized where TEXPIMS is irrelevant.
+TEXPIMS for all the CCDs except nadir is set to the same value to allow Synchronization.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> (<em>lxml.etree._Element</em>) -- XML tree structure. Main container object for the ElementTree API.</p></li>
 <li><p><strong>relativeTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) -- The relative starting time of the macro with regard to the start of the timeline [s]</p></li>
 <li><p><strong>CCD_settings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of int) -- A dict containing settings for the CCDs.</p></li>
-<li><p><strong>TEXPIMS</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- ExposureIntervalTime for the CCDs in ms.</p></li>
+<li><p><strong>TEXPIMS</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- ExposureIntervalTime for the CCDs (except nadir) in ms.</p></li>
 <li><p><strong>comment</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- A comment for the macro. Will be printed in the genereated XML-file.</p></li>
 </ul>
 </dd>
@@ -199,14 +205,14 @@ This to prevent the command buffer on the satellite from overloading. Note: When
 
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.Limb_functional_test_macro">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.</code><code class="descname">Limb_functional_test_macro</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>pointing_altitude</em>, <em>ExpTime</em>, <em>JPEGQ</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Macros.html#Limb_functional_test_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.Limb_functional_test_macro" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.</code><code class="descname">Limb_functional_test_macro</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>pointing_altitude</em>, <em>TEXPMS</em>, <em>JPEGQ</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Macros.html#Limb_functional_test_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.Limb_functional_test_macro" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> (<em>lxml.etree._Element</em>) -- XML tree structure. Main container object for the ElementTree API.</p></li>
 <li><p><strong>relativeTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) -- The relative starting time of the macro with regard to the start of the timeline [s]</p></li>
 <li><p><strong>pointing_altitude</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- The altitude of the tangential point [m].</p></li>
-<li><p><strong>ExpTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- Exposure time in ms</p></li>
+<li><p><strong>TEXPMS</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- Exposure time in ms</p></li>
 <li><p><strong>JPEGQ</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- The JPEG quality in %</p></li>
 <li><p><strong>comment</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- A comment for the macro. Will be printed in the genereated XML-file.</p></li>
 </ul>
@@ -221,8 +227,38 @@ This to prevent the command buffer on the satellite from overloading. Note: When
 </dd></dl>
 
 <dl class="function">
+<dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.NadirSnapshot_Limb_Pointing_macro">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.</code><code class="descname">NadirSnapshot_Limb_Pointing_macro</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>CCD_settings</em>, <em>pointing_altitude</em>, <em>SnapshotSpacing</em>, <em>comment</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Macros.html#NadirSnapshot_Limb_Pointing_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.NadirSnapshot_Limb_Pointing_macro" title="Permalink to this definition">¶</a></dt>
+<dd><p>Macro that corresponds to pointing towards a Limb altitude and taking a Snapshot with each CCD (except Nadir).</p>
+<ol class="arabic simple">
+<li><p>Set Payload to idle mode</p></li>
+<li><p>Point the satellite to <em>pointing_altitude</em>.</p></li>
+<li><p>Run CCD Commands with given settings.</p></li>
+<li><p>Take 5 Snapshots with Nadir with a spacing of <em>SnapshotSpacing</em>.</p></li>
+</ol>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> (<em>lxml.etree._Element</em>) -- XML tree structure. Main container object for the ElementTree API.</p></li>
+<li><p><strong>relativeTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) -- The relative starting time of the macro with regard to the start of the timeline [s]</p></li>
+<li><p><strong>CCD_settings</strong> (<em>dict of dict of int</em>) -- Settings for the CCDs.</p></li>
+<li><p><strong>pointing_altitude</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- The altitude of the tangential point [m].</p></li>
+<li><p><strong>SnapshotSpacing</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- The time in seconds inbetween snapshots of individual CCDs.</p></li>
+<li><p><strong>comment</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- A comment for the macro. Will be printed in the genereated XML-file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Time in seconds equal to the input &quot;relativeTime&quot; with added delay from the scheduling of commands.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>relativeTime (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.Nadir_functional_test_macro">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.</code><code class="descname">Nadir_functional_test_macro</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>pointing_altitude</em>, <em>ExpTime</em>, <em>JPEGQ</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Macros.html#Nadir_functional_test_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.Nadir_functional_test_macro" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.</code><code class="descname">Nadir_functional_test_macro</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>pointing_altitude</em>, <em>TEXPMS</em>, <em>JPEGQ</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Macros.html#Nadir_functional_test_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.Nadir_functional_test_macro" title="Permalink to this definition">¶</a></dt>
 <dd><p>Nadir_functional_test</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -230,7 +266,7 @@ This to prevent the command buffer on the satellite from overloading. Note: When
 <li><p><strong>root</strong> (<em>lxml.etree._Element</em>) -- XML tree structure. Main container object for the ElementTree API.</p></li>
 <li><p><strong>relativeTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) -- The relative starting time of the macro with regard to the start of the timeline [s]</p></li>
 <li><p><strong>pointing_altitude</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- The altitude of the tangential point [m].</p></li>
-<li><p><strong>ExpTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- Exposure time in ms</p></li>
+<li><p><strong>TEXPMS</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- Exposure time in ms</p></li>
 <li><p><strong>JPEGQ</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- The JPEG quality in %</p></li>
 <li><p><strong>comment</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- A comment for the macro. Will be printed in the genereated XML-file.</p></li>
 </ul>
@@ -334,13 +370,13 @@ This to prevent the command buffer on the satellite from overloading. Note: When
 
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.Photometer_test_1_macro">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.</code><code class="descname">Photometer_test_1_macro</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>ExpTime</em>, <em>ExpInt</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Macros.html#Photometer_test_1_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.Photometer_test_1_macro" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.</code><code class="descname">Photometer_test_1_macro</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>TEXPMS</em>, <em>ExpInt</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Macros.html#Photometer_test_1_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.Photometer_test_1_macro" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> (<em>lxml.etree._Element</em>) -- XML tree structure. Main container object for the ElementTree API.</p></li>
 <li><p><strong>relativeTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) -- The relative starting time of the macro with regard to the start of the timeline [s]</p></li>
-<li><p><strong>ExpTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- Exposure time in ms</p></li>
+<li><p><strong>TEXPMS</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- Exposure time in ms</p></li>
 <li><p><strong>ExpInt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- Exposure interval in ms</p></li>
 <li><p><strong>comment</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- A comment for the macro. Will be printed in the genereated XML-file.</p></li>
 </ul>

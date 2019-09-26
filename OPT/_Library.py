@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*
-"""Contains functions used by the Operational Planning Tool .
+"""Functions that are commonly used by the Operational Planning Tool.
 """
 
 import ephem, importlib, time, logging, os, sys, skyfield.api
@@ -8,6 +8,7 @@ from pylab import cos, sin, cross, dot, arctan, sqrt, array, arccos, pi, floor, 
 from OPT import _Globals, _MATS_coordinates
 
 timescale_skyfield = skyfield.api.load.timescale()
+database_skyfield = skyfield.api.load('de421.bsp')
 #OPT_Config_File = importlib.import_module(_Globals.Config_File)
 #Logger = logging.getLogger(OPT_Config_File.Logger_name())
 
@@ -107,9 +108,9 @@ def lat_2_R( lat ):
 
 
 def lat_calculator( Satellite_skyfield, date ):
-    ''' Function that calculates the latitude of a skyfield object at a certain date
+    ''' Function that calculates the latitude of a skyfield.sgp4lib.EarthSatellite object at a certain date
     
-    Mainly used to approximate the latitude of a LP as the LP is close to being in the same orbital plane.
+    Mainly used to approximate the latitude of the LP as the LP is close to being in the same orbital plane.
     
     Arguments:
         Satellite_skyfield (:obj:`skyfield.sgp4lib.EarthSatellite`): A Skyfield object representing an EarthSatellite defined by a TLE.
@@ -470,16 +471,16 @@ def SyncArgCalculator(CCD_settings, ExtraOffset, ExtraIntervalTime):
     ReadOutTime_4 = T_readout + T_delay + T_Extra
     ReadOutTime.append(int(ReadOutTime_4))
     
-    
+    """
     T_readout, T_delay, T_Extra = calculate_time_per_row(NCOL = CCDSEL_64['NCOL'], NCBIN = CCDSEL_64['NCBIN'], NCBINFPGA = CCDSEL_64['NCBINFPGA'], 
                                                          NRSKIP = CCDSEL_64['NRSKIP'], NROW = CCDSEL_64['NROW'], 
                                                          NRBIN = CCDSEL_64['NRBIN'], NFLUSH = CCDSEL_64['NFLUSH'])
     ReadOutTime_64 = T_readout + T_delay + T_Extra
     ReadOutTime.append(int(ReadOutTime_64))
-    
+    """
     
     "Sort ExposureTimes of the CCDs"
-    ExpTimes = [CCDSEL_16['TEXPMS'], CCDSEL_32['TEXPMS'], CCDSEL_1['TEXPMS'], CCDSEL_8['TEXPMS'], CCDSEL_2['TEXPMS'], CCDSEL_4['TEXPMS'], CCDSEL_64['TEXPMS']]
+    ExpTimes = [CCDSEL_16['TEXPMS'], CCDSEL_32['TEXPMS'], CCDSEL_1['TEXPMS'], CCDSEL_8['TEXPMS'], CCDSEL_2['TEXPMS'], CCDSEL_4['TEXPMS']]
     ExpTimes.sort()
     
     "Add arbitrary numbers to allow the offset time to be positioned at the right spot" 
@@ -497,7 +498,7 @@ def SyncArgCalculator(CCD_settings, ExtraOffset, ExtraIntervalTime):
     Flag_8 = False
     Flag_2 = False
     Flag_4 = False
-    Flag_64 = False
+    #Flag_64 = False
     
     OffsetTime = 0
     previous_ExpTime = 0
@@ -571,6 +572,7 @@ def SyncArgCalculator(CCD_settings, ExtraOffset, ExtraIntervalTime):
             ExpIntervals.append(ReadOutTime_4 + CCDSEL_4['TEXPMS'] + ExtraIntervalTime)
             CCDSEL += 4
             
+        """
         elif( ExpTime == CCDSEL_64['TEXPMS'] and Flag_64 == False):
             Flag_64 = True
             
@@ -581,6 +583,7 @@ def SyncArgCalculator(CCD_settings, ExtraOffset, ExtraIntervalTime):
             ExpIntervals.append(ReadOutTime_64 + CCDSEL_64['TEXPMS'] + ExtraIntervalTime)
             CCDSEL += 64
             
+        """
         previous_ExpTime = ExpTime
         x += 1
         
@@ -779,6 +782,46 @@ def Satellite_Simulator( Satellite_skyfield, SimulationTime, Timeline_settings, 
     
     #return r_Satellite, lat_Satellite, long_Satellite, alt_Satellite, optical_axis_unit_vector, Dec_optical_axis, RA_optical_axis, r_H_offset_normal, r_V_offset_normal, orbital_period 
     return Satellite_dict
+
+
+def SunAngle( PositionVector, SimulationTime):
+    """Calculates angle between a position vector and the position vector of the Sun.
+    
+    Simulates a single point in time for the Sun observed from Earth using Skyfield and then calculates the angle between the position vector of the Sun and the given input position vector.
+    Used to determine the eclipse angle of the Sun angle of the position.
+    
+    Arguments:
+        PositionVector (array): Position vector.
+        SimulationTime (:obj:`ephem.Date`): The time of the simulation.
+        
+    Returns:
+        (float): The sun angle [degrees].
+        
+    """
+    
+    current_time_datetime = ephem.Date(SimulationTime).datetime()
+    year = current_time_datetime.year
+    month = current_time_datetime.month
+    day = current_time_datetime.day
+    hour = current_time_datetime.hour
+    minute = current_time_datetime.minute
+    second = current_time_datetime.second + current_time_datetime.microsecond/1000000
+    
+    current_time_skyfield = timescale_skyfield.utc(year, month, day, hour, minute, second)
+    
+    
+    Sun = database_skyfield['Sun']
+    Earth = database_skyfield['Earth']
+    
+    SunFromEarth = Earth.at(current_time_skyfield).observe(Sun)
+    r_SunFromEarth_km = SunFromEarth.position.km
+    
+    SunAngle = arccos( dot( PositionVector, r_SunFromEarth_km) / (norm(r_SunFromEarth_km) * norm(PositionVector)) )
+    SunAngle = SunAngle /pi*180
+    
+    return SunAngle
+    
+
 
 
 def FreezeDuration_calculator(pointing_altitude1, pointing_altitude2, TLE2):

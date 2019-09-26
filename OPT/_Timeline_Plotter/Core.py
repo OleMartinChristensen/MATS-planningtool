@@ -20,12 +20,19 @@ Logger = logging.getLogger(OPT_Config_File.Logger_name())
 def Timeline_Plotter(Science_Mode_Path, OHB_H5_Path, Timestep):
     """Core function of the Timeline_Plotter.
     
+    Goes through the *Science Mode Timeline*, one mode at a time.
+    
     Arguments:
         Science_Mode_Path (str): Path to the Science Mode Timeline to be plotted.
         OHB_H5_Path (str): Path to the .h5 file containing position, time, and attitude data.
+        Timestep (int): The timestep used for the simulation and when accessing OHB data.
         
     Returns:
-        None
+        (tuple): Tuple containing:
+            (:obj:`dict` of :obj:`list`): **Data_MATS**, updated with the new simulated values from the current Science Mode. \n
+            (:obj:`dict` of :obj:`list`): **Data_LP**, updated with the new simulated values from the current Science Mode. \n
+            (list): **Time**, updated with new simulated timestamps from the current Science Mode. \n
+            (list): **Time_OHB**, Timestamps of the OHB data.
     
     """
     
@@ -46,6 +53,7 @@ def Timeline_Plotter(Science_Mode_Path, OHB_H5_Path, Timestep):
     Timeline_settings = OPT_Config_File.Timeline_settings()
     TLE = OPT_Config_File.getTLE()
     
+    "Whether data from OHB is given"
     if ( OHB_H5_Path == ''):
         Timestamp_fraction_of_second = 0
         timestep_OHB_data = 1
@@ -81,7 +89,7 @@ def Timeline_Plotter(Science_Mode_Path, OHB_H5_Path, Timestep):
         
         
         
-        "To allow synchronization of the simulation to the timestamps of the OHB data"
+        "Parameters need to allow synchronization of the simulation to the timestamps of the OHB data"
         Timestamp_fraction_of_second = Time_State_OHB[0]- int(Time_State_OHB[0])
         timestep_OHB_data = Time_State_OHB[1+OHB_StartIndex] - Time_State_OHB[OHB_StartIndex]
         
@@ -181,7 +189,7 @@ def Simulator( ScienceMode, Timestamp_fraction_of_second, Timestep, Timeline_set
     
     Arguments:
         ScienceMode (list): List containing the name of the Science Mode, the start_date, the end_date, and settings related to the Science Mode. 
-        Timestamp_fraction_of_second (float): The fraction of a second timestamp for the data.
+        Timestamp_fraction_of_second (float): The fraction of a second timestamp for the data. Used here to synchronize timestamps between Timeline Simulation datapoints and OHB datapoints.
         Timestep (int): The Timestep [s] for the simulation.
         Timeline_settings (dict): A dictionary containing settings for the Timeline given in the Science Mode Timeline or in the *Configuration File*.
         TLE (list): A list containing the TLE given in the Science Mode Timeline or in the *Configuration File*.
@@ -191,16 +199,16 @@ def Simulator( ScienceMode, Timestamp_fraction_of_second, Timestep, Timeline_set
         OHB_StartTime (:obj:`ephem.Date`): Date and time of the first OHB data to be plotted. Used here to synchronize timestamps between Timeline Simulation datapoints and OHB datapoints.
         
     Returns:
-        (tuple): tuple containing:
-            (:obj:`dict` of :obj:`list`): Data_MATS updated with the new simulated values from the current Science Mode. \n
-            (:obj:`dict` of :obj:`list`): Data_LP updated with the new simulated values from the current Science Mode. \n
-            (list): Time updated with new simulated timestamps from the current Science Mode.
+        (tuple): Tuple containing:
+            (:obj:`dict` of :obj:`list`): **Data_MATS**, updated with the new simulated values from the current Science Mode. \n
+            (:obj:`dict` of :obj:`list`): **Data_LP**, updated with the new simulated values from the current Science Mode. \n
+            (list): **Time**, updated with new simulated timestamps from the current Science Mode.
         
     """
     
     
-    #TLE = ['1 54321U 19100G   20172.75041666 0.00000000  00000-0  75180-4 0  0012',
-    #       '2 54321  97.7044   6.9210 0014595 313.2372  91.8750 14.93194142000010']
+    TLE = ['1 54321U 19100G   20172.75041666 0.00000000  00000-0  75180-4 0  0012',
+           '2 54321  97.7044   6.9210 0014595 313.2372  91.8750 14.93194142000010']
     
     
     ModeName = ScienceMode[0]
@@ -266,8 +274,8 @@ def Simulator( ScienceMode, Timestamp_fraction_of_second, Timestep, Timeline_set
         pointing_altitude = Settings['pointing_altitude_from']
         pointing_altitude_to = Settings["pointing_altitude_to"]
         pointing_altitude_interval = Settings["pointing_altitude_interval"]
-        NumberOfCMDStepsForEachAltitude = 8
-        pointing_duration = Settings["pointing_duration"] + Timeline_settings['pointing_stabilization'] + NumberOfCMDStepsForEachAltitude * Timeline_settings['command_separation']
+        NumberOfCMDStepsForEachAltitude = 9
+        pointing_duration = Settings["pointing_duration"] + Timeline_settings['pointing_stabilization'] + NumberOfCMDStepsForEachAltitude * Timeline_settings['CMD_separation']
         timestamp_change_of_pointing_altitude = pointing_duration
         Color = (0,0.5,0.5)
         
@@ -283,7 +291,7 @@ def Simulator( ScienceMode, Timestamp_fraction_of_second, Timestep, Timeline_set
         return Data_MATS, Data_LP, Time
     
     
-    ########### Synchronize simulation Timesteps with Data ###############
+    "Synchronize simulation Timesteps with OHB Data"
     Mode_start_date = ephem.Date( ephem.Date(ScienceMode[1]) + ephem.second * Timestamp_fraction_of_second )
     TimeDifferenceRest = round( (abs(Mode_start_date - OHB_StartTime) / ephem.second) % Timestep, 0 )
     
@@ -296,9 +304,12 @@ def Simulator( ScienceMode, Timestamp_fraction_of_second, Timestep, Timeline_set
     
     Mode_end_date = ephem.Date(ScienceMode[2])
     duration = (Mode_end_date - Mode_start_date) *24*3600
+    
+    ############# !!!!!!!!!!!!!!!!!! #############
+    ############# !!!!!!!!!!!!!!!!!! #############
     date = Mode_start_date + ephem.second
     ############# !!!!!!!!!!!!!!!!!! #############
-    
+    ############# !!!!!!!!!!!!!!!!!! #############
         
     "Simulation length"
     timesteps = int(floor(duration / Timestep))+1
@@ -341,17 +352,15 @@ def Simulator( ScienceMode, Timestamp_fraction_of_second, Timestep, Timeline_set
     alt_LP = zeros((timesteps,1))
     normal_orbit = zeros((timesteps,3))
     normal_orbit_ECEF = zeros((timesteps,3))
-    orbangle_between_LP_MATS_array = zeros((timesteps,1))
     current_time = zeros((timesteps,1))
     
-    orbangle_between_LP_MATS_array_dotproduct = zeros((timesteps,1))
+    #orbangle_between_LP_MATS_array_dotproduct = zeros((timesteps,1))
     
     
     
     
     MATS_skyfield = EarthSatellite(TLE[0], TLE[1])
     ts = load.timescale()
-    MATS = ephem.readtle('MATS',TLE[0],TLE[1])
     #current_time[0] = date
     
     for t in range(timesteps):
@@ -367,7 +376,7 @@ def Simulator( ScienceMode, Timestamp_fraction_of_second, Timestep, Timeline_set
                 pointing_altitude += sweep_rate * Timestep
             elif( pointing_altitude_to < pointing_altitude):
                 pointing_altitude = pointing_altitude_to
-        #Looking at LP_pointing_altitude after attitude freeze
+        #Looking at LP_pointing_altitude after attitude freeze for Mode12X
         elif( Simulator_Select == 'Mode12X' and t*Timestep >= freeze_duration+freeze_start):
             pointing_altitude = Timeline_settings['LP_pointing_altitude']
         #Looking at pointing_altitude
@@ -375,12 +384,11 @@ def Simulator( ScienceMode, Timestamp_fraction_of_second, Timestep, Timeline_set
             pass
             
         
-        #current_time[t] = ephem.Date(date+ephem.second*(Timestep*t+OHB_StartIndex+Timestamp_fraction_of_second))
-        #current_time_datetime = ephem.Date(current_time[t]).datetime()
+        
         current_time = ephem.Date(date+ephem.second*(Timestep*t))
         current_time_datetime = ephem.Date(date+ephem.second*(Timestep*t)).datetime()
         
-        
+        "Only log data at certain intervals depending on log_timestep"
         if( t*Timestep % log_timestep == 0):
             LogFlag = True
         else:
@@ -392,6 +400,8 @@ def Simulator( ScienceMode, Timestamp_fraction_of_second, Timestep, Timeline_set
         r_MATS[t] = Satellite_dict['Position [km]']
         v_MATS[t] = Satellite_dict['Velocity [km/s]']
         normal_orbit[t] = Satellite_dict['OrbitNormal']
+        r_V_offset_normal = Satellite_dict['Normal2V_offset']
+        r_H_offset_normal = Satellite_dict['Normal2H_offset']
         MATS_P[t] = Satellite_dict['OrbitalPeriod [s]']
         alt_MATS[t] = Satellite_dict['Altitude [km]']
         lat_MATS[t] =  Satellite_dict['Latitude [degrees]']
@@ -425,16 +435,19 @@ def Simulator( ScienceMode, Timestamp_fraction_of_second, Timestep, Timeline_set
                 v_MATS[t,0], v_MATS[t,1], v_MATS[t,2], current_time_datetime)
         
         
-        orbangle_between_LP_MATS_array_dotproduct[t] = arccos( dot(r_MATS_unit_vector[t], r_LP[t]) / norm(r_LP[t]) ) / pi*180
+        #orbangle_between_LP_MATS_array_dotproduct[t] = arccos( dot(r_MATS_unit_vector[t], r_LP[t]) / norm(r_LP[t]) ) / pi*180
         
         
         #Freezing the attitude"
         if( Simulator_Select == 'Mode12X' and t*Timestep+Timestep > freeze_start and t*Timestep <= freeze_duration+freeze_start):
+            
+            "Save the index of the last optical_axis when simulation of attitude freeze is initiated"
             if( freeze_flag == 0):
-                t_freeze = t-1
-                
+                t_freeze = t-1    
             freeze_flag = 1
-            #optical_axis_ECEF[t,:] = r_LP_ECEF[t_freeze,:] - r_MATS_ECEF[t,:]*1000
+            
+            
+            "Maintain the same optical axis as the simulation progresses"
             optical_axis[t,:] = optical_axis[t_freeze,:]
             optical_axis_ECEF[t,0], optical_axis_ECEF[t,1], optical_axis_ECEF[t,2] = _MATS_coordinates.eci2ecef(
                     optical_axis[t,0], optical_axis[t,1], optical_axis[t,2], current_time_datetime)
@@ -452,6 +465,7 @@ def Simulator( ScienceMode, Timestamp_fraction_of_second, Timestep, Timeline_set
                 RA_optical_axis[t] = 360-RA_optical_axis[t]
             
         
+        "Define SLOF basis and convert ECI coordinates to SLOF"
         z_SLOF = -r_MATS[t,:]
         #z_SLOF = -r_MATS[t,0:3]
         z_SLOF = z_SLOF / norm(z_SLOF)
@@ -465,20 +479,22 @@ def Simulator( ScienceMode, Timestamp_fraction_of_second, Timestep, Timeline_set
         r_change_of_basis_ECI_to_SLOF = R.from_dcm(dcm_change_of_basis_ECI_to_SLOF)
     
         optical_axis_SLOF = r_change_of_basis_ECI_to_SLOF.apply( optical_axis[t,:])
+        r_V_offset_normal_SLOF = r_change_of_basis_ECI_to_SLOF.apply( r_V_offset_normal )
+        r_H_offset_normal_SLOF = r_change_of_basis_ECI_to_SLOF.apply( r_H_offset_normal )
         
-        Z = [0,0,-1]
         
-        angle = arccos( dot( Z, optical_axis_SLOF) )
-        normal = cross( Z, optical_axis_SLOF)
-        normal = normal / norm(normal)
-        rot_mat = _Library.rot_arbit(angle, normal)
-        rotation = R.from_dcm(rot_mat)
+        
+        "Find rotation and Euler angles from definition of optical axis in SLOF"
+        basis_SLOF = array( ( (optical_axis_SLOF), (r_V_offset_normal_SLOF), (r_H_offset_normal_SLOF) ) )
+        basis_ECI = array( ( (0,0,-1), (0,1,0), (1,0,0) ) )
+        rotation, sensitivity_matrix = R.match_vectors(basis_SLOF, basis_ECI)
+        
         Euler_angles[t,:] = rotation.as_euler('ZYZ', degrees=True)
-        
         yaw_offset_angle[t] = Euler_angles[t,0]
         pitch_MATS[t] = Euler_angles[t,1]
         roll_MATS[t] = Euler_angles[t,2]
         
+        "Save data"
         Data_MATS['ScienceMode'].append(ModeName)
         Data_MATS['ColorRGB'].append(Color)
         
@@ -573,10 +589,11 @@ def Simulator( ScienceMode, Timestamp_fraction_of_second, Timestep, Timeline_set
 
     
 def Plotter(Data_MATS, Data_LP, Time, DataIndexStep, OHB_StartIndex, OHB_H5_Path = ''):
-    """Subfunction, Plots the position and attitude data of MATS and LP.
+    """Subfunction, Performs calculations and plots the position and attitude data of MATS and LP.
     
-    Plots both simulated data in Data_MATS and Data_LP as a function of the 
-    timestamps in Time but also the data given in the file located at OHB_H5_Path.
+    Performs calculations on the data given in the file located at *OHB_H5_Path* and plots the results. 
+    Also plots the simulated data given in *Data_MATS* and *Data_LP* as a function of the 
+    timestamps in *Time*.
     
     Arguments:
         Data_MATS (dict of lists): Dictionary containing lists of simulated data of MATS.
@@ -587,7 +604,7 @@ def Plotter(Data_MATS, Data_LP, Time, DataIndexStep, OHB_StartIndex, OHB_H5_Path
         OHB_H5_Path (str): Path to the .h5 file containing position, time, and attitude data. If the string is empty, only Science Mode Timeline data will be plotted.
         
     Returns:
-        None
+        (list): **Time_OHB**, Timestamps of the OHB data.
         
     """
     
@@ -977,11 +994,16 @@ def Plotter(Data_MATS, Data_LP, Time, DataIndexStep, OHB_StartIndex, OHB_H5_Path
     y_LP_error_OHB = []
     z_LP_error_OHB = []
     
-    r_MATS_error_OHB_RCI = []
+    
     r_MATS_error_OHB_Radial = []
     r_MATS_error_OHB_CrossTrack = []
     r_MATS_error_OHB_InTrack = []
     total_r_MATS_error_OHB_RCI = []
+    
+    r_LP_error_OHB_Radial = []
+    r_LP_error_OHB_CrossTrack = []
+    r_LP_error_OHB_InTrack = []
+    total_r_LP_error_OHB_RCI = []
     
     Time_error_MPL = []
     
@@ -1020,11 +1042,17 @@ def Plotter(Data_MATS, Data_LP, Time, DataIndexStep, OHB_StartIndex, OHB_H5_Path
                 
                 r_MATS_error_OHB_RCI = r_change_of_basis_ECI_to_SLOF.apply( ( (x_MATS_error_OHB[len(x_MATS_error_OHB)-1], y_MATS_error_OHB[len(y_MATS_error_OHB)-1], z_MATS_error_OHB[len(z_MATS_error_OHB)-1]) ) )
                 
-                
                 r_MATS_error_OHB_Radial.append( r_MATS_error_OHB_RCI[0] )
                 r_MATS_error_OHB_CrossTrack.append( r_MATS_error_OHB_RCI[1] )
                 r_MATS_error_OHB_InTrack.append( r_MATS_error_OHB_RCI[2] )
                 total_r_MATS_error_OHB_RCI.append( norm(r_MATS_error_OHB_RCI) )
+                
+                r_LP_error_OHB_RCI = r_change_of_basis_ECI_to_SLOF.apply( ( (x_LP_error_OHB[len(x_LP_error_OHB)-1], y_LP_error_OHB[len(y_LP_error_OHB)-1], z_LP_error_OHB[len(z_LP_error_OHB)-1]) ) )
+                
+                r_LP_error_OHB_Radial.append( r_LP_error_OHB_RCI[0] )
+                r_LP_error_OHB_CrossTrack.append( r_LP_error_OHB_RCI[1] )
+                r_LP_error_OHB_InTrack.append( r_LP_error_OHB_RCI[2] )
+                total_r_LP_error_OHB_RCI.append( norm(r_LP_error_OHB_RCI) )
                 
                 Time_error_MPL.append( Time_MPL[t] )
                 break
@@ -1040,6 +1068,13 @@ def Plotter(Data_MATS, Data_LP, Time, DataIndexStep, OHB_StartIndex, OHB_H5_Path
     ylabel('Absolute error in ECEF position of MATS in m (prediction vs OHB')
     legend()
     
+    figure()
+    plot_date(Time_error_MPL[:],r_MATS_error_OHB_Radial[:], markersize = 1, label = 'Radial')
+    plot_date(Time_error_MPL[:],r_MATS_error_OHB_CrossTrack[:], markersize = 1, label = 'Cross-track')
+    plot_date(Time_error_MPL[:],r_MATS_error_OHB_InTrack[:], markersize = 1, label = 'Intrack')
+    xlabel('Date')
+    ylabel('Absolute error in ECEF position of MATS as RCI in m (prediction vs OHB')
+    legend()
     
     figure()
     plot_date(Time_error_MPL[:],total_r_MATS_error_OHB[:], markersize = 1, label = 'XYZ')
@@ -1048,13 +1083,6 @@ def Plotter(Data_MATS, Data_LP, Time, DataIndexStep, OHB_StartIndex, OHB_H5_Path
     ylabel('Magnitude of Absolute error in ECEF position of MATS in m (prediction vs OHB')
     legend()
     
-    figure()
-    plot_date(Time_error_MPL[:],r_MATS_error_OHB_Radial[:], markersize = 1, label = 'Radial')
-    plot_date(Time_error_MPL[:],r_MATS_error_OHB_CrossTrack[:], markersize = 1, label = 'Cross-track')
-    plot_date(Time_error_MPL[:],r_MATS_error_OHB_InTrack[:], markersize = 1, label = 'Intrack')
-    xlabel('Date')
-    ylabel('Absolute error in ECEF position of MATS as RCI in m (prediction vs STK')
-    legend()
     
     
     
@@ -1113,16 +1141,28 @@ def Plotter(Data_MATS, Data_LP, Time, DataIndexStep, OHB_StartIndex, OHB_H5_Path
     legend()
     
     figure()
-    plot_date(Time_error_MPL[:],total_r_LP_error_OHB[:], markersize = 1, label = 'Total error')
+    plot_date(Time_error_MPL[:],r_LP_error_OHB_Radial[:], markersize = 1, label = 'Radial')
+    plot_date(Time_error_MPL[:],r_LP_error_OHB_CrossTrack[:], markersize = 1, label = 'Cross-track')
+    plot_date(Time_error_MPL[:],r_LP_error_OHB_InTrack[:], markersize = 1, label = 'Intrack')
+    xlabel('Date')
+    ylabel('Absolute error in ECEF position of LP as RCI in m (prediction vs OHB')
+    legend()
+    
+    figure()
+    plot_date(Time_error_MPL[:],total_r_LP_error_OHB[:], markersize = 1, label = 'XYZ')
+    plot_date(Time_error_MPL[:],total_r_LP_error_OHB_RCI[:], markersize = 1, label = 'RCI')
     xlabel('Date')
     ylabel('Magnitude of Absolute error of LP ECEF position in m')
     legend()
+    
+    
+    
     
     figure()
     plot_date(Time_MPL[:],Data_MATS['optical_axis_RA'][:], markersize = 1, label = 'Predicted')
     plot_date(Time_MPL_OHB[:],Ra_OHB[:], markersize = 1, label = 'OHB-Data')
     xlabel('Date')
-    ylabel('Right Ascension in degrees [J2000] (Parallax assumed negligable)')
+    ylabel('Right Ascension of optical axis in degrees [J2000] (Parallax assumed negligable)')
     legend()
     
     """
@@ -1139,7 +1179,7 @@ def Plotter(Data_MATS, Data_LP, Time, DataIndexStep, OHB_StartIndex, OHB_H5_Path
     #plot_date(current_time_MPL_STK[1:],Dec_STK[1:], markersize = 1, label = 'STK-Data')
     plot_date(Time_MPL_OHB[:],Dec_OHB[:], markersize = 1, label = 'OHB-Data')
     xlabel('Date')
-    ylabel('Declination in degrees [J2000] (Parallax assumed negligable)')
+    ylabel('Declination of optical axis in degrees [J2000] (Parallax assumed negligable)')
     legend()
     
     """

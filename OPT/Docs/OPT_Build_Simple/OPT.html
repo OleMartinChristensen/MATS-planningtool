@@ -33,7 +33,7 @@
             
   <div class="section" id="module-OPT">
 <span id="opt-package"></span><h1>OPT package<a class="headerlink" href="#module-OPT" title="Permalink to this headline">¶</a></h1>
-<p>Contain the functions that together constitute the Operational_Planning_Tool (OPT). These functions are:</p>
+<p>Make sure to read the &quot;Science Modes for MATS&quot; document (at least Version 3.1). The programs (functions) that together constitute the Operational_Planning_Tool (OPT) are:</p>
 <blockquote>
 <div><ul class="simple">
 <li><p>Copy_ConfigFile</p></li>
@@ -52,13 +52,14 @@
 </dd>
 </dl>
 <p><strong>Description:</strong>
-<em>Operational_Planning_Tool</em> uses a special .py file as a <em>Configuration File</em>. An example of a <em>Configuration_File</em> is located in the Operational_Planning_Tool and is called <em>_ConfigFile.py</em>.</p>
+<em>Operational_Planning_Tool</em> uses a hiearchy structure with a procedural programming paradigm. Meaning that only the top level functions (the ones mentioned above) are supposed to be called by a user.</p>
+<p><em>Operational_Planning_Tool</em> uses a special .py file as a <em>Configuration File</em>, meaning that the settings inside the <em>Configuration File</em> dictate the operation of the program (unless the same settings are explicitly stated in the input of a function, see <em>XML_gen</em> and <em>Timeline_Plotter</em>). An example of a <em>Configuration_File</em> with default values is located in the Operational_Planning_Tool and is called <em>_ConfigFile.py</em>.</p>
 <p>Create your own <em>Configuration File</em> with an appropriate name by running <em>Copy_ConfigFile</em> with a chosen name as an input.
-<em>Copy_ConfigFile</em> makes a copy of <em>_ConfigFile.py</em>. You can then modify the settings in your copy.</p>
+<em>Copy_ConfigFile</em> makes a copy of <em>_ConfigFile.py</em>. The settings in your copy is modified manually in a text editor.</p>
 <p>Your <em>Configuration File</em> and its date must be chosen by running <em>Set_ConfigFile</em>.</p>
-<p>The objective of <em>Operational_Planning_Tool</em> is to create a timeline constituting of planned Science Modes and some available stand-alone Commands (specified in &quot;Science Modes for MATS&quot; document).
+<p>The objective of <em>Operational_Planning_Tool</em> is to create a file consisting of planned Science Modes and Commands with timestamps (specified in &quot;Science Modes for MATS&quot; document).
 A <em>Science Mode Timeline</em>, as it is called, is created by running <em>Timeline_gen</em>. Remember to edit and choose your <em>Configuration File</em> by running <em>Set_ConfigFile</em>.</p>
-<p>The created <em>Science Mode Timeline</em> can be converted into Payload and Platform Commands (as specified in the &quot;Innosat Payload Timeline XML Definition&quot; document)
+<p>The created <em>Science Mode Timeline</em> can be converted into a XML-file containing Payload and Platform Commands (formatted as specified in the &quot;Innosat Payload Timeline XML Definition&quot; document)
 by running <em>XML_gen</em> with the <em>Science Mode Timeline</em> as the input.</p>
 <p>The <em>Science Mode Timeline</em> can also be simulated and and plotted by running <em>Timeline_Plotter</em> with the <em>Science Mode Timeline</em> as the input.
 <em>Timeline_Plotter</em> can also optionally plot a special kind of .h5 data-files, created by OHB SWEDEN.</p>
@@ -67,16 +68,23 @@ Any time a function uses a <em>Science Mode Timeline</em> as an input, these set
 <p><em>Check_ConfigFile</em> is used to check if the values stated in the chosen <em>Configuration File</em> are plausible.</p>
 <p>All generated output files are saved in a folder called 'Output' in the working directory.
 Generated logs are saved in folders created in the working directory.</p>
-<p class="rubric">Examples</p>
+<p class="rubric">Example</p>
 <p>import OPT</p>
-<p>OPT.Copy_ConfigFile('OPT_Config_File')</p>
-<p>OPT.Set_ConfigFile('OPT_Config_File', '2019/09/05 08:00:00')</p>
-<p>OPT.CheckConfigFile()</p>
-<p>OPT.Timeline_gen()</p>
-<p>OPT.XML_gen('Output/Science_Mode_Timeline__OPT_Config_File.json')</p>
-<p>Data_MATS, Data_LP, Time, Time_OHB  = OPT.Timeline_Plotter('Output/Science_Mode_Timeline__OPT_Config_File.json')</p>
+<p>#Creates a new Configuration File named OPT_Config_File.
+OPT.Copy_ConfigFile('OPT_Config_File')</p>
+<p>#Optionally change any settings in OPT_Config_File by using a text editor</p>
+<p>#Choose the newly created Configuration File and set the starting date.
+OPT.Set_ConfigFile('OPT_Config_File', '2019/09/05 08:00:00')</p>
+<p>#Sanity check for values in the chosen Configuration File.
+OPT.CheckConfigFile()</p>
+<p>#Creates a Science Mode Timeline specified by settings given in the chosen Configuration File.
+OPT.Timeline_gen()</p>
+<p>#Converts the created Science Mode Timeline into an XML-file.
+OPT.XML_gen('Output/Science_Mode_Timeline__OPT_Config_File.json')</p>
+<p>#Plots the Science Mode Timeline.
+Data_MATS, Data_LP, Time, Time_OHB  = OPT.Timeline_Plotter('Output/Science_Mode_Timeline__OPT_Config_File.json')</p>
 <p>Science Modes are separated into 2 different areas, <em>Operational Science Modes</em> (Mode 1,2,5) and <em>Calibration Modes</em>.</p>
-<p><em>Calibration Modes</em> are scheduled at specific points of time and are usually only scheduled one time per <em>Science Mode Timeline</em>.
+<p><em>Calibration Modes</em> are scheduled at specific points of time and are usually only scheduled once per <em>Science Mode Timeline</em>.
 <em>Operational Science Modes</em> (Mode 1,2,5) are scheduled wherever time is available (after the scheduling of <em>Calibration Modes</em>) and only 1 <em>Operational Science Mode</em> is scheduled per Timeline.</p>
 <dl class="function">
 <dt id="OPT.CheckConfigFile">
@@ -118,7 +126,7 @@ the actual positional and attitude data given in a data set. Plots both the simu
 <dl class="function">
 <dt id="OPT.Set_ConfigFile">
 <code class="descclassname">OPT.</code><code class="descname">Set_ConfigFile</code><span class="sig-paren">(</span><em>Config_File_Name</em>, <em>Date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#Set_ConfigFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.Set_ConfigFile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets the StartTime for OPT, and the name of the <em>.py</em> file that is to be used as a <em>Configuration file</em> for OPT.</p>
+<dd><p>Sets the StartTime for OPT, and the name of the <em>.py</em> file that shall be used as a <em>Configuration file</em> for OPT.</p>
 <p>The <em>Configuration file</em> chosen must be visible in sys.path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -171,7 +179,7 @@ Settings stated in the <em>Science Mode Timeline</em> override settings given in
 <dt id="OPT.Timeline_analyzer">
 <code class="descclassname">OPT.</code><code class="descname">Timeline_analyzer</code><span class="sig-paren">(</span><em>science_mode_timeline_path</em>, <em>date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#Timeline_analyzer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.Timeline_analyzer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Invokes the Timeline_analyser program part of Operational Planning Tool.</p>
-<p>Searches a Science Mode Timeline json file for a given date and returns the scheduled mode and its parameters&quot;</p>
+<p>Searches a Science Mode Timeline json file for a given date and returns the scheduled mode and its parameters</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -201,7 +209,7 @@ Settings stated in the <em>Science Mode Timeline</em> override settings given in
 <p>Predicts and schedueles Science Modes and separate payload CMDs into a list containing run dates and settings used for each Mode/CMD, and saves it to a .json file in /Output.</p>
 <p>The Modes and CMDs to be scheduled are listed in <em>Modes_priority</em> in the chosen <em>Configuration File</em>.</p>
 <p><em>Operational Science Modes</em> (example: Mode 1,2,5) are scheduled separately wherever time is available at the end of the program.</p>
-<p>Settings for the operation of the program are stated in the <em>Configuration File</em> set by <em>Set_ConfigFile</em>.</p>
+<p>Settings for the operation of the program are stated in the <em>Configuration File</em> chosen with <em>Set_ConfigFile</em>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>None</p>

@@ -22,27 +22,6 @@ OPT_Config_File = importlib.import_module(_Globals.Config_File)
 Logger = logging.getLogger(OPT_Config_File.Logger_name())
 
 
-def CMD_scheduler(Occupied_Timeline):
-    
-    Logger.info('Timeline start_time used as initial date')
-    initial_date = ephem.Date(OPT_Config_File.Timeline_settings()['start_date'])
-    duration = OPT_Config_File.Timeline_settings()['CMD_duration']
-    endDate = ephem.Date(initial_date + ephem.second*(OPT_Config_File.Timeline_settings()['mode_separation'] + duration) )
-    
-    ############### Start of availability schedueler ##########################
-    
-    date, endDate, iterations = scheduler(Occupied_Timeline, initial_date, endDate)
-                
-    ############### End of availability schedueler ##########################
-    
-    comment = 'Number of times date postponed: ' + str(iterations)
-    
-    "Get the name of the function, which is defined as the name of the CMD"
-    CMD_name = sys._getframe(1).f_code.co_name
-    
-    Occupied_Timeline[CMD_name].append((date,endDate))
-    
-    return Occupied_Timeline, comment
 
 
 def PWRTOGGLE(Occupied_Timeline):
@@ -79,6 +58,7 @@ def CCDBIAS(Occupied_Timeline):
     return Occupied_Timeline, comment
     
 
+
 """
 def HTR(Occupied_Timeline):
     
@@ -86,3 +66,29 @@ def HTR(Occupied_Timeline):
     
     return Occupied_Timeline, comment
 """
+
+def CMD_scheduler(Occupied_Timeline):
+    """Subfuncton, Schedules a CMD and saves it to the *Occupied_Timeline* variable
+    
+    """
+    
+    
+    Logger.info('Timeline start_time used as initial date')
+    initial_date = ephem.Date(OPT_Config_File.Timeline_settings()['start_date'])
+    duration = OPT_Config_File.Timeline_settings()['CMD_duration']
+    endDate = ephem.Date(initial_date + ephem.second*(OPT_Config_File.Timeline_settings()['mode_separation'] + duration) )
+    
+    ############### Start of availability schedueler ##########################
+    
+    date, endDate, iterations = scheduler(Occupied_Timeline, initial_date, endDate)
+                
+    ############### End of availability schedueler ##########################
+    
+    comment = 'Number of times date postponed: ' + str(iterations)
+    
+    "Get the name of the function, which is defined as the name of the CMD"
+    CMD_name = sys._getframe(1).f_code.co_name
+    
+    Occupied_Timeline[CMD_name].append((date,endDate))
+    
+    return Occupied_Timeline, comment

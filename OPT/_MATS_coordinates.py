@@ -23,7 +23,7 @@
 
 import pylab
 
-#import numpy.transformations as tp
+#from scipy.spatial.transform import Rotation
 
 from astropy.coordinates import EarthLocation, GCRS, CartesianRepresentation, ITRS, get_sun, AltAz
 
@@ -38,191 +38,169 @@ from astroquery.vizier import Vizier
 import astropy.coordinates as coord
 
 
-
+from astropy.utils import iers
+iers.conf.auto_max_age=10
 
 
 def ecef2tanpoint(x,y,z,dx,dy,dz):
-
+    """
+    This function takes a position and look vector in ECEF system and returns the tangent point
+    (point closest to the ellipsiod) for the WGS-84 ellipsiod in ECEF coordinates.
     
-
-#This function takes a position and look vector in ECEF system and returns the tangent point
-
-#(point closest to the ellipsiod) for the WGS-84 ellipsiod in ECEF coordinates.
-
-#The algorithm used is derived by Nick Lloyd at University of Saskatchewan, 
-
-#Canada (nick.lloyd@usask.ca), and is part of
-
-#the operational code for both OSIRIS and SMR on-board- the Odin satellite.
-
-#
-
-# Input
-
-# x = ECEF X-coordinate (m)
-
-# y = ECEF Y-coordinate (m)
-
-# z = ECEF Z-coordinate (m)
-
-# dx = ECEF look vector X-coordinate (m)
-
-# dy = ECEF look vector Y-coordinate (m)
-
-# dz = ECEF look vector Z-coordinate (m
-
-
-
-# Output
-
-# tx = ECEF X-coordinate of tangentpoint (m)
-
-# ty = ECEF Y-coordinate of tangentpoint (m)
-
-# tz = ECEF Z-coordinate of tangentpoint (m)
-
-
-
-#FIXME check normalization of dx,dy,dz!
-
-
-
-
-
-     #WGS-84 semi-major axis and eccentricity
-
-     a=6378137
-
-     e=0.081819190842621
-
-     
-
-     a2 = a**2
-
-     b2 = a2 * ( 1 - e**2 )
-
-     X = pylab.array([x,y,z])
-
-  
-
-     xunit = pylab.array([dx,dy,dz])
-
-  
-
-     zunit = pylab.cross( xunit, X )
-
-     zunit = zunit / pylab.linalg.norm(zunit)
-
- 	
-
-     yunit = pylab.cross( zunit, xunit )
-
-     yunit = yunit / pylab.linalg.norm(yunit)
-
-  
-
-     w11 = xunit[0]
-
-     w12 = yunit[0]
-
-     w21 = xunit[1]
-
-     w22 = yunit[1]
-
-     w31 = xunit[2]
-
-     w32 = yunit[2]
-
-     yr  = pylab.dot( X, yunit )
-
-     xr  = pylab.dot( X, xunit )
-
- 	   
-
-     A = (w11*w11 + w21*w21)/a2 + w31*w31/b2
-
-     B = 2.0*((w11*w12 + w21*w22)/a2 + (w31*w32)/b2)
-
-     C = (w12*w12 + w22*w22)/a2 + w32*w32/b2
-
- 	
-
-     if B == 0.0:
-
-         xx = 0.0
-
-     else: 
-
-        K = -2.0*A/B
-
-        factor = 1.0/(A+(B+C*K)*K)
-
-        xx = pylab.sqrt(factor)
-
-        yy = K*x
-
+    The algorithm used is derived by Nick Lloyd at University of Saskatchewan, 
+    Canada (nick.lloyd@usask.ca), and is part of
+    the operational code for both OSIRIS and SMR on-board- the Odin satellite.
+    
+    
+        Arguments:
+            x (float): ECEF X-coordinate (m)
+            
+            y (float): ECEF Y-coordinate (m)
+            
+            z (float): ECEF Z-coordinate (m)
+            
+            dx (float): ECEF look vector X-coordinate (m)
+            
+            dy (float): ECEF look vector Y-coordinate (m)
+            
+            dz (float): ECEF look vector Z-coordinate (m
+    
+        Returns:
+            (tuple): tuple containing:
+                
+            **tx** (*float*): ECEF X-coordinate of tangentpoint (m)
+            
+            **ty** (*float*): ECEF Y-coordinate of tangentpoint (m)
+            
+            **tz** (*float*): ECEF Z-coordinate of tangentpoint (m)
+    
+    """
+    
+    
+    #FIXME check normalization of dx,dy,dz!
+    
+    #WGS-84 semi-major axis and eccentricity
+    
+    a=6378137
+    
+    e=0.081819190842621
+    
+    
+    
+    a2 = a**2
+    
+    b2 = a2 * ( 1 - e**2 )
+    
+    X = pylab.array([x,y,z])
+    
+    
+    
+    xunit = pylab.array([dx,dy,dz])
+    
+    
+    
+    zunit = pylab.cross( xunit, X )
+    
+    zunit = zunit / pylab.linalg.norm(zunit)
+    
+    
+    
+    yunit = pylab.cross( zunit, xunit )
+    
+    yunit = yunit / pylab.linalg.norm(yunit)
+    
+    
+    
+    w11 = xunit[0]
+    
+    w12 = yunit[0]
+    
+    w21 = xunit[1]
+    
+    w22 = yunit[1]
+    
+    w31 = xunit[2]
+    
+    w32 = yunit[2]
+    
+    yr  = pylab.dot( X, yunit )
+    
+    xr  = pylab.dot( X, xunit )
+    
       
-
-     dist1 = (xr-xx)*(xr-xx) + (yr-yy)*(yr-yy)
-
-     dist2 = (xr+xx)*(xr+xx) + (yr+yy)*(yr+yy)
-
- 	
-
-     if dist1 > dist2:
-
-        xx = -xx
-
-     
-
-     tx = w11*xx + w12*yr
-
-     ty = w21*xx + w22*yr
-
-     tz = w31*xx + w32*yr
-
-     
-
-     return tx,ty,tz
-
- 
-
-def quaternion2ECEF(q):
-
+    A = (w11*w11 + w21*w21)/a2 + w31*w31/b2
     
+    B = 2.0*((w11*w12 + w21*w22)/a2 + (w31*w32)/b2)
+    
+    C = (w12*w12 + w22*w22)/a2 + w32*w32/b2
+    
+    
+    
+    if B == 0.0:
+    
+        xx = 0.0
+    
+    else: 
+        
+        K = -2.0*A/B
+        
+        factor = 1.0/(A+(B+C*K)*K)
+        
+        xx = pylab.sqrt(factor)
+        
+        yy = K*x
+        
+    
+    
+    dist1 = (xr-xx)*(xr-xx) + (yr-yy)*(yr-yy)
+    
+    dist2 = (xr+xx)*(xr+xx) + (yr+yy)*(yr+yy)
+    
+     	
+    
+    if dist1 > dist2:
+        
+        xx = -xx
+    
+    
+    tx = w11*xx + w12*yr
+    
+    ty = w21*xx + w22*yr
+    
+    tz = w31*xx + w32*yr
+    
+    return tx,ty,tz
 
-#This function takes a quaternion look vector in ECEF system and converts 
 
-#to a unit look vector in the same system
-
-#
-
-# Input
-
-# q = Quaternion in ECEF system
-
-
-
-# Output
-
-# dx = unit look vector
-
-# dy = unit look vector
-
-# dz = unit look vector
-
-
-
+'''
+def quaternion2ECEF(q):
+    """This function takes a quaternion look vector in ECEF system and converts 
+    to a unit look vector in the same system.
+    
+    Arguments:
+        q = Quaternion in ECEF system
+    
+    Returns:
+        dx = unit look vector
+        dy = unit look vector
+        dz = unit look vector
+    """
+    
+    R = Rotation.from_quat((q))
+    
+    Unit_Look_Vector_basis_ECEF = R.apply([ [1,0,0], [0,1,0], [0,0,1] ])
+    
+    
     M = tp.quaternion_matrix(q)
-
+    
     dx = M[0][2]
-
+    
     dy = M[0][1]
-
+    
     dz = -M[0][0]
-
+    
     return dx,dy,dz
-
+'''
 
 
 def ECEF2lla(x,y,z):

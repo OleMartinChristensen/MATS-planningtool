@@ -56,7 +56,7 @@
 
 <span class="kn">import</span> <span class="nn">pylab</span>
 
-<span class="c1">#import numpy.transformations as tp</span>
+<span class="c1">#from scipy.spatial.transform import Rotation</span>
 
 <span class="kn">from</span> <span class="nn">astropy.coordinates</span> <span class="k">import</span> <span class="n">EarthLocation</span><span class="p">,</span> <span class="n">GCRS</span><span class="p">,</span> <span class="n">CartesianRepresentation</span><span class="p">,</span> <span class="n">ITRS</span><span class="p">,</span> <span class="n">get_sun</span><span class="p">,</span> <span class="n">AltAz</span>
 
@@ -71,191 +71,169 @@
 <span class="kn">import</span> <span class="nn">astropy.coordinates</span> <span class="k">as</span> <span class="nn">coord</span>
 
 
-
+<span class="kn">from</span> <span class="nn">astropy.utils</span> <span class="k">import</span> <span class="n">iers</span>
+<span class="n">iers</span><span class="o">.</span><span class="n">conf</span><span class="o">.</span><span class="n">auto_max_age</span><span class="o">=</span><span class="mi">10</span>
 
 
 <div class="viewcode-block" id="ecef2tanpoint"><a class="viewcode-back" href="../../OPT.html#OPT._MATS_coordinates.ecef2tanpoint">[docs]</a><span class="k">def</span> <span class="nf">ecef2tanpoint</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="n">dx</span><span class="p">,</span><span class="n">dy</span><span class="p">,</span><span class="n">dz</span><span class="p">):</span>
-
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This function takes a position and look vector in ECEF system and returns the tangent point</span>
+<span class="sd">    (point closest to the ellipsiod) for the WGS-84 ellipsiod in ECEF coordinates.</span>
+<span class="sd">    </span>
+<span class="sd">    The algorithm used is derived by Nick Lloyd at University of Saskatchewan, </span>
+<span class="sd">    Canada (nick.lloyd@usask.ca), and is part of</span>
+<span class="sd">    the operational code for both OSIRIS and SMR on-board- the Odin satellite.</span>
+<span class="sd">    </span>
+<span class="sd">    </span>
+<span class="sd">        Arguments:</span>
+<span class="sd">            x (float): ECEF X-coordinate (m)</span>
+<span class="sd">            </span>
+<span class="sd">            y (float): ECEF Y-coordinate (m)</span>
+<span class="sd">            </span>
+<span class="sd">            z (float): ECEF Z-coordinate (m)</span>
+<span class="sd">            </span>
+<span class="sd">            dx (float): ECEF look vector X-coordinate (m)</span>
+<span class="sd">            </span>
+<span class="sd">            dy (float): ECEF look vector Y-coordinate (m)</span>
+<span class="sd">            </span>
+<span class="sd">            dz (float): ECEF look vector Z-coordinate (m</span>
+<span class="sd">    </span>
+<span class="sd">        Returns:</span>
+<span class="sd">            (tuple): tuple containing:</span>
+<span class="sd">                </span>
+<span class="sd">            **tx** (*float*): ECEF X-coordinate of tangentpoint (m)</span>
+<span class="sd">            </span>
+<span class="sd">            **ty** (*float*): ECEF Y-coordinate of tangentpoint (m)</span>
+<span class="sd">            </span>
+<span class="sd">            **tz** (*float*): ECEF Z-coordinate of tangentpoint (m)</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
     
-
-<span class="c1">#This function takes a position and look vector in ECEF system and returns the tangent point</span>
-
-<span class="c1">#(point closest to the ellipsiod) for the WGS-84 ellipsiod in ECEF coordinates.</span>
-
-<span class="c1">#The algorithm used is derived by Nick Lloyd at University of Saskatchewan, </span>
-
-<span class="c1">#Canada (nick.lloyd@usask.ca), and is part of</span>
-
-<span class="c1">#the operational code for both OSIRIS and SMR on-board- the Odin satellite.</span>
-
-<span class="c1">#</span>
-
-<span class="c1"># Input</span>
-
-<span class="c1"># x = ECEF X-coordinate (m)</span>
-
-<span class="c1"># y = ECEF Y-coordinate (m)</span>
-
-<span class="c1"># z = ECEF Z-coordinate (m)</span>
-
-<span class="c1"># dx = ECEF look vector X-coordinate (m)</span>
-
-<span class="c1"># dy = ECEF look vector Y-coordinate (m)</span>
-
-<span class="c1"># dz = ECEF look vector Z-coordinate (m</span>
-
-
-
-<span class="c1"># Output</span>
-
-<span class="c1"># tx = ECEF X-coordinate of tangentpoint (m)</span>
-
-<span class="c1"># ty = ECEF Y-coordinate of tangentpoint (m)</span>
-
-<span class="c1"># tz = ECEF Z-coordinate of tangentpoint (m)</span>
-
-
-
-<span class="c1">#FIXME check normalization of dx,dy,dz!</span>
-
-
-
-
-
-     <span class="c1">#WGS-84 semi-major axis and eccentricity</span>
-
-     <span class="n">a</span><span class="o">=</span><span class="mi">6378137</span>
-
-     <span class="n">e</span><span class="o">=</span><span class="mf">0.081819190842621</span>
-
-     
-
-     <span class="n">a2</span> <span class="o">=</span> <span class="n">a</span><span class="o">**</span><span class="mi">2</span>
-
-     <span class="n">b2</span> <span class="o">=</span> <span class="n">a2</span> <span class="o">*</span> <span class="p">(</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">e</span><span class="o">**</span><span class="mi">2</span> <span class="p">)</span>
-
-     <span class="n">X</span> <span class="o">=</span> <span class="n">pylab</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">])</span>
-
-  
-
-     <span class="n">xunit</span> <span class="o">=</span> <span class="n">pylab</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">dx</span><span class="p">,</span><span class="n">dy</span><span class="p">,</span><span class="n">dz</span><span class="p">])</span>
-
-  
-
-     <span class="n">zunit</span> <span class="o">=</span> <span class="n">pylab</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span> <span class="n">xunit</span><span class="p">,</span> <span class="n">X</span> <span class="p">)</span>
-
-     <span class="n">zunit</span> <span class="o">=</span> <span class="n">zunit</span> <span class="o">/</span> <span class="n">pylab</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">zunit</span><span class="p">)</span>
-
- 	
-
-     <span class="n">yunit</span> <span class="o">=</span> <span class="n">pylab</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span> <span class="n">zunit</span><span class="p">,</span> <span class="n">xunit</span> <span class="p">)</span>
-
-     <span class="n">yunit</span> <span class="o">=</span> <span class="n">yunit</span> <span class="o">/</span> <span class="n">pylab</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">yunit</span><span class="p">)</span>
-
-  
-
-     <span class="n">w11</span> <span class="o">=</span> <span class="n">xunit</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-
-     <span class="n">w12</span> <span class="o">=</span> <span class="n">yunit</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-
-     <span class="n">w21</span> <span class="o">=</span> <span class="n">xunit</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-
-     <span class="n">w22</span> <span class="o">=</span> <span class="n">yunit</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-
-     <span class="n">w31</span> <span class="o">=</span> <span class="n">xunit</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-
-     <span class="n">w32</span> <span class="o">=</span> <span class="n">yunit</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-
-     <span class="n">yr</span>  <span class="o">=</span> <span class="n">pylab</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">X</span><span class="p">,</span> <span class="n">yunit</span> <span class="p">)</span>
-
-     <span class="n">xr</span>  <span class="o">=</span> <span class="n">pylab</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">X</span><span class="p">,</span> <span class="n">xunit</span> <span class="p">)</span>
-
- 	   
-
-     <span class="n">A</span> <span class="o">=</span> <span class="p">(</span><span class="n">w11</span><span class="o">*</span><span class="n">w11</span> <span class="o">+</span> <span class="n">w21</span><span class="o">*</span><span class="n">w21</span><span class="p">)</span><span class="o">/</span><span class="n">a2</span> <span class="o">+</span> <span class="n">w31</span><span class="o">*</span><span class="n">w31</span><span class="o">/</span><span class="n">b2</span>
-
-     <span class="n">B</span> <span class="o">=</span> <span class="mf">2.0</span><span class="o">*</span><span class="p">((</span><span class="n">w11</span><span class="o">*</span><span class="n">w12</span> <span class="o">+</span> <span class="n">w21</span><span class="o">*</span><span class="n">w22</span><span class="p">)</span><span class="o">/</span><span class="n">a2</span> <span class="o">+</span> <span class="p">(</span><span class="n">w31</span><span class="o">*</span><span class="n">w32</span><span class="p">)</span><span class="o">/</span><span class="n">b2</span><span class="p">)</span>
-
-     <span class="n">C</span> <span class="o">=</span> <span class="p">(</span><span class="n">w12</span><span class="o">*</span><span class="n">w12</span> <span class="o">+</span> <span class="n">w22</span><span class="o">*</span><span class="n">w22</span><span class="p">)</span><span class="o">/</span><span class="n">a2</span> <span class="o">+</span> <span class="n">w32</span><span class="o">*</span><span class="n">w32</span><span class="o">/</span><span class="n">b2</span>
-
- 	
-
-     <span class="k">if</span> <span class="n">B</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
-
-         <span class="n">xx</span> <span class="o">=</span> <span class="mf">0.0</span>
-
-     <span class="k">else</span><span class="p">:</span> 
-
-        <span class="n">K</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.0</span><span class="o">*</span><span class="n">A</span><span class="o">/</span><span class="n">B</span>
-
-        <span class="n">factor</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">/</span><span class="p">(</span><span class="n">A</span><span class="o">+</span><span class="p">(</span><span class="n">B</span><span class="o">+</span><span class="n">C</span><span class="o">*</span><span class="n">K</span><span class="p">)</span><span class="o">*</span><span class="n">K</span><span class="p">)</span>
-
-        <span class="n">xx</span> <span class="o">=</span> <span class="n">pylab</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">factor</span><span class="p">)</span>
-
-        <span class="n">yy</span> <span class="o">=</span> <span class="n">K</span><span class="o">*</span><span class="n">x</span>
-
+    
+    <span class="c1">#FIXME check normalization of dx,dy,dz!</span>
+    
+    <span class="c1">#WGS-84 semi-major axis and eccentricity</span>
+    
+    <span class="n">a</span><span class="o">=</span><span class="mi">6378137</span>
+    
+    <span class="n">e</span><span class="o">=</span><span class="mf">0.081819190842621</span>
+    
+    
+    
+    <span class="n">a2</span> <span class="o">=</span> <span class="n">a</span><span class="o">**</span><span class="mi">2</span>
+    
+    <span class="n">b2</span> <span class="o">=</span> <span class="n">a2</span> <span class="o">*</span> <span class="p">(</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">e</span><span class="o">**</span><span class="mi">2</span> <span class="p">)</span>
+    
+    <span class="n">X</span> <span class="o">=</span> <span class="n">pylab</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">])</span>
+    
+    
+    
+    <span class="n">xunit</span> <span class="o">=</span> <span class="n">pylab</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">dx</span><span class="p">,</span><span class="n">dy</span><span class="p">,</span><span class="n">dz</span><span class="p">])</span>
+    
+    
+    
+    <span class="n">zunit</span> <span class="o">=</span> <span class="n">pylab</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span> <span class="n">xunit</span><span class="p">,</span> <span class="n">X</span> <span class="p">)</span>
+    
+    <span class="n">zunit</span> <span class="o">=</span> <span class="n">zunit</span> <span class="o">/</span> <span class="n">pylab</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">zunit</span><span class="p">)</span>
+    
+    
+    
+    <span class="n">yunit</span> <span class="o">=</span> <span class="n">pylab</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span> <span class="n">zunit</span><span class="p">,</span> <span class="n">xunit</span> <span class="p">)</span>
+    
+    <span class="n">yunit</span> <span class="o">=</span> <span class="n">yunit</span> <span class="o">/</span> <span class="n">pylab</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">yunit</span><span class="p">)</span>
+    
+    
+    
+    <span class="n">w11</span> <span class="o">=</span> <span class="n">xunit</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    
+    <span class="n">w12</span> <span class="o">=</span> <span class="n">yunit</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    
+    <span class="n">w21</span> <span class="o">=</span> <span class="n">xunit</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="n">w22</span> <span class="o">=</span> <span class="n">yunit</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="n">w31</span> <span class="o">=</span> <span class="n">xunit</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    
+    <span class="n">w32</span> <span class="o">=</span> <span class="n">yunit</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    
+    <span class="n">yr</span>  <span class="o">=</span> <span class="n">pylab</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">X</span><span class="p">,</span> <span class="n">yunit</span> <span class="p">)</span>
+    
+    <span class="n">xr</span>  <span class="o">=</span> <span class="n">pylab</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span> <span class="n">X</span><span class="p">,</span> <span class="n">xunit</span> <span class="p">)</span>
+    
       
-
-     <span class="n">dist1</span> <span class="o">=</span> <span class="p">(</span><span class="n">xr</span><span class="o">-</span><span class="n">xx</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">xr</span><span class="o">-</span><span class="n">xx</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">yr</span><span class="o">-</span><span class="n">yy</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">yr</span><span class="o">-</span><span class="n">yy</span><span class="p">)</span>
-
-     <span class="n">dist2</span> <span class="o">=</span> <span class="p">(</span><span class="n">xr</span><span class="o">+</span><span class="n">xx</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">xr</span><span class="o">+</span><span class="n">xx</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">yr</span><span class="o">+</span><span class="n">yy</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">yr</span><span class="o">+</span><span class="n">yy</span><span class="p">)</span>
-
- 	
-
-     <span class="k">if</span> <span class="n">dist1</span> <span class="o">&gt;</span> <span class="n">dist2</span><span class="p">:</span>
-
-        <span class="n">xx</span> <span class="o">=</span> <span class="o">-</span><span class="n">xx</span>
-
-     
-
-     <span class="n">tx</span> <span class="o">=</span> <span class="n">w11</span><span class="o">*</span><span class="n">xx</span> <span class="o">+</span> <span class="n">w12</span><span class="o">*</span><span class="n">yr</span>
-
-     <span class="n">ty</span> <span class="o">=</span> <span class="n">w21</span><span class="o">*</span><span class="n">xx</span> <span class="o">+</span> <span class="n">w22</span><span class="o">*</span><span class="n">yr</span>
-
-     <span class="n">tz</span> <span class="o">=</span> <span class="n">w31</span><span class="o">*</span><span class="n">xx</span> <span class="o">+</span> <span class="n">w32</span><span class="o">*</span><span class="n">yr</span>
-
-     
-
-     <span class="k">return</span> <span class="n">tx</span><span class="p">,</span><span class="n">ty</span><span class="p">,</span><span class="n">tz</span></div>
-
- 
-
-<div class="viewcode-block" id="quaternion2ECEF"><a class="viewcode-back" href="../../OPT.html#OPT._MATS_coordinates.quaternion2ECEF">[docs]</a><span class="k">def</span> <span class="nf">quaternion2ECEF</span><span class="p">(</span><span class="n">q</span><span class="p">):</span>
-
+    <span class="n">A</span> <span class="o">=</span> <span class="p">(</span><span class="n">w11</span><span class="o">*</span><span class="n">w11</span> <span class="o">+</span> <span class="n">w21</span><span class="o">*</span><span class="n">w21</span><span class="p">)</span><span class="o">/</span><span class="n">a2</span> <span class="o">+</span> <span class="n">w31</span><span class="o">*</span><span class="n">w31</span><span class="o">/</span><span class="n">b2</span>
     
+    <span class="n">B</span> <span class="o">=</span> <span class="mf">2.0</span><span class="o">*</span><span class="p">((</span><span class="n">w11</span><span class="o">*</span><span class="n">w12</span> <span class="o">+</span> <span class="n">w21</span><span class="o">*</span><span class="n">w22</span><span class="p">)</span><span class="o">/</span><span class="n">a2</span> <span class="o">+</span> <span class="p">(</span><span class="n">w31</span><span class="o">*</span><span class="n">w32</span><span class="p">)</span><span class="o">/</span><span class="n">b2</span><span class="p">)</span>
+    
+    <span class="n">C</span> <span class="o">=</span> <span class="p">(</span><span class="n">w12</span><span class="o">*</span><span class="n">w12</span> <span class="o">+</span> <span class="n">w22</span><span class="o">*</span><span class="n">w22</span><span class="p">)</span><span class="o">/</span><span class="n">a2</span> <span class="o">+</span> <span class="n">w32</span><span class="o">*</span><span class="n">w32</span><span class="o">/</span><span class="n">b2</span>
+    
+    
+    
+    <span class="k">if</span> <span class="n">B</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">:</span>
+    
+        <span class="n">xx</span> <span class="o">=</span> <span class="mf">0.0</span>
+    
+    <span class="k">else</span><span class="p">:</span> 
+        
+        <span class="n">K</span> <span class="o">=</span> <span class="o">-</span><span class="mf">2.0</span><span class="o">*</span><span class="n">A</span><span class="o">/</span><span class="n">B</span>
+        
+        <span class="n">factor</span> <span class="o">=</span> <span class="mf">1.0</span><span class="o">/</span><span class="p">(</span><span class="n">A</span><span class="o">+</span><span class="p">(</span><span class="n">B</span><span class="o">+</span><span class="n">C</span><span class="o">*</span><span class="n">K</span><span class="p">)</span><span class="o">*</span><span class="n">K</span><span class="p">)</span>
+        
+        <span class="n">xx</span> <span class="o">=</span> <span class="n">pylab</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">factor</span><span class="p">)</span>
+        
+        <span class="n">yy</span> <span class="o">=</span> <span class="n">K</span><span class="o">*</span><span class="n">x</span>
+        
+    
+    
+    <span class="n">dist1</span> <span class="o">=</span> <span class="p">(</span><span class="n">xr</span><span class="o">-</span><span class="n">xx</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">xr</span><span class="o">-</span><span class="n">xx</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">yr</span><span class="o">-</span><span class="n">yy</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">yr</span><span class="o">-</span><span class="n">yy</span><span class="p">)</span>
+    
+    <span class="n">dist2</span> <span class="o">=</span> <span class="p">(</span><span class="n">xr</span><span class="o">+</span><span class="n">xx</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">xr</span><span class="o">+</span><span class="n">xx</span><span class="p">)</span> <span class="o">+</span> <span class="p">(</span><span class="n">yr</span><span class="o">+</span><span class="n">yy</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">yr</span><span class="o">+</span><span class="n">yy</span><span class="p">)</span>
+    
+     	
+    
+    <span class="k">if</span> <span class="n">dist1</span> <span class="o">&gt;</span> <span class="n">dist2</span><span class="p">:</span>
+        
+        <span class="n">xx</span> <span class="o">=</span> <span class="o">-</span><span class="n">xx</span>
+    
+    
+    <span class="n">tx</span> <span class="o">=</span> <span class="n">w11</span><span class="o">*</span><span class="n">xx</span> <span class="o">+</span> <span class="n">w12</span><span class="o">*</span><span class="n">yr</span>
+    
+    <span class="n">ty</span> <span class="o">=</span> <span class="n">w21</span><span class="o">*</span><span class="n">xx</span> <span class="o">+</span> <span class="n">w22</span><span class="o">*</span><span class="n">yr</span>
+    
+    <span class="n">tz</span> <span class="o">=</span> <span class="n">w31</span><span class="o">*</span><span class="n">xx</span> <span class="o">+</span> <span class="n">w32</span><span class="o">*</span><span class="n">yr</span>
+    
+    <span class="k">return</span> <span class="n">tx</span><span class="p">,</span><span class="n">ty</span><span class="p">,</span><span class="n">tz</span></div>
 
-<span class="c1">#This function takes a quaternion look vector in ECEF system and converts </span>
 
-<span class="c1">#to a unit look vector in the same system</span>
-
-<span class="c1">#</span>
-
-<span class="c1"># Input</span>
-
-<span class="c1"># q = Quaternion in ECEF system</span>
-
-
-
-<span class="c1"># Output</span>
-
-<span class="c1"># dx = unit look vector</span>
-
-<span class="c1"># dy = unit look vector</span>
-
-<span class="c1"># dz = unit look vector</span>
-
-
-
-    <span class="n">M</span> <span class="o">=</span> <span class="n">tp</span><span class="o">.</span><span class="n">quaternion_matrix</span><span class="p">(</span><span class="n">q</span><span class="p">)</span>
-
-    <span class="n">dx</span> <span class="o">=</span> <span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">]</span>
-
-    <span class="n">dy</span> <span class="o">=</span> <span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
-
-    <span class="n">dz</span> <span class="o">=</span> <span class="o">-</span><span class="n">M</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-
-    <span class="k">return</span> <span class="n">dx</span><span class="p">,</span><span class="n">dy</span><span class="p">,</span><span class="n">dz</span></div>
-
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">def quaternion2ECEF(q):</span>
+<span class="sd">    &quot;&quot;&quot;This function takes a quaternion look vector in ECEF system and converts </span>
+<span class="sd">    to a unit look vector in the same system.</span>
+<span class="sd">    </span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        q = Quaternion in ECEF system</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        dx = unit look vector</span>
+<span class="sd">        dy = unit look vector</span>
+<span class="sd">        dz = unit look vector</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    </span>
+<span class="sd">    R = Rotation.from_quat((q))</span>
+<span class="sd">    </span>
+<span class="sd">    Unit_Look_Vector_basis_ECEF = R.apply([ [1,0,0], [0,1,0], [0,0,1] ])</span>
+<span class="sd">    </span>
+<span class="sd">    </span>
+<span class="sd">    M = tp.quaternion_matrix(q)</span>
+<span class="sd">    </span>
+<span class="sd">    dx = M[0][2]</span>
+<span class="sd">    </span>
+<span class="sd">    dy = M[0][1]</span>
+<span class="sd">    </span>
+<span class="sd">    dz = -M[0][0]</span>
+<span class="sd">    </span>
+<span class="sd">    return dx,dy,dz</span>
+<span class="sd">&#39;&#39;&#39;</span>
 
 
 <div class="viewcode-block" id="ECEF2lla"><a class="viewcode-back" href="../../OPT.html#OPT._MATS_coordinates.ECEF2lla">[docs]</a><span class="k">def</span> <span class="nf">ECEF2lla</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">):</span>

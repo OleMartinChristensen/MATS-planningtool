@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
-"""Calls for macros, which will generate commands in the XML-file. \n
+"""Calls CMDs, which will generate commands in the XML-file. \n
 
 For PWRTOGGLE, PM, CCDBadColumn, CCDFlushBadColumns: Compares parameters given in the Science Mode Timeline to default parameters 
 given in the set *Configuration File* and fills in any parameters missing in the Science Mode Timeline. \n
 
 For the rest CMDS, each parameter must be given in the Science Mode Timeline. \n
 
-Functions on the form "XML_generator_X", where the last X is any CMD:
+PWRTOGGLE will always call a PWRTOGGLE_macro will also turns off all CCDs before power toggling. \n
+
+Functions on the form "X", where the last X is any CMD:
     Arguments:
         root (lxml.etree.Element):  XML tree structure. Main container object for the ElementTree API. lxml.etree.Element class \n
         date (ephem.Date): Starting date of the CMD. On the form of the ephem.Date class. \n
@@ -30,7 +32,7 @@ OPT_Config_File = importlib.import_module(_Globals.Config_File)
 
 Logger = logging.getLogger(OPT_Config_File.Logger_name())
 
-def XML_generator_MODE(root, date, duration, relativeTime, 
+def MODE(root, date, duration, relativeTime, 
                        params = {}):
     
     #params_default = {'MODE': 0}
@@ -39,7 +41,7 @@ def XML_generator_MODE(root, date, duration, relativeTime,
     Commands.TC_pafMode(root, round(relativeTime,2), mode = params['MODE'], comment = str(date))
  
 
-def XML_generator_PWRTOGGLE(root, date, duration, relativeTime, 
+def PWRTOGGLE(root, date, duration, relativeTime, 
                        params = {}):
     
     params_default = OPT_Config_File.PWRTOGGLE_settings()
@@ -47,7 +49,7 @@ def XML_generator_PWRTOGGLE(root, date, duration, relativeTime,
     Macros.PWRTOGGLE_macro(root, round(relativeTime,2), CONST = params['CONST'], comment = str(date))
     
     
-def XML_generator_UPLOAD(root, date, duration, relativeTime, 
+def UPLOAD(root, date, duration, relativeTime, 
                        params = {}):
     
     #params_default = {'PINDEX': 0, 'PTOTAL': 0, 'WFLASH': 0, 'NIMG': 0, 'IMG': 0}
@@ -56,7 +58,7 @@ def XML_generator_UPLOAD(root, date, duration, relativeTime,
                           WFLASH = params['WFLASH'] , NIMG = params['NIMG'], IMG = params['IMG'], comment = str(date))
 
 
-def XML_generator_HTR(root, date, duration, relativeTime, 
+def HTR(root, date, duration, relativeTime, 
                        params = {}):
     
     #params_default = {'HTRSEL': 1, 'SET': 2000, 'P': 10, 'I': 0, 'D': 0}
@@ -65,7 +67,7 @@ def XML_generator_HTR(root, date, duration, relativeTime,
                           P = params['P'] , I = params['I'], D = params['D'], comment = str(date))
     
 
-def XML_generator_CCD(root, date, duration, relativeTime, 
+def CCD(root, date, duration, relativeTime, 
                        params = {}):
     
     #params_default = {'CCDSEL': 1, 'PWR': 1, 'WDW': 4, 'JPEGQ': 95, 'SYNC': 0, 'TEXPIMS': 3000, 'TEXPMS': 1000, 'GAIN': 0, 'NFLUSH': 1023, 
@@ -79,7 +81,7 @@ def XML_generator_CCD(root, date, duration, relativeTime,
                         NCBINFPGA = params['NCBINFPGA'], SIGMODE = params['SIGMODE'], comment = str(date))
     
 
-def XML_generator_CCDBadColumn(root, date, duration, relativeTime, 
+def CCDBadColumn(root, date, duration, relativeTime, 
                        params = {}):
     
     params_default = OPT_Config_File.CCDBadColumn_settings()
@@ -88,7 +90,7 @@ def XML_generator_CCDBadColumn(root, date, duration, relativeTime,
                              BC = params['BC'], comment = str(date))
 
 
-def XML_generator_CCDFlushBadColumns(root, date, duration, relativeTime, 
+def CCDFlushBadColumns(root, date, duration, relativeTime, 
                        params = {}):
     
     params_default = OPT_Config_File.CCDFlushBadColumns_settings()
@@ -96,10 +98,10 @@ def XML_generator_CCDFlushBadColumns(root, date, duration, relativeTime,
     Commands.TC_pafCCDFlushBadColumns(root, relativeTime, CCDSEL = params['CCDSEL'], comment = str(date))
 
 
-def XML_generator_CCDBIAS(root, date, duration, relativeTime, 
+def CCDBIAS(root, date, duration, relativeTime, 
                        params = {}):
     
-    params_default = OPT_Config_File.CCDFlushBadColumns_settings()
+    params_default = OPT_Config_File.CCDBIAS_settings()
     params = params_checker(params, params_default)
     
     
@@ -107,7 +109,7 @@ def XML_generator_CCDBIAS(root, date, duration, relativeTime,
                              VSUBST = params['VSUBST'], VRD = params['VRD'], VOD = params['VOD'], comment = str(date))
 
 
-def XML_generator_CCDSNAPSHOT(root, date, duration, relativeTime, 
+def CCDSNAPSHOT(root, date, duration, relativeTime, 
                        params = {}):
     
     #params_default = {'CCDSEL': 1}
@@ -115,7 +117,7 @@ def XML_generator_CCDSNAPSHOT(root, date, duration, relativeTime,
     Commands.TC_pafCCDSnapshot(root, round(relativeTime,2), CCDSelect = params['CCDSEL'], comment = str(date))
     
 
-def XML_generator_CCDTRANSPARENTCMD(root, date, duration, relativeTime, 
+def CCDTRANSPARENTCMD(root, date, duration, relativeTime, 
                        params = {}):
     
     #params_default = {'CCDSEL': 1, 'CHAR': 0}
@@ -123,7 +125,7 @@ def XML_generator_CCDTRANSPARENTCMD(root, date, duration, relativeTime,
     Commands.TC_pafCCDTRANSPARENTCMD(root, round(relativeTime,2), CCDSEL = params['CCDSEL'], CHAR = str(params['CHAR']), comment = str(date))
     
 
-def XML_generator_Dbg(root, date, duration, relativeTime, 
+def Dbg(root, date, duration, relativeTime, 
                        params = {}):
     
     #params_default = {'CCDSEL': 1}
@@ -131,7 +133,7 @@ def XML_generator_Dbg(root, date, duration, relativeTime,
     Commands.TC_pafDbg(root, round(relativeTime,2), CCDSEL = params['CCDSEL'], comment = str(date))
     
 
-def XML_generator_PM(root, date, duration, relativeTime, 
+def PM(root, date, duration, relativeTime, 
                        params = {}):
     
     params_default = OPT_Config_File.PM_settings()
@@ -139,7 +141,14 @@ def XML_generator_PM(root, date, duration, relativeTime,
     Commands.TC_pafPM(root, round(relativeTime,2), TEXPMS = params['TEXPMS'], TEXPIMS = params['TEXPIMS'], comment = str(date))
     
 
-def XML_generator_LimbPointingAltitudeOffset(root, date, duration, relativeTime, 
+def CCDSynchronize(root, date, duration, relativeTime, 
+                       params = {}):
+    
+    Commands.TC_pafCCDSynchronize(root, round(relativeTime,2), CCDSEL = params['CCDSEL'], NCCD = params['NCCD'], 
+                                  TEXPIOFS = params['TEXPIOFS'], comment = str(date))
+    
+
+def LimbPointingAltitudeOffset(root, date, duration, relativeTime, 
                        params = {}):
     
     #params_default = {'Initial': 92500, 'Final': 92500, 'Rate': 0}
@@ -148,7 +157,7 @@ def XML_generator_LimbPointingAltitudeOffset(root, date, duration, relativeTime,
                                               Rate = params['Rate'], comment = str(date))
     
 
-def XML_generator_ArgFreezeStart(root, date, duration, relativeTime, 
+def ArgFreezeStart(root, date, duration, relativeTime, 
                        params = {}):
     
     #params_default = {'StartTime': 0}
@@ -156,11 +165,14 @@ def XML_generator_ArgFreezeStart(root, date, duration, relativeTime,
     Commands.TC_affArgFreezeStart(root, round(relativeTime,2), StartTime = params['StartTime'], comment = str(date))
     
 
-def XML_generator_ArgFreezeDuration(root, date, duration, relativeTime, 
+def ArgFreezeDuration(root, date, duration, relativeTime, 
                        params = {}):
     
     #params_default = {'FreezeDuration': 0}
     #params = params_checker(params, params_default)
     Commands.TC_affArgFreezeDuration(root, round(relativeTime,2), FreezeDuration = params['FreezeDuration'], comment = str(date))
     
-
+def ArgEnableYawComp(root, date, duration, relativeTime, 
+                       params = {}):
+    
+    Commands.TC_acfArgEnableYawComp(root, round(relativeTime,2), EnableYawComp = params['EnableYawComp'], comment = str(date))

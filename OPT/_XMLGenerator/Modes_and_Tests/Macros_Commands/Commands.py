@@ -13,7 +13,7 @@ Each Command function has these inputs/outputs in common.
         **comment** (*str*): A comment regarding the CMD.
 
     **Returns:** 
-        **incremented_time** (*int*) = The scheduled relativeTime of the command increased by a number equal to *Timeline.settings()['command_separation']*. 
+        **incremented_time** (*int*) = The scheduled relativeTime of the command increased by a number equal to *Timeline.settings()['CMD_separation']*. 
         This to prevent the command buffer on the satellite from overloading. Note: When *TC_acfLimbPointingAltitudeOffset* is scheduled with Rate = '0', relativeTime is increased by *Timeline_settings['pointing_stabilization'].
 
 """
@@ -33,11 +33,10 @@ Logger = logging.getLogger(OPT_Config_File.Logger_name())
 
 def TC_pafMode(root, relativeTime, mode, comment = ''):
     
-    if not( _Globals.latestRelativeTime <= relativeTime <= _Globals.Timeline_settings['duration'] and type(relativeTime) == int):
-        Logger.error('Invalid argument: negative relativeTime, decreasing relativeTime, exceeding timeline duration, or not integer')
-        print(_Globals.latestRelativeTime)
-        print(relativeTime)
-        print('')
+    if not( _Globals.latestRelativeTime <= relativeTime <= _Globals.Timeline_settings['duration']):
+        Logger.error('Invalid argument: negative relativeTime, decreasing relativeTime, exceeding timeline duration')
+        Logger.error(_Globals.latestRelativeTime)
+        Logger.error(relativeTime)
         raise ValueError
     if not( 1 <= mode <= 2 and type(mode) == int ):
         Logger.error('Invalid argument: mode')
@@ -55,7 +54,7 @@ def TC_pafMode(root, relativeTime, mode, comment = ''):
     etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "MODE")
     root[1][len(root[1])-1][2][0].text = str(mode)
     
-    incremented_time = relativeTime+_Globals.Timeline_settings['command_separation']
+    incremented_time = relativeTime+_Globals.Timeline_settings['CMD_separation']
     _Globals.latestRelativeTime = relativeTime
     
     return incremented_time
@@ -64,16 +63,16 @@ def TC_pafMode(root, relativeTime, mode, comment = ''):
 def TC_acfLimbPointingAltitudeOffset(root, relativeTime, Initial = 92500, Final = 92500, Rate = 0, comment = ''):
     """Schedules Pointing Command unless the desired attitude is already set and Rate = 0."""
     
-    if not( _Globals.latestRelativeTime <= relativeTime <= _Globals.Timeline_settings['duration'] and type(relativeTime) == int):
-        Logger.error('Invalid argument: negative relativeTime, decreasing relativeTime, exceeding timeline duration, or not integer')
+    if not( _Globals.latestRelativeTime <= relativeTime <= _Globals.Timeline_settings['duration']):
+        Logger.error('Invalid argument: negative relativeTime, decreasing relativeTime, exceeding timeline duration')
         raise ValueError
-    if not( 10000 <= Initial <= 300000 and type(Initial) == int ):
+    if not( -60000 <= Initial <= 230000 and type(Initial) == int ):
         Logger.error('Invalid argument: Initial')
         raise ValueError
-    if not( 10000 <= Final <= 300000 and type(Final) == int ):
+    if not( -60000 <= Final <= 230000 and type(Final) == int ):
         Logger.error('Invalid argument: Final')
         raise ValueError
-    if not( 0 <= Rate <= 1000 and ( type(Rate) == int or type(Rate) == float) ):
+    if not( -5000 <= Rate <= 5000 and ( type(Rate) == int or type(Rate) == float) ):
         Logger.error('Invalid argument: Rate')
         raise ValueError
     
@@ -104,7 +103,7 @@ def TC_acfLimbPointingAltitudeOffset(root, relativeTime, Initial = 92500, Final 
         root[1][len(root[1])-1][2][2].text = str(Rate)
     
         if( Rate != 0 ):
-            incremented_time = relativeTime+_Globals.Timeline_settings['command_separation']
+            incremented_time = relativeTime+_Globals.Timeline_settings['CMD_separation']
             _Globals.current_pointing= None
         elif( Final == Initial and Rate == 0):
             _Globals.current_pointing= Final
@@ -115,19 +114,19 @@ def TC_acfLimbPointingAltitudeOffset(root, relativeTime, Initial = 92500, Final 
         incremented_time = relativeTime
     
     
-    #incremented_time = relativeTime+_Globals.Timeline_settings['command_separation']
+    #incremented_time = relativeTime+_Globals.Timeline_settings['CMD_separation']
     _Globals.latestRelativeTime = relativeTime
     
     return incremented_time
     
 def TC_affArgFreezeStart(root, relativeTime, StartTime, comment = ''):
     
-    if not( _Globals.latestRelativeTime <= relativeTime <= _Globals.Timeline_settings['duration'] and type(relativeTime) == int):
-        Logger.error('Invalid argument: negative relativeTime, decreasing relativeTime, exceeding timeline duration, or not integer')
+    if not( _Globals.latestRelativeTime <= relativeTime <= _Globals.Timeline_settings['duration']):
+        Logger.error('Invalid argument: negative relativeTime, decreasing relativeTime, exceeding timeline duration')
         raise ValueError
     "Within the years 2019-2100"
-    if not( 1198800018 < StartTime < 3786480018 ):
-        Logger.error('Invalid argument: StartTime is set before the year 2018 (GPSTIME 1198800018) or after the year 2100 (GPSTIME 3786480018)')
+    if not( 1198843200 < StartTime <= 1893067200 ):
+        Logger.error('Invalid argument: StartTime')
         raise ValueError
     etree.SubElement(root[1], 'command', mnemonic = "TC_affArgFreezeStart")
     
@@ -141,7 +140,7 @@ def TC_affArgFreezeStart(root, relativeTime, StartTime, comment = ''):
     etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "StartTime")
     root[1][len(root[1])-1][2][0].text = str(StartTime)
     
-    incremented_time = relativeTime+_Globals.Timeline_settings['command_separation']
+    incremented_time = relativeTime+_Globals.Timeline_settings['CMD_separation']
     _Globals.latestRelativeTime = relativeTime
     
     return incremented_time
@@ -149,10 +148,10 @@ def TC_affArgFreezeStart(root, relativeTime, StartTime, comment = ''):
     
 def TC_affArgFreezeDuration(root, relativeTime, FreezeDuration, comment = ''):
     
-    if not( _Globals.latestRelativeTime <= relativeTime <= _Globals.Timeline_settings['duration'] and type(relativeTime) == int):
-        Logger.error('Invalid argument: negative relativeTime, decreasing relativeTime, exceeding timeline duration, or not integer')
+    if not( _Globals.latestRelativeTime <= relativeTime <= _Globals.Timeline_settings['duration']):
+        Logger.error('Invalid argument: negative relativeTime, decreasing relativeTime, exceeding timeline duration')
         raise ValueError
-    if not( 0 < FreezeDuration < _Globals.Timeline_settings['duration'] ):
+    if not( 0 < FreezeDuration <= 3600 ):
         Logger.error('Invalid argument: negative FreezeDuration or exceeding timeline duration')
         raise ValueError
     
@@ -168,15 +167,43 @@ def TC_affArgFreezeDuration(root, relativeTime, FreezeDuration, comment = ''):
     etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "FreezeDuration")
     root[1][len(root[1])-1][2][0].text = str(FreezeDuration)
     
-    incremented_time = relativeTime+_Globals.Timeline_settings['command_separation']
+    incremented_time = relativeTime+_Globals.Timeline_settings['CMD_separation']
     _Globals.latestRelativeTime = relativeTime
     
     return incremented_time
     
+
+def TC_acfArgEnableYawComp(root, relativeTime, EnableYawComp, comment = ''):
+    
+    if not( _Globals.latestRelativeTime <= relativeTime <= _Globals.Timeline_settings['duration']):
+        Logger.error('Invalid argument: negative relativeTime, decreasing relativeTime, exceeding timeline duration')
+        raise ValueError
+    if not( EnableYawComp == 1 or EnableYawComp == 0):
+        Logger.error('Invalid argument: EnableYawComp')
+        raise ValueError
+        
+    etree.SubElement(root[1], 'command', mnemonic = "TC_acfArgEnableYawComp")
+    
+    etree.SubElement(root[1][len(root[1])-1], 'relativeTime')
+    root[1][len(root[1])-1][0].text = str(relativeTime)
+    
+    etree.SubElement(root[1][len(root[1])-1], 'comment')
+    root[1][len(root[1])-1][1].text = comment
+    
+    etree.SubElement(root[1][len(root[1])-1], 'tcArguments')
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "EnableYawComp")
+    root[1][len(root[1])-1][2][0].text = str(EnableYawComp)
+    
+    incremented_time = relativeTime+_Globals.Timeline_settings['CMD_separation']
+    _Globals.latestRelativeTime = relativeTime
+    
+    return incremented_time
+
+
 def TC_pafPWRToggle(root, relativeTime, CONST = 165, comment = ''):
     
-    if not( _Globals.latestRelativeTime <= relativeTime <= _Globals.Timeline_settings['duration'] and type(relativeTime) == int):
-        Logger.error('Invalid argument: negative relativeTime, decreasing relativeTime, exceeding timeline duration, or not integer')
+    if not( _Globals.latestRelativeTime <= relativeTime <= _Globals.Timeline_settings['duration']):
+        Logger.error('Invalid argument: negative relativeTime, decreasing relativeTime, exceeding timeline duration')
         raise ValueError
     if not( CONST == 165 and type(CONST) == int ):
         Logger.error('Invalid argument: CONST')
@@ -194,7 +221,7 @@ def TC_pafPWRToggle(root, relativeTime, CONST = 165, comment = ''):
     etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "CONST")
     root[1][len(root[1])-1][2][0].text = str(CONST)
     
-    incremented_time = relativeTime+_Globals.Timeline_settings['command_separation']
+    incremented_time = relativeTime+_Globals.Timeline_settings['CMD_separation']
     _Globals.latestRelativeTime = relativeTime
     
     return incremented_time
@@ -202,8 +229,8 @@ def TC_pafPWRToggle(root, relativeTime, CONST = 165, comment = ''):
     
 def TC_pafUpload(root, relativeTime, PINDEX = 0, PTOTAL = 0, WFLASH = 0, NIMG = 0, IMG = [], comment = ''):
     
-    if not( _Globals.latestRelativeTime <= relativeTime <= _Globals.Timeline_settings['duration'] and type(relativeTime) == int):
-        Logger.error('Invalid argument: negative relativeTime, decreasing relativeTime, exceeding timeline duration, or not integer')
+    if not( _Globals.latestRelativeTime <= relativeTime <= _Globals.Timeline_settings['duration']):
+        Logger.error('Invalid argument: negative relativeTime, decreasing relativeTime, exceeding timeline duration')
         raise ValueError
     if not( 0 <= PINDEX and type(PINDEX) == int ):
         Logger.error('Invalid argument: PINDEX')
@@ -252,15 +279,15 @@ def TC_pafUpload(root, relativeTime, PINDEX = 0, PTOTAL = 0, WFLASH = 0, NIMG = 
         x = x + 1
     
     
-    incremented_time = relativeTime+_Globals.Timeline_settings['command_separation']
+    incremented_time = relativeTime+_Globals.Timeline_settings['CMD_separation']
     _Globals.latestRelativeTime = relativeTime
     
     return incremented_time
     
 def TC_pafHTR(root, relativeTime, HTRSEL, SET, P, I, D, comment = ''):
     
-    if not( _Globals.latestRelativeTime <= relativeTime <= _Globals.Timeline_settings['duration'] and type(relativeTime) == int):
-        Logger.error('Invalid argument: negative relativeTime, decreasing relativeTime, exceeding timeline duration, or not integer')
+    if not( _Globals.latestRelativeTime <= relativeTime <= _Globals.Timeline_settings['duration']):
+        Logger.error('Invalid argument: negative relativeTime, decreasing relativeTime, exceeding timeline duration')
         raise ValueError
     if not( (1 <= HTRSEL <= 3 or 64 <= HTRSEL <= 67 or 128 <= HTRSEL <= 131 or 192 <= HTRSEL <= 195)  and type(HTRSEL) == int ):
         Logger.error('Invalid argument: HTRSEL')
@@ -302,19 +329,19 @@ def TC_pafHTR(root, relativeTime, HTRSEL, SET, P, I, D, comment = ''):
     etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "D")
     root[1][len(root[1])-1][2][4].text = str(D)
     
-    incremented_time = relativeTime+_Globals.Timeline_settings['command_separation']
+    incremented_time = relativeTime+_Globals.Timeline_settings['CMD_separation']
     _Globals.latestRelativeTime = relativeTime
     
     return incremented_time
     
     
-def TC_pafCCDMain(root, relativeTime, CCDSEL, PWR, ExpInterval, ExpTime, NRSKIP = 0, NRBIN = 1,
-                  NROW = 1, NCBIN = 1, NCOL = 1, WDW = 128, JPEGQ = 90, SYNC = 0, 
-                  NCBINFPGA = 0, SIGMODE = 1, GAIN = 0, 
-                  NFLUSH = 1023, NCSKIP = 0, comment = ''):
+def TC_pafCCDMain(root, relativeTime, CCDSEL, PWR, TEXPMS, TEXPIMS, NRSKIP, NRBIN,
+                  NROW, NCBIN, NCOL, WDW, JPEGQ, SYNC, 
+                  NCBINFPGA, SIGMODE, GAIN, 
+                  NFLUSH, NCSKIP, comment = ''):
     
-    if not( _Globals.latestRelativeTime <= relativeTime <= _Globals.Timeline_settings['duration'] and type(relativeTime) == int):
-        Logger.error('Invalid argument: negative relativeTime, decreasing relativeTime, exceeding timeline duration, or not integer')
+    if not( _Globals.latestRelativeTime <= relativeTime <= _Globals.Timeline_settings['duration']):
+        Logger.error('Invalid argument: negative relativeTime, decreasing relativeTime, exceeding timeline duration')
         raise ValueError
     if not( 1 <= CCDSEL <= 127 and type(CCDSEL) == int ):
         Logger.error('Invalid argument: CCDSEL')
@@ -367,7 +394,7 @@ def TC_pafCCDMain(root, relativeTime, CCDSEL, PWR, ExpInterval, ExpTime, NRSKIP 
     if not( NROW * NRBIN + NRSKIP <=  511 ):
         Logger.error('Invalid argument: NROW * NRBIN + NRSKIP exceeds 511')
         raise ValueError
-    if not( (NCOL+1) * NCBIN * 2**NCBINFPGA + NCSKIP <= 2047 ):
+    if not( (NCOL) * NCBIN * 2**NCBINFPGA + NCSKIP <= 2047 ):
         Logger.error('Invalid argument: (NCOL+1) * NCBIN * 2^NCBINFPGA + NCSKIP exceeds 2047')
         raise ValueError
         
@@ -377,10 +404,10 @@ def TC_pafCCDMain(root, relativeTime, CCDSEL, PWR, ExpInterval, ExpTime, NRSKIP 
                                                          NRSKIP = NRSKIP, NROW = NROW, NRBIN = NRBIN, NFLUSH = NFLUSH)
     ReadOutTime = T_readout + T_delay + T_Extra
     #Logger.debug('ReadOutTime = '+str(ReadOutTime))
-    if not( 0 <= ExpTime and ExpTime + ReadOutTime < ExpInterval ):
-        Logger.error('Invalid argument: TEXPMS is negative or ExpTime + ReadOutTime > ExpInterval')
+    if not( 0 <= TEXPMS and TEXPMS + ReadOutTime < TEXPIMS ):
+        Logger.error('Invalid argument: TEXPMS is negative or TEXPMS + ReadOutTime > TEXPIMS')
         raise ValueError
-    if not( type(ExpTime) == int and type(ExpInterval) == int ):
+    if not( type(TEXPMS) == int and type(TEXPIMS) == int ):
         Logger.error('Invalid argument: TEXPMS or TEXPIMS is not an integer')
         raise TypeError
     
@@ -409,10 +436,10 @@ def TC_pafCCDMain(root, relativeTime, CCDSEL, PWR, ExpInterval, ExpTime, NRSKIP 
     root[1][len(root[1])-1][2][4].text = str(SYNC)
     
     etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "TEXPIMS")
-    root[1][len(root[1])-1][2][5].text = str(ExpInterval)
+    root[1][len(root[1])-1][2][5].text = str(TEXPIMS)
     
     etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "TEXPMS")
-    root[1][len(root[1])-1][2][6].text = str(ExpTime)
+    root[1][len(root[1])-1][2][6].text = str(TEXPMS)
     
     etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "GAIN")
     root[1][len(root[1])-1][2][7].text = str(GAIN)
@@ -444,16 +471,16 @@ def TC_pafCCDMain(root, relativeTime, CCDSEL, PWR, ExpInterval, ExpTime, NRSKIP 
     etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "SIGMODE")
     root[1][len(root[1])-1][2][16].text = str(SIGMODE)
     
-    incremented_time = relativeTime+_Globals.Timeline_settings['command_separation']
+    incremented_time = relativeTime+_Globals.Timeline_settings['CMD_separation']
     _Globals.latestRelativeTime = relativeTime
     
     return incremented_time
     
 
-def TC_pafCCDSynchronize( root, relativeTime, CCDSEL, NCCD, TEXPIOFS, comment = '' ):
+def TC_pafCCDSYNCHRONIZE( root, relativeTime, CCDSEL, NCCD, TEXPIOFS, comment = '' ):
     
-    if not( _Globals.latestRelativeTime <= relativeTime <= _Globals.Timeline_settings['duration'] and type(relativeTime) == int):
-        Logger.error('Invalid argument: negative relativeTime, decreasing relativeTime, exceeding timeline duration, or not integer')
+    if not( _Globals.latestRelativeTime <= relativeTime <= _Globals.Timeline_settings['duration']):
+        Logger.error('Invalid argument: negative relativeTime, decreasing relativeTime, exceeding timeline duration')
         raise ValueError
     if not( 3 <= CCDSEL <= 127 and CCDSEL not in [4,8,16,32,64]  and type(CCDSEL) == int ):
         Logger.error('Invalid argument: CCDSEL')
@@ -465,6 +492,9 @@ def TC_pafCCDSynchronize( root, relativeTime, CCDSEL, NCCD, TEXPIOFS, comment = 
         Logger.error('Invalid argument: Number of CCDs (NCCD) does not coincide with the number of time-offsets (TEXPIOFS).')
         raise ValueError
     
+    Logger.debug('CCDSEL: '+str(CCDSEL))
+    Logger.debug('NCCD: '+str(NCCD))
+    Logger.debug('TEXPIOFS: '+str(TEXPIOFS))
     
     etree.SubElement(root[1], 'command', mnemonic = "TC_pafCCDSynchronize")
     
@@ -499,7 +529,7 @@ def TC_pafCCDSynchronize( root, relativeTime, CCDSEL, NCCD, TEXPIOFS, comment = 
         Logger.error('Invalid argument: Any TEXPIOFS not set to 0 -> No leading CCD selected')
         raise ValueError
         
-    incremented_time = relativeTime+_Globals.Timeline_settings['command_separation']
+    incremented_time = relativeTime+_Globals.Timeline_settings['CMD_separation']
     _Globals.latestRelativeTime = relativeTime
     
     return incremented_time
@@ -507,8 +537,8 @@ def TC_pafCCDSynchronize( root, relativeTime, CCDSEL, NCCD, TEXPIOFS, comment = 
     
 def TC_pafCCDBadColumn(root, relativeTime, CCDSEL, NBC, BC, comment = ''):
     
-    if not( _Globals.latestRelativeTime <= relativeTime <= _Globals.Timeline_settings['duration'] and type(relativeTime) == int):
-        Logger.error('Invalid argument: negative relativeTime, decreasing relativeTime, exceeding timeline duration, or not integer')
+    if not( _Globals.latestRelativeTime <= relativeTime <= _Globals.Timeline_settings['duration']):
+        Logger.error('Invalid argument: negative relativeTime, decreasing relativeTime, exceeding timeline duration')
         raise ValueError
     if not( 1 <= CCDSEL <= 127 and type(CCDSEL) == int ):
         Logger.error('Invalid argument: CCDSEL')
@@ -545,7 +575,7 @@ def TC_pafCCDBadColumn(root, relativeTime, CCDSEL, NBC, BC, comment = ''):
         root[1][len(root[1])-1][2][x].text = str(BadColumn)
         x = x + 1
         
-    incremented_time = relativeTime+_Globals.Timeline_settings['command_separation']
+    incremented_time = relativeTime+_Globals.Timeline_settings['CMD_separation']
     _Globals.latestRelativeTime = relativeTime
     
     return incremented_time
@@ -553,8 +583,8 @@ def TC_pafCCDBadColumn(root, relativeTime, CCDSEL, NBC, BC, comment = ''):
     
 def TC_pafCCDFlushBadColumns(root, relativeTime, CCDSEL, comment = ''):
     
-    if not( _Globals.latestRelativeTime <= relativeTime <= _Globals.Timeline_settings['duration'] and type(relativeTime) == int):
-        Logger.error('Invalid argument: negative relativeTime, decreasing relativeTime, exceeding timeline duration, or not integer')
+    if not( _Globals.latestRelativeTime <= relativeTime <= _Globals.Timeline_settings['duration']):
+        Logger.error('Invalid argument: negative relativeTime, decreasing relativeTime, exceeding timeline duration')
         raise ValueError
     if not( 1 <= CCDSEL <= 127 and type(CCDSEL) == int ):
         Logger.error('Invalid argument: CCDSEL')
@@ -572,15 +602,15 @@ def TC_pafCCDFlushBadColumns(root, relativeTime, CCDSEL, comment = ''):
     etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "CCDSEL")
     root[1][len(root[1])-1][2][0].text = str(CCDSEL)
     
-    incremented_time = relativeTime+_Globals.Timeline_settings['command_separation']
+    incremented_time = relativeTime+_Globals.Timeline_settings['CMD_separation']
     
     return incremented_time
     
     
 def TC_pafCCDBIAS(root, relativeTime, CCDSEL, VGATE, VSUBST, VRD, VOD, comment = ''):
     
-    if not( _Globals.latestRelativeTime <= relativeTime <= _Globals.Timeline_settings['duration'] and type(relativeTime) == int):
-        Logger.error('Invalid argument: negative relativeTime, decreasing relativeTime, exceeding timeline duration, or not integer')
+    if not( _Globals.latestRelativeTime <= relativeTime <= _Globals.Timeline_settings['duration']):
+        Logger.error('Invalid argument: negative relativeTime, decreasing relativeTime, exceeding timeline duration')
         raise ValueError
     if not( 1 <= CCDSEL <= 127 and type(CCDSEL) == int ):
         Logger.error('Invalid argument: CCDSEL')
@@ -614,7 +644,7 @@ def TC_pafCCDBIAS(root, relativeTime, CCDSEL, VGATE, VSUBST, VRD, VOD, comment =
     etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "VOD")
     root[1][len(root[1])-1][2][4].text = str(VOD)
     
-    incremented_time = relativeTime+_Globals.Timeline_settings['command_separation']
+    incremented_time = relativeTime+_Globals.Timeline_settings['CMD_separation']
     _Globals.latestRelativeTime = relativeTime
     
     return incremented_time
@@ -623,8 +653,8 @@ def TC_pafCCDBIAS(root, relativeTime, CCDSEL, VGATE, VSUBST, VRD, VOD, comment =
 def TC_pafCCDSnapshot(root, relativeTime, CCDSEL, comment = ''):
     
     
-    if not( _Globals.latestRelativeTime <= relativeTime <= _Globals.Timeline_settings['duration'] and type(relativeTime) == int):
-        Logger.error('Invalid argument: negative relativeTime, decreasing relativeTime, exceeding timeline duration, or not integer')
+    if not( _Globals.latestRelativeTime <= relativeTime <= _Globals.Timeline_settings['duration']):
+        Logger.error('Invalid argument: negative relativeTime, decreasing relativeTime, exceeding timeline duration')
         raise ValueError
     if not( 1 <= CCDSEL <= 127 and type(CCDSEL) == int ):
         Logger.error('Invalid argument: CCDSEL')
@@ -642,7 +672,7 @@ def TC_pafCCDSnapshot(root, relativeTime, CCDSEL, comment = ''):
     etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "CCDSEL")
     root[1][len(root[1])-1][2][0].text = str(CCDSEL)
     
-    incremented_time = relativeTime+_Globals.Timeline_settings['command_separation']
+    incremented_time = relativeTime+_Globals.Timeline_settings['CMD_separation']
     
     return incremented_time
 
@@ -650,8 +680,8 @@ def TC_pafCCDSnapshot(root, relativeTime, CCDSEL, comment = ''):
 def TC_pafCCDTRANSPARENTCMD(root, relativeTime, CCDSEL, CHAR, comment = ''):
     
     
-    if not( _Globals.latestRelativeTime <= relativeTime <= _Globals.Timeline_settings['duration'] and type(relativeTime) == int):
-        Logger.error('Invalid argument: negative relativeTime, decreasing relativeTime, exceeding timeline duration, or not integer')
+    if not( _Globals.latestRelativeTime <= relativeTime <= _Globals.Timeline_settings['duration']):
+        Logger.error('Invalid argument: negative relativeTime, decreasing relativeTime, exceeding timeline duration')
         raise ValueError
     if not( 1 <= CCDSEL <= 127 and type(CCDSEL) == int ):
         Logger.error('Invalid argument: CCDSEL')
@@ -675,7 +705,7 @@ def TC_pafCCDTRANSPARENTCMD(root, relativeTime, CCDSEL, CHAR, comment = ''):
     etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "CHAR")
     root[1][len(root[1])-1][2][1].text = CHAR
     
-    incremented_time = relativeTime+_Globals.Timeline_settings['command_separation']
+    incremented_time = relativeTime+_Globals.Timeline_settings['CMD_separation']
     _Globals.latestRelativeTime = relativeTime
     
     return incremented_time
@@ -683,8 +713,8 @@ def TC_pafCCDTRANSPARENTCMD(root, relativeTime, CCDSEL, CHAR, comment = ''):
 
 def TC_pafDbg(root, relativeTime, CCDSEL, comment = ''):
     
-    if not( _Globals.latestRelativeTime <= relativeTime <= _Globals.Timeline_settings['duration'] and type(relativeTime) == int):
-        Logger.error('Invalid argument: negative relativeTime, decreasing relativeTime, exceeding timeline duration, or not integer')
+    if not( _Globals.latestRelativeTime <= relativeTime <= _Globals.Timeline_settings['duration']):
+        Logger.error('Invalid argument: negative relativeTime, decreasing relativeTime, exceeding timeline duration')
         raise ValueError
     if not( 1 <= CCDSEL <= 127 and type(CCDSEL) == int ):
         Logger.error('Invalid argument: CCDSEL')
@@ -702,7 +732,7 @@ def TC_pafDbg(root, relativeTime, CCDSEL, comment = ''):
     etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "CCDSEL")
     root[1][len(root[1])-1][2][0].text = str(CCDSEL)
     
-    incremented_time = relativeTime+_Globals.Timeline_settings['command_separation']
+    incremented_time = relativeTime+_Globals.Timeline_settings['CMD_separation']
     _Globals.latestRelativeTime = relativeTime
     
     return incremented_time
@@ -710,8 +740,8 @@ def TC_pafDbg(root, relativeTime, CCDSEL, comment = ''):
 
 def TC_pafPM(root, relativeTime, TEXPMS = OPT_Config_File.PM_settings()['TEXPMS'], TEXPIMS = OPT_Config_File.PM_settings()['TEXPIMS'], comment = ''):
     
-    if not( _Globals.latestRelativeTime <= relativeTime <= _Globals.Timeline_settings['duration'] and type(relativeTime) == int):
-        Logger.error('Invalid argument: negative relativeTime, decreasing relativeTime, exceeding timeline duration, or not integer')
+    if not( _Globals.latestRelativeTime <= relativeTime <= _Globals.Timeline_settings['duration']):
+        Logger.error('Invalid argument: negative relativeTime, decreasing relativeTime, exceeding timeline duration')
         raise ValueError
     if not( 0 <= TEXPMS and TEXPIMS >= TEXPMS + 500 ):
         Logger.error('Invalid argument: TEXPMS is negative or TEXPMS is less than 500ms larger then TEXPIMS')
@@ -735,7 +765,7 @@ def TC_pafPM(root, relativeTime, TEXPMS = OPT_Config_File.PM_settings()['TEXPMS'
     etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "TEXPIMS")
     root[1][len(root[1])-1][2][1].text = str(TEXPIMS)
     
-    incremented_time = relativeTime+_Globals.Timeline_settings['command_separation']
+    incremented_time = relativeTime+_Globals.Timeline_settings['CMD_separation']
     _Globals.latestRelativeTime = relativeTime
     
     return incremented_time

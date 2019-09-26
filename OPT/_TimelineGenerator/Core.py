@@ -137,21 +137,26 @@ def Timeline_generator():
     Mode1_2_5 = getattr(Modes_Header,'Mode1_2_5')
     
     
-    if( Timeline_settings['Schedule_Mode5'] == True ):
-        Logger.info("Timeline_settings['Schedule_Mode5'] == True")
+    if( Timeline_settings['Choose_Operational_Science_Mode'] == 5 ):
         Logger.info('Schedule Mode5 as an operational science mode')
         
         mode = 'Mode5'
-    ### Check if it is NLC season ###
-    elif( Timeline_start_date.tuple()[1] in [11,12,1,2,5,6,7,8] or 
-            ( Timeline_start_date.tuple()[1] in [3,9] and Timeline_start_date.tuple()[2] in range(11) )):
-        
-        Logger.info('NLC season (Mode1)')
-        mode = 'Mode1' 
-    else:
-        
-        Logger.info('Not NLC season (Mode2)')
+    elif( Timeline_settings['Choose_Operational_Science_Mode'] == 1 ):
+        Logger.info('Schedule Mode1 as an operational science mode')
+        mode = 'Mode1'
+    elif( Timeline_settings['Choose_Operational_Science_Mode'] == 2 ):
+        Logger.info('Schedule Mode2 as an operational science mode')
         mode = 'Mode2'
+    elif( Timeline_settings['Choose_Operational_Science_Mode'] == 0 ):
+        ### Check if it is NLC season ###
+        if( Timeline_start_date.tuple()[1] in [11,12,1,2,5,6,7,8] or 
+                ( Timeline_start_date.tuple()[1] in [3,9] and Timeline_start_date.tuple()[2] in range(11) )):
+            
+            Logger.info('NLC season (Mode1)')
+            mode = 'Mode1' 
+        else:
+            Logger.info('Not NLC season (Mode2)')
+            mode = 'Mode2'
             
         
     Occupied_Timeline.update({mode: []})

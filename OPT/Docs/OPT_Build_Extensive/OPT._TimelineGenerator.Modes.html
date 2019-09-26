@@ -35,9 +35,10 @@
   <div class="section" id="module-OPT._TimelineGenerator.Modes">
 <span id="opt-timelinegenerator-modes-package"></span><h1>OPT._TimelineGenerator.Modes package<a class="headerlink" href="#module-OPT._TimelineGenerator.Modes" title="Permalink to this headline">¶</a></h1>
 <p>Contains modules which correspond to the scheduling of each Mode.</p>
+<p>Schedules and calculates duration of modes.</p>
 <p>The top or core function of each module is the only one called from higher levels.
 The name of the core function in each Mode specific module must be equal to the name
-of the Mode as stated in OPT_Config_File.Modes_priority().</p>
+of the Mode as stated in <em>Modes_priority</em> found in the <em>Configuration File</em>.</p>
 <p>The core function may call two other functions inside the same module, date_calculator() and date_select.
 date_calculator returns calculated or chosen dates (1 or many).
 date_select chooses the most appropriate date or/and makes sure the date chosen is available.</p>
@@ -546,8 +547,8 @@ If the date is occupied a date will be selected with the 2nd least amount of H-o
 <dt id="OPT._TimelineGenerator.Modes.Mode1_2_5.Mode1_2_5">
 <code class="descclassname">OPT._TimelineGenerator.Modes.Mode1_2_5.</code><code class="descname">Mode1_2_5</code><span class="sig-paren">(</span><em>Occupied_Timeline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/Mode1_2_5.html#Mode1_2_5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.Mode1_2_5.Mode1_2_5" title="Permalink to this definition">¶</a></dt>
 <dd><p>Core function for the scheduling of <em>Operational Science Modes</em> (Mode 1, 2, and 5).</p>
-<p>These Modes, called <em>Operational Science Modes</em>, are always scheduled last, and wherever time is available. Only one <em>Operational Science Mode</em> is scheduled for each timeline.
-Mode5 is only scheduled if <em>Timeline_settings['Schedule_Mode5'] is set to *True</em>. Mode1 or Mode2 is scheduled depending on the time of the year, see the &quot;Science Modes for MATS&quot; document.</p>
+<p>Which Mode that will be scheduled depends on <em>Timeline_settings['Choose_Operational_Science_Mode']</em>.
+These Modes, called <em>Operational Science Modes</em>, are always scheduled last, and wherever time is available. Only one <em>Operational Science Mode</em> is scheduled for each timeline.</p>
 <p>:param Occupied_Timeline (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of: obj:<a href="#id1"><span class="problematic" id="id2">`</span></a>list): Dictionary with keys equal to planned and scheduled Modes with entries equal to with their start and end time as a list of duples.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -657,7 +658,8 @@ Remember to also add the name of this Mode into the <em>Scheduling_priority</em>
 <dl class="function">
 <dt id="OPT._TimelineGenerator.Modes.PayloadCmds.CMD_scheduler">
 <code class="descclassname">OPT._TimelineGenerator.Modes.PayloadCmds.</code><code class="descname">CMD_scheduler</code><span class="sig-paren">(</span><em>Occupied_Timeline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/PayloadCmds.html#CMD_scheduler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.PayloadCmds.CMD_scheduler" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Subfuncton, Schedules a CMD and saves it to the <em>Occupied_Timeline</em> variable</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="OPT._TimelineGenerator.Modes.PayloadCmds.PM">

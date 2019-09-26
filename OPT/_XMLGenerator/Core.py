@@ -120,7 +120,7 @@ def XML_generator(SCIMOD_Path):
             
         
         Logger.debug('Call XML_generator_select')
-        XML_generator_select(root=root, duration=mode_duration, relativeTime=relativeTime, mode=SCIMOD[x][0], date=ephem.Date(SCIMOD[x][1]), params=SCIMOD[x][3])
+        XML_generator_select(root=root, duration=mode_duration, relativeTime=relativeTime, name=SCIMOD[x][0], date=ephem.Date(SCIMOD[x][1]), params=SCIMOD[x][3])
         
     
     ### Rewrite path string to allow it to be in the name of the generated XML command file ###
@@ -145,8 +145,7 @@ def XML_Initial_Basis_Creator(timeline_start,timeline_duration, SCIMOD_Path):
     '''Subfunction, Construct Basis of XML document and adds the description container.
     
     Arguments: 
-        earliestStartingDate (ephem.Date): Earliest Starting date of the Timeline. On the form of the ephem.Date class.
-        latestStartingDate (ephem.Date): Latest Starting date of the Timeline. On the form of the ephem.Date class.
+        timeline_start (ephem.Date): Starting date of the Timeline. On the form of the ephem.Date class.
         timeline_duration (int): Duration of the timeline [s].
         SCIMOD_Path (str): The path as a string to the Science Mode Timeline .json file used in this run.
     
@@ -161,8 +160,8 @@ def XML_Initial_Basis_Creator(timeline_start,timeline_duration, SCIMOD_Path):
     TimelineStart_datetime = datetime.datetime( TimelineStart_Tuple[0], TimelineStart_Tuple[1], TimelineStart_Tuple[2], 
                       TimelineStart_Tuple[3], TimelineStart_Tuple[4], int(round(TimelineStart_Tuple[5])) )
     
-    earliestStartingDate = TimelineStart_datetime.strftime("%Y-%m-%dT%H:%M:%S")
-    latestStartingDate = TimelineStart_datetime.strftime("%Y-%m-%dT%H:%M:%S")
+    StartingDate = TimelineStart_datetime.strftime("%Y-%m-%dT%H:%M:%S")
+    
     
     #earliestStartingDate = ephem.Date(timeline_start).datetime().strftime("%Y-%m-%dT%H:%M:%S")
     #latestStartingDate = ephem.Date(timeline_start).datetime().strftime("%Y-%m-%dT%H:%M:%S")
@@ -180,21 +179,14 @@ def XML_Initial_Basis_Creator(timeline_start,timeline_duration, SCIMOD_Path):
     root[0][1][0].text = "Created Document"
     
     
-    etree.SubElement(root[0], 'initialConditions')
-    etree.SubElement(root[0][2], 'spacecraft', mode = OPT_Config_File.initialConditions()['spacecraft']['mode'], acs = OPT_Config_File.initialConditions()['spacecraft']['acs'])
-    etree.SubElement(root[0][2], 'payload', power = OPT_Config_File.initialConditions()['payload']['power'], mode = OPT_Config_File.initialConditions()['payload']['mode'])
-    
-    
     etree.SubElement(root[0], 'validity')
-    etree.SubElement(root[0][3], 'earliestStartingDate')
-    root[0][3][0].text = earliestStartingDate
-    etree.SubElement(root[0][3], 'latestStartingDate')
-    root[0][3][1].text = latestStartingDate
-    etree.SubElement(root[0][3], 'scenarioDuration')
-    root[0][3][2].text = str(timeline_duration)
+    etree.SubElement(root[0][2], 'StartingDate')
+    root[0][2][0].text = StartingDate
+    etree.SubElement(root[0][2], 'scenarioDuration')
+    root[0][2][1].text = str(timeline_duration)
     
     etree.SubElement(root[0], 'comment')
-    root[0][4].text = "This command sequence is an Innosat timeline. Science Mode Timeline used to generate: "+SCIMOD_Path+', Configuration File used: '+_Globals.Config_File
+    root[0][3].text = "This command sequence is an Innosat timeline. Science Mode Timeline used to generate: "+SCIMOD_Path+', Configuration File used: '+_Globals.Config_File
     
     
     root.append(etree.Element('listOfCommands'))
@@ -207,13 +199,13 @@ def XML_Initial_Basis_Creator(timeline_start,timeline_duration, SCIMOD_Path):
 
 ####################### Mode selecter ###################################
 
-def XML_generator_select(mode, root, date, duration, relativeTime, params):
+def XML_generator_select(name, root, date, duration, relativeTime, params):
     '''Subfunction, Selects corresponding mode, test or CMD function in the package *Modes_and_Tests* from the variable *mode*.
     
-    Calls for any function named *XML_generator_XXX* where XXX is the string in the input *name*.
+    Calls for any function named *X* where X is the string in the input *name*.
     
     Arguments: 
-        mode (str): The name of the of the mode or test as a string. The name in the XML_generator_name function in OPT_XML_generator_MODES
+        name (str): The name of the of the mode or test as a string. The name in the XML_generator_name function in OPT_XML_generator_MODES
         root (lxml.etree.Element): XML tree structure. Main container object for the ElementTree API.
         date (ephem.Date) = Starting date of the Mode. On the form of the ephem.Date class.
         duration (int) = The duration of the mode [s] as an integer class.
@@ -226,15 +218,15 @@ def XML_generator_select(mode, root, date, duration, relativeTime, params):
     
     
     try:
-        Mode_Test_SeparateCmd_func = getattr(MODES,'XML_generator_'+mode)
+        Mode_Test_SeparateCmd_func = getattr(MODES,name)
     except AttributeError:
         try:
-            Mode_Test_SeparateCmd_func = getattr(Tests,'XML_generator_'+mode)
+            Mode_Test_SeparateCmd_func = getattr(Tests,name)
         except AttributeError:
             try:
-                Mode_Test_SeparateCmd_func = getattr(SeparateCmds,'XML_generator_'+mode)
+                Mode_Test_SeparateCmd_func = getattr(SeparateCmds,name)
             except AttributeError:
-                Logger.error('No XML-generator is defined for '+mode)
+                Logger.error('No XML-generator is defined for '+name)
                 raise AttributeError
     
     "Check if no parameters are given"
