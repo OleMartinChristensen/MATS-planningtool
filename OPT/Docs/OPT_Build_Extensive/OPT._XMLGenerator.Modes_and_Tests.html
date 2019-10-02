@@ -56,7 +56,7 @@
 <span id="opt-xmlgenerator-modes-and-tests-modes-module"></span><h2>OPT._XMLGenerator.Modes_and_Tests.MODES module<a class="headerlink" href="#module-OPT._XMLGenerator.Modes_and_Tests.MODES" title="Permalink to this headline">¶</a></h2>
 <p>Contain Mode functions which generates and calculates parameters for each mode,
 then calls for Macros/Commands functions located in the <em>Macros_Commands</em> package, which will in turn write commands to the XML tree object <em>root</em>.</p>
-<p>Functions on the form &quot;X&quot;, where the last X is any Mode:</p>
+<p>Functions on the form &quot;X&quot;, where X is any Mode:</p>
 <blockquote>
 <div><dl>
 <dt><strong>Arguments:</strong></dt><dd><p><strong>root</strong> (<em>lxml.etree.Element</em>):  XML tree structure. Main container object for the ElementTree API.</p>
@@ -70,7 +70,7 @@ then calls for Macros/Commands functions located in the <em>Macros_Commands</em>
 </dl>
 </div></blockquote>
 <p>When creating new Mode functions it is crucial that the function name is
-Mode_name, where Mode_name is the same as the string used in the <em>Science Mode Timeline</em></p>
+<em>X</em>, where <em>X</em> is the same as the string used in the <em>Science Mode Timeline</em>. Because OPT will automatically look for any function named the same as the string in the <em>Science Mode Timeline</em></p>
 <p>&#64;author: David</p>
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.MODES.Mode1">
@@ -146,8 +146,13 @@ Used for moon calibration.</p>
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.MODES.Mode12X">
 <code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">Mode12X</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params</em>, <em>CCD_settings</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode12X"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode12X" title="Permalink to this definition">¶</a></dt>
-<dd><p>Mode12X, where X is 1,2,3....</p>
+<dd><p>Subfunction of Mode12X, where X is 1,2,3....</p>
 <p><strong>Macro</strong>: Snapshot_Inertial_macro.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>CCD_settings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of int) -- Settings for the CCDs. Defined in the <em>Configuration File</em>.</p>
+</dd>
+</dl>
 <p>Stare at a point in inertial reference frame and take a Snapshot with each CCD except nadir.</p>
 </dd></dl>
 
@@ -162,7 +167,7 @@ Used for moon calibration.</p>
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.MODES.Mode131">
 <code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">Mode131</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode131"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode131" title="Permalink to this definition">¶</a></dt>
-<dd><p><strong>Macro</strong>: FullReadout_Operational_Limb_Pointing_macro.</p>
+<dd><p><strong>Macro</strong>: Operational_Limb_Pointing_macro.</p>
 <p><strong>CCD_Macro</strong>: FullReadout.</p>
 <p>Look at fixed limb altitude in operational mode.</p>
 </dd></dl>
@@ -178,8 +183,13 @@ Used for moon calibration.</p>
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.MODES.Mode132_133">
 <code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">Mode132_133</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params</em>, <em>CCD_settings</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode132_133"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode132_133" title="Permalink to this definition">¶</a></dt>
-<dd><p>Mode132 and Mode133</p>
+<dd><p>Subfunction of Mode132 and Mode133</p>
 <p><strong>Macro</strong>: Operational_Limb_Pointing_macro.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>CCD_settings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of int) -- Settings for the CCDs. Defined in the <em>Configuration File</em>.</p>
+</dd>
+</dl>
 <p>Look at fixed limb altitude in operational mode with a set of exposure times for UV and IR CCDs.</p>
 </dd></dl>
 
@@ -214,7 +224,7 @@ Simulates MATS to determine when a point below MATS is at night or daytime.</p>
 <dt id="OPT._XMLGenerator.Modes_and_Tests.MODES.Mode5">
 <code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">Mode5</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode5" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>Macro:</strong> Operational_Limb_Pointing_macro</p>
-<p><strong>CCD_Macro:</strong> CustomBinning</p>
+<p><strong>CCD_Macro:</strong> Chosen in the settings of the Mode.</p>
 </dd></dl>
 
 <dl class="function">
@@ -233,7 +243,7 @@ given in the set <em>Configuration File</em> and fills in any parameters missing
 <p>For the rest CMDS, each parameter must be given in the Science Mode Timeline.</p>
 <p>PWRTOGGLE will always call a PWRTOGGLE_macro will also turns off all CCDs before power toggling.</p>
 <dl>
-<dt>Functions on the form &quot;X&quot;, where the last X is any CMD:</dt><dd><dl>
+<dt>Functions on the form &quot;X&quot;, where X is any CMD:</dt><dd><dl>
 <dt>Arguments:</dt><dd><p>root (lxml.etree.Element):  XML tree structure. Main container object for the ElementTree API. lxml.etree.Element class</p>
 <p>date (ephem.Date): Starting date of the CMD. On the form of the ephem.Date class.</p>
 <p>duration (int): The duration of the CMD [s] as an integer class.</p>
@@ -354,6 +364,19 @@ then calls for macros, which will generate commands in the XML-file.</p>
 Test_name, where Test_name is the same as the string used in the Science Mode Timeline</p>
 <p>&#64;author: David</p>
 <dl class="function">
+<dt id="OPT._XMLGenerator.Modes_and_Tests.Tests.All_Tests">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Tests.</code><code class="descname">All_Tests</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params=[]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Tests.html#All_Tests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Tests.All_Tests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simulates and schedules all Tests.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="OPT._XMLGenerator.Modes_and_Tests.Tests.CCD_stability_test">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Tests.</code><code class="descname">CCD_stability_test</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={'ExpTimes': [1000</em>, <em>2000</em>, <em>4000</em>, <em>8000</em>, <em>16000</em>, <em>32000]}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Tests.html#CCD_stability_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Tests.CCD_stability_test" title="Permalink to this definition">¶</a></dt>
+<dd><p>CCD_stability_test.</p>
+<p>Schedules CCD_stability_test with defined parameters and simulates MATS propagation from TLE.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.Tests.Limb_functional_test">
 <code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Tests.</code><code class="descname">Limb_functional_test</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={'ExpTimes': [1000</em>, <em>2000</em>, <em>4000</em>, <em>8000</em>, <em>16000]}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Tests.html#Limb_functional_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Tests.Limb_functional_test" title="Permalink to this definition">¶</a></dt>
 <dd><p>Limb_functional_test.</p>
@@ -364,12 +387,14 @@ Scheduling of all daylight and nighttime commands are separated timewise and all
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.Tests.Nadir_functional_test">
 <code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Tests.</code><code class="descname">Nadir_functional_test</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={'ExpTimes': [1000</em>, <em>2000</em>, <em>4000</em>, <em>8000</em>, <em>16000]}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Tests.html#Nadir_functional_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Tests.Nadir_functional_test" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Schedules Nadir_functional_test with defined parameters and simulates MATS propagation from TLE.
+Scheduling of all daylight and nighttime commands are separated timewise and all commands for one of the two is scheduled first.</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.Tests.Photometer_test_1">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Tests.</code><code class="descname">Photometer_test_1</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={'ExpTimes': [1000</em>, <em>2000</em>, <em>4000</em>, <em>8000</em>, <em>16000]}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Tests.html#Photometer_test_1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Tests.Photometer_test_1" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets the payload in operational mode and then cycles PM settings as defined in the mode.</p>
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Tests.</code><code class="descname">Photometer_test_1</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>relativeTime</em>, <em>duration=5400</em>, <em>params={'ExpTimes': [1000</em>, <em>2000</em>, <em>4000</em>, <em>8000</em>, <em>16000]}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Tests.html#Photometer_test_1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Tests.Photometer_test_1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the payload in operational mode and then cycles PM settings as defined in the Test.</p>
 </dd></dl>
 
 </div>

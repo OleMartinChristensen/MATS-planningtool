@@ -206,9 +206,12 @@ def Timeline_generator():
                 
                 Config_File = getattr(OPT_Config_File,'Operational_Science_Mode_settings')()
                 
+            elif( x[2] == 'ArgEnableYawComp' ):
+                Config_File = { 'EnableYawComp': int(Timeline_settings['yaw_correction']) }
+                
             else:
-                    Logger.error('No Config function for '+x[2])
-                    Config_File = []
+                Logger.error('No Config function for '+x[2])
+                Config_File = {}
                     
             
                 

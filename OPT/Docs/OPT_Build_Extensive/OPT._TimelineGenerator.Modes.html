@@ -117,6 +117,7 @@ date_select chooses the most appropriate date or/and makes sure the date chosen 
 <dt id="OPT._TimelineGenerator.Modes.Mode120.Mode120">
 <code class="descclassname">OPT._TimelineGenerator.Modes.Mode120.</code><code class="descname">Mode120</code><span class="sig-paren">(</span><em>Occupied_Timeline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/Mode120.html#Mode120"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.Mode120.Mode120" title="Permalink to this definition">¶</a></dt>
 <dd><p>Core function for the scheduling of Mode120.</p>
+<p>Determines if the scheduled date should be determined by simulating MATS or be user provided.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>Occupied_Timeline</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>) -- Dictionary with keys equal to planned and scheduled Modes with entries equal to their start and end time as a list.</p>
@@ -138,9 +139,7 @@ date_select chooses the most appropriate date or/and makes sure the date chosen 
 <dl class="function">
 <dt id="OPT._TimelineGenerator.Modes.Mode120.Mode120_date_calculator">
 <code class="descclassname">OPT._TimelineGenerator.Modes.Mode120.</code><code class="descname">Mode120_date_calculator</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/Mode120.html#Mode120_date_calculator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.Mode120.Mode120_date_calculator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Subfunction, Either selects a user provided date, or simulates MATS FOV and stars.</p>
-<p>If 'automatic' in <em>Mode120_settings</em> is set to False, the date in <em>Mode120_settings</em> will be returned..</p>
-<p>If 'automatic' in <em>Mode120_settings</em> is set to True. A list of dictionaries containing simulated dates is returned.</p>
+<dd><p>Subfunction, Simulates MATS FOV and stars.</p>
 <p>Determines when stars are entering the FOV at an vertical offset-angle equal to <em>#V-offset</em>, and also being
 located at a horizontal off-set angle equal to less than <em>#H-offset</em>, when pointing at the LP located at an altitude equal to <em>#pointing_altitude</em>.
 Also determines when the optical axis is pointing towards a LP located at an altitude equal to <em>#LP_pointing_altitude</em> during the hypothetical attitude freeze.</p>
@@ -153,26 +152,23 @@ Also saves relevant data to an .csv file located in Output/.</p>
 <dd class="field-odd"><p>A list containing dictionaries containing parameters for each time a star is spotted. Or just a date depending on 'automatic' in <em>Mode124_settings</em>.</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p>dates ((<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>)) or (str)</p>
+<dd class="field-even"><p>star_list ((<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>)) or (str)</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="OPT._TimelineGenerator.Modes.Mode120.Mode120_date_select">
-<code class="descclassname">OPT._TimelineGenerator.Modes.Mode120.</code><code class="descname">Mode120_date_select</code><span class="sig-paren">(</span><em>Occupied_Timeline</em>, <em>dates</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/Mode120.html#Mode120_date_select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.Mode120.Mode120_date_select" title="Permalink to this definition">¶</a></dt>
-<dd><p>Subfunction, Either schedules a user provided date or a simulated date.</p>
-<p>If automatic in OPT_Config_File is set to False, the date is user provided. It will be postponed until available.</p>
-<p>If automatic in OPT_Config_File is set to True. A list of dictionaries containing simulated dates is provided.
-A date is selected for which the brightest star is visible at the minimum amount of H-offset in the FOV.
+<code class="descclassname">OPT._TimelineGenerator.Modes.Mode120.</code><code class="descname">Mode120_date_select</code><span class="sig-paren">(</span><em>Occupied_Timeline</em>, <em>star_list</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/Mode120.html#Mode120_date_select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.Mode120.Mode120_date_select" title="Permalink to this definition">¶</a></dt>
+<dd><p>Subfunction, Schedules a simulated date.</p>
+<p>A date is selected for which the brightest star is visible at the minimum amount of H-offset in the FOV.
 If the date is occupied the same star will be selected with the 2nd least amount of H-offset and so on. Another star will not be chosen and if
 no date is available for the brightest star; the Mode will not be scheduled.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>Occupied_Timeline</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>) -- Dictionary with keys equal to planned and scheduled Modes together with their start and end time in a list. The list is empty if the Mode is unscheduled.</p></li>
-<li><p><strong>dates</strong> (<em>ephem.Date</em>) -- A list containing dictionaries containing parameters for each time a star is spotted.</p></li>
-<li><p><strong>dates</strong> -- A user provided date for the to schedule the Mode.</p></li>
+<li><p><strong>star_list</strong> ((<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>)) -- A list containing dictionaries containing parameters for each time a star is spotted.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -198,6 +194,7 @@ no date is available for the brightest star; the Mode will not be scheduled.</p>
 <dt id="OPT._TimelineGenerator.Modes.Mode121.Mode121">
 <code class="descclassname">OPT._TimelineGenerator.Modes.Mode121.</code><code class="descname">Mode121</code><span class="sig-paren">(</span><em>Occupied_Timeline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/Mode121.html#Mode121"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.Mode121.Mode121" title="Permalink to this definition">¶</a></dt>
 <dd><p>Core function for the scheduling of Mode121.</p>
+<p>Determines if the scheduled date should be determined by simulating MATS or be user provided.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>Occupied_Timeline</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>) -- Dictionary with keys equal to planned and scheduled Modes with entries equal to their start and end time as a list.</p>
@@ -217,57 +214,6 @@ no date is available for the brightest star; the Mode will not be scheduled.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-OPT._TimelineGenerator.Modes.Mode121_122_123">
-<span id="opt-timelinegenerator-modes-mode121-122-123-module"></span><h2>OPT._TimelineGenerator.Modes.Mode121_122_123 module<a class="headerlink" href="#module-OPT._TimelineGenerator.Modes.Mode121_122_123" title="Permalink to this headline">¶</a></h2>
-<p>Created on Tue Jun  4 11:52:12 2019</p>
-<p>&#64;author: David</p>
-<dl class="function">
-<dt id="OPT._TimelineGenerator.Modes.Mode121_122_123.date_calculator">
-<code class="descclassname">OPT._TimelineGenerator.Modes.Mode121_122_123.</code><code class="descname">date_calculator</code><span class="sig-paren">(</span><em>Settings</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/Mode121_122_123.html#date_calculator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.Mode121_122_123.date_calculator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Simulates MATS FOV and stars.</p>
-<p>Simuates MATS FOV and visible stars for one orbit then skips ahead for <em>Settings['Timeskip']</em> amount of days (as defined in the <em>Configuration File</em>).
-Saves the date, pointing RA and Dec, and the magnitude of the brightest visible star at each timestep.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>Settings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) -- Dictionary containing settings for this simulation.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Array containing date in first column and brightest magnitude visible in the second. Contains current Dec and RA in 3rd and 4th column respectively.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>(array)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="OPT._TimelineGenerator.Modes.Mode121_122_123.date_select">
-<code class="descclassname">OPT._TimelineGenerator.Modes.Mode121_122_123.</code><code class="descname">date_select</code><span class="sig-paren">(</span><em>Occupied_Timeline</em>, <em>date_magnitude_array</em>, <em>settings</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/Mode121_122_123.html#date_select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.Mode121_122_123.date_select" title="Permalink to this definition">¶</a></dt>
-<dd><p>Schedules a simulated date.</p>
-<p>A date is selected for when the brightest star visible; has the faintest magntitude compared
-to other brightest stars visible at other timesteps.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>Occupied_Timeline</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>) -- Dictionary with keys equal to planned and scheduled Modes together with their start and end time in a list. The list is empty if the Mode is unscheduled.</p></li>
-<li><p><strong>date_magnitude_array</strong> (<em>array</em>) -- Array containing date in first column and brightest magnitude visible in the second. Contains Dec and RA in 3rd and 4th column respectively.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p><dl>
-<dt>tuple containing:</dt><dd><p>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>): Occupied_Timeline (updated with the result from the scheduled Mode).</p>
-<p>(str): Comment regarding the result of the scheduling of the mode.</p>
-</dd>
-</dl>
-</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)">tuple</a>)</p>
-</dd>
-</dl>
-</dd></dl>
-
-</div>
 <div class="section" id="module-OPT._TimelineGenerator.Modes.Mode122">
 <span id="opt-timelinegenerator-modes-mode122-module"></span><h2>OPT._TimelineGenerator.Modes.Mode122 module<a class="headerlink" href="#module-OPT._TimelineGenerator.Modes.Mode122" title="Permalink to this headline">¶</a></h2>
 <p>Schedules the active Mode and saves the result in the Occupied_Timeline dictionary.</p>
@@ -276,6 +222,7 @@ to other brightest stars visible at other timesteps.</p>
 <dt id="OPT._TimelineGenerator.Modes.Mode122.Mode122">
 <code class="descclassname">OPT._TimelineGenerator.Modes.Mode122.</code><code class="descname">Mode122</code><span class="sig-paren">(</span><em>Occupied_Timeline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/Mode122.html#Mode122"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.Mode122.Mode122" title="Permalink to this definition">¶</a></dt>
 <dd><p>Core function for the scheduling of Mode121.</p>
+<p>Determines if the scheduled date should be determined by simulating MATS or be user provided.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>Occupied_Timeline</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>) -- Dictionary with keys equal to planned and scheduled Modes with entries equal to their start and end time as a list.</p>
@@ -303,6 +250,7 @@ to other brightest stars visible at other timesteps.</p>
 <dt id="OPT._TimelineGenerator.Modes.Mode123.Mode123">
 <code class="descclassname">OPT._TimelineGenerator.Modes.Mode123.</code><code class="descname">Mode123</code><span class="sig-paren">(</span><em>Occupied_Timeline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/Mode123.html#Mode123"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.Mode123.Mode123" title="Permalink to this definition">¶</a></dt>
 <dd><p>Core function for the scheduling of Mode121.</p>
+<p>Determines if the scheduled date should be determined by simulating MATS or be user provided.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>Occupied_Timeline</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>) -- Dictionary with keys equal to planned and scheduled Modes with entries equal to their start and end time as a list.</p>
@@ -330,6 +278,7 @@ to other brightest stars visible at other timesteps.</p>
 <dt id="OPT._TimelineGenerator.Modes.Mode124.Mode124">
 <code class="descclassname">OPT._TimelineGenerator.Modes.Mode124.</code><code class="descname">Mode124</code><span class="sig-paren">(</span><em>Occupied_Timeline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/Mode124.html#Mode124"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.Mode124.Mode124" title="Permalink to this definition">¶</a></dt>
 <dd><p>Core function for the scheduling of Mode124.</p>
+<p>Determines if the scheduled date should be determined by simulating MATS or be user provided.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>Occupied_Timeline</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>) -- Dictionary with keys equal to planned and scheduled Modes with entries equal to their start and end time as a list.</p>
@@ -351,9 +300,7 @@ to other brightest stars visible at other timesteps.</p>
 <dl class="function">
 <dt id="OPT._TimelineGenerator.Modes.Mode124.date_calculator">
 <code class="descclassname">OPT._TimelineGenerator.Modes.Mode124.</code><code class="descname">date_calculator</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/Mode124.html#date_calculator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.Mode124.date_calculator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Subfunction, Either selects a user provided date, or simulates MATS FOV and the Moon.</p>
-<p>If 'automatic' in <em>Mode124_settings</em> is set to False, the date in <em>Mode124_settings</em> will be returned..</p>
-<p>If 'automatic' in <em>Mode124_settings</em> is set to True. A list of dictionaries containing simulated dates is returned.</p>
+<dd><p>Subfunction, Simulates MATS FOV and the Moon.</p>
 <p>Determines when the Moon is entering the FOV at an vertical offset-angle equal to <em>#V-offset</em> and also being
 located at a horizontal off-set angle equal to less than <em>#H-offset</em> when pointing at an LP altitude equal to <em>#pointing_altitude</em>.</p>
 <p>A timeskip equal to 1/2 an orbit of MATS is applied after a successful spotting of the Moon to save processing time.</p>
@@ -376,23 +323,97 @@ Also saves relevant data to an .csv file located in Output/.</p>
 <dl class="function">
 <dt id="OPT._TimelineGenerator.Modes.Mode124.date_select">
 <code class="descclassname">OPT._TimelineGenerator.Modes.Mode124.</code><code class="descname">date_select</code><span class="sig-paren">(</span><em>Occupied_Timeline</em>, <em>dates</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/Mode124.html#date_select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.Mode124.date_select" title="Permalink to this definition">¶</a></dt>
-<dd><p>Subfunction, Either schedules a user provided date or a simulated date.</p>
-<p>If automatic in <em>Mode124_settings</em> is set to False, the date is user provided. It will be postponed until available.</p>
-<p>If automatic in <em>Mode124_settings</em> is set to True. A list of dictionaries containing simulated dates is provided.
-A date is selected for which the Moon is visible at an minimum amount of H-offset in the FOV.
+<dd><p>Subfunction, Schedules a simulated date.</p>
+<p>A date is selected for which the Moon is visible at an minimum amount of H-offset in the FOV.
 If the date is occupied a date will be selected with the 2nd least amount of H-offset and so on.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>Occupied_Timeline</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>) -- Dictionary with keys equal to planned and scheduled Modes together with their start and end time in a list. The list is empty if the Mode is unscheduled.</p></li>
-<li><p><strong>dates</strong> (<em>ephem.Date</em>) -- A list containing dictionaries containing parameters for each time the Moon is spotted.</p></li>
-<li><p><strong>dates</strong> -- A user provided date for the to schedule the Mode.</p></li>
+<li><p><strong>dates</strong> ((<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>)) -- A list containing dictionaries containing parameters for each time the Moon is spotted.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><dl>
 <dt>tuple containing:</dt><dd><p>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>): Occupied_Timeline (updated with the result from the scheduled Mode).</p>
 <p>(str): Comment regarding the result of scheduling of the mode.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)">tuple</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="section" id="module-OPT._TimelineGenerator.Modes.Mode12X">
+<span id="opt-timelinegenerator-modes-mode12x-module"></span><h2>OPT._TimelineGenerator.Modes.Mode12X module<a class="headerlink" href="#module-OPT._TimelineGenerator.Modes.Mode12X" title="Permalink to this headline">¶</a></h2>
+<p>Contain Subfunctions used in <em>Timeline_gen</em> by Modes12X, where X is 0,1,2,3,4.</p>
+<dl class="function">
+<dt id="OPT._TimelineGenerator.Modes.Mode12X.UserProvidedDateScheduler">
+<code class="descclassname">OPT._TimelineGenerator.Modes.Mode12X.</code><code class="descname">UserProvidedDateScheduler</code><span class="sig-paren">(</span><em>Occupied_Timeline</em>, <em>Settings</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/Mode12X.html#UserProvidedDateScheduler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.Mode12X.UserProvidedDateScheduler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Schedules a single user provided date.</p>
+<p>Used by Mode120-124.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Occupied_Timeline</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>) -- Dictionary with keys equal to planned and scheduled Modes together with their start and end time in a list. The list is empty if the Mode is unscheduled.</p></li>
+<li><p><strong>Settings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) -- Dictionary containing settings for this simulation.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl>
+<dt>tuple containing:</dt><dd><p>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>): Occupied_Timeline (updated with the result from the scheduled Mode).</p>
+<p>(str): Comment regarding the result of the scheduling of the mode.</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)">tuple</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="OPT._TimelineGenerator.Modes.Mode12X.date_calculator">
+<code class="descclassname">OPT._TimelineGenerator.Modes.Mode12X.</code><code class="descname">date_calculator</code><span class="sig-paren">(</span><em>Settings</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/Mode12X.html#date_calculator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.Mode12X.date_calculator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simulates MATS FOV and stars.</p>
+<p>Used by Mode121-123.
+Simuates MATS FOV and visible stars for one orbit then skips ahead for <em>Settings['Timeskip']</em> amount of days (as defined in the <em>Configuration File</em>).
+Saves the date, pointing RA and Dec, and the magnitude of the brightest visible star at each timestep.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>Settings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) -- Dictionary containing settings for this simulation.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Array containing date in first column and brightest magnitude visible in the second. Contains current Dec and RA in 3rd and 4th column respectively.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="OPT._TimelineGenerator.Modes.Mode12X.date_select">
+<code class="descclassname">OPT._TimelineGenerator.Modes.Mode12X.</code><code class="descname">date_select</code><span class="sig-paren">(</span><em>Occupied_Timeline</em>, <em>date_magnitude_array</em>, <em>Settings</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/Mode12X.html#date_select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.Mode12X.date_select" title="Permalink to this definition">¶</a></dt>
+<dd><p>Schedules a simulated date.</p>
+<p>Used by Mode121-123. A date is selected for when the brightest star visible; has the faintest magntitude compared
+to other brightest stars visible at other timesteps.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Occupied_Timeline</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>) -- Dictionary with keys equal to planned and scheduled Modes together with their start and end time in a list. The list is empty if the Mode is unscheduled.</p></li>
+<li><p><strong>date_magnitude_array</strong> (<em>array</em>) -- An Array containing date in first column and brightest magnitude visible in the second. Contains Dec and RA in 3rd and 4th column respectively.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl>
+<dt>tuple containing:</dt><dd><p>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>): Occupied_Timeline (updated with the result from the scheduled Mode).</p>
+<p>(str): Comment regarding the result of the scheduling of the mode.</p>
 </dd>
 </dl>
 </p>
@@ -627,8 +648,8 @@ Remember to also add the name of this Mode into the <em>Scheduling_priority</em>
 <p>Header containing the functions which schedules each mode and CMD.</p>
 <p>&#64;author: David</p>
 </div>
-<div class="section" id="module-OPT._TimelineGenerator.Modes.PayloadCmds">
-<span id="opt-timelinegenerator-modes-payloadcmds-module"></span><h2>OPT._TimelineGenerator.Modes.PayloadCmds module<a class="headerlink" href="#module-OPT._TimelineGenerator.Modes.PayloadCmds" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="module-OPT._TimelineGenerator.Modes.StartUpCmds">
+<span id="opt-timelinegenerator-modes-startupcmds-module"></span><h2>OPT._TimelineGenerator.Modes.StartUpCmds module<a class="headerlink" href="#module-OPT._TimelineGenerator.Modes.StartUpCmds" title="Permalink to this headline">¶</a></h2>
 <p>Schedules the PayloadCMDs at the start of the timeline and saves the result in the Occupied_Timeline dictionary.</p>
 <p>Part of Timeline_generator, as part of OPT.</p>
 <blockquote>
@@ -641,34 +662,44 @@ Remember to also add the name of this Mode into the <em>Scheduling_priority</em>
 </dl>
 </div></blockquote>
 <dl class="function">
-<dt id="OPT._TimelineGenerator.Modes.PayloadCmds.CCDBIAS">
-<code class="descclassname">OPT._TimelineGenerator.Modes.PayloadCmds.</code><code class="descname">CCDBIAS</code><span class="sig-paren">(</span><em>Occupied_Timeline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/PayloadCmds.html#CCDBIAS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.PayloadCmds.CCDBIAS" title="Permalink to this definition">¶</a></dt>
+<dt id="OPT._TimelineGenerator.Modes.StartUpCmds.ArgEnableYawComp">
+<code class="descclassname">OPT._TimelineGenerator.Modes.StartUpCmds.</code><code class="descname">ArgEnableYawComp</code><span class="sig-paren">(</span><em>Occupied_Timeline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/StartUpCmds.html#ArgEnableYawComp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.StartUpCmds.ArgEnableYawComp" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
-<dt id="OPT._TimelineGenerator.Modes.PayloadCmds.CCDBadColumn">
-<code class="descclassname">OPT._TimelineGenerator.Modes.PayloadCmds.</code><code class="descname">CCDBadColumn</code><span class="sig-paren">(</span><em>Occupied_Timeline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/PayloadCmds.html#CCDBadColumn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.PayloadCmds.CCDBadColumn" title="Permalink to this definition">¶</a></dt>
+<dt id="OPT._TimelineGenerator.Modes.StartUpCmds.CCDBIAS">
+<code class="descclassname">OPT._TimelineGenerator.Modes.StartUpCmds.</code><code class="descname">CCDBIAS</code><span class="sig-paren">(</span><em>Occupied_Timeline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/StartUpCmds.html#CCDBIAS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.StartUpCmds.CCDBIAS" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
-<dt id="OPT._TimelineGenerator.Modes.PayloadCmds.CCDFlushBadColumns">
-<code class="descclassname">OPT._TimelineGenerator.Modes.PayloadCmds.</code><code class="descname">CCDFlushBadColumns</code><span class="sig-paren">(</span><em>Occupied_Timeline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/PayloadCmds.html#CCDFlushBadColumns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.PayloadCmds.CCDFlushBadColumns" title="Permalink to this definition">¶</a></dt>
+<dt id="OPT._TimelineGenerator.Modes.StartUpCmds.CCDBadColumn">
+<code class="descclassname">OPT._TimelineGenerator.Modes.StartUpCmds.</code><code class="descname">CCDBadColumn</code><span class="sig-paren">(</span><em>Occupied_Timeline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/StartUpCmds.html#CCDBadColumn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.StartUpCmds.CCDBadColumn" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
-<dt id="OPT._TimelineGenerator.Modes.PayloadCmds.CMD_scheduler">
-<code class="descclassname">OPT._TimelineGenerator.Modes.PayloadCmds.</code><code class="descname">CMD_scheduler</code><span class="sig-paren">(</span><em>Occupied_Timeline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/PayloadCmds.html#CMD_scheduler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.PayloadCmds.CMD_scheduler" title="Permalink to this definition">¶</a></dt>
+<dt id="OPT._TimelineGenerator.Modes.StartUpCmds.CCDFlushBadColumns">
+<code class="descclassname">OPT._TimelineGenerator.Modes.StartUpCmds.</code><code class="descname">CCDFlushBadColumns</code><span class="sig-paren">(</span><em>Occupied_Timeline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/StartUpCmds.html#CCDFlushBadColumns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.StartUpCmds.CCDFlushBadColumns" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="OPT._TimelineGenerator.Modes.StartUpCmds.CMD_scheduler">
+<code class="descclassname">OPT._TimelineGenerator.Modes.StartUpCmds.</code><code class="descname">CMD_scheduler</code><span class="sig-paren">(</span><em>Occupied_Timeline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/StartUpCmds.html#CMD_scheduler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.StartUpCmds.CMD_scheduler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Subfuncton, Schedules a CMD and saves it to the <em>Occupied_Timeline</em> variable</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="OPT._TimelineGenerator.Modes.PayloadCmds.PM">
-<code class="descclassname">OPT._TimelineGenerator.Modes.PayloadCmds.</code><code class="descname">PM</code><span class="sig-paren">(</span><em>Occupied_Timeline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/PayloadCmds.html#PM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.PayloadCmds.PM" title="Permalink to this definition">¶</a></dt>
+<dt id="OPT._TimelineGenerator.Modes.StartUpCmds.HTR">
+<code class="descclassname">OPT._TimelineGenerator.Modes.StartUpCmds.</code><code class="descname">HTR</code><span class="sig-paren">(</span><em>Occupied_Timeline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/StartUpCmds.html#HTR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.StartUpCmds.HTR" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
-<dt id="OPT._TimelineGenerator.Modes.PayloadCmds.PWRTOGGLE">
-<code class="descclassname">OPT._TimelineGenerator.Modes.PayloadCmds.</code><code class="descname">PWRTOGGLE</code><span class="sig-paren">(</span><em>Occupied_Timeline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/PayloadCmds.html#PWRTOGGLE"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.PayloadCmds.PWRTOGGLE" title="Permalink to this definition">¶</a></dt>
+<dt id="OPT._TimelineGenerator.Modes.StartUpCmds.PM">
+<code class="descclassname">OPT._TimelineGenerator.Modes.StartUpCmds.</code><code class="descname">PM</code><span class="sig-paren">(</span><em>Occupied_Timeline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/StartUpCmds.html#PM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.StartUpCmds.PM" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="OPT._TimelineGenerator.Modes.StartUpCmds.PWRTOGGLE">
+<code class="descclassname">OPT._TimelineGenerator.Modes.StartUpCmds.</code><code class="descname">PWRTOGGLE</code><span class="sig-paren">(</span><em>Occupied_Timeline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/StartUpCmds.html#PWRTOGGLE"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.StartUpCmds.PWRTOGGLE" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>

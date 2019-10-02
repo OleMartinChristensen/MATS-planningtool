@@ -405,7 +405,7 @@ def SyncArgCalculator(CCD_settings, ExtraOffset, ExtraIntervalTime):
     The offset calculations depend on the Readout Time, which depends on the binning settings of the CCDs. \n
     The ExposureInterval Time depends on the longest combined Readout Time and ExposureTime for a CCD aswell as the 
     leading CCD's Exposure Time to prevent collision between
-    Readout of the leading CCD and the final CCD.
+    Readout of the leading CCD and the final CCD. If the combined TransferTime is estimated to be longer than TEXPIMS; TEXPIMS is set to the estimated combined TransferTime to prevent CRB crash. 
     
     Arguments:
         CCD_settings (dict of dict of int): Dictionary containing settings for the CCDs.
@@ -503,6 +503,9 @@ def SyncArgCalculator(CCD_settings, ExtraOffset, ExtraIntervalTime):
     OffsetTime = 0
     previous_ExpTime = 0
     
+    TransferTimes = []
+    TransfertimePerPixel = 0.01 #in ms
+    
     "Calculate offset time in order of ExposureTime"
     for ExpTime in ExpTimes:
         
@@ -520,6 +523,11 @@ def SyncArgCalculator(CCD_settings, ExtraOffset, ExtraIntervalTime):
             OffsetTime = OffsetTime + (ReadOutTime_16+ExtraOffset)
             
             ExpIntervals.append(ReadOutTime_16 + CCDSEL_16['TEXPMS'] + ExtraIntervalTime)
+            
+            "Save estimated TransferTime"
+            #if( CCDSEL_16['NCOL'] * CCDSEL_16['NROW'] * TransfertimePerPixel >=  ExpIntervals[len(ExpIntervals)-1] ):
+            TransferTimes.append( CCDSEL_16['NCOL'] * CCDSEL_16['NROW'] * TransfertimePerPixel )
+            
             CCDSEL += 16
             
         elif( ExpTime == CCDSEL_32['TEXPMS'] and Flag_32 == False):
@@ -530,6 +538,11 @@ def SyncArgCalculator(CCD_settings, ExtraOffset, ExtraIntervalTime):
             OffsetTime = OffsetTime + (ReadOutTime_32+ExtraOffset)
             
             ExpIntervals.append(ReadOutTime_32 + CCDSEL_32['TEXPMS'] + ExtraIntervalTime)
+            
+            "Save estimated TransferTime"
+            #if( CCDSEL_32['NCOL'] * CCDSEL_32['NROW'] * TransfertimePerPixel >=  ExpIntervals[len(ExpIntervals)-1] ):
+            TransferTimes.append( CCDSEL_32['NCOL'] * CCDSEL_32['NROW'] * TransfertimePerPixel )
+            
             CCDSEL += 32
             
         elif( ExpTime == CCDSEL_1['TEXPMS'] and Flag_1 == False):
@@ -539,6 +552,11 @@ def SyncArgCalculator(CCD_settings, ExtraOffset, ExtraIntervalTime):
             OffsetTime = OffsetTime + (ReadOutTime_1+ExtraOffset)
             
             ExpIntervals.append(ReadOutTime_1 + CCDSEL_1['TEXPMS'] + ExtraIntervalTime)
+            
+            "Save estimated TransferTime"
+            #if( CCDSEL_1['NCOL'] * CCDSEL_1['NROW'] * TransfertimePerPixel >=  ExpIntervals[len(ExpIntervals)-1] ):
+            TransferTimes.append( CCDSEL_1['NCOL'] * CCDSEL_1['NROW'] * TransfertimePerPixel )
+            
             CCDSEL += 1
             
         elif( ExpTime == CCDSEL_8['TEXPMS'] and Flag_8 == False):
@@ -549,6 +567,11 @@ def SyncArgCalculator(CCD_settings, ExtraOffset, ExtraIntervalTime):
             OffsetTime = OffsetTime + (ReadOutTime_8+ExtraOffset)
             
             ExpIntervals.append(ReadOutTime_8 + CCDSEL_8['TEXPMS'] + ExtraIntervalTime)
+            
+            "Save estimated TransferTime"
+            #if( CCDSEL_8['NCOL'] * CCDSEL_8['NROW'] * TransfertimePerPixel >=  ExpIntervals[len(ExpIntervals)-1] ):
+            TransferTimes.append( CCDSEL_8['NCOL'] * CCDSEL_8['NROW'] * TransfertimePerPixel)
+            
             CCDSEL += 8
             
             
@@ -560,16 +583,28 @@ def SyncArgCalculator(CCD_settings, ExtraOffset, ExtraIntervalTime):
             OffsetTime = OffsetTime + (ReadOutTime_2+ExtraOffset)
             
             ExpIntervals.append(ReadOutTime_2 + CCDSEL_2['TEXPMS'] + ExtraIntervalTime)
+            
+            "Save estimated TransferTime"
+            #if( CCDSEL_2['NCOL'] * CCDSEL_2['NROW'] * TransfertimePerPixel >=  ExpIntervals[len(ExpIntervals)-1] ):
+            TransferTimes.append( CCDSEL_2['NCOL'] * CCDSEL_2['NROW'] * TransfertimePerPixel)
+            
             CCDSEL += 2
             
         elif( ExpTime == CCDSEL_4['TEXPMS'] and Flag_4 == False):
             Flag_4 = True
+            
             
             TEXPIOFS.insert(2, int(round(OffsetTime/10,0)*10))
             
             OffsetTime = OffsetTime + (ReadOutTime_4+ExtraOffset)
             
             ExpIntervals.append(ReadOutTime_4 + CCDSEL_4['TEXPMS'] + ExtraIntervalTime)
+            
+            "Save estimated TransferTime"
+            TransferTimes.append( CCDSEL_4['NCOL'] * CCDSEL_4['NROW'] * TransfertimePerPixel )
+            #if( CCDSEL_4['NCOL'] * CCDSEL_4['NROW'] * TransfertimePerPixel >=  ExpIntervals[len(ExpIntervals)-1] ):
+            #    ExpIntervals[len(ExpIntervals)-1] = CCDSEL_4['NCOL'] * CCDSEL_4['NROW'] * TransfertimePerPixel
+            
             CCDSEL += 4
             
         """
@@ -592,8 +627,9 @@ def SyncArgCalculator(CCD_settings, ExtraOffset, ExtraIntervalTime):
     for x in range(TEXPIOFS.count(-1)):
         TEXPIOFS.remove(-1)
         
+    TransferTimesCombined = sum(TransferTimes)
     
-    ExpIntervals
+    
     ExpInterval = max(ExpIntervals)
     
     for FirstExpTime in ExpTimes:
@@ -603,11 +639,12 @@ def SyncArgCalculator(CCD_settings, ExtraOffset, ExtraIntervalTime):
     "Increase the IntervalTime if it is too short, meaning that the Exposure and Readout of the last CCD interferes with the Readout of the leading CCD"
     if( FirstExpTime <= max(TEXPIOFS) ):
         ExpInterval = ExpInterval + (max(TEXPIOFS) - FirstExpTime)
+    if( TransferTimesCombined > ExpInterval):
+        ExpInterval = TransferTimesCombined
     
     TEXPIMS = int(round(ExpInterval,-2))
     
     NCCD = bin(CCDSEL).count('1')
-    
     
     return CCDSEL, NCCD, TEXPIOFS, TEXPIMS
 

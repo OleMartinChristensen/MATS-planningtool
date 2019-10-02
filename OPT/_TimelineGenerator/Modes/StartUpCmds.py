@@ -58,20 +58,24 @@ def CCDBIAS(Occupied_Timeline):
     return Occupied_Timeline, comment
     
 
-
-"""
 def HTR(Occupied_Timeline):
     
     Occupied_Timeline, comment = CMD_scheduler(Occupied_Timeline)
     
     return Occupied_Timeline, comment
-"""
+
+
+def ArgEnableYawComp(Occupied_Timeline):
+    
+    Occupied_Timeline, comment = CMD_scheduler(Occupied_Timeline)
+    
+    return Occupied_Timeline, comment
+
 
 def CMD_scheduler(Occupied_Timeline):
     """Subfuncton, Schedules a CMD and saves it to the *Occupied_Timeline* variable
     
     """
-    
     
     Logger.info('Timeline start_time used as initial date')
     initial_date = ephem.Date(OPT_Config_File.Timeline_settings()['start_date'])

@@ -262,10 +262,10 @@ Settings given in the <em>Science Mode Timeline</em> override the settings given
 <li class="toctree-l4"><a class="reference internal" href="OPT._TimelineGenerator.Modes.html#module-OPT._TimelineGenerator.Modes.Mode110">OPT._TimelineGenerator.Modes.Mode110 module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="OPT._TimelineGenerator.Modes.html#module-OPT._TimelineGenerator.Modes.Mode120">OPT._TimelineGenerator.Modes.Mode120 module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="OPT._TimelineGenerator.Modes.html#module-OPT._TimelineGenerator.Modes.Mode121">OPT._TimelineGenerator.Modes.Mode121 module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="OPT._TimelineGenerator.Modes.html#module-OPT._TimelineGenerator.Modes.Mode121_122_123">OPT._TimelineGenerator.Modes.Mode121_122_123 module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="OPT._TimelineGenerator.Modes.html#module-OPT._TimelineGenerator.Modes.Mode122">OPT._TimelineGenerator.Modes.Mode122 module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="OPT._TimelineGenerator.Modes.html#module-OPT._TimelineGenerator.Modes.Mode123">OPT._TimelineGenerator.Modes.Mode123 module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="OPT._TimelineGenerator.Modes.html#module-OPT._TimelineGenerator.Modes.Mode124">OPT._TimelineGenerator.Modes.Mode124 module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="OPT._TimelineGenerator.Modes.html#module-OPT._TimelineGenerator.Modes.Mode12X">OPT._TimelineGenerator.Modes.Mode12X module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="OPT._TimelineGenerator.Modes.html#module-OPT._TimelineGenerator.Modes.Mode130">OPT._TimelineGenerator.Modes.Mode130 module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="OPT._TimelineGenerator.Modes.html#module-OPT._TimelineGenerator.Modes.Mode131">OPT._TimelineGenerator.Modes.Mode131 module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="OPT._TimelineGenerator.Modes.html#module-OPT._TimelineGenerator.Modes.Mode132">OPT._TimelineGenerator.Modes.Mode132 module</a></li>
@@ -276,7 +276,7 @@ Settings given in the <em>Science Mode Timeline</em> override the settings given
 <li class="toctree-l4"><a class="reference internal" href="OPT._TimelineGenerator.Modes.html#module-OPT._TimelineGenerator.Modes.Mode203">OPT._TimelineGenerator.Modes.Mode203 module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="OPT._TimelineGenerator.Modes.html#module-OPT._TimelineGenerator.Modes.ModeTemplate">OPT._TimelineGenerator.Modes.ModeTemplate module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="OPT._TimelineGenerator.Modes.html#module-OPT._TimelineGenerator.Modes.Modes_Header">OPT._TimelineGenerator.Modes.Modes_Header module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="OPT._TimelineGenerator.Modes.html#module-OPT._TimelineGenerator.Modes.PayloadCmds">OPT._TimelineGenerator.Modes.PayloadCmds module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="OPT._TimelineGenerator.Modes.html#module-OPT._TimelineGenerator.Modes.StartUpCmds">OPT._TimelineGenerator.Modes.StartUpCmds module</a></li>
 </ul>
 </li>
 </ul>
@@ -387,9 +387,9 @@ by calling <em>OPT.Set_ConfigFile()</em> and must be visible in <em>sys.path</em
 <dl class="function">
 <dt id="OPT._ConfigFile.CCD_macro_settings">
 <code class="descclassname">OPT._ConfigFile.</code><code class="descname">CCD_macro_settings</code><span class="sig-paren">(</span><em>CCDMacroSelect</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#CCD_macro_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.CCD_macro_settings" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns CCD settings for a specific macro.</p>
+<dd><p>Returns CCD settings for a specific CCD macro.</p>
 <p>Each key in the output represents settings for a corresponding CCDSEL argument.
-TEXPIMS for the CCDs (except nadir) is not changebale as they need to be synchronized with a calculated TEXPIMS.</p>
+TEXPIMS for the CCDs (except nadir) is not changeable as they need to be synchronized with a calculated TEXPIMS to prevent streaks.</p>
 <dl>
 <dt><strong>Keys in returned dict:</strong></dt><dd><p>'CCDSEL_16': Represents settings for UV1 (CCD5)</p>
 <p>'CCDSEL_32': Represents settings for UV2 (CCD6)</p>
@@ -485,9 +485,10 @@ TEXPIMS for the CCDs (except nadir) is not changebale as they need to be synchro
 <p>'H_offset': Used only in <em>Timeline_gen</em>. Sets the maximum Horizontal-offset angle in degrees that determines if stars are visible. (int)</p>
 <p>'Vmag': Used only in <em>Timeline_gen</em>. Sets the Johnson V magnitude of stars to be considered (as a string expression, example '&lt;2').</p>
 <p>'timestep': Used only in <em>Timeline_gen</em>. Sets timestep used in scheduling simulation [s]. Will impact scheduling accuracy. (int)</p>
+<p>'TimeSkip': Used only in <em>Timeline_gen</em>. Set the amount of seconds to skip ahead after one complete orbit is simulated. Will drastically change the runtime of the simulation. (int)</p>
 <p>'log_timestep': Sets the timestep of data being logged [s]. Only determines how much of simulated data is logged for debugging purposes.. (int)</p>
 <p>'automatic': Used only in <em>Timeline_gen</em>. Sets if 'start_date' will be calculated or user provided. True for calculated and False for user provided. (bool)</p>
-<p>'start_date': Used only in <em>Timeline_gen</em>. Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). Note! only applies if automatic is set to False.</p>
+<p>'start_date':  Note! only applies if <em>automatic</em> is set to False. Used only in <em>Timeline_gen</em>. Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). If set to '0', Timeline_settings['start_date'] will be used.</p>
 <p>'freeze_start': Sets in seconds the time from start of the Mode to when the attitude freezes. (int)</p>
 <p>'freeze_duration': Sets in seconds the duration of the attitude freeze. If set to 0, it will be estimated to a
 value corresponding to the attitude being frozen until realigned with <em>Timeline_settings['LP_pointing_altitude']</em> (Normally around 50 s). (int)</p>
@@ -515,7 +516,7 @@ value corresponding to the attitude being frozen until realigned with <em>Timeli
 <p>'V_FOV': Used only in <em>Timeline_gen</em>. Sets full Vertical FOV of the Limb instrument in degrees. Used to determine if stars are visible. (float)</p>
 <p>'Vmag': Used only in <em>Timeline_gen</em>. Sets the Johnson V magnitude of stars to be considered (as a string expression, example '&lt;2').</p>
 <p>'timestep': Used only in <em>Timeline_gen</em>. Set timestep used in scheduling simulation [s]. Will impact scheduling accuracy. (int)</p>
-<p>'TimeSkip': Used only in <em>Timeline_gen</em>. Set the amount of days to skip ahead after one complete orbit is simulated. (float)</p>
+<p>'TimeSkip': Used only in <em>Timeline_gen</em>. Set the amount of seconds to skip ahead after one complete orbit is simulated. Will drastically change the runtime of the simulation. (float)</p>
 <p>'log_timestep': Sets the timestep of data being logged [s]. Only determines how much of simulated data is logged for debugging purposes. (int)</p>
 <p>'freeze_start': Sets in seconds, the time from start of the Mode to when the attitude freezes. (int)</p>
 <p>'freeze_duration': Sets in seconds the duration of the attitude freeze. If set to 0, it will be estimated to a
@@ -538,8 +539,9 @@ value corresponding to the attitude being frozen until realigned with <em>Timeli
 <dt id="OPT._ConfigFile.Mode121_settings">
 <code class="descclassname">OPT._ConfigFile.</code><code class="descname">Mode121_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#Mode121_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.Mode121_settings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns settings related to Mode121.</p>
-<dl class="simple">
-<dt><strong>Keys in returned dict:</strong></dt><dd><p>'start_date': Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). Note! only applies if automatic is set to False.</p>
+<dl>
+<dt><strong>Keys in returned dict:</strong></dt><dd><p>'start_date':  Note! only applies if <em>automatic</em> is set to False. Used only in <em>Timeline_gen</em>. Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). If set to '0', Timeline_settings['start_date'] will be used.</p>
+<p>'automatic': Used only in <em>Timeline_gen</em>. Sets if 'start_date' will be calculated or user provided. True for calculated and False for user provided. (bool)</p>
 </dd>
 </dl>
 <dl class="field-list simple">
@@ -557,7 +559,8 @@ value corresponding to the attitude being frozen until realigned with <em>Timeli
 <code class="descclassname">OPT._ConfigFile.</code><code class="descname">Mode122_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#Mode122_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.Mode122_settings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns settings related to Mode122.</p>
 <dl>
-<dt><strong>Keys in returned dict:</strong></dt><dd><p>'start_date': Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). Note! only applies if automatic is set to False.</p>
+<dt><strong>Keys in returned dict:</strong></dt><dd><p>'start_date':  Note! only applies if <em>automatic</em> is set to False. Used only in <em>Timeline_gen</em>. Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). If set to '0', Timeline_settings['start_date'] will be used.</p>
+<p>'automatic': Used only in <em>Timeline_gen</em>. Sets if 'start_date' will be calculated or user provided. True for calculated and False for user provided. (bool)</p>
 <p>'Exp_Time_IR': Sets exposure time [ms] of the IR CCDs. (int)</p>
 <p>'Exp_Time_UV': Sets exposure time [ms] of the UV CCDs. (int)</p>
 </dd>
@@ -577,7 +580,8 @@ value corresponding to the attitude being frozen until realigned with <em>Timeli
 <code class="descclassname">OPT._ConfigFile.</code><code class="descname">Mode123_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#Mode123_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.Mode123_settings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns settings related to Mode123.</p>
 <dl>
-<dt><strong>Keys in returned dict:</strong></dt><dd><p>'start_date': Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). Note! only applies if automatic is set to False.</p>
+<dt><strong>Keys in returned dict:</strong></dt><dd><p>'start_date':  Note! only applies if <em>automatic</em> is set to False. Used only in <em>Timeline_gen</em>. Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). If set to '0', Timeline_settings['start_date'] will be used.</p>
+<p>'automatic': Used only in <em>Timeline_gen</em>. Sets if 'start_date' will be calculated or user provided. True for calculated and False for user provided. (bool)</p>
 <p>'Exp_Time_IR': Sets exposure time [ms] of the IR CCDs. (int)</p>
 <p>'Exp_Time_UV': Sets exposure time [ms] of the UV CCDs. (int)</p>
 </dd>
@@ -603,7 +607,7 @@ value corresponding to the attitude being frozen until realigned with <em>Timeli
 <p>'timestep':  Used only in <em>Timeline_gen</em>. Sets in seconds the timestep during scheduling simulation [s]. Will impact scheduling accuracy. (int)</p>
 <p>'log_timestep': Sets the timestep of data being logged [s]. Only determines how much of simulated data is logged for debugging purposes. (int)</p>
 <p>'automatic':  Used only in <em>Timeline_gen</em>. Sets if the mode date is to be calculated or user provided. True for calculated or False for user provided. (bool)</p>
-<p>'start_date':  Used only in <em>Timeline_gen</em>. Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). Note! only applies if automatic is set to False.</p>
+<p>'start_date':  Note! only applies if <em>automatic</em> is set to False. Used only in <em>Timeline_gen</em>. Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). If set to '0', Timeline_settings['start_date'] will be used.</p>
 <p>'freeze_start': Sets in seconds the time from start of the Mode to when the attitude freeze command is scheduled. (int)</p>
 <p>'freeze_duration': Sets in seconds the duration of the attitude freeze. If set to 0, it will be estimated to a
 value corresponding to the attitude being frozen until realigned with <em>Timeline_settings['LP_pointing_altitude']</em>. (int)</p>
@@ -647,7 +651,6 @@ value corresponding to the attitude being frozen until realigned with <em>Timeli
 <dd><p>Returns settings related to Mode131.</p>
 <dl>
 <dt><strong>Keys in returned dict:</strong></dt><dd><p>'pointing_altitude': Sets in meters the altitude of the pointing command. (int)</p>
-<p>'Exposure_Interval': Sets in ms the Exposure Interval Time of the CCD Command. Recommended to be at least 60000 to support FullReadout in Operational Mode. (int)</p>
 <p>'mode_duration': Sets the scheduled duration of the Mode in seconds. (int)</p>
 <p>'start_date': Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). If the date is set to '0', Timeline start_date will be used.</p>
 </dd>
@@ -731,9 +734,10 @@ value corresponding to the attitude being frozen until realigned with <em>Timeli
 <code class="descclassname">OPT._ConfigFile.</code><code class="descname">Operational_Science_Mode_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#Operational_Science_Mode_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.Operational_Science_Mode_settings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns settings related to Operational Science Modes (Mode1, 2, and 5).</p>
 <dl>
-<dt><strong>Keys:</strong></dt><dd><p>'lat': Sets in degrees the latitude (+ and -) that the LP crosses that causes the UV exposure to swith on/off (applies only to Mode1). (int)</p>
+<dt><strong>Keys:</strong></dt><dd><p>'lat': Applies only to Mode1! Sets in degrees the latitude (+ and -) that the LP crosses that causes the UV exposure to swith on/off. (int)</p>
 <p>'log_timestep': Sets the frequency of data being logged [s] for Mode1-2. Only determines how much of simulated data is logged for debugging purposes. (int)</p>
-<p>'timestep': Sets the timestep [s] of the XML generator simulation of Mode1-2. Will impact accuracy of command generation (int)</p>
+<p>'timestep': Sets the timestep [s] of the XML generator simulation of Mode1-2. Will impact accuracy of command generation but also drastically changes the runtime of XML-gen. (int)</p>
+<p>'Choose_CCDMacro': Applies only to Mode5! Sets the CCD macro to be used by Mode5. Used as input to <em>CCD_macro_settings</em> (str).</p>
 </dd>
 </dl>
 <dl class="field-list simple">
@@ -791,9 +795,11 @@ value corresponding to the attitude being frozen until realigned with <em>Timeli
 <blockquote>
 <div><ul class="simple">
 <li><p>'PWRTOGGLE',</p></li>
+<li><p>'ArgEnableYawComp',</p></li>
 <li><p>'CCDFlushBadColumns',</p></li>
 <li><p>'CCDBadColumn',</p></li>
 <li><p>'PM',</p></li>
+<li><p>'HTR',</p></li>
 <li><p>'CCDBIAS',</p></li>
 <li><p>'Mode100',</p></li>
 <li><p>'Mode110',</p></li>
@@ -837,7 +843,7 @@ The name must be equal to the name of a function imported in the <em>_Timeline_g
 <p>'yaw_amplitude': Amplitude of the yaw function (float).</p>
 <p>'yaw_phase': Phase of the yaw function (float).</p>
 <p>'Choose_Operational_Science_Mode': Set to 1, 2, or 5 to choose either Mode1, Mode2, or Mode5 as the <em>Operational Science Mode</em>. Set to 0 to schedule either Mode1 or Mode2 depending of the time of the year.
-'LP_pointing_altitude': Sets altitude of LP in meters for the timeline. Used to set the pointing altitude of <em>Operational Science Modes</em> and to calculate the duration of attitude freezes (for attitude freezes last until the pointing altitude is once again set to this value.  (int)</p>
+'LP_pointing_altitude': Sets altitude of LP in meters for the timeline. Used to set the pointing altitude of <em>Operational Science Modes</em> and to calculate the duration of attitude freezes (because attitude freezes last until the pointing altitude is once again set to this value).  (int)</p>
 <p>'CMD_separation': Changes the separation in time [s] between commands that are scheduled in <em>XML_gen</em>. If set too large without increasing Timeline_settings['mode_separation'], it is possible that not enough time is scheduled for the duration of Modes, causing Modes to overlap in time. (float)</p>
 <p>'pointing_stabilization': The maximum time it takes for an attitude change to stabilize [s]. Used before scheduling certain Commands in <em>XML_gen</em> to make sure that the attitude has been stabilized after running <em>TC_acfLimbPointingAltitudeOffset</em>. Also impact the estimated duration of Science Modes in <em>Timeline_gen</em>. (int)</p>
 <p>'CCDSYNC_ExtraOffset': Extra offset time [ms] that is added to an estimated ReadoutTime when calculating TEXPIOFS for the CCD Synchronize CMD. (int)</p>
@@ -989,7 +995,7 @@ Used to determine the eclipse angle of the Sun angle of the position.</p>
 <p>The offset calculations depend on the Readout Time, which depends on the binning settings of the CCDs.</p>
 <p>The ExposureInterval Time depends on the longest combined Readout Time and ExposureTime for a CCD aswell as the
 leading CCD's Exposure Time to prevent collision between
-Readout of the leading CCD and the final CCD.</p>
+Readout of the leading CCD and the final CCD. If the combined TransferTime is estimated to be longer than TEXPIMS; TEXPIMS is set to the estimated combined TransferTime to prevent CRB crash.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">

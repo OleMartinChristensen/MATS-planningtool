@@ -41,14 +41,6 @@ OPT.\_TimelineGenerator.Modes.Mode121 module
     :undoc-members:
     :show-inheritance:
 
-OPT.\_TimelineGenerator.Modes.Mode121\_122\_123 module
-------------------------------------------------------
-
-.. automodule:: OPT._TimelineGenerator.Modes.Mode121_122_123
-    :members:
-    :undoc-members:
-    :show-inheritance:
-
 OPT.\_TimelineGenerator.Modes.Mode122 module
 --------------------------------------------
 
@@ -69,6 +61,14 @@ OPT.\_TimelineGenerator.Modes.Mode124 module
 --------------------------------------------
 
 .. automodule:: OPT._TimelineGenerator.Modes.Mode124
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+OPT.\_TimelineGenerator.Modes.Mode12X module
+--------------------------------------------
+
+.. automodule:: OPT._TimelineGenerator.Modes.Mode12X
     :members:
     :undoc-members:
     :show-inheritance:
@@ -153,10 +153,10 @@ OPT.\_TimelineGenerator.Modes.Modes\_Header module
     :undoc-members:
     :show-inheritance:
 
-OPT.\_TimelineGenerator.Modes.PayloadCmds module
+OPT.\_TimelineGenerator.Modes.StartUpCmds module
 ------------------------------------------------
 
-.. automodule:: OPT._TimelineGenerator.Modes.PayloadCmds
+.. automodule:: OPT._TimelineGenerator.Modes.StartUpCmds
     :members:
     :undoc-members:
     :show-inheritance:

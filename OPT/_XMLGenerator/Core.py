@@ -59,7 +59,7 @@ def XML_generator(SCIMOD_Path):
     
     Logger.info('Science Mode Timeline Used: '+SCIMOD_Path)
     
-    Timeline_settings = OPT_Config_File.Timeline_settings()
+    "Check if there are Timeline_settings given in the Science Mode Timeline"
     if( str(SCIMOD[0][0]) == 'Timeline_settings' ):
         Timeline_settings_from_Timeline = SCIMOD[0][3]
         Timeline_settings = _Library.params_checker( Timeline_settings_from_Timeline, OPT_Config_File.Timeline_settings())
@@ -73,7 +73,9 @@ def XML_generator(SCIMOD_Path):
             raise ValueError
     else:
         Logger.info('Timeline_settings not found in Science Mode Timeline. Using the ones in the chosen ConfigFile')
+        Timeline_settings = OPT_Config_File.Timeline_settings()
         
+    "Save the Timeline_settings to be used in a Global variable"
     _Globals.Timeline_settings = Timeline_settings
     
     ################ Get settings for Timeline from Config module ############
@@ -156,6 +158,9 @@ def XML_Initial_Basis_Creator(timeline_start,timeline_duration, SCIMOD_Path):
     
     TimelineStart_Tuple = timeline_start.tuple()
     
+    "Because of rounding errors in ephem.Date 0 seconds might be 59.9999... causing error. Add half a second here to fix this error."
+    if( int(round(TimelineStart_Tuple[5])) == 60 ):
+        TimelineStart_Tuple = ephem.Date( timeline_start + ephem.second/2 ).tuple()
     
     TimelineStart_datetime = datetime.datetime( TimelineStart_Tuple[0], TimelineStart_Tuple[1], TimelineStart_Tuple[2], 
                       TimelineStart_Tuple[3], TimelineStart_Tuple[4], int(round(TimelineStart_Tuple[5])) )
@@ -202,7 +207,7 @@ def XML_Initial_Basis_Creator(timeline_start,timeline_duration, SCIMOD_Path):
 def XML_generator_select(name, root, date, duration, relativeTime, params):
     '''Subfunction, Selects corresponding mode, test or CMD function in the package *Modes_and_Tests* from the variable *mode*.
     
-    Calls for any function named *X* where X is the string in the input *name*.
+    Calls for any function named *X* in the modules *MODES*, *SeparateCmds*, and *Tests*, where X is the string in the input *name*.
     
     Arguments: 
         name (str): The name of the of the mode or test as a string. The name in the XML_generator_name function in OPT_XML_generator_MODES
@@ -234,6 +239,8 @@ def XML_generator_select(name, root, date, duration, relativeTime, params):
         Mode_Test_SeparateCmd_func(root, date, duration, relativeTime)
     else:
         Mode_Test_SeparateCmd_func(root, date, duration, relativeTime, params = params)
-
+        
+    "Return relativeTime for the dynamic length of Commisioning phase tests."
+    return relativeTime
 ####################### End of Mode selecter #############################
 

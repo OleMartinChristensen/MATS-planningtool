@@ -8,7 +8,7 @@ For the rest CMDS, each parameter must be given in the Science Mode Timeline. \n
 
 PWRTOGGLE will always call a PWRTOGGLE_macro will also turns off all CCDs before power toggling. \n
 
-Functions on the form "X", where the last X is any CMD:
+Functions on the form "X", where X is any CMD:
     Arguments:
         root (lxml.etree.Element):  XML tree structure. Main container object for the ElementTree API. lxml.etree.Element class \n
         date (ephem.Date): Starting date of the CMD. On the form of the ephem.Date class. \n

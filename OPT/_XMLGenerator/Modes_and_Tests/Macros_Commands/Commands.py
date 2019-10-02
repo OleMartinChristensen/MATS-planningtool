@@ -491,6 +491,10 @@ def TC_pafCCDSYNCHRONIZE( root, relativeTime, CCDSEL, NCCD, TEXPIOFS, comment = 
     if not( len(TEXPIOFS) == NCCD ):
         Logger.error('Invalid argument: Number of CCDs (NCCD) does not coincide with the number of time-offsets (TEXPIOFS).')
         raise ValueError
+    for TEXPIOFS_value in TEXPIOFS:
+        if not( 0 <= TEXPIOFS_value <= 12000 ):
+            Logger.error('Invalid argument: 0 > TEXPIOFS_value, TEXPIOFS_value > 12000')
+            raise ValueError
     
     Logger.debug('CCDSEL: '+str(CCDSEL))
     Logger.debug('NCCD: '+str(NCCD))

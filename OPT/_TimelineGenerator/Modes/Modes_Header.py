@@ -23,6 +23,6 @@ from .Mode203 import Mode203
 from .Mode110 import Mode110
 from .Mode134 import Mode134
 from .Mode1_2_5 import Mode1_2_5
-from .PayloadCmds import PWRTOGGLE, PM, CCDBadColumn, CCDFlushBadColumns, CCDBIAS
+from .StartUpCmds import PWRTOGGLE, ArgEnableYawComp, PM, CCDBadColumn, CCDFlushBadColumns, CCDBIAS
 
 

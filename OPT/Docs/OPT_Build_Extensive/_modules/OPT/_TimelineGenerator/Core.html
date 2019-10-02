@@ -239,9 +239,12 @@
                 
                 <span class="n">Config_File</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">OPT_Config_File</span><span class="p">,</span><span class="s1">&#39;Operational_Science_Mode_settings&#39;</span><span class="p">)()</span>
                 
+            <span class="k">elif</span><span class="p">(</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;ArgEnableYawComp&#39;</span> <span class="p">):</span>
+                <span class="n">Config_File</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;EnableYawComp&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;yaw_correction&#39;</span><span class="p">])</span> <span class="p">}</span>
+                
             <span class="k">else</span><span class="p">:</span>
-                    <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;No Config function for &#39;</span><span class="o">+</span><span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
-                    <span class="n">Config_File</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;No Config function for &#39;</span><span class="o">+</span><span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+                <span class="n">Config_File</span> <span class="o">=</span> <span class="p">{}</span>
                     
             
                 

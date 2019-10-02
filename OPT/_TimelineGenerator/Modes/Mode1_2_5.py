@@ -62,8 +62,17 @@ def Mode1_2_5(Occupied_Timeline):
     ## at the start and end of the timeline.
     for x in range(len(Occupied_values)+1):
         
+        ## If Occupied_values is empty then just schedule until the end of the timeline
+        if( len(Occupied_values) == 0 ):
+            timeline_end = ephem.Date( ephem.Date(settings['start_date'])+ephem.second*settings['duration'])
+            date = initial_date
+            endDate = ephem.Date(timeline_end - ephem.second*settings['mode_separation'])
+            dates.append( (date, endDate) )
+            
+            iterations = iterations + 1
+            
         ## For first iteration; Check if there is spacing between initial_date and the the first mode running
-        if( x == 0 and Occupied_values[0][0] != initial_date):
+        elif( x == 0 and Occupied_values[0][0] != initial_date):
             time_between_modes = Occupied_values[0][0] - initial_date 
             if(time_between_modes > minDuration ):
                 date = initial_date

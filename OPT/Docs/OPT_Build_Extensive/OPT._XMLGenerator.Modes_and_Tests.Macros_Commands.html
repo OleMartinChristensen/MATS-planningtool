@@ -156,7 +156,7 @@ TEXPIMS for all the CCDs except nadir is set to the same value to allow Synchron
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> (<em>lxml.etree._Element</em>) -- XML tree structure. Main container object for the ElementTree API.</p></li>
 <li><p><strong>relativeTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) -- The relative starting time of the macro with regard to the start of the timeline [s]</p></li>
-<li><p><strong>CCD_settings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of int) -- A dict containing settings for the CCDs.</p></li>
+<li><p><strong>CCD_settings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of int) -- A dict containing Settings for the CCDs.. Defined in the <em>Configuration File</em>.</p></li>
 <li><p><strong>TEXPIMS</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- ExposureIntervalTime for the CCDs (except nadir) in ms.</p></li>
 <li><p><strong>comment</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- A comment for the macro. Will be printed in the genereated XML-file.</p></li>
 </ul>
@@ -171,103 +171,23 @@ TEXPIMS for all the CCDs except nadir is set to the same value to allow Synchron
 </dd></dl>
 
 <dl class="function">
-<dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.FullReadout_Operational_Limb_Pointing_macro">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.</code><code class="descname">FullReadout_Operational_Limb_Pointing_macro</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>CCD_settings</em>, <em>pointing_altitude</em>, <em>TEXPIMS</em>, <em>comment</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Macros.html#FullReadout_Operational_Limb_Pointing_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.FullReadout_Operational_Limb_Pointing_macro" title="Permalink to this definition">¶</a></dt>
-<dd><p>Macro that corresponds to pointing towards a Limb altitude in Operational Mode.</p>
-<p>Has an dedicated set Exposure Interval to prevent CRB-crashes when transferring very large images.</p>
-<ol class="arabic simple">
-<li><p>Set Payload to idle mode</p></li>
-<li><p>Point the satellite to a limb altitide.</p></li>
-<li><p>Start Photometers.</p></li>
-<li><p>Run CCD Synchronize Command with calculated settings.</p></li>
-<li><p>Run CCD Commands with given settings.</p></li>
-<li><p>Set Payload to operational mode</p></li>
-</ol>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>root</strong> (<em>lxml.etree._Element</em>) -- XML tree structure. Main container object for the ElementTree API.</p></li>
-<li><p><strong>relativeTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) -- The relative starting time of the macro with regard to the start of the timeline [s]</p></li>
-<li><p><strong>CCD_settings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of int) -- Settings for the CCDs.</p></li>
-<li><p><strong>pointing_altitude</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- The altitude of the tangential point [m].</p></li>
-<li><p><strong>TEXPIMS</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- Exposure Interval [ms]. Note! Must be set very large when handling large images, at least 60000ms.</p></li>
-<li><p><strong>comment</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- A comment for the macro. Will be printed in the genereated XML-file.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Time in seconds equal to the input &quot;relativeTime&quot; with added delay from the scheduling of commands.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>relativeTime (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a>)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.Limb_functional_test_macro">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.</code><code class="descname">Limb_functional_test_macro</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>pointing_altitude</em>, <em>TEXPMS</em>, <em>JPEGQ</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Macros.html#Limb_functional_test_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.Limb_functional_test_macro" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>root</strong> (<em>lxml.etree._Element</em>) -- XML tree structure. Main container object for the ElementTree API.</p></li>
-<li><p><strong>relativeTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) -- The relative starting time of the macro with regard to the start of the timeline [s]</p></li>
-<li><p><strong>pointing_altitude</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- The altitude of the tangential point [m].</p></li>
-<li><p><strong>TEXPMS</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- Exposure time in ms</p></li>
-<li><p><strong>JPEGQ</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- The JPEG quality in %</p></li>
-<li><p><strong>comment</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- A comment for the macro. Will be printed in the genereated XML-file.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Time in seconds equal to the input &quot;relativeTime&quot; with added delay from the scheduling of commands.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>relativeTime (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a>)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.NadirSnapshot_Limb_Pointing_macro">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.</code><code class="descname">NadirSnapshot_Limb_Pointing_macro</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>CCD_settings</em>, <em>pointing_altitude</em>, <em>SnapshotSpacing</em>, <em>comment</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Macros.html#NadirSnapshot_Limb_Pointing_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.NadirSnapshot_Limb_Pointing_macro" title="Permalink to this definition">¶</a></dt>
-<dd><p>Macro that corresponds to pointing towards a Limb altitude and taking a Snapshot with each CCD (except Nadir).</p>
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.</code><code class="descname">NadirSnapshot_Limb_Pointing_macro</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>CCD_settings</em>, <em>pointing_altitude</em>, <em>comment</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Macros.html#NadirSnapshot_Limb_Pointing_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.NadirSnapshot_Limb_Pointing_macro" title="Permalink to this definition">¶</a></dt>
+<dd><p>Macro that corresponds to pointing towards a Limb altitude and taking a Snapshot with Nadir.</p>
 <ol class="arabic simple">
 <li><p>Set Payload to idle mode</p></li>
 <li><p>Point the satellite to <em>pointing_altitude</em>.</p></li>
 <li><p>Run CCD Commands with given settings.</p></li>
-<li><p>Take 5 Snapshots with Nadir with a spacing of <em>SnapshotSpacing</em>.</p></li>
+<li><p>Take a Snapshot with Nadir.</p></li>
 </ol>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> (<em>lxml.etree._Element</em>) -- XML tree structure. Main container object for the ElementTree API.</p></li>
 <li><p><strong>relativeTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) -- The relative starting time of the macro with regard to the start of the timeline [s]</p></li>
-<li><p><strong>CCD_settings</strong> (<em>dict of dict of int</em>) -- Settings for the CCDs.</p></li>
+<li><p><strong>CCD_settings</strong> (<em>dict of dict of int</em>) -- Settings for the CCDs.. Defined in the <em>Configuration File</em>.</p></li>
 <li><p><strong>pointing_altitude</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- The altitude of the tangential point [m].</p></li>
 <li><p><strong>SnapshotSpacing</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- The time in seconds inbetween snapshots of individual CCDs.</p></li>
-<li><p><strong>comment</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- A comment for the macro. Will be printed in the genereated XML-file.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Time in seconds equal to the input &quot;relativeTime&quot; with added delay from the scheduling of commands.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>relativeTime (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a>)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
-<dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.Nadir_functional_test_macro">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.</code><code class="descname">Nadir_functional_test_macro</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>pointing_altitude</em>, <em>TEXPMS</em>, <em>JPEGQ</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Macros.html#Nadir_functional_test_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.Nadir_functional_test_macro" title="Permalink to this definition">¶</a></dt>
-<dd><p>Nadir_functional_test</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>root</strong> (<em>lxml.etree._Element</em>) -- XML tree structure. Main container object for the ElementTree API.</p></li>
-<li><p><strong>relativeTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) -- The relative starting time of the macro with regard to the start of the timeline [s]</p></li>
-<li><p><strong>pointing_altitude</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- The altitude of the tangential point [m].</p></li>
-<li><p><strong>TEXPMS</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- Exposure time in ms</p></li>
-<li><p><strong>JPEGQ</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- The JPEG quality in %</p></li>
 <li><p><strong>comment</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- A comment for the macro. Will be printed in the genereated XML-file.</p></li>
 </ul>
 </dd>
@@ -297,7 +217,7 @@ TEXPIMS for all the CCDs except nadir is set to the same value to allow Synchron
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> (<em>lxml.etree._Element</em>) -- XML tree structure. Main container object for the ElementTree API.</p></li>
 <li><p><strong>relativeTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) -- The relative starting time of the macro with regard to the start of the timeline [s]</p></li>
-<li><p><strong>CCD_settings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of int) -- Settings for the CCDs.</p></li>
+<li><p><strong>CCD_settings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of int) -- Settings for the CCDs. Defined in the <em>Configuration File</em>.</p></li>
 <li><p><strong>pointing_altitude</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- The altitude of the tangential point [m].</p></li>
 <li><p><strong>comment</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- A comment for the macro. Will be printed in the genereated XML-file.</p></li>
 </ul>
@@ -329,7 +249,7 @@ TEXPIMS for all the CCDs except nadir is set to the same value to allow Synchron
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> (<em>lxml.etree._Element</em>) -- XML tree structure. Main container object for the ElementTree API.</p></li>
 <li><p><strong>relativeTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) -- The relative starting time of the macro with regard to the start of the timeline [s]</p></li>
-<li><p><strong>CCD_settings</strong> (<em>dict of dict of int</em>) -- Settings for the CCDs.</p></li>
+<li><p><strong>CCD_settings</strong> (<em>dict of dict of int</em>) -- Settings for the CCDs.. Defined in the <em>Configuration File</em>.</p></li>
 <li><p><strong>pointing_altitude_from</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- The altitude in meters from which to start the sweep</p></li>
 <li><p><strong>pointing_altitude_from</strong> -- The altitude in meters where the sweep will end</p></li>
 <li><p><strong>sweep_rate</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- The rate of the sweep in m/s.</p></li>
@@ -369,28 +289,6 @@ TEXPIMS for all the CCDs except nadir is set to the same value to allow Synchron
 </dd></dl>
 
 <dl class="function">
-<dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.Photometer_test_1_macro">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.</code><code class="descname">Photometer_test_1_macro</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>TEXPMS</em>, <em>ExpInt</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Macros.html#Photometer_test_1_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.Photometer_test_1_macro" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>root</strong> (<em>lxml.etree._Element</em>) -- XML tree structure. Main container object for the ElementTree API.</p></li>
-<li><p><strong>relativeTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) -- The relative starting time of the macro with regard to the start of the timeline [s]</p></li>
-<li><p><strong>TEXPMS</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- Exposure time in ms</p></li>
-<li><p><strong>ExpInt</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- Exposure interval in ms</p></li>
-<li><p><strong>comment</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- A comment for the macro. Will be printed in the genereated XML-file.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Time in seconds equal to the input &quot;relativeTime&quot; with added delay from the scheduling of commands.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>relativeTime (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)">float</a>)</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.Snapshot_Inertial_macro">
 <code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.</code><code class="descname">Snapshot_Inertial_macro</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>CCD_settings</em>, <em>FreezeTime</em>, <em>FreezeDuration</em>, <em>pointing_altitude</em>, <em>LP_pointing_altitude</em>, <em>SnapshotSpacing</em>, <em>Snapshot_relativeTime</em>, <em>comment</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Macros.html#Snapshot_Inertial_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.Snapshot_Inertial_macro" title="Permalink to this definition">¶</a></dt>
 <dd><p>Macro that corresponds to pointing towards an Inertial direction and take a Snapshot with all the CCDs (except Nadir).</p>
@@ -400,6 +298,7 @@ TEXPIMS for all the CCDs except nadir is set to the same value to allow Synchron
 <li><p>Run CCD Commands with given settings.</p></li>
 <li><p>Run ArgFreezeStart Command with <em>FreezeTime</em>.</p></li>
 <li><p>Run ArgFreezeDuration Command with <em>FreezeDuration</em>.</p></li>
+<li><p>Start Photometers</p></li>
 <li><p>Take a Snapshot with each CCD (except Nadir) starting at <em>Snapshot_relativeTime</em> with a spacing of <em>SnapshotSpacing</em>.</p></li>
 <li><p>Point the satellite to <em>LP_pointing_altitude</em>.</p></li>
 </ol>
@@ -408,7 +307,7 @@ TEXPIMS for all the CCDs except nadir is set to the same value to allow Synchron
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> (<em>lxml.etree._Element</em>) -- XML tree structure. Main container object for the ElementTree API.</p></li>
 <li><p><strong>relativeTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) -- The relative starting time of the macro with regard to the start of the timeline [s]</p></li>
-<li><p><strong>CCD_settings</strong> (<em>dict of dict of int</em>) -- Settings for the CCDs.</p></li>
+<li><p><strong>CCD_settings</strong> (<em>dict of dict of int</em>) -- Settings for the CCDs.. Defined in the <em>Configuration File</em>.</p></li>
 <li><p><strong>FreezeTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) -- Start time of attitude freeze command in on-board time [s].</p></li>
 <li><p><strong>FreezeDuration</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- Duration of freeze [s].</p></li>
 <li><p><strong>pointing_altitude</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- The altitude of the tangential point [m].</p></li>
@@ -435,6 +334,7 @@ TEXPIMS for all the CCDs except nadir is set to the same value to allow Synchron
 <li><p>Set Payload to idle mode</p></li>
 <li><p>Point the satellite to <em>pointing_altitude</em>.</p></li>
 <li><p>Run CCD Commands with given settings.</p></li>
+<li><p>Start Photometers</p></li>
 <li><p>Take a Snapshot with each CCD (except Nadir) with a spacing of <em>SnapshotSpacing</em>.</p></li>
 </ol>
 <dl class="field-list simple">
@@ -442,7 +342,7 @@ TEXPIMS for all the CCDs except nadir is set to the same value to allow Synchron
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>root</strong> (<em>lxml.etree._Element</em>) -- XML tree structure. Main container object for the ElementTree API.</p></li>
 <li><p><strong>relativeTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) -- The relative starting time of the macro with regard to the start of the timeline [s]</p></li>
-<li><p><strong>CCD_settings</strong> (<em>dict of dict of int</em>) -- Settings for the CCDs.</p></li>
+<li><p><strong>CCD_settings</strong> (<em>dict of dict of int</em>) -- Settings for the CCDs.. Defined in the <em>Configuration File</em>.</p></li>
 <li><p><strong>pointing_altitude</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- The altitude of the tangential point [m].</p></li>
 <li><p><strong>SnapshotSpacing</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- The time in seconds inbetween snapshots of individual CCDs.</p></li>
 <li><p><strong>comment</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- A comment for the macro. Will be printed in the genereated XML-file.</p></li>

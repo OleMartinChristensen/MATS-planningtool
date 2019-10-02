@@ -41,12 +41,14 @@
 <span class="kn">import</span> <span class="nn">importlib</span>
 
 <span class="kn">from</span> <span class="nn">OPT</span> <span class="k">import</span> <span class="n">_Globals</span>
-<span class="kn">from</span> <span class="nn">.Mode121_122_123</span> <span class="k">import</span> <span class="n">date_calculator</span><span class="p">,</span> <span class="n">date_select</span>
+<span class="kn">from</span> <span class="nn">.Mode12X</span> <span class="k">import</span> <span class="n">date_calculator</span><span class="p">,</span> <span class="n">date_select</span><span class="p">,</span> <span class="n">UserProvidedDateScheduler</span>
 
 <span class="n">OPT_Config_File</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">_Globals</span><span class="o">.</span><span class="n">Config_File</span><span class="p">)</span>
 
 <div class="viewcode-block" id="Mode122"><a class="viewcode-back" href="../../../../OPT._TimelineGenerator.Modes.html#OPT._TimelineGenerator.Modes.Mode122.Mode122">[docs]</a><span class="k">def</span> <span class="nf">Mode122</span><span class="p">(</span><span class="n">Occupied_Timeline</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Core function for the scheduling of Mode121.</span>
+<span class="sd">    </span>
+<span class="sd">    Determines if the scheduled date should be determined by simulating MATS or be user provided.</span>
 <span class="sd">    </span>
 <span class="sd">    Arguments:</span>
 <span class="sd">        Occupied_Timeline (:obj:`dict` of :obj:`list`): Dictionary with keys equal to planned and scheduled Modes with entries equal to their start and end time as a list.</span>
@@ -59,10 +61,13 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">Settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Mode122_settings</span><span class="p">()</span>
     
-    <span class="n">date_magnitude_array</span> <span class="o">=</span> <span class="n">date_calculator</span><span class="p">(</span><span class="n">Settings</span><span class="p">)</span>
-    
-    <span class="n">Occupied_Timeline</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">date_select</span><span class="p">(</span><span class="n">Occupied_Timeline</span><span class="p">,</span> <span class="n">date_magnitude_array</span><span class="p">,</span> <span class="n">Settings</span><span class="p">)</span>
-    
+    <span class="k">if</span><span class="p">(</span> <span class="n">Settings</span><span class="p">[</span><span class="s1">&#39;automatic&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">False</span> <span class="p">):</span>
+        <span class="n">Occupied_Timeline</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">UserProvidedDateScheduler</span><span class="p">(</span><span class="n">Occupied_Timeline</span><span class="p">,</span> <span class="n">Settings</span><span class="p">)</span>
+    <span class="k">elif</span><span class="p">(</span> <span class="n">Settings</span><span class="p">[</span><span class="s1">&#39;automatic&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">True</span> <span class="p">):</span>
+        <span class="n">date_magnitude_array</span> <span class="o">=</span> <span class="n">date_calculator</span><span class="p">(</span><span class="n">Settings</span><span class="p">)</span>
+        
+        <span class="n">Occupied_Timeline</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">date_select</span><span class="p">(</span><span class="n">Occupied_Timeline</span><span class="p">,</span> <span class="n">date_magnitude_array</span><span class="p">,</span> <span class="n">Settings</span><span class="p">)</span>
+        
     
     <span class="k">return</span> <span class="n">Occupied_Timeline</span><span class="p">,</span> <span class="n">comment</span></div>
 </pre></div>

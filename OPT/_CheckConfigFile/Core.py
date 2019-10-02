@@ -48,7 +48,7 @@ def CheckConfigFile():
     if not( 43099.5 < ephem.Date(Timeline_settings['start_date']) < 73049.5 and type(Timeline_settings['start_date']) == str):
         Logger.error('Timeline_settings["start_date"]')
         raise ValueError
-    if not( 30 <= Timeline_settings['CMD_duration'] and type(Timeline_settings['CMD_duration']) == int ):
+    if not( 15 <= Timeline_settings['CMD_duration'] and type(Timeline_settings['CMD_duration']) == int ):
         Logger.error('Timeline_settings["CMD_duration"]')
         raise ValueError
     if not( 15 <= Timeline_settings['mode_separation'] and type(Timeline_settings['mode_separation']) == int ):
@@ -91,17 +91,23 @@ def CheckConfigFile():
     
     for key in Operational_Science_Mode_settings.keys():
         
-        if not( Operational_Science_Mode_settings[key] > 0 and type(Operational_Science_Mode_settings[key]) == int ):
-            Logger.error('Operational_Science_Mode_settings')
-            raise ValueError
-        if( key == 'timestep'):
-            if not( Operational_Science_Mode_settings[key] < 50):
-                Logger.error('Operational_Science_Mode_settings["timestep"]')
+        if( key == 'Choose_CCDMacro'):
+            if not( Operational_Science_Mode_settings[key] in ['CustomBinning', 'HighResUV', 'HighResIR', 'LowPixel', 'FullReadout', 'BinnedCalibration']):
+                Logger.error('Operational_Science_Mode_settings["Choose_CCDMacro"]')
                 raise ValueError
-        if( key == 'lat'):
-            if not( 0 <= Operational_Science_Mode_settings[key] <= 90):
-                Logger.error('Operational_Science_Mode_settings["lat"]')
+        else:
+            if not( Operational_Science_Mode_settings[key] > 0 and type(Operational_Science_Mode_settings[key]) == int ):
+                Logger.error('Operational_Science_Mode_settings')
                 raise ValueError
+            if( key == 'timestep'):
+                if not( Operational_Science_Mode_settings[key] < 50):
+                    Logger.error('Operational_Science_Mode_settings["timestep"]')
+                    raise ValueError
+            if( key == 'lat'):
+                if not( 0 <= Operational_Science_Mode_settings[key] <= 90):
+                    Logger.error('Operational_Science_Mode_settings["lat"]')
+                    raise ValueError
+        
                 
     #if not( 10000 <= Mode5_settings['pointing_altitude'] <= 300000 and type(Mode5_settings['pointing_altitude']) == int ):
     #    Logger.error("Mode5_settings['pointing_altitude']")
@@ -144,6 +150,14 @@ def CheckConfigFile():
             if not( type(Mode110_settings[key]) == str ):
                 Logger.error('Mode110_settings')
                 raise ValueError
+        elif( key == 'pointing_altitude_from' or key == 'pointing_altitude_to' ):
+            if not( -60000 <= Mode110_settings[key] <= 230000 ):
+                Logger.error('Mode110_settings')
+                raise ValueError
+        elif( key == 'sweep_rate' ):
+            if not( -5000 <= Mode110_settings[key] <= 5000 ):
+                Logger.error('Mode110_settings')
+                raise ValueError
         else:
             if not( Mode110_settings[key] > 0 and type(Mode110_settings[key]) == int ):
                 Logger.error('Mode110_settings')
@@ -174,7 +188,7 @@ def CheckConfigFile():
     if not( 0 < Mode120_settings['SnapshotTime'] and type(Mode120_settings['SnapshotTime']) == int):
         Logger.error("Mode120_settings['SnapshotTime']")
         raise ValueError
-    if not( 0 <= Mode120_settings['SnapshotSpacing'] and type(Mode120_settings['SnapshotSpacing']) == int):
+    if not( 2 <= Mode120_settings['SnapshotSpacing'] and type(Mode120_settings['SnapshotSpacing']) == int):
         Logger.error("Mode120_settings['SnapshotSpacing']")
         raise ValueError
     if not( Mode120_settings['SnapshotSpacing'] * 5 + Mode120_settings['SnapshotTime'] < Mode120_settings['freeze_duration'] ):
@@ -199,9 +213,6 @@ def CheckConfigFile():
     if not( 0 < abs(Mode121_122_123_settings['V_FOV']) <= 5 and 0 < abs(Mode121_122_123_settings['H_FOV']) <= 10 ):
         Logger.error("Mode121_122_123_settings['V_FOV'] or Mode121_122_123_settings['H_FOV']")
         raise ValueError
-    if not( type(Mode121_122_123_settings['automatic']) == bool):
-        Logger.error("Mode121_122_123_settings['automatic']")
-        raise TypeError
     if not( type(Mode121_122_123_settings['Vmag']) == str):
         Logger.error("Mode121_122_123_settings['Vmag']")
         raise TypeError
@@ -211,7 +222,7 @@ def CheckConfigFile():
     if not( Timeline_settings['LP_pointing_altitude'] < Mode121_122_123_settings['pointing_altitude'] and type(Mode121_122_123_settings['pointing_altitude']) == int):
         Logger.error("Mode121_122_123_settings['pointing_altitude']")
         raise ValueError
-    if not( 0 <= Mode121_122_123_settings['TimeSkip'] <= 3 and type(Mode121_122_123_settings['TimeSkip']) == int or type(Mode121_122_123_settings['TimeSkip']) == float ):
+    if not( 0 <= Mode121_122_123_settings['TimeSkip'] <= 2*3600*24 and type(Mode121_122_123_settings['TimeSkip']) == int or type(Mode121_122_123_settings['TimeSkip']) == float ):
         Logger.error("Mode121_122_123_settings['TimeSkip']")
         raise ValueError
     if not( 0 <= Mode121_122_123_settings['SnapshotSpacing'] and type(Mode121_122_123_settings['SnapshotSpacing']) == int):
@@ -246,7 +257,15 @@ def CheckConfigFile():
         Logger.error("Mode123_settings['Exp_Time_UV']")
         raise ValueError
     
-    
+    if not( type(Mode121_settings['automatic']) == bool):
+        Logger.error("Mode121_settings['automatic']")
+        raise TypeError
+    if not( type(Mode122_settings['automatic']) == bool):
+        Logger.error("Mode122_settings['automatic']")
+        raise TypeError
+    if not( type(Mode123_settings['automatic']) == bool):
+        Logger.error("Mode123_settings['automatic']")
+        raise TypeError
     
     
     if not( -60000 <= Mode124_settings['pointing_altitude'] <= 230000 and type(Mode124_settings['pointing_altitude']) == int ):

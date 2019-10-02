@@ -20,4 +20,6 @@ current_pointing = None
 StartTime = None
 Timeline_settings = None
 latestRelativeTime = 0
-
+#TLE = ['1 54321U 19100G   20172.75043981 0.00000000  00000-0  75180-4 0  0014', 
+#       '2 54321  97.7044   6.9210 0014595 313.2372  91.8750 14.93194142000010']
+    

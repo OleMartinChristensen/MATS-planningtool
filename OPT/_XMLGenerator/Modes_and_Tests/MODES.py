@@ -2,7 +2,7 @@
 """Contain Mode functions which generates and calculates parameters for each mode, 
 then calls for Macros/Commands functions located in the *Macros_Commands* package, which will in turn write commands to the XML tree object *root*.
 
-Functions on the form "X", where the last X is any Mode:
+Functions on the form "X", where X is any Mode:
 
     **Arguments:**
         **root** (*lxml.etree.Element*):  XML tree structure. Main container object for the ElementTree API. \n
@@ -15,7 +15,7 @@ Functions on the form "X", where the last X is any Mode:
         None
 
 When creating new Mode functions it is crucial that the function name is
-Mode_name, where Mode_name is the same as the string used in the *Science Mode Timeline*
+*X*, where *X* is the same as the string used in the *Science Mode Timeline*. Because OPT will automatically look for any function named the same as the string in the *Science Mode Timeline*
         
 @author: David
 """
@@ -37,18 +37,20 @@ def Mode5(root, date, duration, relativeTime, params = {}):
     '''Mode5
     
     **Macro:** Operational_Limb_Pointing_macro \n
-    **CCD_Macro:** CustomBinning \n
+    **CCD_Macro:** Chosen in the settings of the Mode. \n
             
     '''
     
     pointing_altitude = _Globals.Timeline_settings['LP_pointing_altitude']
     
-    CCD_settings = OPT_Config_File.CCD_macro_settings('CustomBinning')
+    
     settings = OPT_Config_File.Operational_Science_Mode_settings()
     
     params = params_checker(params, settings, Logger)
     
-    Mode_name = sys._getframe(1).f_code.co_name.replace('','')
+    CCD_settings = OPT_Config_File.CCD_macro_settings(params['Choose_CCDMacro'])
+    
+    Mode_name = sys._getframe(0).f_code.co_name.replace('','')
     comment = Mode_name+' starting date: '+str(date)+', '+str(params)
     
     #pointing_altitude = params['pointing_altitude']
@@ -118,7 +120,7 @@ def Mode1(root, date, duration, relativeTime, params = {}):
     pointing_altitude = Timeline_settings['LP_pointing_altitude']
     lat = params['lat']
     
-    heightAboveSurface = 20000 #Altitude in km where sun is deemed to reflect in atmosphere, determining night and day below satellite"
+    heightAboveSurface = 35000 #Altitude in km where sun is deemed to reflect in atmosphere, determining night and day below satellite"
     
     
     #Estimation of the angle between the sun and the FOV position when it enters eclipse
@@ -126,7 +128,7 @@ def Mode1(root, date, duration, relativeTime, params = {}):
     
     Logger.debug('MATS_nadir_eclipse_angle : '+str(MATS_nadir_eclipse_angle))
     Logger.debug('')
-    
+    t = -1
     
     MATS_skyfield = skyfield.api.EarthSatellite(TLE[0], TLE[1])
     
@@ -134,7 +136,10 @@ def Mode1(root, date, duration, relativeTime, params = {}):
     current_time = ephem.Date(date)
     
     "Loop and calculate the relevant angle of each star to each direction of MATS's FOV"
-    for t in range(int(duration/timestep)):
+    #for t in range(int(duration/timestep)):
+    while( current_time < ephem.second*duration+ephem.Date(date) ):
+        
+        t += 1
         
         if( t != 0):
             "Incremented time from scheduling CMDs"
@@ -394,7 +399,7 @@ def Mode2(root, date, duration, relativeTime, params = {}):
     R_mean = 6371000 #Radius of Earth in m
     pointing_altitude = Timeline_settings['LP_pointing_altitude']
     
-    heightAboveSurface = 20000 #Altitude in m where sun is deemed to reflect in atmosphere, determining night and day below satellite"
+    heightAboveSurface = 35000 #Altitude in m where sun is deemed to reflect in atmosphere, determining night and day below satellite"
     
     #Estimation of the angle between the sun and the FOV position when it enters eclipse
     MATS_nadir_eclipse_angle = arccos(R_mean/(R_mean+heightAboveSurface))/pi*180 + 90
@@ -403,11 +408,16 @@ def Mode2(root, date, duration, relativeTime, params = {}):
     
     MATS_skyfield = skyfield.api.EarthSatellite(TLE[0], TLE[1])
     
+    t = -1
+    
     new_relativeTime = relativeTime
     current_time = ephem.Date(date)
     
     "Loop and calculate the relevant angle of each star to each direction of MATS's FOV"
-    for t in range(int(duration/timestep)):
+    #for t in range(int(duration/timestep)):
+    while( current_time < ephem.second*duration+ephem.Date(date) ):
+        
+        t += 1
         
         if( t != 0):
             CMD_scheduling_delay = (new_relativeTime-relativeTime)
@@ -432,7 +442,6 @@ def Mode2(root, date, duration, relativeTime, params = {}):
         
         r_MATS[t] = Satellite_dict['Position [km]']
         sun_angle[t] = SunAngle( r_MATS[t], current_time)
-        
         
         
         if( t % log_timestep == 0):
@@ -462,7 +471,6 @@ def Mode2(root, date, duration, relativeTime, params = {}):
                                                        pointing_altitude=pointing_altitude, comment = comment)
         
         ############# End of Initial Mode setup ###################################
-        
         
         
         if(t != 0):
@@ -633,9 +641,12 @@ def Mode110(root, date, duration, relativeTime, params = {}):
 
 def Mode12X(root, date, duration, relativeTime, 
                        params, CCD_settings):
-    """Mode12X, where X is 1,2,3....
+    """Subfunction of Mode12X, where X is 1,2,3....
     
     **Macro**: Snapshot_Inertial_macro. \n
+    
+    Arguments:
+        CCD_settings (:obj:`dict` of :obj:`dict` of int): Settings for the CCDs. Defined in the *Configuration File*.
     
     Stare at a point in inertial reference frame and take a Snapshot with each CCD except nadir.
     
@@ -855,7 +866,7 @@ def Mode131(root, date, duration, relativeTime,
                        params = {}):
     """Mode131
     
-    **Macro**: FullReadout_Operational_Limb_Pointing_macro. \n
+    **Macro**: Operational_Limb_Pointing_macro. \n
     **CCD_Macro**: FullReadout. \n
     
     Look at fixed limb altitude in operational mode.
@@ -870,10 +881,10 @@ def Mode131(root, date, duration, relativeTime,
     comment = Mode_name+' starting date: '+str(date)+', '+str(params)
     
     pointing_altitude = params['pointing_altitude']
-    TEXPIMS = params['Exposure_Interval']
     
-    Macros.FullReadout_Operational_Limb_Pointing_macro(root, round(relativeTime,2), CCD_settings, 
-                                                       TEXPIMS = TEXPIMS, pointing_altitude = pointing_altitude, comment = comment)
+    
+    Macros.Operational_Limb_Pointing_macro(root, round(relativeTime,2), CCD_settings, 
+                                                       pointing_altitude = pointing_altitude, comment = comment)
 
 
 ################################################################################################
@@ -882,9 +893,12 @@ def Mode131(root, date, duration, relativeTime,
 
 def Mode132_133(root, date, duration, relativeTime, 
                        params, CCD_settings):
-    """Mode132 and Mode133
+    """Subfunction of Mode132 and Mode133
     
     **Macro**: Operational_Limb_Pointing_macro. \n
+    
+    Arguments:
+        CCD_settings (:obj:`dict` of :obj:`dict` of int): Settings for the CCDs. Defined in the *Configuration File*.
     
     Look at fixed limb altitude in operational mode with a set of exposure times for UV and IR CCDs.
     """

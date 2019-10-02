@@ -35,7 +35,7 @@
 <span class="sd">&quot;&quot;&quot;Contain Mode functions which generates and calculates parameters for each mode, </span>
 <span class="sd">then calls for Macros/Commands functions located in the *Macros_Commands* package, which will in turn write commands to the XML tree object *root*.</span>
 
-<span class="sd">Functions on the form &quot;X&quot;, where the last X is any Mode:</span>
+<span class="sd">Functions on the form &quot;X&quot;, where X is any Mode:</span>
 
 <span class="sd">    **Arguments:**</span>
 <span class="sd">        **root** (*lxml.etree.Element*):  XML tree structure. Main container object for the ElementTree API. \n</span>
@@ -48,7 +48,7 @@
 <span class="sd">        None</span>
 
 <span class="sd">When creating new Mode functions it is crucial that the function name is</span>
-<span class="sd">Mode_name, where Mode_name is the same as the string used in the *Science Mode Timeline*</span>
+<span class="sd">*X*, where *X* is the same as the string used in the *Science Mode Timeline*. Because OPT will automatically look for any function named the same as the string in the *Science Mode Timeline*</span>
 <span class="sd">        </span>
 <span class="sd">@author: David</span>
 <span class="sd">&quot;&quot;&quot;</span>
@@ -70,18 +70,20 @@
     <span class="sd">&#39;&#39;&#39;Mode5</span>
 <span class="sd">    </span>
 <span class="sd">    **Macro:** Operational_Limb_Pointing_macro \n</span>
-<span class="sd">    **CCD_Macro:** CustomBinning \n</span>
+<span class="sd">    **CCD_Macro:** Chosen in the settings of the Mode. \n</span>
 <span class="sd">            </span>
 <span class="sd">    &#39;&#39;&#39;</span>
     
     <span class="n">pointing_altitude</span> <span class="o">=</span> <span class="n">_Globals</span><span class="o">.</span><span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;LP_pointing_altitude&#39;</span><span class="p">]</span>
     
-    <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">CCD_macro_settings</span><span class="p">(</span><span class="s1">&#39;CustomBinning&#39;</span><span class="p">)</span>
+    
     <span class="n">settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Operational_Science_Mode_settings</span><span class="p">()</span>
     
     <span class="n">params</span> <span class="o">=</span> <span class="n">params_checker</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">Logger</span><span class="p">)</span>
     
-    <span class="n">Mode_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
+    <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">CCD_macro_settings</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;Choose_CCDMacro&#39;</span><span class="p">])</span>
+    
+    <span class="n">Mode_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
     <span class="n">comment</span> <span class="o">=</span> <span class="n">Mode_name</span><span class="o">+</span><span class="s1">&#39; starting date: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
     
     <span class="c1">#pointing_altitude = params[&#39;pointing_altitude&#39;]</span>
@@ -151,7 +153,7 @@
     <span class="n">pointing_altitude</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;LP_pointing_altitude&#39;</span><span class="p">]</span>
     <span class="n">lat</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">]</span>
     
-    <span class="n">heightAboveSurface</span> <span class="o">=</span> <span class="mi">20000</span> <span class="c1">#Altitude in km where sun is deemed to reflect in atmosphere, determining night and day below satellite&quot;</span>
+    <span class="n">heightAboveSurface</span> <span class="o">=</span> <span class="mi">35000</span> <span class="c1">#Altitude in km where sun is deemed to reflect in atmosphere, determining night and day below satellite&quot;</span>
     
     
     <span class="c1">#Estimation of the angle between the sun and the FOV position when it enters eclipse</span>
@@ -159,7 +161,7 @@
     
     <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;MATS_nadir_eclipse_angle : &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">MATS_nadir_eclipse_angle</span><span class="p">))</span>
     <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
-    
+    <span class="n">t</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
     
     <span class="n">MATS_skyfield</span> <span class="o">=</span> <span class="n">skyfield</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">EarthSatellite</span><span class="p">(</span><span class="n">TLE</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">TLE</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
     
@@ -167,7 +169,10 @@
     <span class="n">current_time</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">date</span><span class="p">)</span>
     
     <span class="s2">&quot;Loop and calculate the relevant angle of each star to each direction of MATS&#39;s FOV&quot;</span>
-    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">duration</span><span class="o">/</span><span class="n">timestep</span><span class="p">)):</span>
+    <span class="c1">#for t in range(int(duration/timestep)):</span>
+    <span class="k">while</span><span class="p">(</span> <span class="n">current_time</span> <span class="o">&lt;</span> <span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="n">duration</span><span class="o">+</span><span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">date</span><span class="p">)</span> <span class="p">):</span>
+        
+        <span class="n">t</span> <span class="o">+=</span> <span class="mi">1</span>
         
         <span class="k">if</span><span class="p">(</span> <span class="n">t</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
             <span class="s2">&quot;Incremented time from scheduling CMDs&quot;</span>
@@ -427,7 +432,7 @@
     <span class="n">R_mean</span> <span class="o">=</span> <span class="mi">6371000</span> <span class="c1">#Radius of Earth in m</span>
     <span class="n">pointing_altitude</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;LP_pointing_altitude&#39;</span><span class="p">]</span>
     
-    <span class="n">heightAboveSurface</span> <span class="o">=</span> <span class="mi">20000</span> <span class="c1">#Altitude in m where sun is deemed to reflect in atmosphere, determining night and day below satellite&quot;</span>
+    <span class="n">heightAboveSurface</span> <span class="o">=</span> <span class="mi">35000</span> <span class="c1">#Altitude in m where sun is deemed to reflect in atmosphere, determining night and day below satellite&quot;</span>
     
     <span class="c1">#Estimation of the angle between the sun and the FOV position when it enters eclipse</span>
     <span class="n">MATS_nadir_eclipse_angle</span> <span class="o">=</span> <span class="n">arccos</span><span class="p">(</span><span class="n">R_mean</span><span class="o">/</span><span class="p">(</span><span class="n">R_mean</span><span class="o">+</span><span class="n">heightAboveSurface</span><span class="p">))</span><span class="o">/</span><span class="n">pi</span><span class="o">*</span><span class="mi">180</span> <span class="o">+</span> <span class="mi">90</span>
@@ -436,11 +441,16 @@
     
     <span class="n">MATS_skyfield</span> <span class="o">=</span> <span class="n">skyfield</span><span class="o">.</span><span class="n">api</span><span class="o">.</span><span class="n">EarthSatellite</span><span class="p">(</span><span class="n">TLE</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">TLE</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
     
+    <span class="n">t</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+    
     <span class="n">new_relativeTime</span> <span class="o">=</span> <span class="n">relativeTime</span>
     <span class="n">current_time</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">date</span><span class="p">)</span>
     
     <span class="s2">&quot;Loop and calculate the relevant angle of each star to each direction of MATS&#39;s FOV&quot;</span>
-    <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">duration</span><span class="o">/</span><span class="n">timestep</span><span class="p">)):</span>
+    <span class="c1">#for t in range(int(duration/timestep)):</span>
+    <span class="k">while</span><span class="p">(</span> <span class="n">current_time</span> <span class="o">&lt;</span> <span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="n">duration</span><span class="o">+</span><span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">date</span><span class="p">)</span> <span class="p">):</span>
+        
+        <span class="n">t</span> <span class="o">+=</span> <span class="mi">1</span>
         
         <span class="k">if</span><span class="p">(</span> <span class="n">t</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
             <span class="n">CMD_scheduling_delay</span> <span class="o">=</span> <span class="p">(</span><span class="n">new_relativeTime</span><span class="o">-</span><span class="n">relativeTime</span><span class="p">)</span>
@@ -465,7 +475,6 @@
         
         <span class="n">r_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">Satellite_dict</span><span class="p">[</span><span class="s1">&#39;Position [km]&#39;</span><span class="p">]</span>
         <span class="n">sun_angle</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">SunAngle</span><span class="p">(</span> <span class="n">r_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">current_time</span><span class="p">)</span>
-        
         
         
         <span class="k">if</span><span class="p">(</span> <span class="n">t</span> <span class="o">%</span> <span class="n">log_timestep</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
@@ -495,7 +504,6 @@
                                                        <span class="n">pointing_altitude</span><span class="o">=</span><span class="n">pointing_altitude</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">)</span>
         
         <span class="c1">############# End of Initial Mode setup ###################################</span>
-        
         
         
         <span class="k">if</span><span class="p">(</span><span class="n">t</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
@@ -666,9 +674,12 @@
 
 <div class="viewcode-block" id="Mode12X"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode12X">[docs]</a><span class="k">def</span> <span class="nf">Mode12X</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
                        <span class="n">params</span><span class="p">,</span> <span class="n">CCD_settings</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Mode12X, where X is 1,2,3....</span>
+    <span class="sd">&quot;&quot;&quot;Subfunction of Mode12X, where X is 1,2,3....</span>
 <span class="sd">    </span>
 <span class="sd">    **Macro**: Snapshot_Inertial_macro. \n</span>
+<span class="sd">    </span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        CCD_settings (:obj:`dict` of :obj:`dict` of int): Settings for the CCDs. Defined in the *Configuration File*.</span>
 <span class="sd">    </span>
 <span class="sd">    Stare at a point in inertial reference frame and take a Snapshot with each CCD except nadir.</span>
 <span class="sd">    </span>
@@ -888,7 +899,7 @@
                        <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
     <span class="sd">&quot;&quot;&quot;Mode131</span>
 <span class="sd">    </span>
-<span class="sd">    **Macro**: FullReadout_Operational_Limb_Pointing_macro. \n</span>
+<span class="sd">    **Macro**: Operational_Limb_Pointing_macro. \n</span>
 <span class="sd">    **CCD_Macro**: FullReadout. \n</span>
 <span class="sd">    </span>
 <span class="sd">    Look at fixed limb altitude in operational mode.</span>
@@ -903,10 +914,10 @@
     <span class="n">comment</span> <span class="o">=</span> <span class="n">Mode_name</span><span class="o">+</span><span class="s1">&#39; starting date: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
     
     <span class="n">pointing_altitude</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;pointing_altitude&#39;</span><span class="p">]</span>
-    <span class="n">TEXPIMS</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;Exposure_Interval&#39;</span><span class="p">]</span>
     
-    <span class="n">Macros</span><span class="o">.</span><span class="n">FullReadout_Operational_Limb_Pointing_macro</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">relativeTime</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">CCD_settings</span><span class="p">,</span> 
-                                                       <span class="n">TEXPIMS</span> <span class="o">=</span> <span class="n">TEXPIMS</span><span class="p">,</span> <span class="n">pointing_altitude</span> <span class="o">=</span> <span class="n">pointing_altitude</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">)</span></div>
+    
+    <span class="n">Macros</span><span class="o">.</span><span class="n">Operational_Limb_Pointing_macro</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">relativeTime</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">CCD_settings</span><span class="p">,</span> 
+                                                       <span class="n">pointing_altitude</span> <span class="o">=</span> <span class="n">pointing_altitude</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">)</span></div>
 
 
 <span class="c1">################################################################################################</span>
@@ -915,9 +926,12 @@
 
 <div class="viewcode-block" id="Mode132_133"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode132_133">[docs]</a><span class="k">def</span> <span class="nf">Mode132_133</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
                        <span class="n">params</span><span class="p">,</span> <span class="n">CCD_settings</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Mode132 and Mode133</span>
+    <span class="sd">&quot;&quot;&quot;Subfunction of Mode132 and Mode133</span>
 <span class="sd">    </span>
 <span class="sd">    **Macro**: Operational_Limb_Pointing_macro. \n</span>
+<span class="sd">    </span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        CCD_settings (:obj:`dict` of :obj:`dict` of int): Settings for the CCDs. Defined in the *Configuration File*.</span>
 <span class="sd">    </span>
 <span class="sd">    Look at fixed limb altitude in operational mode with a set of exposure times for UV and IR CCDs.</span>
 <span class="sd">    &quot;&quot;&quot;</span>

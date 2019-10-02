@@ -438,7 +438,7 @@
 <span class="sd">    The offset calculations depend on the Readout Time, which depends on the binning settings of the CCDs. \n</span>
 <span class="sd">    The ExposureInterval Time depends on the longest combined Readout Time and ExposureTime for a CCD aswell as the </span>
 <span class="sd">    leading CCD&#39;s Exposure Time to prevent collision between</span>
-<span class="sd">    Readout of the leading CCD and the final CCD.</span>
+<span class="sd">    Readout of the leading CCD and the final CCD. If the combined TransferTime is estimated to be longer than TEXPIMS; TEXPIMS is set to the estimated combined TransferTime to prevent CRB crash. </span>
 <span class="sd">    </span>
 <span class="sd">    Arguments:</span>
 <span class="sd">        CCD_settings (dict of dict of int): Dictionary containing settings for the CCDs.</span>
@@ -536,6 +536,9 @@
     <span class="n">OffsetTime</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="n">previous_ExpTime</span> <span class="o">=</span> <span class="mi">0</span>
     
+    <span class="n">TransferTimes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">TransfertimePerPixel</span> <span class="o">=</span> <span class="mf">0.01</span> <span class="c1">#in ms</span>
+    
     <span class="s2">&quot;Calculate offset time in order of ExposureTime&quot;</span>
     <span class="k">for</span> <span class="n">ExpTime</span> <span class="ow">in</span> <span class="n">ExpTimes</span><span class="p">:</span>
         
@@ -553,6 +556,11 @@
             <span class="n">OffsetTime</span> <span class="o">=</span> <span class="n">OffsetTime</span> <span class="o">+</span> <span class="p">(</span><span class="n">ReadOutTime_16</span><span class="o">+</span><span class="n">ExtraOffset</span><span class="p">)</span>
             
             <span class="n">ExpIntervals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ReadOutTime_16</span> <span class="o">+</span> <span class="n">CCDSEL_16</span><span class="p">[</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">ExtraIntervalTime</span><span class="p">)</span>
+            
+            <span class="s2">&quot;Save estimated TransferTime&quot;</span>
+            <span class="c1">#if( CCDSEL_16[&#39;NCOL&#39;] * CCDSEL_16[&#39;NROW&#39;] * TransfertimePerPixel &gt;=  ExpIntervals[len(ExpIntervals)-1] ):</span>
+            <span class="n">TransferTimes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">CCDSEL_16</span><span class="p">[</span><span class="s1">&#39;NCOL&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">CCDSEL_16</span><span class="p">[</span><span class="s1">&#39;NROW&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">TransfertimePerPixel</span> <span class="p">)</span>
+            
             <span class="n">CCDSEL</span> <span class="o">+=</span> <span class="mi">16</span>
             
         <span class="k">elif</span><span class="p">(</span> <span class="n">ExpTime</span> <span class="o">==</span> <span class="n">CCDSEL_32</span><span class="p">[</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">Flag_32</span> <span class="o">==</span> <span class="kc">False</span><span class="p">):</span>
@@ -563,6 +571,11 @@
             <span class="n">OffsetTime</span> <span class="o">=</span> <span class="n">OffsetTime</span> <span class="o">+</span> <span class="p">(</span><span class="n">ReadOutTime_32</span><span class="o">+</span><span class="n">ExtraOffset</span><span class="p">)</span>
             
             <span class="n">ExpIntervals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ReadOutTime_32</span> <span class="o">+</span> <span class="n">CCDSEL_32</span><span class="p">[</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">ExtraIntervalTime</span><span class="p">)</span>
+            
+            <span class="s2">&quot;Save estimated TransferTime&quot;</span>
+            <span class="c1">#if( CCDSEL_32[&#39;NCOL&#39;] * CCDSEL_32[&#39;NROW&#39;] * TransfertimePerPixel &gt;=  ExpIntervals[len(ExpIntervals)-1] ):</span>
+            <span class="n">TransferTimes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">CCDSEL_32</span><span class="p">[</span><span class="s1">&#39;NCOL&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">CCDSEL_32</span><span class="p">[</span><span class="s1">&#39;NROW&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">TransfertimePerPixel</span> <span class="p">)</span>
+            
             <span class="n">CCDSEL</span> <span class="o">+=</span> <span class="mi">32</span>
             
         <span class="k">elif</span><span class="p">(</span> <span class="n">ExpTime</span> <span class="o">==</span> <span class="n">CCDSEL_1</span><span class="p">[</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">Flag_1</span> <span class="o">==</span> <span class="kc">False</span><span class="p">):</span>
@@ -572,6 +585,11 @@
             <span class="n">OffsetTime</span> <span class="o">=</span> <span class="n">OffsetTime</span> <span class="o">+</span> <span class="p">(</span><span class="n">ReadOutTime_1</span><span class="o">+</span><span class="n">ExtraOffset</span><span class="p">)</span>
             
             <span class="n">ExpIntervals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ReadOutTime_1</span> <span class="o">+</span> <span class="n">CCDSEL_1</span><span class="p">[</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">ExtraIntervalTime</span><span class="p">)</span>
+            
+            <span class="s2">&quot;Save estimated TransferTime&quot;</span>
+            <span class="c1">#if( CCDSEL_1[&#39;NCOL&#39;] * CCDSEL_1[&#39;NROW&#39;] * TransfertimePerPixel &gt;=  ExpIntervals[len(ExpIntervals)-1] ):</span>
+            <span class="n">TransferTimes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">CCDSEL_1</span><span class="p">[</span><span class="s1">&#39;NCOL&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">CCDSEL_1</span><span class="p">[</span><span class="s1">&#39;NROW&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">TransfertimePerPixel</span> <span class="p">)</span>
+            
             <span class="n">CCDSEL</span> <span class="o">+=</span> <span class="mi">1</span>
             
         <span class="k">elif</span><span class="p">(</span> <span class="n">ExpTime</span> <span class="o">==</span> <span class="n">CCDSEL_8</span><span class="p">[</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">Flag_8</span> <span class="o">==</span> <span class="kc">False</span><span class="p">):</span>
@@ -582,6 +600,11 @@
             <span class="n">OffsetTime</span> <span class="o">=</span> <span class="n">OffsetTime</span> <span class="o">+</span> <span class="p">(</span><span class="n">ReadOutTime_8</span><span class="o">+</span><span class="n">ExtraOffset</span><span class="p">)</span>
             
             <span class="n">ExpIntervals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ReadOutTime_8</span> <span class="o">+</span> <span class="n">CCDSEL_8</span><span class="p">[</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">ExtraIntervalTime</span><span class="p">)</span>
+            
+            <span class="s2">&quot;Save estimated TransferTime&quot;</span>
+            <span class="c1">#if( CCDSEL_8[&#39;NCOL&#39;] * CCDSEL_8[&#39;NROW&#39;] * TransfertimePerPixel &gt;=  ExpIntervals[len(ExpIntervals)-1] ):</span>
+            <span class="n">TransferTimes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">CCDSEL_8</span><span class="p">[</span><span class="s1">&#39;NCOL&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">CCDSEL_8</span><span class="p">[</span><span class="s1">&#39;NROW&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">TransfertimePerPixel</span><span class="p">)</span>
+            
             <span class="n">CCDSEL</span> <span class="o">+=</span> <span class="mi">8</span>
             
             
@@ -593,16 +616,28 @@
             <span class="n">OffsetTime</span> <span class="o">=</span> <span class="n">OffsetTime</span> <span class="o">+</span> <span class="p">(</span><span class="n">ReadOutTime_2</span><span class="o">+</span><span class="n">ExtraOffset</span><span class="p">)</span>
             
             <span class="n">ExpIntervals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ReadOutTime_2</span> <span class="o">+</span> <span class="n">CCDSEL_2</span><span class="p">[</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">ExtraIntervalTime</span><span class="p">)</span>
+            
+            <span class="s2">&quot;Save estimated TransferTime&quot;</span>
+            <span class="c1">#if( CCDSEL_2[&#39;NCOL&#39;] * CCDSEL_2[&#39;NROW&#39;] * TransfertimePerPixel &gt;=  ExpIntervals[len(ExpIntervals)-1] ):</span>
+            <span class="n">TransferTimes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">CCDSEL_2</span><span class="p">[</span><span class="s1">&#39;NCOL&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">CCDSEL_2</span><span class="p">[</span><span class="s1">&#39;NROW&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">TransfertimePerPixel</span><span class="p">)</span>
+            
             <span class="n">CCDSEL</span> <span class="o">+=</span> <span class="mi">2</span>
             
         <span class="k">elif</span><span class="p">(</span> <span class="n">ExpTime</span> <span class="o">==</span> <span class="n">CCDSEL_4</span><span class="p">[</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="n">Flag_4</span> <span class="o">==</span> <span class="kc">False</span><span class="p">):</span>
             <span class="n">Flag_4</span> <span class="o">=</span> <span class="kc">True</span>
+            
             
             <span class="n">TEXPIOFS</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">OffsetTime</span><span class="o">/</span><span class="mi">10</span><span class="p">,</span><span class="mi">0</span><span class="p">)</span><span class="o">*</span><span class="mi">10</span><span class="p">))</span>
             
             <span class="n">OffsetTime</span> <span class="o">=</span> <span class="n">OffsetTime</span> <span class="o">+</span> <span class="p">(</span><span class="n">ReadOutTime_4</span><span class="o">+</span><span class="n">ExtraOffset</span><span class="p">)</span>
             
             <span class="n">ExpIntervals</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ReadOutTime_4</span> <span class="o">+</span> <span class="n">CCDSEL_4</span><span class="p">[</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">ExtraIntervalTime</span><span class="p">)</span>
+            
+            <span class="s2">&quot;Save estimated TransferTime&quot;</span>
+            <span class="n">TransferTimes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">CCDSEL_4</span><span class="p">[</span><span class="s1">&#39;NCOL&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">CCDSEL_4</span><span class="p">[</span><span class="s1">&#39;NROW&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">TransfertimePerPixel</span> <span class="p">)</span>
+            <span class="c1">#if( CCDSEL_4[&#39;NCOL&#39;] * CCDSEL_4[&#39;NROW&#39;] * TransfertimePerPixel &gt;=  ExpIntervals[len(ExpIntervals)-1] ):</span>
+            <span class="c1">#    ExpIntervals[len(ExpIntervals)-1] = CCDSEL_4[&#39;NCOL&#39;] * CCDSEL_4[&#39;NROW&#39;] * TransfertimePerPixel</span>
+            
             <span class="n">CCDSEL</span> <span class="o">+=</span> <span class="mi">4</span>
             
         <span class="sd">&quot;&quot;&quot;</span>
@@ -625,8 +660,9 @@
     <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">TEXPIOFS</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)):</span>
         <span class="n">TEXPIOFS</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
         
+    <span class="n">TransferTimesCombined</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">TransferTimes</span><span class="p">)</span>
     
-    <span class="n">ExpIntervals</span>
+    
     <span class="n">ExpInterval</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">ExpIntervals</span><span class="p">)</span>
     
     <span class="k">for</span> <span class="n">FirstExpTime</span> <span class="ow">in</span> <span class="n">ExpTimes</span><span class="p">:</span>
@@ -636,11 +672,12 @@
     <span class="s2">&quot;Increase the IntervalTime if it is too short, meaning that the Exposure and Readout of the last CCD interferes with the Readout of the leading CCD&quot;</span>
     <span class="k">if</span><span class="p">(</span> <span class="n">FirstExpTime</span> <span class="o">&lt;=</span> <span class="nb">max</span><span class="p">(</span><span class="n">TEXPIOFS</span><span class="p">)</span> <span class="p">):</span>
         <span class="n">ExpInterval</span> <span class="o">=</span> <span class="n">ExpInterval</span> <span class="o">+</span> <span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">TEXPIOFS</span><span class="p">)</span> <span class="o">-</span> <span class="n">FirstExpTime</span><span class="p">)</span>
+    <span class="k">if</span><span class="p">(</span> <span class="n">TransferTimesCombined</span> <span class="o">&gt;</span> <span class="n">ExpInterval</span><span class="p">):</span>
+        <span class="n">ExpInterval</span> <span class="o">=</span> <span class="n">TransferTimesCombined</span>
     
     <span class="n">TEXPIMS</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">ExpInterval</span><span class="p">,</span><span class="o">-</span><span class="mi">2</span><span class="p">))</span>
     
     <span class="n">NCCD</span> <span class="o">=</span> <span class="nb">bin</span><span class="p">(</span><span class="n">CCDSEL</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">(</span><span class="s1">&#39;1&#39;</span><span class="p">)</span>
-    
     
     <span class="k">return</span> <span class="n">CCDSEL</span><span class="p">,</span> <span class="n">NCCD</span><span class="p">,</span> <span class="n">TEXPIOFS</span><span class="p">,</span> <span class="n">TEXPIMS</span></div>
 

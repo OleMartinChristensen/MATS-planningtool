@@ -31,7 +31,7 @@ def Operational_Limb_Pointing_macro(root, relativeTime, CCD_settings, pointing_a
     Arguments:
         root (lxml.etree._Element):  XML tree structure. Main container object for the ElementTree API.
         relativeTime (float): The relative starting time of the macro with regard to the start of the timeline [s]
-        CCD_settings (:obj:`dict` of :obj:`dict` of int): Settings for the CCDs.
+        CCD_settings (:obj:`dict` of :obj:`dict` of int): Settings for the CCDs. Defined in the *Configuration File*.
         pointing_altitude (int): The altitude of the tangential point [m].
         comment (str): A comment for the macro. Will be printed in the genereated XML-file.
         
@@ -60,7 +60,7 @@ def Operational_Limb_Pointing_macro(root, relativeTime, CCD_settings, pointing_a
     
     return relativeTime
 
-
+"""
 def FullReadout_Operational_Limb_Pointing_macro(root, relativeTime, CCD_settings, pointing_altitude, TEXPIMS, comment):
     ''' Macro that corresponds to pointing towards a Limb altitude in Operational Mode. 
     
@@ -76,7 +76,7 @@ def FullReadout_Operational_Limb_Pointing_macro(root, relativeTime, CCD_settings
     Arguments:
         root (lxml.etree._Element):  XML tree structure. Main container object for the ElementTree API.
         relativeTime (float): The relative starting time of the macro with regard to the start of the timeline [s]
-        CCD_settings (:obj:`dict` of :obj:`dict` of int): Settings for the CCDs.
+        CCD_settings (:obj:`dict` of :obj:`dict` of int): Settings for the CCDs.. Defined in the *Configuration File*.
         pointing_altitude (int): The altitude of the tangential point [m].
         TEXPIMS (int): Exposure Interval [ms]. Note! Must be set very large when handling large images, at least 60000ms.
         comment (str): A comment for the macro. Will be printed in the genereated XML-file.
@@ -87,7 +87,7 @@ def FullReadout_Operational_Limb_Pointing_macro(root, relativeTime, CCD_settings
     '''
     
     
-    CCDSEL, NCCD, TEXPIOFS, Disregarded = _Library.SyncArgCalculator(CCD_settings, _Globals.Timeline_settings['CCDSYNC_ExtraOffset'], _Globals.Timeline_settings['CCDSYNC_ExtraIntervalTime'])
+    CCDSEL, NCCD, TEXPIOFS, TEXPIMS = _Library.SyncArgCalculator(CCD_settings, _Globals.Timeline_settings['CCDSYNC_ExtraOffset'], _Globals.Timeline_settings['CCDSYNC_ExtraIntervalTime'])
     
     relativeTime = Commands.TC_pafMode(root, relativeTime, mode = 2, comment = comment)
     
@@ -104,7 +104,7 @@ def FullReadout_Operational_Limb_Pointing_macro(root, relativeTime, CCD_settings
     relativeTime = Commands.TC_pafMode(root, relativeTime, mode = 1, comment = comment)
     
     return relativeTime
-
+"""
 
 def Operational_Sweep_macro(root, relativeTime, CCD_settings, pointing_altitude_from, pointing_altitude_to, sweep_rate, comment = ''):
     '''Macro that corresponds to performing a sweep while in Operational Mode.
@@ -120,7 +120,7 @@ def Operational_Sweep_macro(root, relativeTime, CCD_settings, pointing_altitude_
     Arguments:
         root (lxml.etree._Element):  XML tree structure. Main container object for the ElementTree API.
         relativeTime (float): The relative starting time of the macro with regard to the start of the timeline [s]
-        CCD_settings (dict of dict of int): Settings for the CCDs.
+        CCD_settings (dict of dict of int): Settings for the CCDs.. Defined in the *Configuration File*.
         pointing_altitude_from (int): The altitude in meters from which to start the sweep 
         pointing_altitude_from (int): The altitude in meters where the sweep will end
         sweep_rate (int): The rate of the sweep in m/s.
@@ -163,13 +163,14 @@ def Snapshot_Inertial_macro(root, relativeTime, CCD_settings, FreezeTime, Freeze
     3. Run CCD Commands with given settings.
     4. Run ArgFreezeStart Command with *FreezeTime*.
     5. Run ArgFreezeDuration Command with *FreezeDuration*.
-    6. Take a Snapshot with each CCD (except Nadir) starting at *Snapshot_relativeTime* with a spacing of *SnapshotSpacing*.
-    7. Point the satellite to *LP_pointing_altitude*.
+    6. Start Photometers
+    7. Take a Snapshot with each CCD (except Nadir) starting at *Snapshot_relativeTime* with a spacing of *SnapshotSpacing*.
+    8. Point the satellite to *LP_pointing_altitude*.
     
     Arguments:
         root (lxml.etree._Element):  XML tree structure. Main container object for the ElementTree API.
         relativeTime (float): The relative starting time of the macro with regard to the start of the timeline [s]
-        CCD_settings (dict of dict of int): Settings for the CCDs.
+        CCD_settings (dict of dict of int): Settings for the CCDs.. Defined in the *Configuration File*.
         FreezeTime (float): Start time of attitude freeze command in on-board time [s].
         FreezeDuration (int): Duration of freeze [s].
         pointing_altitude (int): The altitude of the tangential point [m].
@@ -194,6 +195,8 @@ def Snapshot_Inertial_macro(root, relativeTime, CCD_settings, FreezeTime, Freeze
     
     relativeTime = Commands.TC_affArgFreezeDuration(root, relativeTime, FreezeDuration = FreezeDuration, comment = comment)
     
+    relativeTime = Commands.TC_pafPM(root, relativeTime, comment = comment)
+    
     for CCDSEL in [1,2,4,8,16,32]:
         relativeTime = Commands.TC_pafCCDSnapshot(root, Snapshot_relativeTime, CCDSEL = CCDSEL, comment = comment)
         Snapshot_relativeTime += SnapshotSpacing
@@ -210,12 +213,13 @@ def Snapshot_Limb_Pointing_macro(root, relativeTime, CCD_settings, pointing_alti
     1. Set Payload to idle mode
     2. Point the satellite to *pointing_altitude*.
     3. Run CCD Commands with given settings.
-    4. Take a Snapshot with each CCD (except Nadir) with a spacing of *SnapshotSpacing*.
+    4. Start Photometers
+    5. Take a Snapshot with each CCD (except Nadir) with a spacing of *SnapshotSpacing*.
     
     Arguments:
         root (lxml.etree._Element):  XML tree structure. Main container object for the ElementTree API.
         relativeTime (float): The relative starting time of the macro with regard to the start of the timeline [s]
-        CCD_settings (dict of dict of int): Settings for the CCDs.
+        CCD_settings (dict of dict of int): Settings for the CCDs.. Defined in the *Configuration File*.
         pointing_altitude (int): The altitude of the tangential point [m].
         SnapshotSpacing (int): The time in seconds inbetween snapshots of individual CCDs.
         comment (str): A comment for the macro. Will be printed in the genereated XML-file.
@@ -233,6 +237,8 @@ def Snapshot_Limb_Pointing_macro(root, relativeTime, CCD_settings, pointing_alti
     
     relativeTime = CCD_macro(root, relativeTime, CCD_settings, TEXPIMS, comment = comment)
     
+    relativeTime = Commands.TC_pafPM(root, relativeTime, comment = comment)
+    
     for CCDSEL in [1,2,4,8,16,32]:
         Commands.TC_pafCCDSnapshot(root, relativeTime, CCDSEL = CCDSEL, comment = comment)
         relativeTime += SnapshotSpacing
@@ -243,18 +249,18 @@ def Snapshot_Limb_Pointing_macro(root, relativeTime, CCD_settings, pointing_alti
 
 
 
-def NadirSnapshot_Limb_Pointing_macro(root, relativeTime, CCD_settings, pointing_altitude, SnapshotSpacing, comment):
-    ''' Macro that corresponds to pointing towards a Limb altitude and taking a Snapshot with each CCD (except Nadir).
+def NadirSnapshot_Limb_Pointing_macro(root, relativeTime, CCD_settings, pointing_altitude, comment):
+    ''' Macro that corresponds to pointing towards a Limb altitude and taking a Snapshot with Nadir.
     
     1. Set Payload to idle mode
     2. Point the satellite to *pointing_altitude*.
     3. Run CCD Commands with given settings.
-    4. Take 5 Snapshots with Nadir with a spacing of *SnapshotSpacing*.
+    4. Take a Snapshot with Nadir.
     
     Arguments:
         root (lxml.etree._Element):  XML tree structure. Main container object for the ElementTree API.
         relativeTime (float): The relative starting time of the macro with regard to the start of the timeline [s]
-        CCD_settings (dict of dict of int): Settings for the CCDs.
+        CCD_settings (dict of dict of int): Settings for the CCDs.. Defined in the *Configuration File*.
         pointing_altitude (int): The altitude of the tangential point [m].
         SnapshotSpacing (int): The time in seconds inbetween snapshots of individual CCDs.
         comment (str): A comment for the macro. Will be printed in the genereated XML-file.
@@ -268,11 +274,17 @@ def NadirSnapshot_Limb_Pointing_macro(root, relativeTime, CCD_settings, pointing
     #relativeTime_SnapShot = relativeTime+_Globals.Timeline_settings['pointing_stabilization']
     relativeTime = Commands.TC_acfLimbPointingAltitudeOffset(root, relativeTime, Initial = pointing_altitude, Final = pointing_altitude, Rate = 0, comment = comment)
     
-    relativeTime = CCD_macro(root, relativeTime, CCD_settings, comment = comment)
+    CCDSEL_64 = CCD_settings['CCDSEL_64']
     
-    for CCDSEL in [64,64,44,64,64,64]:
-        Commands.TC_pafCCDSnapshot(root, relativeTime, CCDSEL = CCDSEL, comment = comment)
-        relativeTime += SnapshotSpacing
+    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDSEL = 64, PWR = CCDSEL_64['PWR'], WDW = CCDSEL_64['WDW'], JPEGQ = CCDSEL_64['JPEGQ'], SYNC = CCDSEL_64['SYNC'], 
+                                          TEXPIMS = CCDSEL_64['TEXPIMS'], TEXPMS = CCDSEL_64['TEXPMS'], GAIN = CCDSEL_64['GAIN'], 
+                                          NFLUSH = CCDSEL_64['NFLUSH'], NRSKIP = CCDSEL_64['NRSKIP'], NRBIN = CCDSEL_64['NRBIN'], 
+                                          NROW = CCDSEL_64['NROW'], NCSKIP = CCDSEL_64['NCSKIP'], NCBIN = CCDSEL_64['NCBIN'], 
+                                          NCOL = CCDSEL_64['NCOL'], NCBINFPGA = CCDSEL_64['NCBINFPGA'], SIGMODE = CCDSEL_64['SIGMODE'], comment = comment)
+    
+    
+    relativeTime = Commands.TC_pafCCDSnapshot(root, relativeTime, CCDSEL = 64, comment = comment)
+    
         
     #relativeTime = Commands.TC_pafMode(root, relativeTime, mode = 1, comment = comment)
     
@@ -316,7 +328,7 @@ def CCD_macro(root, relativeTime, CCD_settings, TEXPIMS, comment = ''):
     Arguments:
         root (lxml.etree._Element):  XML tree structure. Main container object for the ElementTree API.
         relativeTime (float): The relative starting time of the macro with regard to the start of the timeline [s]
-        CCD_settings (:obj:`dict` of int): A dict containing settings for the CCDs.
+        CCD_settings (:obj:`dict` of int): A dict containing Settings for the CCDs.. Defined in the *Configuration File*.
         TEXPIMS (int): ExposureIntervalTime for the CCDs (except nadir) in ms.
         comment (str): A comment for the macro. Will be printed in the genereated XML-file.
     
@@ -389,116 +401,6 @@ def CCD_macro(root, relativeTime, CCD_settings, TEXPIMS, comment = ''):
     
     return relativeTime
 
-
-def Limb_functional_test_macro(root, relativeTime, pointing_altitude, TEXPMS, JPEGQ, comment = ''):
-    '''Limb_functional_test_macro
-    
-    Arguments: 
-        root (lxml.etree._Element):  XML tree structure. Main container object for the ElementTree API.
-        relativeTime (float): The relative starting time of the macro with regard to the start of the timeline [s]
-        pointing_altitude (int): The altitude of the tangential point [m].
-        TEXPMS (int): Exposure time in ms
-        JPEGQ (int): The JPEG quality in %
-        comment (str): A comment for the macro. Will be printed in the genereated XML-file.
-        
-    Returns:
-        relativeTime (float): Time in seconds equal to the input "relativeTime" with added delay from the scheduling of commands.
-    '''
-    
-    relativeTime = Commands.TC_pafMode(root, relativeTime, mode = 2, comment = comment)
-    
-    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDSEL = '48', PWR = '1', TEXPIMS = '100', TEXPMS = TEXPMS, comment = comment, 
-                  NRSKIP = '100', NRBIN= '2', NROW = '400', NCBIN = '40', NCOL = '2000', JPEGQ = JPEGQ)
-    
-    
-    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDSEL = '9', PWR = '1', TEXPIMS = '100', TEXPMS = TEXPMS, comment = comment, 
-                  NRSKIP = '100', NRBIN= '3', NROW = '400', NCBIN = '81', NCOL = '2000', JPEGQ = JPEGQ)
-    
-    
-    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDSEL = '6', PWR = '1', TEXPIMS = '100', TEXPMS = TEXPMS, comment = comment, 
-                  NRSKIP = '100', NRBIN= '7', NROW = '400', NCBIN = '409', NCOL = '2000', JPEGQ = JPEGQ)
-    
-    
-    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDSEL = '64', PWR = '0', TEXPIMS = '5000', TEXPMS = '5000', comment = comment, 
-                  NRSKIP = '0', NRBIN= '110', NROW = '500', NCBIN = '196', NCOL = '1980', JPEGQ = '100')
-    
-    relativeTime = Commands.TC_acfLimbPointingAltitudeOffset(root, relativeTime, Initial = pointing_altitude, Final = pointing_altitude, comment = comment)
-    
-    relativeTime = Commands.TC_pafCCDSnapshot(root, relativeTime, CCDSEL = '63', comment = '')
-    
-    ''' #Snapshot with on CCD at a time with 5 seconds intervall
-    for CCDSEL in ['1','2','4','8','16','32']:
-        
-        relativeTime = TC_pafCCDSnapshot(root, relativeTime, CCDSEL = CCDSEL, comment = '')
-        relativeTime = str(round(float(relativeTime) + 5-Timeline_settings()['CMD_separation'],2))
-    '''
-    
-    return relativeTime
-
-
-
-def Photometer_test_1_macro(root, relativeTime, TEXPMS, ExpInt, comment = ''):
-    '''Photometer_test_1_macro
-
-    Arguments:
-        root (lxml.etree._Element):  XML tree structure. Main container object for the ElementTree API.
-        relativeTime (float): The relative starting time of the macro with regard to the start of the timeline [s]
-        TEXPMS (int): Exposure time in ms
-        ExpInt (int): Exposure interval in ms
-        comment (str): A comment for the macro. Will be printed in the genereated XML-file.
-        
-    Returns:
-        relativeTime (float): Time in seconds equal to the input "relativeTime" with added delay from the scheduling of commands.
-    '''
-    
-    relativeTime = Commands.TC_pafMode(root, relativeTime, mode = 2, comment = comment)
-    
-    relativeTime = Commands.TC_pafPM(root, time = relativeTime, TEXPMS= TEXPMS, TEXPIMS = ExpInt)
-    
-    relativeTime = Commands.TC_pafMode(root, relativeTime, mode = 1, comment = comment)
-        
-    return relativeTime
-
-
-
-def Nadir_functional_test_macro(root, relativeTime, pointing_altitude, TEXPMS, JPEGQ, comment = ''):
-    '''Nadir_functional_test
-    
-    Arguments:
-        root (lxml.etree._Element):  XML tree structure. Main container object for the ElementTree API.
-        relativeTime (float): The relative starting time of the macro with regard to the start of the timeline [s]
-        pointing_altitude (int): The altitude of the tangential point [m].
-        TEXPMS (int): Exposure time in ms
-        JPEGQ (int): The JPEG quality in %
-        comment (str): A comment for the macro. Will be printed in the genereated XML-file.
-        
-    Returns:
-        relativeTime (float): Time in seconds equal to the input "relativeTime" with added delay from the scheduling of commands.
-        '''
-    
-    relativeTime = Commands.TC_pafMode(root, relativeTime, mode = 2, comment = comment)
-    
-    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDSEL = '48', PWR = '0', TEXPIMS = '0', TEXPMS = TEXPMS, comment = comment, 
-                  NRSKIP = '0', NRBIN= '2', NROW = '400', NCBIN = '40', NCOL = '2000', JPEGQ = JPEGQ)
-    
-    
-    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDSEL = '9', PWR = '0', TEXPIMS = '0', TEXPMS = TEXPMS, comment = comment, 
-                  NRSKIP = '0', NRBIN= '3', NROW = '400', NCBIN = '81', NCOL = '2000', JPEGQ = JPEGQ)
-    
-    
-    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDSEL = '6', PWR = '0', TEXPIMS = '0', TEXPMS = TEXPMS, comment = comment, 
-                  NRSKIP = '0', NRBIN= '7', NROW = '400', NCBIN = '409', NCOL = '2000', JPEGQ = JPEGQ)
-    
-    
-    relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDSEL = '64', PWR = '1', TEXPIMS = '0', TEXPMS = TEXPMS, comment = comment, 
-                  NRSKIP = '0', NRBIN= '110', NROW = '500', NCBIN = '196', NCOL = '1980', JPEGQ = JPEGQ)
-    
-    
-    relativeTime = Commands.TC_acfLimbPointingAltitudeOffset(root, relativeTime, Initial = pointing_altitude, Final = pointing_altitude, comment = comment)
-        
-    relativeTime = Commands.TC_pafCCDSnapshot(root, relativeTime, CCDSEL = '64', comment = '')
-    
-    return relativeTime
 
 
 
