@@ -96,6 +96,7 @@ def Mode1(root, date, duration, relativeTime, params = {}):
     TEXPMS_32 = CCD_settings['CCDSEL_32']['TEXPMS']
     TEXPMS_nadir = CCD_settings['CCDSEL_64']['TEXPMS']
     
+    
     log_timestep = params['log_timestep']
     Logger.debug('log_timestep [s]: '+str(log_timestep))
     

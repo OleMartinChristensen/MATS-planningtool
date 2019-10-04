@@ -679,10 +679,10 @@ def CCD_macro_settings(CCDMacroSelect):
         
     elif( CCDMacroSelect == 'BinnedCalibration'):
         CCD_settings['CCDSEL_16'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 90, 'SYNC': 0, 'TEXPMS': 3000, 'GAIN': 0, 'NFLUSH': 1023, 
-                                 'NRSKIP': 0, 'NRBIN': 2, 'NROW': 255, 'NCSKIP': 0, 'NCBIN': 40, 'NCOL': 50, 'NCBINFPGA': 0, 'SIGMODE': 0}
+                                 'NRSKIP': 0, 'NRBIN': 2, 'NROW': 255, 'NCSKIP': 0, 'NCBIN': 40, 'NCOL': 50, 'NCBINFPGA': 0, 'SIGMODE': 1}
         
         CCD_settings['CCDSEL_32'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 90, 'SYNC': 0, 'TEXPMS': 3000, 'GAIN': 0, 'NFLUSH': 1023, 
-                                 'NRSKIP': 0, 'NRBIN': 2, 'NROW': 255, 'NCSKIP': 0, 'NCBIN': 40, 'NCOL': 50, 'NCBINFPGA': 0, 'SIGMODE': 0}
+                                 'NRSKIP': 0, 'NRBIN': 2, 'NROW': 255, 'NCSKIP': 0, 'NCBIN': 40, 'NCOL': 50, 'NCBINFPGA': 0, 'SIGMODE': 1}
         
         CCD_settings['CCDSEL_1'] = {'PWR': 1, 'WDW': 128, 'JPEGQ': 90, 'SYNC': 0, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
                                 'NRSKIP': 0, 'NRBIN': 2, 'NROW': 255, 'NCSKIP': 0, 'NCBIN': 40, 'NCOL': 50, 'NCBINFPGA': 0, 'SIGMODE': 1}
@@ -702,10 +702,10 @@ def CCD_macro_settings(CCDMacroSelect):
         
     elif( CCDMacroSelect == 'FullReadout'):
         CCD_settings['CCDSEL_16'] = {'PWR': 1, 'WDW': 7, 'JPEGQ': 110, 'SYNC': 0, 'TEXPMS': 3000, 'GAIN': 0, 'NFLUSH': 1023, 
-                                'NRSKIP': 0, 'NRBIN': 1, 'NROW': 511, 'NCSKIP': 0, 'NCBIN': 1, 'NCOL': 2047, 'NCBINFPGA': 0, 'SIGMODE': 0}
+                                'NRSKIP': 0, 'NRBIN': 1, 'NROW': 511, 'NCSKIP': 0, 'NCBIN': 1, 'NCOL': 2047, 'NCBINFPGA': 0, 'SIGMODE': 1}
         
         CCD_settings['CCDSEL_32'] = {'PWR': 1, 'WDW': 7, 'JPEGQ': 110, 'SYNC': 0, 'TEXPMS': 3000, 'GAIN': 0, 'NFLUSH': 1023, 
-                                'NRSKIP': 0, 'NRBIN': 1, 'NROW': 511, 'NCSKIP': 0, 'NCBIN': 1, 'NCOL': 2047, 'NCBINFPGA': 0, 'SIGMODE': 0}
+                                'NRSKIP': 0, 'NRBIN': 1, 'NROW': 511, 'NCSKIP': 0, 'NCBIN': 1, 'NCOL': 2047, 'NCBINFPGA': 0, 'SIGMODE': 1}
         
         CCD_settings['CCDSEL_1'] = {'PWR': 1, 'WDW': 7, 'JPEGQ': 110, 'SYNC': 0, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
                                 'NRSKIP': 0, 'NRBIN': 1, 'NROW': 511, 'NCSKIP': 0, 'NCBIN': 1, 'NCOL': 2047, 'NCBINFPGA': 0, 'SIGMODE': 1}
@@ -725,10 +725,10 @@ def CCD_macro_settings(CCDMacroSelect):
         
     elif( CCDMacroSelect == 'LowPixel'):
         CCD_settings['CCDSEL_16'] = {'PWR': 1, 'WDW': 7, 'JPEGQ': 110, 'SYNC': 0, 'TEXPMS': 3000, 'GAIN': 0, 'NFLUSH': 1023, 
-                                 'NRSKIP': 0, 'NRBIN': 63, 'NROW': 7, 'NCSKIP': 0, 'NCBIN': 255, 'NCOL': 7, 'NCBINFPGA': 0, 'SIGMODE': 0}
+                                 'NRSKIP': 0, 'NRBIN': 63, 'NROW': 7, 'NCSKIP': 0, 'NCBIN': 255, 'NCOL': 7, 'NCBINFPGA': 0, 'SIGMODE': 1}
         
         CCD_settings['CCDSEL_32'] = {'PWR': 1, 'WDW': 7, 'JPEGQ': 110, 'SYNC': 0, 'TEXPMS': 3000, 'GAIN': 0, 'NFLUSH': 1023, 
-                                 'NRSKIP': 0, 'NRBIN': 63, 'NROW': 7, 'NCSKIP': 0, 'NCBIN': 255, 'NCOL': 7, 'NCBINFPGA': 0, 'SIGMODE': 0}
+                                 'NRSKIP': 0, 'NRBIN': 63, 'NROW': 7, 'NCSKIP': 0, 'NCBIN': 255, 'NCOL': 7, 'NCBINFPGA': 0, 'SIGMODE': 1}
         
         CCD_settings['CCDSEL_1'] = {'PWR': 1, 'WDW': 7, 'JPEGQ': 110, 'SYNC': 0, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
                                 'NRSKIP': 0, 'NRBIN': 63, 'NROW': 7, 'NCSKIP': 0, 'NCBIN': 255, 'NCOL': 7, 'NCBINFPGA': 0, 'SIGMODE': 1}

@@ -39,9 +39,9 @@ def Mode133(Occupied_Timeline):
         initialDate = ephem.Date(Timeline_settings['start_date'])
     
     if( len(Settings['Exp_Times_UV']) <= len(Settings['Exp_Times_IR'])):
-        duration = ( Settings['session_duration']+ Timeline_settings['mode_separation'] ) * len(Settings['Exp_Times_UV'])+Timeline_settings['pointing_stabilization']
+        duration = ( Settings['session_duration']+ Timeline_settings['mode_separation']+Timeline_settings['pointing_stabilization'] ) * len(Settings['Exp_Times_UV'])
     elif( len(Settings['Exp_Times_IR']) < len(Settings['Exp_Times_UV']) ):
-        duration = ( Settings['session_duration']+ Timeline_settings['mode_separation'] ) * len(Settings['Exp_Times_IR'])+Timeline_settings['pointing_stabilization'] 
+        duration = ( Settings['session_duration']+ Timeline_settings['mode_separation']+Timeline_settings['pointing_stabilization'] ) * len(Settings['Exp_Times_IR'])
     
     """
     NumberOfCMDStepsInMacro = 12

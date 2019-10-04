@@ -742,7 +742,8 @@ def Satellite_Simulator( Satellite_skyfield, SimulationTime, Timeline_settings, 
     
     
     "Calculate intersection between the orbital plane and the equator"
-    ascending_node = cross(normal_orbit, celestial_eq)
+    #ascending_node = cross(normal_orbit, celestial_eq)
+    ascending_node = cross(celestial_eq, normal_orbit)
     
     arg_of_lat = arccos( dot(ascending_node, r_Satellite) / norm(r_Satellite) / norm(ascending_node) ) /pi*180
     

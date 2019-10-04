@@ -61,7 +61,10 @@ def TC_pafMode(root, relativeTime, mode, comment = ''):
     
     
 def TC_acfLimbPointingAltitudeOffset(root, relativeTime, Initial = 92500, Final = 92500, Rate = 0, comment = ''):
-    """Schedules Pointing Command unless the desired attitude is already set and Rate = 0."""
+    """Schedules Pointing Command
+    
+    If Rate == 0 an delay equal to *Timeline_settings['pointing_stabilization']* is added to *relativeTime*.
+    """
     
     if not( _Globals.latestRelativeTime <= relativeTime <= _Globals.Timeline_settings['duration']):
         Logger.error('Invalid argument: negative relativeTime, decreasing relativeTime, exceeding timeline duration')
@@ -81,37 +84,37 @@ def TC_acfLimbPointingAltitudeOffset(root, relativeTime, Initial = 92500, Final 
     Logger.debug('current_pointing: '+str(current_pointing))
     Logger.debug('Initial: '+str(Initial)+', Final: '+str(Final)+', Rate: '+str(Rate))
     
-    if(current_pointing != Final or current_pointing != Initial ):
-        Logger.debug('Scheduling pointing command')
+    #if(current_pointing != Final or current_pointing != Initial ):
+    #    Logger.debug('Scheduling pointing command')
+
+    etree.SubElement(root[1], 'command', mnemonic = "TC_acfLimbPointingAltitudeOffset")
     
-        etree.SubElement(root[1], 'command', mnemonic = "TC_acfLimbPointingAltitudeOffset")
-        
-        etree.SubElement(root[1][len(root[1])-1], 'relativeTime')
-        root[1][len(root[1])-1][0].text = str(relativeTime)
-        
-        etree.SubElement(root[1][len(root[1])-1], 'comment')
-        root[1][len(root[1])-1][1].text = comment
-        
-        etree.SubElement(root[1][len(root[1])-1], 'tcArguments')
-        etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "Initial")
-        root[1][len(root[1])-1][2][0].text = str(Initial)
-        
-        etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "Final")
-        root[1][len(root[1])-1][2][1].text = str(Final)
-        
-        etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "Rate")
-        root[1][len(root[1])-1][2][2].text = str(Rate)
+    etree.SubElement(root[1][len(root[1])-1], 'relativeTime')
+    root[1][len(root[1])-1][0].text = str(relativeTime)
     
-        if( Rate != 0 ):
-            incremented_time = relativeTime+_Globals.Timeline_settings['CMD_separation']
-            _Globals.current_pointing= None
-        elif( Final == Initial and Rate == 0):
-            _Globals.current_pointing= Final
-            incremented_time = relativeTime+_Globals.Timeline_settings['pointing_stabilization']
+    etree.SubElement(root[1][len(root[1])-1], 'comment')
+    root[1][len(root[1])-1][1].text = comment
     
-    else:
-        Logger.debug('Skipping pointing command as satellite is already oriented the desired way')
-        incremented_time = relativeTime
+    etree.SubElement(root[1][len(root[1])-1], 'tcArguments')
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "Initial")
+    root[1][len(root[1])-1][2][0].text = str(Initial)
+    
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "Final")
+    root[1][len(root[1])-1][2][1].text = str(Final)
+    
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "Rate")
+    root[1][len(root[1])-1][2][2].text = str(Rate)
+
+    if( Rate != 0 ):
+        incremented_time = relativeTime+_Globals.Timeline_settings['CMD_separation']
+        _Globals.current_pointing= None
+    elif( Final == Initial and Rate == 0):
+        _Globals.current_pointing= Final
+        incremented_time = relativeTime+_Globals.Timeline_settings['pointing_stabilization']
+
+    #else:
+    #    Logger.debug('Skipping pointing command as satellite is already oriented the desired way')
+    #    incremented_time = relativeTime
     
     
     #incremented_time = relativeTime+_Globals.Timeline_settings['CMD_separation']
@@ -404,7 +407,7 @@ def TC_pafCCDMain(root, relativeTime, CCDSEL, PWR, TEXPMS, TEXPIMS, NRSKIP, NRBI
                                                          NRSKIP = NRSKIP, NROW = NROW, NRBIN = NRBIN, NFLUSH = NFLUSH)
     ReadOutTime = T_readout + T_delay + T_Extra
     #Logger.debug('ReadOutTime = '+str(ReadOutTime))
-    if not( 0 <= TEXPMS and TEXPMS + ReadOutTime < TEXPIMS ):
+    if not( 0 <= TEXPMS <= 30000 and TEXPMS + ReadOutTime < TEXPIMS ):
         Logger.error('Invalid argument: TEXPMS is negative or TEXPMS + ReadOutTime > TEXPIMS')
         raise ValueError
     if not( type(TEXPMS) == int and type(TEXPIMS) == int ):
@@ -500,7 +503,7 @@ def TC_pafCCDSYNCHRONIZE( root, relativeTime, CCDSEL, NCCD, TEXPIOFS, comment = 
     Logger.debug('NCCD: '+str(NCCD))
     Logger.debug('TEXPIOFS: '+str(TEXPIOFS))
     
-    etree.SubElement(root[1], 'command', mnemonic = "TC_pafCCDSynchronize")
+    etree.SubElement(root[1], 'command', mnemonic = "TC_pafCCDSYNCHRONIZE")
     
     etree.SubElement(root[1][len(root[1])-1], 'relativeTime')
     root[1][len(root[1])-1][0].text = str(relativeTime)

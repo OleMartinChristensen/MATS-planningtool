@@ -207,8 +207,8 @@ def Simulator( ScienceMode, Timestamp_fraction_of_second, Timestep, Timeline_set
     """
     
     
-    TLE = ['1 54321U 19100G   20172.75041666 0.00000000  00000-0  75180-4 0  0012',
-           '2 54321  97.7044   6.9210 0014595 313.2372  91.8750 14.93194142000010']
+    #TLE = ['1 54321U 19100G   20172.75041666 0.00000000  00000-0  75180-4 0  0012',
+    #       '2 54321  97.7044   6.9210 0014595 313.2372  91.8750 14.93194142000010']
     
     
     ModeName = ScienceMode[0]
@@ -305,11 +305,9 @@ def Simulator( ScienceMode, Timestamp_fraction_of_second, Timestep, Timeline_set
     Mode_end_date = ephem.Date(ScienceMode[2])
     duration = (Mode_end_date - Mode_start_date) *24*3600
     
-    ############# !!!!!!!!!!!!!!!!!! #############
-    ############# !!!!!!!!!!!!!!!!!! #############
-    date = Mode_start_date + ephem.second
-    ############# !!!!!!!!!!!!!!!!!! #############
-    ############# !!!!!!!!!!!!!!!!!! #############
+    
+    date = Mode_start_date
+    
         
     "Simulation length"
     timesteps = int(floor(duration / Timestep))+1
