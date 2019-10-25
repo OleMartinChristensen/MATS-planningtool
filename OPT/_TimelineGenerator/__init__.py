@@ -10,14 +10,14 @@ which can be seen in the order of the modes in the list fetched from the
 function *Scheduling_priority* in the *Configuration File*. \n
 
 For each mode/CMD, one at a time, an appropriate date is calculated, or
-a predetermined date is already set in the *Configuration File* (could be for example at the start of the timeline). A dictionary (Occupied_Timeline) 
-keeps track of the planned runtime of all Modes, this to prevent colliding scheduling. \n
+a predetermined date is already set in the *Configuration File* (or could also be at the start of the timeline if no specific date was given). A dictionary (Occupied_Timeline) 
+keeps track of the planned runtime of all Modes/CMDs, this to prevent colliding scheduling. \n
 
 Mode1,2,5 are known as *Operational Science Modes*.
 These modes will fill out time left available after the rest of the Modes, set in *Scheduling_priority*, have been scheduled. 
 
 If calculated starting dates for modes are occupied, they will be changed  
-depending on a specialized filtering process (mode 120, 200...), or postponed until time is available (mode 130, 131...) using *_Library.scheduler*.
+depending on a specialized filtering process (mode 120-124...), or postponed until time is available (CMDs and mode 130, 131...) using *_Library.scheduler*.
 
 **Adding your own Science Modes:** \n
 

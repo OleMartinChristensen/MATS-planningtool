@@ -75,6 +75,15 @@ def ArgEnableYawComp(Occupied_Timeline):
 def CMD_scheduler(Occupied_Timeline):
     """Subfuncton, Schedules a CMD and saves it to the *Occupied_Timeline* variable
     
+    Arguments:
+        Occupied_Timeline (:obj:`dict` of :obj:`list`): Dictionary with keys equal to planned and scheduled Modes/CMDs with entries equal to their start and end time as a list.
+        
+    Returns:
+        (tuple): tuple containing:
+            (:obj:`dict` of :obj:`list`): Occupied_Timeline (updated with the result from the scheduled CMD). \n
+            (str): Comment regarding the result of scheduling of the CMD.
+    
+    
     """
     
     Logger.info('Timeline start_time used as initial date')

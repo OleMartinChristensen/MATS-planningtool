@@ -108,6 +108,15 @@
 <div class="viewcode-block" id="CMD_scheduler"><a class="viewcode-back" href="../../../../OPT._TimelineGenerator.Modes.html#OPT._TimelineGenerator.Modes.StartUpCmds.CMD_scheduler">[docs]</a><span class="k">def</span> <span class="nf">CMD_scheduler</span><span class="p">(</span><span class="n">Occupied_Timeline</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Subfuncton, Schedules a CMD and saves it to the *Occupied_Timeline* variable</span>
 <span class="sd">    </span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        Occupied_Timeline (:obj:`dict` of :obj:`list`): Dictionary with keys equal to planned and scheduled Modes/CMDs with entries equal to their start and end time as a list.</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (tuple): tuple containing:</span>
+<span class="sd">            (:obj:`dict` of :obj:`list`): Occupied_Timeline (updated with the result from the scheduled CMD). \n</span>
+<span class="sd">            (str): Comment regarding the result of scheduling of the CMD.</span>
+<span class="sd">    </span>
+<span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
     <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Timeline start_time used as initial date&#39;</span><span class="p">)</span>

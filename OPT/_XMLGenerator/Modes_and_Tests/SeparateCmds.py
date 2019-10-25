@@ -6,7 +6,7 @@ given in the set *Configuration File* and fills in any parameters missing in the
 
 For the rest CMDS, each parameter must be given in the Science Mode Timeline. \n
 
-PWRTOGGLE will always call a PWRTOGGLE_macro will also turns off all CCDs before power toggling. \n
+PWRTOGGLE will always call a PWRTOGGLE_macro which also turns off all CCDs before power toggling. \n
 
 Functions on the form "X", where X is any CMD:
     Arguments:
@@ -64,7 +64,7 @@ def HTR(root, date, duration, relativeTime,
     #params_default = {'HTRSEL': 1, 'SET': 2000, 'P': 10, 'I': 0, 'D': 0}
     #params = params_checker(params, params_default)
     Commands.TC_pafHTR(root, round(relativeTime,2), HTRSEL = params['HTRSEL'], SET = params['SET'], 
-                          P = params['P'] , I = params['I'], D = params['D'], comment = str(date))
+                          PVALUE = params['PVALUE'] , IVALUE = params['IVALUE'], DVALUE = params['DVALUE'], comment = str(date))
     
 
 def CCD(root, date, duration, relativeTime, 

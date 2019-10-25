@@ -2,7 +2,7 @@
 """Functions that are commonly used by the Operational Planning Tool.
 """
 
-import ephem, importlib, time, logging, os, sys, skyfield.api
+import ephem, importlib, time, logging, os, sys, skyfield.api, astropy
 from pylab import cos, sin, cross, dot, arctan, sqrt, array, arccos, pi, floor, around, norm
 
 from OPT import _Globals, _MATS_coordinates
@@ -230,37 +230,27 @@ def params_checker(dict1, dict2, Logger = None):
     return dict_new
 
 
-def utc_to_onboardTime(utc_date, GPS_epoch, leapSeconds):
-    """Function which converts a date in utc into onboard time in seconds.
+def utc_to_onboardTime(utc_date):
+    """Function which converts a date in utc into onboard time in seconds and rounds to nearest 10th of a second.
     
     Arguments:
         utc_date (:obj:`ephem.Date`): The date as a ephem.Date object.
-        GPS_epoch (str): Sets the epoch of the GPS time as a str, (example: '1980/1/6').
-        leapSeconds (int): Sets the amount of leap seconds for GPS time to be used [s].
-    
+        
     Returns:
-        (float): Onboard Time in seconds
+        (float): Onboard GPS time in seconds.
         
     """
     
+    utc_TimeObject = astropy.time.Time(utc_date.datetime())
+    onboardGPSTime = around(utc_TimeObject.gps,1)
     
-    #GPS_epoch = ephem.Date(Timeline_settings['GPS_epoch'])
-    #leapSeconds = ephem.second*Timeline_settings['leapSeconds']
-    
-    GPS_date = utc_date + ephem.second*leapSeconds -  ephem.Date(GPS_epoch)
-    
-    onboardTime = around(GPS_date / ephem.second, 1)
-    
-    #GPS_week = floor(GPS_date/7)
-    #onboardTime = around( (GPS_date/7 - GPS_week) / ephem.second, 1 )
-    
-    return onboardTime
+    return onboardGPSTime
 
 def SetupLogger(LoggerName):
     """Removes previous handlers and sets up a logger with both a file handler and a stream handler.
     
     Arguments:
-        LoggerName (str): 
+        LoggerName (str): The name of the Logger.
     
     Returns:
         None
@@ -282,7 +272,7 @@ def SetupLogger(LoggerName):
     
     #logging.basicConfig(stream=sys.stdout, level=logging.INFO)
     timestr = time.strftime("%Y%m%d-%H%M%S")
-    logstring = os.path.join('Logs_'+name, name+'__'+_Globals.Config_File+'__'+timestr+'.log')
+    logstring = os.path.join('Logs_'+name, name+'__'+timestr+'.log')
     Handler = logging.FileHandler(logstring, mode='a')
     formatter = logging.Formatter("%(levelname)6s : %(message)-80s :: %(module)s :: %(funcName)s")
     Handler.setFormatter(formatter)
@@ -428,7 +418,6 @@ def SyncArgCalculator(CCD_settings, ExtraOffset, ExtraIntervalTime):
     CCDSEL_8 = CCD_settings['CCDSEL_8']
     CCDSEL_2 = CCD_settings['CCDSEL_2']
     CCDSEL_4 = CCD_settings['CCDSEL_4']
-    CCDSEL_64 = CCD_settings['CCDSEL_64']
     
     
     
@@ -652,6 +641,8 @@ def SyncArgCalculator(CCD_settings, ExtraOffset, ExtraIntervalTime):
 def Satellite_Simulator( Satellite_skyfield, SimulationTime, Timeline_settings, pointing_altitude, LogFlag = False, Logger = None ):
     """Simulates a single point in time for a Satellite using Skyfield and also the pointing of the satellite.
     
+    Only estimates the actual pointing definition used by OHB.
+    
     Arguments:
         Satellite_skyfield (:obj:`skyfield.sgp4lib.EarthSatellite`): A Skyfield object representing an EarthSatellite defined by a TLE.
         SimulationTime (:obj:`ephem.Date`): The time of the simulation.
@@ -682,6 +673,9 @@ def Satellite_Simulator( Satellite_skyfield, SimulationTime, Timeline_settings, 
     U = 398600.441800000 #Earth gravitational parameter
     R_mean = 6371.000
     celestial_eq = [0,0,1]
+    
+    "Offset the pointing altitude slightly which improves the estimation of OHBs actual pointing"
+    pointing_altitude = pointing_altitude + 0.3
     
     yaw_correction = Timeline_settings['yaw_correction']
     #LP_altitude = Timeline_settings['LP_pointing_altitude']
@@ -736,7 +730,7 @@ def Satellite_Simulator( Satellite_skyfield, SimulationTime, Timeline_settings, 
     
     ############# Calculations of orbital and pointing vectors ############
     "Vector normal to the orbital plane of Satellite"
-    normal_orbit = cross(v_Satellite,r_Satellite)
+    normal_orbit = cross(r_Satellite,v_Satellite)
     normal_orbit = normal_orbit / norm(normal_orbit)
     
     
@@ -748,7 +742,7 @@ def Satellite_Simulator( Satellite_skyfield, SimulationTime, Timeline_settings, 
     arg_of_lat = arccos( dot(ascending_node, r_Satellite) / norm(r_Satellite) / norm(ascending_node) ) /pi*180
     
     "To determine if Satellite is moving towards the ascending node"
-    if( dot(cross( ascending_node, r_Satellite), normal_orbit) >= 0 ):
+    if( dot(cross( ascending_node, r_Satellite), normal_orbit) <= 0 ):
         arg_of_lat = 360 - arg_of_lat
         
     if( yaw_correction == True):
@@ -758,27 +752,27 @@ def Satellite_Simulator( Satellite_skyfield, SimulationTime, Timeline_settings, 
     
     
     "Rotate 'vector to Satellite', to represent pointing direction"
-    rot_mat = rot_arbit(Pitch/180*pi, normal_orbit)
+    rot_mat = rot_arbit(Pitch/180*pi, -normal_orbit)
     optical_axis = (rot_mat @ (r_Satellite) )
     
     "Apply yaw to optical_axis, meaning to rotate around the vector to Satellite"
-    rot_mat = rot_arbit(-yaw_offset_angle/180*pi, r_Satellite_unit_vector)
+    rot_mat = rot_arbit(yaw_offset_angle/180*pi, -r_Satellite_unit_vector)
     optical_axis = (rot_mat @ optical_axis )
     optical_axis_unit_vector = optical_axis/norm(optical_axis)
     
     
-    'Rotate optical_axis, to represent vector normal to satellite H-offset '
-    rot_mat = rot_arbit((Pitch-90)/180*pi, normal_orbit)
+    "Rotate 'vector to Satellite', to represent vector normal to satellite H-offset "
+    rot_mat = rot_arbit((Pitch-90)/180*pi, -normal_orbit)
     r_H_offset_normal = ( rot_mat @ r_Satellite )
     r_H_offset_normal = r_H_offset_normal / norm(r_H_offset_normal)
     
     "If pointing direction has a Yaw defined, Rotate yaw of normal to pointing direction H-offset plane, meaning to rotate around the vector to Satellite"
-    rot_mat = rot_arbit(-yaw_offset_angle/180*pi, r_Satellite_unit_vector)
+    rot_mat = rot_arbit(yaw_offset_angle/180*pi, -r_Satellite_unit_vector)
     r_H_offset_normal = (rot_mat @ r_H_offset_normal)
     r_H_offset_normal = r_H_offset_normal/norm(r_H_offset_normal)
     
-    "Rotate orbital plane normal to make it into a normal to the V-offset plane"
-    r_V_offset_normal = (rot_mat @ normal_orbit)
+    "Rotate negative orbital plane normal to make it into a normal to the V-offset plane"
+    r_V_offset_normal = (rot_mat @ -normal_orbit)
     r_V_offset_normal = r_V_offset_normal/norm(r_V_offset_normal)
     
     "Calculate Dec and RA of optical axis"
@@ -821,6 +815,55 @@ def Satellite_Simulator( Satellite_skyfield, SimulationTime, Timeline_settings, 
     #return r_Satellite, lat_Satellite, long_Satellite, alt_Satellite, optical_axis_unit_vector, Dec_optical_axis, RA_optical_axis, r_H_offset_normal, r_V_offset_normal, orbital_period 
     return Satellite_dict
 
+'''
+def IntrinsicEulerAnglesSLOF( VelocityVector, NegativeOrbitalNormal, NegativePosVector,):
+    """Calculates intrinsic Euler angles (ZYZ or Yaw, Pitch, Roll) defined from SLOF (Spacecraft Local Orbit Frame)
+    
+    Arguments:
+        VelocityVector (array): Velocity vector in GCRS. X basis vector in SLOF.
+        NegativeOrbitalNormal (array): Negative orbital normal vector in GCRS. Y basis vector in SLOF.
+        NegativePosVector (array): Negative positional vector in GCRS. Z basis vector in SLOF.
+        
+    Returns:
+        (tuple): tuple containing:
+            
+            - **Yaw** (*float*): Yaw angle in degrees.
+            - **Pitch** (*float*): Pitch angle in degrees.
+            - **Roll** (*float*): Roll angle in degrees.
+        
+        
+    
+    """
+    
+    "Define SLOF basis"
+    z_SLOF = NegativePosVector
+    z_SLOF = z_SLOF / norm(z_SLOF)
+    y_SLOF = NegativeOrbitalNormal
+    y_SLOF = y_SLOF / norm(y_SLOF)
+    x_SLOF = VelocityVector
+    x_SLOF = x_SLOF / norm(x_SLOF)
+    
+    "Convert ECI coordinates to SLOF"
+    dcm_SLOF_coordinate_system = array( ([x_SLOF[0], y_SLOF[0], z_SLOF[0]], [x_SLOF[1], y_SLOF[1], z_SLOF[1]], [x_SLOF[2], y_SLOF[2], z_SLOF[2]]) )
+    dcm_change_of_basis_ECI_to_SLOF = transpose(dcm_SLOF_coordinate_system)
+    r_change_of_basis_ECI_to_SLOF = R.from_dcm(dcm_change_of_basis_ECI_to_SLOF)
+    
+    optical_axis_SLOF = r_change_of_basis_ECI_to_SLOF.apply( optical_axis[t,:])
+    r_V_offset_normal_SLOF = r_change_of_basis_ECI_to_SLOF.apply( r_V_offset_normal )
+    r_H_offset_normal_SLOF = r_change_of_basis_ECI_to_SLOF.apply( r_H_offset_normal )
+    
+    
+    
+    "Find rotation and Euler angles from definition of optical axis in SLOF"
+    basis_SLOF = array( ( (optical_axis_SLOF), (r_V_offset_normal_SLOF), (r_H_offset_normal_SLOF) ) )
+    basis_ECI = array( ( (0,0,-1), (0,1,0), (1,0,0) ) )
+    rotation, sensitivity_matrix = R.match_vectors(basis_SLOF, basis_ECI)
+    
+    Euler_angles[t,:] = rotation.as_euler('ZYZ', degrees=True)
+    yaw_offset_angle[t] = Euler_angles[t,0]
+    pitch_MATS[t] = Euler_angles[t,1]
+    roll_MATS[t] = Euler_angles[t,2]
+'''
 
 def SunAngle( PositionVector, SimulationTime):
     """Calculates angle between a position vector and the position vector of the Sun.
@@ -889,3 +932,35 @@ def FreezeDuration_calculator(pointing_altitude1, pointing_altitude2, TLE2):
     FreezeDuration = int(round(MATS_P*(pitch_angle_difference)/360,0))
     
     return FreezeDuration
+
+
+def Snapshot_Images_Size_Calculator(CCD_settings):
+    
+    SizeOfImages = 0
+    SizeOfImagePerPixel = 2 #Bytes
+    
+    for CCDSEL in ['CCDSEL_1', 'CCDSEL_2', 'CCDSEL_4', 'CCDSEL_8', 'CCDSEL_16', 'CCDSEL_32', 'CCDSEL_64']:
+        if( CCD_settings[CCDSEL]['TEXPMS'] == 0 or CCD_settings[CCDSEL]['PWR'] == 0 ):
+            continue
+        else:
+            SizeOfImages += CCD_settings[CCDSEL]['NCOL'] * CCD_settings[CCDSEL]['NROW'] * SizeOfImagePerPixel
+            
+    return SizeOfImages
+    
+
+def Operational_Images_Size_Calculator(CCD_settings, duration, ExtraOffset, ExtraIntervalTime):
+    
+    SizeOfImages = 0
+    SizeOfImagePerPixel = 2 #Bytes
+    
+    disregarded, disregarded, disregarded, TEXPIMS = SyncArgCalculator(CCD_settings, ExtraOffset, ExtraIntervalTime)
+    
+    for CCDSEL in ['CCDSEL_1', 'CCDSEL_2', 'CCDSEL_4', 'CCDSEL_8', 'CCDSEL_16', 'CCDSEL_32', 'CCDSEL_64']:
+        if( CCD_settings[CCDSEL]['TEXPMS'] == 0 or CCD_settings[CCDSEL]['PWR'] == 0 ):
+            continue
+        elif( CCDSEL == 'CCDSEL_64'):
+            SizeOfImages += round(CCD_settings[CCDSEL]['NCOL'] * CCD_settings[CCDSEL]['NROW'] * SizeOfImagePerPixel * duration/CCD_settings[CCDSEL]['TEXPIMS'],0)
+        else:
+            SizeOfImages += round(CCD_settings[CCDSEL]['NCOL'] * CCD_settings[CCDSEL]['NROW'] * SizeOfImagePerPixel * duration/TEXPIMS, 0)
+            
+    

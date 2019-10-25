@@ -22,7 +22,7 @@ def UserProvidedDateScheduler(Occupied_Timeline, Settings):
     Used by Mode120-124.
     
     Arguments:
-        Occupied_Timeline (:obj:`dict` of :obj:`list`): Dictionary with keys equal to planned and scheduled Modes together with their start and end time in a list. The list is empty if the Mode is unscheduled.
+        Occupied_Timeline (:obj:`dict` of :obj:`list`): Dictionary with keys equal to planned and scheduled Modes/CMDs with entries equal to their start and end time as a list.
         Settings (dict): Dictionary containing settings for this simulation.
         
     Returns:
@@ -326,7 +326,7 @@ def date_select(Occupied_Timeline, date_magnitude_array, Settings):
     to other brightest stars visible at other timesteps.
     
     Arguments:
-        Occupied_Timeline (:obj:`dict` of :obj:`list`): Dictionary with keys equal to planned and scheduled Modes together with their start and end time in a list. The list is empty if the Mode is unscheduled.
+        Occupied_Timeline (:obj:`dict` of :obj:`list`): Dictionary with keys equal to planned and scheduled Modes/CMDs with entries equal to their start and end time as a list.
         date_magnitude_array (array): An Array containing date in first column and brightest magnitude visible in the second. Contains Dec and RA in 3rd and 4th column respectively. 
         
     Returns:

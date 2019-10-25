@@ -94,7 +94,7 @@
         
     <span class="n">SCIMOD_Timeline_unchronological</span> <span class="o">=</span> <span class="p">[]</span>
     
-    <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Create &quot;Occupied_Timeline&quot; variable&#39;</span><span class="p">)</span>
+    <span class="s2">&quot;Create Occupied_Timeline variable from the content of Schedulin_priority&quot;</span>
     <span class="n">Occupied_Timeline</span> <span class="o">=</span> <span class="p">{</span><span class="n">key</span><span class="p">:[]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">Scheduling_priority</span><span class="p">}</span>
     
     <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
@@ -120,13 +120,14 @@
         <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Start of &#39;</span><span class="o">+</span><span class="n">scimod</span><span class="p">)</span>
         <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
         
-        <span class="s2">&quot;Call the function of the same name as the string in Scheduling_priority&quot;</span>
+        <span class="s2">&quot;Get the function of the same name as the string in Scheduling_priority&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">Mode_function</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">Modes_Header</span><span class="p">,</span><span class="n">scimod</span><span class="p">)</span>
         <span class="k">except</span><span class="p">:</span>
             <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="n">scimod</span><span class="o">+</span><span class="s1">&#39; in Scheduling_priority was not found in Modes.Modes_Header&#39;</span><span class="p">)</span>
             <span class="k">raise</span> <span class="ne">NameError</span>
             
+        <span class="s2">&quot;Call the function of the same name as the string in Scheduling_priority&quot;</span>
         <span class="n">Occupied_Timeline</span><span class="p">,</span> <span class="n">Mode_comment</span> <span class="o">=</span> <span class="n">Mode_function</span><span class="p">(</span><span class="n">Occupied_Timeline</span><span class="p">)</span>
         
         <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
@@ -217,14 +218,15 @@
     <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Unchronological timeline sorted&#39;</span><span class="p">)</span>
     <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
     
+    <span class="s2">&quot;Create a Science Mode Timeline list with the first entry being Timeline_settings&quot;</span>
     <span class="n">SCIMOD_Timeline</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">SCIMOD_Timeline</span><span class="o">.</span><span class="n">append</span><span class="p">([</span> <span class="s1">&#39;Timeline_settings&#39;</span><span class="p">,</span><span class="s1">&#39;This Timeline was created using these settings from &#39;</span><span class="o">+</span><span class="n">_Globals</span><span class="o">.</span><span class="n">Config_File</span><span class="p">,</span>
                             <span class="s1">&#39;Note: These Timeline_settings and TLE will be used when converting into a XML&#39;</span><span class="p">,</span> 
                             <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">getTLE</span><span class="p">()])</span>
     
-    <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Create a science mode list in chronological order. The list contains Mode name, start date, enddate, params for XML-gen and comment&quot;</span><span class="p">)</span>
+    
     <span class="n">t</span><span class="o">=</span><span class="mi">0</span>
-    <span class="s2">&quot;Create a science mode list in chronological order. The list contains Mode name, start date, enddate, params for XML-gen and comment&quot;</span>
+    <span class="s2">&quot;Add entries to the Science Mode Timeline list in chronological order. The list contains Mode name, start date, enddate, params for XML-gen and comment&quot;</span>
     <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">SCIMOD_Timeline_unchronological</span><span class="p">:</span>
         
         <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; Timeline entry: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
@@ -242,6 +244,9 @@
             <span class="k">elif</span><span class="p">(</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;ArgEnableYawComp&#39;</span> <span class="p">):</span>
                 <span class="n">Config_File</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;EnableYawComp&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;yaw_correction&#39;</span><span class="p">])</span> <span class="p">}</span>
                 
+            <span class="c1">#elif( x[2] == &#39;HTR&#39; ):</span>
+            <span class="c1">#    Config_File = { &#39;HTRSEL&#39;: &#39;?&#39;, &#39;SET&#39;: &#39;?&#39;, </span>
+            <span class="c1">#              &#39;PVALUE&#39;: &#39;?&#39; , &#39;IVALUE&#39;: &#39;?&#39;, &#39;DVALUE&#39;: &#39;?&#39;}</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;No Config function for &#39;</span><span class="o">+</span><span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
                 <span class="n">Config_File</span> <span class="o">=</span> <span class="p">{}</span>
@@ -267,7 +272,9 @@
     <span class="n">SCIMOD_NAME</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;Output&#39;</span><span class="p">,</span> <span class="s1">&#39;Science_Mode_Timeline__&#39;</span><span class="o">+</span><span class="n">_Globals</span><span class="o">.</span><span class="n">Config_File</span><span class="o">+</span><span class="s1">&#39;.json&#39;</span><span class="p">)</span>
     <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Save mode timeline to file: &#39;</span><span class="o">+</span><span class="n">SCIMOD_NAME</span><span class="p">)</span>
     <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">SCIMOD_NAME</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">write_file</span><span class="p">:</span>
-        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">SCIMOD_Timeline</span><span class="p">,</span> <span class="n">write_file</span><span class="p">,</span> <span class="n">indent</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span></div>
+        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">SCIMOD_Timeline</span><span class="p">,</span> <span class="n">write_file</span><span class="p">,</span> <span class="n">indent</span> <span class="o">=</span> <span class="mi">2</span><span class="p">)</span>
+        
+    <span class="n">logging</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span></div>
     
 </pre></div>
 

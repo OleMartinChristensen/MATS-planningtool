@@ -35,7 +35,7 @@
 <span class="sd">&quot;&quot;&quot;Functions that are commonly used by the Operational Planning Tool.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">ephem</span><span class="o">,</span> <span class="nn">importlib</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">skyfield.api</span>
+<span class="kn">import</span> <span class="nn">ephem</span><span class="o">,</span> <span class="nn">importlib</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">skyfield.api</span><span class="o">,</span> <span class="nn">astropy</span>
 <span class="kn">from</span> <span class="nn">pylab</span> <span class="k">import</span> <span class="n">cos</span><span class="p">,</span> <span class="n">sin</span><span class="p">,</span> <span class="n">cross</span><span class="p">,</span> <span class="n">dot</span><span class="p">,</span> <span class="n">arctan</span><span class="p">,</span> <span class="n">sqrt</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">arccos</span><span class="p">,</span> <span class="n">pi</span><span class="p">,</span> <span class="n">floor</span><span class="p">,</span> <span class="n">around</span><span class="p">,</span> <span class="n">norm</span>
 
 <span class="kn">from</span> <span class="nn">OPT</span> <span class="k">import</span> <span class="n">_Globals</span><span class="p">,</span> <span class="n">_MATS_coordinates</span>
@@ -263,37 +263,27 @@
     <span class="k">return</span> <span class="n">dict_new</span></div>
 
 
-<div class="viewcode-block" id="utc_to_onboardTime"><a class="viewcode-back" href="../../OPT.html#OPT._Library.utc_to_onboardTime">[docs]</a><span class="k">def</span> <span class="nf">utc_to_onboardTime</span><span class="p">(</span><span class="n">utc_date</span><span class="p">,</span> <span class="n">GPS_epoch</span><span class="p">,</span> <span class="n">leapSeconds</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Function which converts a date in utc into onboard time in seconds.</span>
+<div class="viewcode-block" id="utc_to_onboardTime"><a class="viewcode-back" href="../../OPT.html#OPT._Library.utc_to_onboardTime">[docs]</a><span class="k">def</span> <span class="nf">utc_to_onboardTime</span><span class="p">(</span><span class="n">utc_date</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Function which converts a date in utc into onboard time in seconds and rounds to nearest 10th of a second.</span>
 <span class="sd">    </span>
 <span class="sd">    Arguments:</span>
 <span class="sd">        utc_date (:obj:`ephem.Date`): The date as a ephem.Date object.</span>
-<span class="sd">        GPS_epoch (str): Sets the epoch of the GPS time as a str, (example: &#39;1980/1/6&#39;).</span>
-<span class="sd">        leapSeconds (int): Sets the amount of leap seconds for GPS time to be used [s].</span>
-<span class="sd">    </span>
+<span class="sd">        </span>
 <span class="sd">    Returns:</span>
-<span class="sd">        (float): Onboard Time in seconds</span>
+<span class="sd">        (float): Onboard GPS time in seconds.</span>
 <span class="sd">        </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
+    <span class="n">utc_TimeObject</span> <span class="o">=</span> <span class="n">astropy</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">Time</span><span class="p">(</span><span class="n">utc_date</span><span class="o">.</span><span class="n">datetime</span><span class="p">())</span>
+    <span class="n">onboardGPSTime</span> <span class="o">=</span> <span class="n">around</span><span class="p">(</span><span class="n">utc_TimeObject</span><span class="o">.</span><span class="n">gps</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
     
-    <span class="c1">#GPS_epoch = ephem.Date(Timeline_settings[&#39;GPS_epoch&#39;])</span>
-    <span class="c1">#leapSeconds = ephem.second*Timeline_settings[&#39;leapSeconds&#39;]</span>
-    
-    <span class="n">GPS_date</span> <span class="o">=</span> <span class="n">utc_date</span> <span class="o">+</span> <span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="n">leapSeconds</span> <span class="o">-</span>  <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">GPS_epoch</span><span class="p">)</span>
-    
-    <span class="n">onboardTime</span> <span class="o">=</span> <span class="n">around</span><span class="p">(</span><span class="n">GPS_date</span> <span class="o">/</span> <span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-    
-    <span class="c1">#GPS_week = floor(GPS_date/7)</span>
-    <span class="c1">#onboardTime = around( (GPS_date/7 - GPS_week) / ephem.second, 1 )</span>
-    
-    <span class="k">return</span> <span class="n">onboardTime</span></div>
+    <span class="k">return</span> <span class="n">onboardGPSTime</span></div>
 
 <div class="viewcode-block" id="SetupLogger"><a class="viewcode-back" href="../../OPT.html#OPT._Library.SetupLogger">[docs]</a><span class="k">def</span> <span class="nf">SetupLogger</span><span class="p">(</span><span class="n">LoggerName</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Removes previous handlers and sets up a logger with both a file handler and a stream handler.</span>
 <span class="sd">    </span>
 <span class="sd">    Arguments:</span>
-<span class="sd">        LoggerName (str): </span>
+<span class="sd">        LoggerName (str): The name of the Logger.</span>
 <span class="sd">    </span>
 <span class="sd">    Returns:</span>
 <span class="sd">        None</span>
@@ -315,7 +305,7 @@
     
     <span class="c1">#logging.basicConfig(stream=sys.stdout, level=logging.INFO)</span>
     <span class="n">timestr</span> <span class="o">=</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">-%H%M%S&quot;</span><span class="p">)</span>
-    <span class="n">logstring</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;Logs_&#39;</span><span class="o">+</span><span class="n">name</span><span class="p">,</span> <span class="n">name</span><span class="o">+</span><span class="s1">&#39;__&#39;</span><span class="o">+</span><span class="n">_Globals</span><span class="o">.</span><span class="n">Config_File</span><span class="o">+</span><span class="s1">&#39;__&#39;</span><span class="o">+</span><span class="n">timestr</span><span class="o">+</span><span class="s1">&#39;.log&#39;</span><span class="p">)</span>
+    <span class="n">logstring</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;Logs_&#39;</span><span class="o">+</span><span class="n">name</span><span class="p">,</span> <span class="n">name</span><span class="o">+</span><span class="s1">&#39;__&#39;</span><span class="o">+</span><span class="n">timestr</span><span class="o">+</span><span class="s1">&#39;.log&#39;</span><span class="p">)</span>
     <span class="n">Handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="n">logstring</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;a&#39;</span><span class="p">)</span>
     <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%(levelname)6s</span><span class="s2"> : </span><span class="si">%(message)-80s</span><span class="s2"> :: </span><span class="si">%(module)s</span><span class="s2"> :: </span><span class="si">%(funcName)s</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="n">Handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
@@ -461,7 +451,6 @@
     <span class="n">CCDSEL_8</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_8&#39;</span><span class="p">]</span>
     <span class="n">CCDSEL_2</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_2&#39;</span><span class="p">]</span>
     <span class="n">CCDSEL_4</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_4&#39;</span><span class="p">]</span>
-    <span class="n">CCDSEL_64</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_64&#39;</span><span class="p">]</span>
     
     
     
@@ -685,6 +674,8 @@
 <div class="viewcode-block" id="Satellite_Simulator"><a class="viewcode-back" href="../../OPT.html#OPT._Library.Satellite_Simulator">[docs]</a><span class="k">def</span> <span class="nf">Satellite_Simulator</span><span class="p">(</span> <span class="n">Satellite_skyfield</span><span class="p">,</span> <span class="n">SimulationTime</span><span class="p">,</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">pointing_altitude</span><span class="p">,</span> <span class="n">LogFlag</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">Logger</span> <span class="o">=</span> <span class="kc">None</span> <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Simulates a single point in time for a Satellite using Skyfield and also the pointing of the satellite.</span>
 <span class="sd">    </span>
+<span class="sd">    Only estimates the actual pointing definition used by OHB.</span>
+<span class="sd">    </span>
 <span class="sd">    Arguments:</span>
 <span class="sd">        Satellite_skyfield (:obj:`skyfield.sgp4lib.EarthSatellite`): A Skyfield object representing an EarthSatellite defined by a TLE.</span>
 <span class="sd">        SimulationTime (:obj:`ephem.Date`): The time of the simulation.</span>
@@ -715,6 +706,9 @@
     <span class="n">U</span> <span class="o">=</span> <span class="mf">398600.441800000</span> <span class="c1">#Earth gravitational parameter</span>
     <span class="n">R_mean</span> <span class="o">=</span> <span class="mf">6371.000</span>
     <span class="n">celestial_eq</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="s2">&quot;Offset the pointing altitude slightly which improves the estimation of OHBs actual pointing&quot;</span>
+    <span class="n">pointing_altitude</span> <span class="o">=</span> <span class="n">pointing_altitude</span> <span class="o">+</span> <span class="mf">0.3</span>
     
     <span class="n">yaw_correction</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;yaw_correction&#39;</span><span class="p">]</span>
     <span class="c1">#LP_altitude = Timeline_settings[&#39;LP_pointing_altitude&#39;]</span>
@@ -769,18 +763,19 @@
     
     <span class="c1">############# Calculations of orbital and pointing vectors ############</span>
     <span class="s2">&quot;Vector normal to the orbital plane of Satellite&quot;</span>
-    <span class="n">normal_orbit</span> <span class="o">=</span> <span class="n">cross</span><span class="p">(</span><span class="n">v_Satellite</span><span class="p">,</span><span class="n">r_Satellite</span><span class="p">)</span>
+    <span class="n">normal_orbit</span> <span class="o">=</span> <span class="n">cross</span><span class="p">(</span><span class="n">r_Satellite</span><span class="p">,</span><span class="n">v_Satellite</span><span class="p">)</span>
     <span class="n">normal_orbit</span> <span class="o">=</span> <span class="n">normal_orbit</span> <span class="o">/</span> <span class="n">norm</span><span class="p">(</span><span class="n">normal_orbit</span><span class="p">)</span>
     
     
     
     <span class="s2">&quot;Calculate intersection between the orbital plane and the equator&quot;</span>
-    <span class="n">ascending_node</span> <span class="o">=</span> <span class="n">cross</span><span class="p">(</span><span class="n">normal_orbit</span><span class="p">,</span> <span class="n">celestial_eq</span><span class="p">)</span>
+    <span class="c1">#ascending_node = cross(normal_orbit, celestial_eq)</span>
+    <span class="n">ascending_node</span> <span class="o">=</span> <span class="n">cross</span><span class="p">(</span><span class="n">celestial_eq</span><span class="p">,</span> <span class="n">normal_orbit</span><span class="p">)</span>
     
     <span class="n">arg_of_lat</span> <span class="o">=</span> <span class="n">arccos</span><span class="p">(</span> <span class="n">dot</span><span class="p">(</span><span class="n">ascending_node</span><span class="p">,</span> <span class="n">r_Satellite</span><span class="p">)</span> <span class="o">/</span> <span class="n">norm</span><span class="p">(</span><span class="n">r_Satellite</span><span class="p">)</span> <span class="o">/</span> <span class="n">norm</span><span class="p">(</span><span class="n">ascending_node</span><span class="p">)</span> <span class="p">)</span> <span class="o">/</span><span class="n">pi</span><span class="o">*</span><span class="mi">180</span>
     
     <span class="s2">&quot;To determine if Satellite is moving towards the ascending node&quot;</span>
-    <span class="k">if</span><span class="p">(</span> <span class="n">dot</span><span class="p">(</span><span class="n">cross</span><span class="p">(</span> <span class="n">ascending_node</span><span class="p">,</span> <span class="n">r_Satellite</span><span class="p">),</span> <span class="n">normal_orbit</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="p">):</span>
+    <span class="k">if</span><span class="p">(</span> <span class="n">dot</span><span class="p">(</span><span class="n">cross</span><span class="p">(</span> <span class="n">ascending_node</span><span class="p">,</span> <span class="n">r_Satellite</span><span class="p">),</span> <span class="n">normal_orbit</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="mi">0</span> <span class="p">):</span>
         <span class="n">arg_of_lat</span> <span class="o">=</span> <span class="mi">360</span> <span class="o">-</span> <span class="n">arg_of_lat</span>
         
     <span class="k">if</span><span class="p">(</span> <span class="n">yaw_correction</span> <span class="o">==</span> <span class="kc">True</span><span class="p">):</span>
@@ -790,27 +785,27 @@
     
     
     <span class="s2">&quot;Rotate &#39;vector to Satellite&#39;, to represent pointing direction&quot;</span>
-    <span class="n">rot_mat</span> <span class="o">=</span> <span class="n">rot_arbit</span><span class="p">(</span><span class="n">Pitch</span><span class="o">/</span><span class="mi">180</span><span class="o">*</span><span class="n">pi</span><span class="p">,</span> <span class="n">normal_orbit</span><span class="p">)</span>
+    <span class="n">rot_mat</span> <span class="o">=</span> <span class="n">rot_arbit</span><span class="p">(</span><span class="n">Pitch</span><span class="o">/</span><span class="mi">180</span><span class="o">*</span><span class="n">pi</span><span class="p">,</span> <span class="o">-</span><span class="n">normal_orbit</span><span class="p">)</span>
     <span class="n">optical_axis</span> <span class="o">=</span> <span class="p">(</span><span class="n">rot_mat</span> <span class="o">@</span> <span class="p">(</span><span class="n">r_Satellite</span><span class="p">)</span> <span class="p">)</span>
     
     <span class="s2">&quot;Apply yaw to optical_axis, meaning to rotate around the vector to Satellite&quot;</span>
-    <span class="n">rot_mat</span> <span class="o">=</span> <span class="n">rot_arbit</span><span class="p">(</span><span class="o">-</span><span class="n">yaw_offset_angle</span><span class="o">/</span><span class="mi">180</span><span class="o">*</span><span class="n">pi</span><span class="p">,</span> <span class="n">r_Satellite_unit_vector</span><span class="p">)</span>
+    <span class="n">rot_mat</span> <span class="o">=</span> <span class="n">rot_arbit</span><span class="p">(</span><span class="n">yaw_offset_angle</span><span class="o">/</span><span class="mi">180</span><span class="o">*</span><span class="n">pi</span><span class="p">,</span> <span class="o">-</span><span class="n">r_Satellite_unit_vector</span><span class="p">)</span>
     <span class="n">optical_axis</span> <span class="o">=</span> <span class="p">(</span><span class="n">rot_mat</span> <span class="o">@</span> <span class="n">optical_axis</span> <span class="p">)</span>
     <span class="n">optical_axis_unit_vector</span> <span class="o">=</span> <span class="n">optical_axis</span><span class="o">/</span><span class="n">norm</span><span class="p">(</span><span class="n">optical_axis</span><span class="p">)</span>
     
     
-    <span class="s1">&#39;Rotate optical_axis, to represent vector normal to satellite H-offset &#39;</span>
-    <span class="n">rot_mat</span> <span class="o">=</span> <span class="n">rot_arbit</span><span class="p">((</span><span class="n">Pitch</span><span class="o">-</span><span class="mi">90</span><span class="p">)</span><span class="o">/</span><span class="mi">180</span><span class="o">*</span><span class="n">pi</span><span class="p">,</span> <span class="n">normal_orbit</span><span class="p">)</span>
+    <span class="s2">&quot;Rotate &#39;vector to Satellite&#39;, to represent vector normal to satellite H-offset &quot;</span>
+    <span class="n">rot_mat</span> <span class="o">=</span> <span class="n">rot_arbit</span><span class="p">((</span><span class="n">Pitch</span><span class="o">-</span><span class="mi">90</span><span class="p">)</span><span class="o">/</span><span class="mi">180</span><span class="o">*</span><span class="n">pi</span><span class="p">,</span> <span class="o">-</span><span class="n">normal_orbit</span><span class="p">)</span>
     <span class="n">r_H_offset_normal</span> <span class="o">=</span> <span class="p">(</span> <span class="n">rot_mat</span> <span class="o">@</span> <span class="n">r_Satellite</span> <span class="p">)</span>
     <span class="n">r_H_offset_normal</span> <span class="o">=</span> <span class="n">r_H_offset_normal</span> <span class="o">/</span> <span class="n">norm</span><span class="p">(</span><span class="n">r_H_offset_normal</span><span class="p">)</span>
     
     <span class="s2">&quot;If pointing direction has a Yaw defined, Rotate yaw of normal to pointing direction H-offset plane, meaning to rotate around the vector to Satellite&quot;</span>
-    <span class="n">rot_mat</span> <span class="o">=</span> <span class="n">rot_arbit</span><span class="p">(</span><span class="o">-</span><span class="n">yaw_offset_angle</span><span class="o">/</span><span class="mi">180</span><span class="o">*</span><span class="n">pi</span><span class="p">,</span> <span class="n">r_Satellite_unit_vector</span><span class="p">)</span>
+    <span class="n">rot_mat</span> <span class="o">=</span> <span class="n">rot_arbit</span><span class="p">(</span><span class="n">yaw_offset_angle</span><span class="o">/</span><span class="mi">180</span><span class="o">*</span><span class="n">pi</span><span class="p">,</span> <span class="o">-</span><span class="n">r_Satellite_unit_vector</span><span class="p">)</span>
     <span class="n">r_H_offset_normal</span> <span class="o">=</span> <span class="p">(</span><span class="n">rot_mat</span> <span class="o">@</span> <span class="n">r_H_offset_normal</span><span class="p">)</span>
     <span class="n">r_H_offset_normal</span> <span class="o">=</span> <span class="n">r_H_offset_normal</span><span class="o">/</span><span class="n">norm</span><span class="p">(</span><span class="n">r_H_offset_normal</span><span class="p">)</span>
     
-    <span class="s2">&quot;Rotate orbital plane normal to make it into a normal to the V-offset plane&quot;</span>
-    <span class="n">r_V_offset_normal</span> <span class="o">=</span> <span class="p">(</span><span class="n">rot_mat</span> <span class="o">@</span> <span class="n">normal_orbit</span><span class="p">)</span>
+    <span class="s2">&quot;Rotate negative orbital plane normal to make it into a normal to the V-offset plane&quot;</span>
+    <span class="n">r_V_offset_normal</span> <span class="o">=</span> <span class="p">(</span><span class="n">rot_mat</span> <span class="o">@</span> <span class="o">-</span><span class="n">normal_orbit</span><span class="p">)</span>
     <span class="n">r_V_offset_normal</span> <span class="o">=</span> <span class="n">r_V_offset_normal</span><span class="o">/</span><span class="n">norm</span><span class="p">(</span><span class="n">r_V_offset_normal</span><span class="p">)</span>
     
     <span class="s2">&quot;Calculate Dec and RA of optical axis&quot;</span>
@@ -853,6 +848,55 @@
     <span class="c1">#return r_Satellite, lat_Satellite, long_Satellite, alt_Satellite, optical_axis_unit_vector, Dec_optical_axis, RA_optical_axis, r_H_offset_normal, r_V_offset_normal, orbital_period </span>
     <span class="k">return</span> <span class="n">Satellite_dict</span></div>
 
+<span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">def IntrinsicEulerAnglesSLOF( VelocityVector, NegativeOrbitalNormal, NegativePosVector,):</span>
+<span class="sd">    &quot;&quot;&quot;Calculates intrinsic Euler angles (ZYZ or Yaw, Pitch, Roll) defined from SLOF (Spacecraft Local Orbit Frame)</span>
+<span class="sd">    </span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        VelocityVector (array): Velocity vector in GCRS. X basis vector in SLOF.</span>
+<span class="sd">        NegativeOrbitalNormal (array): Negative orbital normal vector in GCRS. Y basis vector in SLOF.</span>
+<span class="sd">        NegativePosVector (array): Negative positional vector in GCRS. Z basis vector in SLOF.</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (tuple): tuple containing:</span>
+<span class="sd">            </span>
+<span class="sd">            - **Yaw** (*float*): Yaw angle in degrees.</span>
+<span class="sd">            - **Pitch** (*float*): Pitch angle in degrees.</span>
+<span class="sd">            - **Roll** (*float*): Roll angle in degrees.</span>
+<span class="sd">        </span>
+<span class="sd">        </span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;Define SLOF basis&quot;</span>
+<span class="sd">    z_SLOF = NegativePosVector</span>
+<span class="sd">    z_SLOF = z_SLOF / norm(z_SLOF)</span>
+<span class="sd">    y_SLOF = NegativeOrbitalNormal</span>
+<span class="sd">    y_SLOF = y_SLOF / norm(y_SLOF)</span>
+<span class="sd">    x_SLOF = VelocityVector</span>
+<span class="sd">    x_SLOF = x_SLOF / norm(x_SLOF)</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;Convert ECI coordinates to SLOF&quot;</span>
+<span class="sd">    dcm_SLOF_coordinate_system = array( ([x_SLOF[0], y_SLOF[0], z_SLOF[0]], [x_SLOF[1], y_SLOF[1], z_SLOF[1]], [x_SLOF[2], y_SLOF[2], z_SLOF[2]]) )</span>
+<span class="sd">    dcm_change_of_basis_ECI_to_SLOF = transpose(dcm_SLOF_coordinate_system)</span>
+<span class="sd">    r_change_of_basis_ECI_to_SLOF = R.from_dcm(dcm_change_of_basis_ECI_to_SLOF)</span>
+<span class="sd">    </span>
+<span class="sd">    optical_axis_SLOF = r_change_of_basis_ECI_to_SLOF.apply( optical_axis[t,:])</span>
+<span class="sd">    r_V_offset_normal_SLOF = r_change_of_basis_ECI_to_SLOF.apply( r_V_offset_normal )</span>
+<span class="sd">    r_H_offset_normal_SLOF = r_change_of_basis_ECI_to_SLOF.apply( r_H_offset_normal )</span>
+<span class="sd">    </span>
+<span class="sd">    </span>
+<span class="sd">    </span>
+<span class="sd">    &quot;Find rotation and Euler angles from definition of optical axis in SLOF&quot;</span>
+<span class="sd">    basis_SLOF = array( ( (optical_axis_SLOF), (r_V_offset_normal_SLOF), (r_H_offset_normal_SLOF) ) )</span>
+<span class="sd">    basis_ECI = array( ( (0,0,-1), (0,1,0), (1,0,0) ) )</span>
+<span class="sd">    rotation, sensitivity_matrix = R.match_vectors(basis_SLOF, basis_ECI)</span>
+<span class="sd">    </span>
+<span class="sd">    Euler_angles[t,:] = rotation.as_euler(&#39;ZYZ&#39;, degrees=True)</span>
+<span class="sd">    yaw_offset_angle[t] = Euler_angles[t,0]</span>
+<span class="sd">    pitch_MATS[t] = Euler_angles[t,1]</span>
+<span class="sd">    roll_MATS[t] = Euler_angles[t,2]</span>
+<span class="sd">&#39;&#39;&#39;</span>
 
 <div class="viewcode-block" id="SunAngle"><a class="viewcode-back" href="../../OPT.html#OPT._Library.SunAngle">[docs]</a><span class="k">def</span> <span class="nf">SunAngle</span><span class="p">(</span> <span class="n">PositionVector</span><span class="p">,</span> <span class="n">SimulationTime</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Calculates angle between a position vector and the position vector of the Sun.</span>
@@ -921,6 +965,38 @@
     <span class="n">FreezeDuration</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">MATS_P</span><span class="o">*</span><span class="p">(</span><span class="n">pitch_angle_difference</span><span class="p">)</span><span class="o">/</span><span class="mi">360</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
     
     <span class="k">return</span> <span class="n">FreezeDuration</span></div>
+
+
+<div class="viewcode-block" id="Snapshot_Images_Size_Calculator"><a class="viewcode-back" href="../../OPT.html#OPT._Library.Snapshot_Images_Size_Calculator">[docs]</a><span class="k">def</span> <span class="nf">Snapshot_Images_Size_Calculator</span><span class="p">(</span><span class="n">CCD_settings</span><span class="p">):</span>
+    
+    <span class="n">SizeOfImages</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">SizeOfImagePerPixel</span> <span class="o">=</span> <span class="mi">2</span> <span class="c1">#Bytes</span>
+    
+    <span class="k">for</span> <span class="n">CCDSEL</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;CCDSEL_1&#39;</span><span class="p">,</span> <span class="s1">&#39;CCDSEL_2&#39;</span><span class="p">,</span> <span class="s1">&#39;CCDSEL_4&#39;</span><span class="p">,</span> <span class="s1">&#39;CCDSEL_8&#39;</span><span class="p">,</span> <span class="s1">&#39;CCDSEL_16&#39;</span><span class="p">,</span> <span class="s1">&#39;CCDSEL_32&#39;</span><span class="p">,</span> <span class="s1">&#39;CCDSEL_64&#39;</span><span class="p">]:</span>
+        <span class="k">if</span><span class="p">(</span> <span class="n">CCD_settings</span><span class="p">[</span><span class="n">CCDSEL</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">CCD_settings</span><span class="p">[</span><span class="n">CCDSEL</span><span class="p">][</span><span class="s1">&#39;PWR&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">):</span>
+            <span class="k">continue</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">SizeOfImages</span> <span class="o">+=</span> <span class="n">CCD_settings</span><span class="p">[</span><span class="n">CCDSEL</span><span class="p">][</span><span class="s1">&#39;NCOL&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">CCD_settings</span><span class="p">[</span><span class="n">CCDSEL</span><span class="p">][</span><span class="s1">&#39;NROW&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">SizeOfImagePerPixel</span>
+            
+    <span class="k">return</span> <span class="n">SizeOfImages</span></div>
+    
+
+<div class="viewcode-block" id="Operational_Images_Size_Calculator"><a class="viewcode-back" href="../../OPT.html#OPT._Library.Operational_Images_Size_Calculator">[docs]</a><span class="k">def</span> <span class="nf">Operational_Images_Size_Calculator</span><span class="p">(</span><span class="n">CCD_settings</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">ExtraOffset</span><span class="p">,</span> <span class="n">ExtraIntervalTime</span><span class="p">):</span>
+    
+    <span class="n">SizeOfImages</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">SizeOfImagePerPixel</span> <span class="o">=</span> <span class="mi">2</span> <span class="c1">#Bytes</span>
+    
+    <span class="n">disregarded</span><span class="p">,</span> <span class="n">disregarded</span><span class="p">,</span> <span class="n">disregarded</span><span class="p">,</span> <span class="n">TEXPIMS</span> <span class="o">=</span> <span class="n">SyncArgCalculator</span><span class="p">(</span><span class="n">CCD_settings</span><span class="p">,</span> <span class="n">ExtraOffset</span><span class="p">,</span> <span class="n">ExtraIntervalTime</span><span class="p">)</span>
+    
+    <span class="k">for</span> <span class="n">CCDSEL</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;CCDSEL_1&#39;</span><span class="p">,</span> <span class="s1">&#39;CCDSEL_2&#39;</span><span class="p">,</span> <span class="s1">&#39;CCDSEL_4&#39;</span><span class="p">,</span> <span class="s1">&#39;CCDSEL_8&#39;</span><span class="p">,</span> <span class="s1">&#39;CCDSEL_16&#39;</span><span class="p">,</span> <span class="s1">&#39;CCDSEL_32&#39;</span><span class="p">,</span> <span class="s1">&#39;CCDSEL_64&#39;</span><span class="p">]:</span>
+        <span class="k">if</span><span class="p">(</span> <span class="n">CCD_settings</span><span class="p">[</span><span class="n">CCDSEL</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">CCD_settings</span><span class="p">[</span><span class="n">CCDSEL</span><span class="p">][</span><span class="s1">&#39;PWR&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">):</span>
+            <span class="k">continue</span>
+        <span class="k">elif</span><span class="p">(</span> <span class="n">CCDSEL</span> <span class="o">==</span> <span class="s1">&#39;CCDSEL_64&#39;</span><span class="p">):</span>
+            <span class="n">SizeOfImages</span> <span class="o">+=</span> <span class="nb">round</span><span class="p">(</span><span class="n">CCD_settings</span><span class="p">[</span><span class="n">CCDSEL</span><span class="p">][</span><span class="s1">&#39;NCOL&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">CCD_settings</span><span class="p">[</span><span class="n">CCDSEL</span><span class="p">][</span><span class="s1">&#39;NROW&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">SizeOfImagePerPixel</span> <span class="o">*</span> <span class="n">duration</span><span class="o">/</span><span class="n">CCD_settings</span><span class="p">[</span><span class="n">CCDSEL</span><span class="p">][</span><span class="s1">&#39;TEXPIMS&#39;</span><span class="p">],</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">SizeOfImages</span> <span class="o">+=</span> <span class="nb">round</span><span class="p">(</span><span class="n">CCD_settings</span><span class="p">[</span><span class="n">CCDSEL</span><span class="p">][</span><span class="s1">&#39;NCOL&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">CCD_settings</span><span class="p">[</span><span class="n">CCDSEL</span><span class="p">][</span><span class="s1">&#39;NROW&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">SizeOfImagePerPixel</span> <span class="o">*</span> <span class="n">duration</span><span class="o">/</span><span class="n">TEXPIMS</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span></div>
+            
+    
 </pre></div>
 
           </div>

@@ -18,13 +18,12 @@ def Mode130(Occupied_Timeline):
     """Core function for the scheduling of Mode130.
     
     Arguments:
-        Occupied_Timeline (:obj:`dict` of :obj:`list`): Dictionary with keys equal to planned and scheduled Modes with entries equal to their start and end time as a list.
+        Occupied_Timeline (:obj:`dict` of :obj:`list`): Dictionary with keys equal to planned and scheduled Modes/CMDs with entries equal to their start and end time as a list.
         
     Returns:
         (tuple): tuple containing:
             (:obj:`dict` of :obj:`list`): Occupied_Timeline (updated with the result from the scheduled Mode). \n
             (str): Comment regarding the result of scheduling of the mode.
-    
     """
     
     Timeline_settings = OPT_Config_File.Timeline_settings()

@@ -26,7 +26,7 @@ def Mode120(Occupied_Timeline):
     Determines if the scheduled date should be determined by simulating MATS or be user provided.
     
     Arguments:
-        Occupied_Timeline (:obj:`dict` of :obj:`list`): Dictionary with keys equal to planned and scheduled Modes with entries equal to their start and end time as a list.
+        Occupied_Timeline (:obj:`dict` of :obj:`list`): Dictionary with keys equal to planned and scheduled Modes/CMDs with entries equal to their start and end time as a list.
         
     Returns:
         (tuple): tuple containing:
@@ -302,8 +302,8 @@ def Mode120_date_calculator():
                     "Log all relevent data for the star"
                     star_list_excel[0].append(stars[x].name)
                     star_list_excel[1].append(str(current_time))
-                    star_list_excel[2].append(str(float(long_MATS[t]/pi*180)))
-                    star_list_excel[3].append(str(float(lat_MATS[t]/pi*180)))
+                    star_list_excel[2].append(str(float(long_MATS[t])))
+                    star_list_excel[3].append(str(float(lat_MATS[t])))
                     star_list_excel[4].append(str(stars[x].mag))
                     star_list_excel[5].append(str(stars_hori_offset[t][x]))
                     star_list_excel[6].append(str(stars_vert_offset[t][x]))
@@ -318,7 +318,7 @@ def Mode120_date_calculator():
                     
                     "Log data of star relevant to filtering process"
                     star_list.append({ 'Date': str(current_time), 'V-offset': stars_vert_offset[t][x], 'H-offset': stars_hori_offset[t][x], 
-                                      'long_MATS': float(long_MATS[t]/pi*180), 'lat_MATS': float(lat_MATS[t]/pi*180), 
+                                      'long_MATS': float(long_MATS[t]), 'lat_MATS': float(lat_MATS[t]), 
                                       'Dec_optical_axis': Dec_optical_axis[t], 'RA_optical_axis': RA_optical_axis[t], 
                                       'Vmag': stars[x].mag, 'Name': stars[x].name, 'Dec': stars_dec[x]/pi*180, 'RA': stars_ra[x]/pi*180 })
                     
@@ -374,11 +374,11 @@ def Mode120_date_select(Occupied_Timeline, star_list):
     """Subfunction, Schedules a simulated date.
     
     A date is selected for which the brightest star is visible at the minimum amount of H-offset in the FOV.
-    If the date is occupied the same star will be selected with the 2nd least amount of H-offset and so on. Another star will not be chosen and if 
-    no date is available for the brightest star; the Mode will not be scheduled.
+    If the date is occupied the same star will be selected with the 2nd least amount of H-offset and so on. Another star will be chosen in chronological
+    order of availabilty if all the times the brightest star is available are occupied.
     
     Arguments:
-        Occupied_Timeline (:obj:`dict` of :obj:`list`): Dictionary with keys equal to planned and scheduled Modes together with their start and end time in a list. The list is empty if the Mode is unscheduled.
+        Occupied_Timeline (:obj:`dict` of :obj:`list`): Dictionary with keys equal to planned and scheduled Modes/CMDs with entries equal to their start and end time as a list.
         star_list ((:obj:`list` of :obj:`dict`)): A list containing dictionaries containing parameters for each time a star is spotted.
         
     Returns:
@@ -421,21 +421,25 @@ def Mode120_date_select(Occupied_Timeline, star_list):
     star_mag_sorted.sort()
     
     Logger.info('Brightest star magnitude: '+str(min(star_mag)))
+    arbitraryLargeNumber = 1000
     
-    "Extract all the H-offsets for the brightest star"
+    "Extract all the H-offsets for the brightest star. Allows scheduling in order of rising H-offset for the brightest star"
     for x in range(len(star_list)):
         if( min(star_mag) == star_mag[x]):
             star_min_mag_H_offset.append( star_H_offset[x])
             
-        #Just add an arbitrary large H-offset value for stars other than the brightest to keep the list the same length
+        #Just add an arbitrary large H-offset value for stars other than the brightest to keep the list the same length.
+        #This will also allow all instances with the brightest star to be scheduled first. Then later in random magnitude order.
         else:
-            star_min_mag_H_offset.append(100)
+            star_min_mag_H_offset.append(arbitraryLargeNumber)
+            "Increase the arbitraryLargeNumber to keep H-offsets different, which allow scheduling of stars with other magnitudes than the brightest if needed"
+            arbitraryLargeNumber += 1
     
     
     
-    #star_H_offset_abs = [abs(x) for x in star_H_offset]
+    "Extract and sort the H-offsets."
     star_H_offset_abs = [abs(x) for x in star_min_mag_H_offset]
-    #star_H_offset_sorted = star_H_offset_abs
+    
     star_H_offset_sorted = [abs(x) for x in star_min_mag_H_offset]
     star_H_offset_sorted.sort()
     Logger.debug('star_H_offset_abs: '+str(star_H_offset_abs))
@@ -457,7 +461,7 @@ def Mode120_date_select(Occupied_Timeline, star_list):
         restart = False
         
         #Extract index of  minimum H-offset for first iteration, 
-        #then next smallest if 2nd iterations needed and so on
+        #then next smallest if 2nd iterations needed and so on. If all 
         x = star_H_offset_abs.index(star_H_offset_sorted[iterations])
         
         StartDate = star_date[x]
@@ -490,7 +494,7 @@ def Mode120_date_select(Occupied_Timeline, star_list):
     
     
     
-    comment = ('Star name:'+star_name[x]+', V-offset: '+str(star_V_offset[x])+', H-offset: '+str(star_H_offset[x])+', V-mag: '+str(star_mag[x])+', Number of times date changed: '+str(iterations)
+    comment = ('Star name:'+star_name[x]+', V-offset: '+str(round(star_V_offset[x],2))+', H-offset: '+str(round(star_H_offset[x],2))+', V-mag: '+str(star_mag[x])+', Number of times date changed: '+str(iterations)
         +', MATS (long,lat) in degrees = ('+str(long_MATS[x])+', '+str(lat_MATS[x])+'), optical-axis Dec (J2000 ICRS): '+str(Dec_optical_axis[x])+'), optical-axis RA (J2000 ICRS): '+str(RA_optical_axis[x])+
     '), star Dec (J2000 ICRS): '+str(star_list[x]['Dec'])+', star RA (J2000 ICRS): '+str(star_list[x]['RA']))
     

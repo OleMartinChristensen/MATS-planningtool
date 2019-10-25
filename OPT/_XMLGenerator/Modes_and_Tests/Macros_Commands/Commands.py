@@ -20,6 +20,7 @@ Each Command function has these inputs/outputs in common.
 
 import logging, importlib
 from lxml import etree
+from pylab import sign
 
 from OPT import _Globals
 from OPT._Library import calculate_time_per_row
@@ -64,6 +65,7 @@ def TC_acfLimbPointingAltitudeOffset(root, relativeTime, Initial = 92500, Final 
     """Schedules Pointing Command
     
     If Rate == 0 an delay equal to *Timeline_settings['pointing_stabilization']* is added to *relativeTime*.
+    If the desired pointing altitude is already set, the maximum allowed TEXPMS is added to *relativeTime*.
     """
     
     if not( _Globals.latestRelativeTime <= relativeTime <= _Globals.Timeline_settings['duration']):
@@ -78,6 +80,9 @@ def TC_acfLimbPointingAltitudeOffset(root, relativeTime, Initial = 92500, Final 
     if not( -5000 <= Rate <= 5000 and ( type(Rate) == int or type(Rate) == float) ):
         Logger.error('Invalid argument: Rate')
         raise ValueError
+    if( Rate != 0 and sign(Final - Initial) != sign(Rate)):
+        Logger.error('Invalid argument: sign(Final - Initial) != sign(Rate)')
+        raise ValueError
     
     current_pointing = _Globals.current_pointing
     
@@ -86,7 +91,7 @@ def TC_acfLimbPointingAltitudeOffset(root, relativeTime, Initial = 92500, Final 
     
     #if(current_pointing != Final or current_pointing != Initial ):
     #    Logger.debug('Scheduling pointing command')
-
+    
     etree.SubElement(root[1], 'command', mnemonic = "TC_acfLimbPointingAltitudeOffset")
     
     etree.SubElement(root[1][len(root[1])-1], 'relativeTime')
@@ -108,10 +113,16 @@ def TC_acfLimbPointingAltitudeOffset(root, relativeTime, Initial = 92500, Final 
     if( Rate != 0 ):
         incremented_time = relativeTime+_Globals.Timeline_settings['CMD_separation']
         _Globals.current_pointing= None
-    elif( Final == Initial and Rate == 0):
+        Logger.debug('Rate != 0, meaning a sweep is scheduled. Next CMD is only staggered by Timeline_settings["CMD_separation"]')
+    elif(current_pointing == Final and current_pointing == Initial ):
+        _Globals.current_pointing= Final
+        incremented_time = relativeTime + 32
+        Logger.debug('Satellite is already orientated the right way. Next CMD is staggered by the same amount as the the maximum allowed TEXPMS')
+    elif( Rate == 0):
         _Globals.current_pointing= Final
         incremented_time = relativeTime+_Globals.Timeline_settings['pointing_stabilization']
-
+        Logger.debug('Satellite is not orientated the right way. Next CMD is staggered by Timeline_settings["pointing_stabilization"]')
+        
     #else:
     #    Logger.debug('Skipping pointing command as satellite is already oriented the desired way')
     #    incremented_time = relativeTime
@@ -287,7 +298,7 @@ def TC_pafUpload(root, relativeTime, PINDEX = 0, PTOTAL = 0, WFLASH = 0, NIMG = 
     
     return incremented_time
     
-def TC_pafHTR(root, relativeTime, HTRSEL, SET, P, I, D, comment = ''):
+def TC_pafHTR(root, relativeTime, HTRSEL, SET, PVALUE, IVALUE, DVALUE, comment = ''):
     
     if not( _Globals.latestRelativeTime <= relativeTime <= _Globals.Timeline_settings['duration']):
         Logger.error('Invalid argument: negative relativeTime, decreasing relativeTime, exceeding timeline duration')
@@ -298,14 +309,14 @@ def TC_pafHTR(root, relativeTime, HTRSEL, SET, P, I, D, comment = ''):
     if not( 86 <= SET <= 2285 and type(SET) == int ):
         Logger.error('Invalid argument: 86 > SET or SET > 2285')
         raise ValueError
-    if not( 0 <= P <= 65536 and type(P) == int ):
-        Logger.error('Invalid argument: P')
+    if not( 0 <= PVALUE <= 65536 and type(PVALUE) == int ):
+        Logger.error('Invalid argument: PVALUE')
         raise ValueError
-    if not( 0 <= I <= 65536 and type(I) == int ):
-        Logger.error('Invalid argument: I')
+    if not( 0 <= IVALUE <= 65536 and type(IVALUE) == int ):
+        Logger.error('Invalid argument: IVALUE')
         raise ValueError
-    if not( 0 <= D <= 65536 and type(D) == int ):
-        Logger.error('Invalid argument: D')
+    if not( 0 <= DVALUE <= 65536 and type(DVALUE) == int ):
+        Logger.error('Invalid argument: DVALUE')
         raise ValueError
     
     etree.SubElement(root[1], 'command', mnemonic = "TC_pafHTR")
@@ -323,14 +334,14 @@ def TC_pafHTR(root, relativeTime, HTRSEL, SET, P, I, D, comment = ''):
     etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "SET")
     root[1][len(root[1])-1][2][1].text = str(SET)
     
-    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "P")
-    root[1][len(root[1])-1][2][2].text = str(P)
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "PVALUE")
+    root[1][len(root[1])-1][2][2].text = str(PVALUE)
     
-    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "I")
-    root[1][len(root[1])-1][2][3].text = str(I)
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "IVALUE")
+    root[1][len(root[1])-1][2][3].text = str(IVALUE)
     
-    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "D")
-    root[1][len(root[1])-1][2][4].text = str(D)
+    etree.SubElement(root[1][len(root[1])-1][2], 'tcArgument', mnemonic = "DVALUE")
+    root[1][len(root[1])-1][2][4].text = str(DVALUE)
     
     incremented_time = relativeTime+_Globals.Timeline_settings['CMD_separation']
     _Globals.latestRelativeTime = relativeTime
@@ -373,8 +384,8 @@ def TC_pafCCDMain(root, relativeTime, CCDSEL, PWR, TEXPMS, TEXPIMS, NRSKIP, NRBI
     if not( 0 <= NCBINFPGA <= 7 and type(NCBINFPGA) == int ):
         Logger.error('Invalid argument: NCBINFPGA, if NCBINFPGA=8 then the CRB may stop working')
         raise ValueError
-    if not( 0 <= SIGMODE <= 255 and type(SIGMODE) == int ):
-        Logger.error('Invalid argument: SIGMODE')
+    if not( 1 <= SIGMODE <= 255 and type(SIGMODE) == int ):
+        Logger.error('Invalid argument: SIGMODE, if SIGMODE=0 then the CCDs may be unstable and stop working.')
         raise ValueError
     if not( (0 <= WDW <= 7 or WDW == 128) and type(WDW) == int ):
         Logger.error('Invalid argument: WDW')
@@ -397,18 +408,18 @@ def TC_pafCCDMain(root, relativeTime, CCDSEL, PWR, TEXPMS, TEXPIMS, NRSKIP, NRBI
     if not( NROW * NRBIN + NRSKIP <=  511 ):
         Logger.error('Invalid argument: NROW * NRBIN + NRSKIP exceeds 511')
         raise ValueError
-    if not( (NCOL) * NCBIN * 2**NCBINFPGA + NCSKIP <= 2047 ):
-        Logger.error('Invalid argument: (NCOL+1) * NCBIN * 2^NCBINFPGA + NCSKIP exceeds 2047')
+    if not( (NCOL+1) * NCBIN * 2**NCBINFPGA + NCSKIP <= 2048 ):
+        Logger.error('Invalid argument: (NCOL+1) * NCBIN * 2^NCBINFPGA + NCSKIP exceeds 2048')
         raise ValueError
-        
+    
         
     
     T_readout, T_delay, T_Extra = calculate_time_per_row(NCOL = NCOL, NCBIN = NCBIN, NCBINFPGA = NCBINFPGA, 
                                                          NRSKIP = NRSKIP, NROW = NROW, NRBIN = NRBIN, NFLUSH = NFLUSH)
     ReadOutTime = T_readout + T_delay + T_Extra
     #Logger.debug('ReadOutTime = '+str(ReadOutTime))
-    if not( 0 <= TEXPMS <= 30000 and TEXPMS + ReadOutTime < TEXPIMS ):
-        Logger.error('Invalid argument: TEXPMS is negative or TEXPMS + ReadOutTime > TEXPIMS')
+    if not( 0 <= TEXPMS <= 32000 and TEXPMS + ReadOutTime < TEXPIMS ):
+        Logger.error('Invalid argument: 32000 < TEXPMS < 0 or TEXPMS + ReadOutTime > TEXPIMS')
         raise ValueError
     if not( type(TEXPMS) == int and type(TEXPIMS) == int ):
         Logger.error('Invalid argument: TEXPMS or TEXPIMS is not an integer')
@@ -750,7 +761,7 @@ def TC_pafPM(root, relativeTime, TEXPMS = OPT_Config_File.PM_settings()['TEXPMS'
     if not( _Globals.latestRelativeTime <= relativeTime <= _Globals.Timeline_settings['duration']):
         Logger.error('Invalid argument: negative relativeTime, decreasing relativeTime, exceeding timeline duration')
         raise ValueError
-    if not( 0 <= TEXPMS and TEXPIMS >= TEXPMS + 500 ):
+    if not( 0 <= TEXPMS <= 100000 and TEXPIMS >= TEXPMS + 500 ):
         Logger.error('Invalid argument: TEXPMS is negative or TEXPMS is less than 500ms larger then TEXPIMS')
         raise ValueError
     if not( type(TEXPMS) == int and type(TEXPIMS) == int ):

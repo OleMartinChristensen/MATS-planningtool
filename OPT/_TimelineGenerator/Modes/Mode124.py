@@ -23,7 +23,7 @@ def Mode124(Occupied_Timeline):
     Determines if the scheduled date should be determined by simulating MATS or be user provided.
     
     Arguments:
-        Occupied_Timeline (:obj:`dict` of :obj:`list`): Dictionary with keys equal to planned and scheduled Modes with entries equal to their start and end time as a list.
+        Occupied_Timeline (:obj:`dict` of :obj:`list`): Dictionary with keys equal to planned and scheduled Modes/CMDs with entries equal to their start and end time as a list.
         
     Returns:
         (tuple): tuple containing:
@@ -101,7 +101,7 @@ def date_calculator():
     lat_MATS = zeros((timesteps,1))
     long_MATS = zeros((timesteps,1))
     optical_axis = zeros((timesteps,3))
-    normal_orbit = zeros((timesteps,3))
+    negative_normal_orbit = zeros((timesteps,3))
     r_H_offset_normal = zeros((timesteps,3))
     r_V_offset_normal = zeros((timesteps,3))
     MATS_P = zeros((timesteps,1))
@@ -175,7 +175,7 @@ def date_calculator():
         yaw_offset_angle = Satellite_dict['Yaw [degrees]']
         arg_of_lat = Satellite_dict['ArgOfLat [degrees]']
         
-        normal_orbit[t] = Satellite_dict['OrbitNormal']
+        negative_normal_orbit[t] = -Satellite_dict['OrbitNormal']
         r_H_offset_normal[t] = Satellite_dict['Normal2H_offset']
         r_V_offset_normal[t] = Satellite_dict['Normal2V_offset']
         
@@ -209,7 +209,7 @@ def date_calculator():
             RA_Moon = 360-RA_Moon
         
         "Project 'r_MATS_2_Moon' ontop of orbital plane"
-        Moon_r_orbital_plane[t] = r_MATS_2_Moon_norm[t] - dot(r_MATS_2_Moon_norm[t],normal_orbit[t]) * normal_orbit[t]
+        Moon_r_orbital_plane[t] = r_MATS_2_Moon_norm[t] - dot(r_MATS_2_Moon_norm[t],negative_normal_orbit[t]) * negative_normal_orbit[t]
         
         "Project 'r_MATS_2_Moon' ontop pointing H-offset and V-offset plane"
         Moon_r_V_offset_plane[t] = r_MATS_2_Moon_norm[t] - dot(r_MATS_2_Moon_norm[t],r_V_offset_normal[t]) * r_V_offset_normal[t]
@@ -221,7 +221,7 @@ def date_calculator():
         Moon_hori_offset[t] = arccos(dot(optical_axis[t],Moon_r_H_offset_plane[t]) / (norm(optical_axis[t])*norm(Moon_r_H_offset_plane[t]))) /pi*180
         
         "Get the offset angle sign correct"
-        if( dot(cross(optical_axis[t],Moon_r_V_offset_plane[t]),normal_orbit[t,0:3]) > 0 ):
+        if( dot(cross(optical_axis[t],Moon_r_V_offset_plane[t]),negative_normal_orbit[t,0:3]) > 0 ):
             Moon_vert_offset[t] = -Moon_vert_offset[t]
         if( dot(cross(optical_axis[t],Moon_r_H_offset_plane[t]),r_H_offset_normal[t]) > 0 ):
             Moon_hori_offset[t] = -Moon_hori_offset[t]
@@ -263,7 +263,7 @@ def date_calculator():
                 Logger.debug('angle_between_orbital_plane_and_moon [degrees]: '+str(angle_between_orbital_plane_and_moon[t]))
                 Logger.debug('Moon_vert_offset [degrees]: '+str(Moon_vert_offset[t]))
                 Logger.debug('Moon_hori_offset [degrees]: '+str(Moon_hori_offset[t]))
-                Logger.debug('normal_orbit: '+str(normal_orbit[t,0:3]))
+                Logger.debug('normal_orbit: '+str(-negative_normal_orbit[t,0:3]))
                 Logger.debug('r_V_offset_normal: '+str(r_V_offset_normal[t,0:3]))
                 Logger.debug('r_H_offset_normal: '+str(r_H_offset_normal[t,0:3]))
                 Logger.debug('optical_axis: '+str(optical_axis[t,0:3]))
@@ -423,7 +423,7 @@ def date_select(Occupied_Timeline, dates):
                         restart = True
                         break
         
-    comment = ('V-offset: '+str(Moon_V_offset[x])+' H-offset: '+str(Moon_H_offset[x])+', Number of times date changed: '+str(iterations)+
+    comment = ('V-offset: '+str(round(Moon_V_offset[x],2))+' H-offset: '+str(round(Moon_H_offset[x],2))+', Number of times date changed: '+str(iterations)+
                                       ', MATS (long,lat) in degrees = ('+str(Moon_long[x])+', '+str(Moon_lat[x])+'), Moon Dec (J2000) [degrees]: '+
                                       str(dates[x]['Dec'])+', Moon RA (J2000) [degrees]: '+str(dates[x]['RA'])+', Dec = '+str(dates[x]['Dec FOV'])+
                                       ', RA = '+str(dates[x]['RA FOV']))

@@ -39,6 +39,7 @@ def Operational_Limb_Pointing_macro(root, relativeTime, CCD_settings, pointing_a
         relativeTime (float): Time in seconds equal to the input "relativeTime" with added delay from the scheduling of commands.
     '''
     
+    comment = comment + ', Operational_Limb_Pointing_macro'
     
     CCDSEL, NCCD, TEXPIOFS, TEXPIMS = _Library.SyncArgCalculator(CCD_settings, _Globals.Timeline_settings['CCDSYNC_ExtraOffset'], _Globals.Timeline_settings['CCDSYNC_ExtraIntervalTime'])
     
@@ -130,7 +131,7 @@ def Operational_Sweep_macro(root, relativeTime, CCD_settings, pointing_altitude_
         relativeTime (float): Time in seconds equal to the input "relativeTime" with added delay from the scheduling of commands.
     '''
     
-    
+    comment = comment + ', Operational_Sweep_macro'
     
     CCDSEL, NCCD, TEXPIOFS, TEXPIMS = _Library.SyncArgCalculator(CCD_settings, _Globals.Timeline_settings['CCDSYNC_ExtraOffset'], _Globals.Timeline_settings['CCDSYNC_ExtraIntervalTime'])
     
@@ -183,6 +184,8 @@ def Snapshot_Inertial_macro(root, relativeTime, CCD_settings, FreezeTime, Freeze
         relativeTime (float): Time in seconds equal to the input "relativeTime" with added delay from the scheduling of commands.
     '''
     
+    comment = comment + ', Snapshot_Inertial_macro'
+    
     Disregarded, Disregarded, Disregarded, TEXPIMS = _Library.SyncArgCalculator(CCD_settings, _Globals.Timeline_settings['CCDSYNC_ExtraOffset'], _Globals.Timeline_settings['CCDSYNC_ExtraIntervalTime'])
     
     relativeTime = Commands.TC_pafMode(root, relativeTime, mode = 2, comment = comment)
@@ -228,6 +231,8 @@ def Snapshot_Limb_Pointing_macro(root, relativeTime, CCD_settings, pointing_alti
         relativeTime (float): Time in seconds equal to the input "relativeTime" with added delay from the scheduling of commands.
     '''
     
+    comment = comment + ', Snapshot_Limb_Pointing_macro'
+    
     Disregarded, Disregarded, Disregarded, TEXPIMS = _Library.SyncArgCalculator(CCD_settings, _Globals.Timeline_settings['CCDSYNC_ExtraOffset'], _Globals.Timeline_settings['CCDSYNC_ExtraIntervalTime'])
     
     relativeTime = Commands.TC_pafMode(root, relativeTime, mode = 2, comment = comment)
@@ -235,7 +240,7 @@ def Snapshot_Limb_Pointing_macro(root, relativeTime, CCD_settings, pointing_alti
     #relativeTime_SnapShot = relativeTime+_Globals.Timeline_settings['pointing_stabilization']
     relativeTime = Commands.TC_acfLimbPointingAltitudeOffset(root, relativeTime, Initial = pointing_altitude, Final = pointing_altitude, Rate = 0, comment = comment)
     
-    relativeTime = CCD_macro(root, relativeTime, CCD_settings, TEXPIMS, comment = comment)
+    relativeTime = CCD_macro(root, relativeTime, CCD_settings, TEXPIMS=TEXPIMS, comment = comment)
     
     relativeTime = Commands.TC_pafPM(root, relativeTime, comment = comment)
     
@@ -268,6 +273,8 @@ def NadirSnapshot_Limb_Pointing_macro(root, relativeTime, CCD_settings, pointing
     Returns:
         relativeTime (float): Time in seconds equal to the input "relativeTime" with added delay from the scheduling of commands.
     '''
+    
+    comment = comment + ', NadirSnapshot_Limb_Pointing_macro'
     
     relativeTime = Commands.TC_pafMode(root, relativeTime, mode = 2, comment = comment)
     
@@ -306,13 +313,16 @@ def PWRTOGGLE_macro(root, relativeTime, CONST, comment = ''):
         relativeTime (float): Time in seconds equal to the input "relativeTime" with added delay from the scheduling of commands.
     '''
     
+    comment = comment + ', PWRTOGGLE_macro'
+    
     relativeTime = Commands.TC_pafMode(root, relativeTime, mode = 2, comment = comment)
     
     relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDSEL = 127, PWR = 0, TEXPIMS = 6000, TEXPMS = 0, NRSKIP = 0, NRBIN = 1, NROW = 1, 
-                                          NCBIN = 1, NCOL=1, WDW = 128, JPEGQ = 110, SYNC = 0, NCBINFPGA = 0, SIGMODE = 0, GAIN = 0, 
+                                          NCBIN = 1, NCOL=1, WDW = 7, JPEGQ = 110, SYNC = 0, NCBINFPGA = 0, SIGMODE = 1, GAIN = 0, 
                                           NFLUSH = 1023, NCSKIP = 0, comment = comment)
     
     Commands.TC_pafPWRToggle(root, relativeTime, CONST = CONST, comment = comment)
+    
     
     
     return relativeTime
@@ -322,7 +332,7 @@ def PWRTOGGLE_macro(root, relativeTime, CONST, comment = ''):
 def CCD_macro(root, relativeTime, CCD_settings, TEXPIMS, comment = ''):
     """Macro that corresponds to configurating the settings of the CCDs
     
-    Used when the Synchronization CMD is used to synchronize all the CCDs except nadir or when Snapshots are utilized where TEXPIMS is irrelevant.
+    Used when the Synchronization CMD is used to synchronize all the CCDs (except nadir), or when Snapshots are utilized where TEXPIMS is irrelevant.
     TEXPIMS for all the CCDs except nadir is set to the same value to allow Synchronization.
     
     Arguments:

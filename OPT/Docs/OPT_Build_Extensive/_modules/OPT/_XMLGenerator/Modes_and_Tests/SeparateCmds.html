@@ -39,7 +39,7 @@
 
 <span class="sd">For the rest CMDS, each parameter must be given in the Science Mode Timeline. \n</span>
 
-<span class="sd">PWRTOGGLE will always call a PWRTOGGLE_macro will also turns off all CCDs before power toggling. \n</span>
+<span class="sd">PWRTOGGLE will always call a PWRTOGGLE_macro which also turns off all CCDs before power toggling. \n</span>
 
 <span class="sd">Functions on the form &quot;X&quot;, where X is any CMD:</span>
 <span class="sd">    Arguments:</span>
@@ -97,7 +97,7 @@
     <span class="c1">#params_default = {&#39;HTRSEL&#39;: 1, &#39;SET&#39;: 2000, &#39;P&#39;: 10, &#39;I&#39;: 0, &#39;D&#39;: 0}</span>
     <span class="c1">#params = params_checker(params, params_default)</span>
     <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafHTR</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">relativeTime</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">HTRSEL</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;HTRSEL&#39;</span><span class="p">],</span> <span class="n">SET</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;SET&#39;</span><span class="p">],</span> 
-                          <span class="n">P</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;P&#39;</span><span class="p">]</span> <span class="p">,</span> <span class="n">I</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;I&#39;</span><span class="p">],</span> <span class="n">D</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;D&#39;</span><span class="p">],</span> <span class="n">comment</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">))</span></div>
+                          <span class="n">PVALUE</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;PVALUE&#39;</span><span class="p">]</span> <span class="p">,</span> <span class="n">IVALUE</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;IVALUE&#39;</span><span class="p">],</span> <span class="n">DVALUE</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;DVALUE&#39;</span><span class="p">],</span> <span class="n">comment</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">))</span></div>
     
 
 <div class="viewcode-block" id="CCD"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.CCD">[docs]</a><span class="k">def</span> <span class="nf">CCD</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 

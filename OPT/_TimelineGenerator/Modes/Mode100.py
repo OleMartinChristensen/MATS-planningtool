@@ -18,7 +18,7 @@ def Mode100(Occupied_Timeline):
     """Core function for the scheduling of Mode100.
     
     Arguments:
-        Occupied_Timeline (:obj:`dict` of :obj:`list`): Dictionary with keys equal to planned and scheduled Modes with entries equal to their start and end time as a list.
+        Occupied_Timeline (:obj:`dict` of :obj:`list`): Dictionary with keys equal to planned and scheduled Modes/CMDs with entries equal to their start and end time as a list.
         
     Returns:
         (tuple): tuple containing:
@@ -42,7 +42,8 @@ def Mode100(Occupied_Timeline):
     #number_of_CMDs = 6
     number_of_altitudes = int( (Settings['pointing_altitude_to'] - Settings['pointing_altitude_from']) / Settings['pointing_altitude_interval'] + 1 )
     
-    duration = (Settings['pointing_duration'] + Timeline_settings['pointing_stabilization'] + Timeline_settings['mode_separation']) * number_of_altitudes
+    NumberOfCMDsPerAltitude = 12
+    duration = (Settings['pointing_duration'] + Timeline_settings['pointing_stabilization'] + Timeline_settings['CMD_separation'] * NumberOfCMDsPerAltitude) * number_of_altitudes
     
     endDate = ephem.Date(initialDate + ephem.second*(duration) )
     

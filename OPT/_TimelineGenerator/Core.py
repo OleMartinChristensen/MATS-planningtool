@@ -61,8 +61,10 @@ def Timeline_generator():
         
     SCIMOD_Timeline_unchronological = []
     
-    Logger.debug('Create "Occupied_Timeline" variable')
+    "Create Occupied_Timeline dictionary with keys equal to keys of Scheduling_priority"
     Occupied_Timeline = {key:[] for key in Scheduling_priority}
+    "Create scheduled_instances dictionary with keys equal to keys of Scheduling_priority"
+    scheduled_instances = {key:0 for key in Scheduling_priority}
     
     Logger.debug('')
     Logger.debug('Occupied_Timeline: \n'+"{" + "\n".join("        {}: {}".format(k, v) for k, v in Occupied_Timeline.items()) + "}")
@@ -87,13 +89,14 @@ def Timeline_generator():
         Logger.info('Start of '+scimod)
         Logger.info('')
         
-        "Call the function of the same name as the string in Scheduling_priority"
+        "Get the function of the same name as the string in Scheduling_priority"
         try:
             Mode_function = getattr(Modes_Header,scimod)
         except:
             Logger.error(scimod+' in Scheduling_priority was not found in Modes.Modes_Header')
             raise NameError
             
+        "Call the function of the same name as the string in Scheduling_priority"
         Occupied_Timeline, Mode_comment = Mode_function(Occupied_Timeline)
         
         Logger.debug('')
@@ -101,21 +104,23 @@ def Timeline_generator():
         Logger.debug('')
         
         
-        "Check if a date was scheduled"
-        if( Occupied_Timeline[scimod] != [] ):
+        "Check if a new date was scheduled"
+        #if( Occupied_Timeline[scimod] != [] ):
+        if( len(Occupied_Timeline[scimod]) != scheduled_instances[scimod] ):
             
-            scheduled_instances = len(Occupied_Timeline[scimod])
+            #scheduled_instances[scimod] = len(Occupied_Timeline[scimod])
+            scheduled_instances[scimod] += 1
             
             "Check if the scheduled date is within the time defined for the timeline"
-            if( Occupied_Timeline[scimod][scheduled_instances-1][0] < Timeline_start_date or 
-                   Occupied_Timeline[scimod][scheduled_instances-1][0] > (Timeline_start_date+ephem.second*Timeline_settings['duration']) or
-                   Occupied_Timeline[scimod][scheduled_instances-1][1] - Occupied_Timeline[scimod][scheduled_instances-1][0] > Timeline_settings['duration']):
+            if( Occupied_Timeline[scimod][scheduled_instances[scimod]-1][0] < Timeline_start_date or 
+                   Occupied_Timeline[scimod][scheduled_instances[scimod]-1][0] > (Timeline_start_date+ephem.second*Timeline_settings['duration']) or
+                   Occupied_Timeline[scimod][scheduled_instances[scimod]-1][1] - Occupied_Timeline[scimod][scheduled_instances[scimod]-1][0] > Timeline_settings['duration']):
                 Logger.warning(scimod+' scheduled outside of timeline as defined in OPT_Config_File')
                 
                 #input('Enter anything to acknowledge and continue\n')
             
             "Append mode and dates and comment to an unchronological Science Mode Timeline"
-            SCIMOD_Timeline_unchronological.append((Occupied_Timeline[scimod][scheduled_instances-1][0], Occupied_Timeline[scimod][scheduled_instances-1][1],scimod, Mode_comment))
+            SCIMOD_Timeline_unchronological.append((Occupied_Timeline[scimod][scheduled_instances[scimod]-1][0], Occupied_Timeline[scimod][scheduled_instances[scimod]-1][1],scimod, Mode_comment))
             Logger.debug('Entry number '+str(len(SCIMOD_Timeline_unchronological))+' in unchronological Science Mode list: '+str(SCIMOD_Timeline_unchronological[-1]))
             Logger.debug('')
         
@@ -179,19 +184,21 @@ def Timeline_generator():
     #############################################################################################
     ################# Sort Planned Modes and create a Science Mode Timeline List ################
     
+    
     SCIMOD_Timeline_unchronological.sort()
     Logger.debug('')
     Logger.debug('Unchronological timeline sorted')
     Logger.debug('')
     
+    "Create a Science Mode Timeline list with the first entry being Timeline_settings"
     SCIMOD_Timeline = []
     SCIMOD_Timeline.append([ 'Timeline_settings','This Timeline was created using these settings from '+_Globals.Config_File,
                             'Note: These Timeline_settings and TLE will be used when converting into a XML', 
                             Timeline_settings, OPT_Config_File.getTLE()])
     
-    Logger.debug("Create a science mode list in chronological order. The list contains Mode name, start date, enddate, params for XML-gen and comment")
+    
     t=0
-    "Create a science mode list in chronological order. The list contains Mode name, start date, enddate, params for XML-gen and comment"
+    "Add entries to the Science Mode Timeline list in chronological order. The list contains Mode name, start date, enddate, params for XML-gen and comment"
     for x in SCIMOD_Timeline_unchronological:
         
         Logger.debug(str(t+1)+' Timeline entry: '+str(x))
@@ -209,6 +216,9 @@ def Timeline_generator():
             elif( x[2] == 'ArgEnableYawComp' ):
                 Config_File = { 'EnableYawComp': int(Timeline_settings['yaw_correction']) }
                 
+            #elif( x[2] == 'HTR' ):
+            #    Config_File = { 'HTRSEL': '?', 'SET': '?', 
+            #              'PVALUE': '?' , 'IVALUE': '?', 'DVALUE': '?'}
             else:
                 Logger.error('No Config function for '+x[2])
                 Config_File = {}
@@ -235,4 +245,6 @@ def Timeline_generator():
     Logger.info('Save mode timeline to file: '+SCIMOD_NAME)
     with open(SCIMOD_NAME, "w") as write_file:
         json.dump(SCIMOD_Timeline, write_file, indent = 2)
+        
+    logging.shutdown()
     

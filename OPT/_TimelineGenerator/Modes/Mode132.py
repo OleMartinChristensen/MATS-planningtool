@@ -18,7 +18,7 @@ def Mode132(Occupied_Timeline):
     """Core function for the scheduling of Mode132.
     
     Arguments:
-        Occupied_Timeline (:obj:`dict` of :obj:`list`): Dictionary with keys equal to planned and scheduled Modes with entries equal to their start and end time as a list.
+        Occupied_Timeline (:obj:`dict` of :obj:`list`): Dictionary with keys equal to planned and scheduled Modes/CMDs with entries equal to their start and end time as a list.
         
     Returns:
         (tuple): tuple containing:
@@ -39,10 +39,12 @@ def Mode132(Occupied_Timeline):
         Logger.info('Timeline start_date used as initial date')
         initialDate = ephem.Date(Timeline_settings['start_date'])
     
+    NumberOfCMDsPerAltitude = 12
+    
     if( len(Settings['Exp_Times_UV']) <= len(Settings['Exp_Times_IR'])):
-        duration = ( Settings['session_duration']+ Timeline_settings['mode_separation']+Timeline_settings['pointing_stabilization'] ) * len(Settings['Exp_Times_UV']) + Timeline_settings['mode_separation']
+        duration = ( Settings['session_duration']+ Timeline_settings['CMD_separation'] * NumberOfCMDsPerAltitude + Timeline_settings['pointing_stabilization'] ) * len(Settings['Exp_Times_UV']) + Timeline_settings['mode_separation']
     elif( len(Settings['Exp_Times_IR']) < len(Settings['Exp_Times_UV']) ):
-        duration = ( Settings['session_duration']+ Timeline_settings['mode_separation']+Timeline_settings['pointing_stabilization'] ) * len(Settings['Exp_Times_IR']) + Timeline_settings['mode_separation']
+        duration = ( Settings['session_duration']+ Timeline_settings['CMD_separation'] * NumberOfCMDsPerAltitude + Timeline_settings['pointing_stabilization'] ) * len(Settings['Exp_Times_IR']) + Timeline_settings['mode_separation']
     
     """
     NumberOfCMDStepsInMacro = 12

@@ -46,27 +46,28 @@ purpose is to simulate a <em>Science Mode Timeline</em>, and also save and plot 
 <p>&#64;author: David</p>
 <dl class="function">
 <dt id="OPT._Timeline_Plotter.Core.Plotter">
-<code class="descclassname">OPT._Timeline_Plotter.Core.</code><code class="descname">Plotter</code><span class="sig-paren">(</span><em>Data_MATS</em>, <em>Data_LP</em>, <em>Time</em>, <em>DataIndexStep</em>, <em>OHB_StartIndex</em>, <em>OHB_H5_Path=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Timeline_Plotter/Core.html#Plotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Timeline_Plotter.Core.Plotter" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._Timeline_Plotter.Core.</code><code class="descname">Plotter</code><span class="sig-paren">(</span><em>Data_MATS</em>, <em>Data_LP</em>, <em>Time</em>, <em>DataIndexStep</em>, <em>OHB_StartIndex</em>, <em>OHB_H5_Path=''</em>, <em>STK_CSV_FILE=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Timeline_Plotter/Core.html#Plotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Timeline_Plotter.Core.Plotter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Subfunction, Performs calculations and plots the position and attitude data of MATS and LP.</p>
 <p>Performs calculations on the data given in the file located at <em>OHB_H5_Path</em> and plots the results.
 Also plots the simulated data given in <em>Data_MATS</em> and <em>Data_LP</em> as a function of the
-timestamps in <em>Time</em>.</p>
+timestamps in <em>Time</em>. May also plot positional error compared to STK data, if <em>STK_CSV_FILE</em> is given.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>Data_MATS</strong> (<em>dict of lists</em>) -- Dictionary containing lists of simulated data of MATS.</p></li>
 <li><p><strong>Data_LP</strong> (<em>dict of lists</em>) -- Dictionary containing lists of simulated data of LP.</p></li>
-<li><p><strong>Time</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) -- List containing timestamps of the simulated data in Data_MATS and Data_LP.</p></li>
-<li><p><strong>DataIndexStep</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- The data index step size when going through the data given in <em>OHB_H5_Path</em>.</p></li>
-<li><p><strong>OHB_StartIndex</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- The starting data index when going through the data given in <em>OHB_H5_Path</em>.</p></li>
-<li><p><strong>OHB_H5_Path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Path to the .h5 file containing position, time, and attitude data. If the string is empty, only Science Mode Timeline data will be plotted.</p></li>
+<li><p><strong>Time</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a>) -- List containing timestamps (utc) of the simulated data in Data_MATS and Data_LP.</p></li>
+<li><p><strong>DataIndexStep</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- The data index step size when going through the data given in <em>OHB_H5_Path</em>.</p></li>
+<li><p><strong>OHB_StartIndex</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- The starting data index when going through the data given in <em>OHB_H5_Path</em>.</p></li>
+<li><p><strong>OHB_H5_Path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the .h5 file containing position, time, and attitude data. If the string is empty, only Science Mode Timeline data will be plotted.</p></li>
+<li><p><strong>STK_CSV_PATH</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the .csv file containing position (column 1-3), velocity (column 4-6), and time (column 7), generated in STK. Position and velocity data is assumed to be in km and in ICRF.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>Time_OHB</strong>, Timestamps of the OHB data.</p>
+<dd class="field-even"><p><strong>Time_OHB</strong>, Timestamps (utc) of the OHB data.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)">list</a>)</p>
+<dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)">list</a>)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -75,61 +76,62 @@ timestamps in <em>Time</em>.</p>
 <dt id="OPT._Timeline_Plotter.Core.Simulator">
 <code class="descclassname">OPT._Timeline_Plotter.Core.</code><code class="descname">Simulator</code><span class="sig-paren">(</span><em>ScienceMode</em>, <em>Timestamp_fraction_of_second</em>, <em>Timestep</em>, <em>Timeline_settings</em>, <em>TLE</em>, <em>Data_MATS</em>, <em>Data_LP</em>, <em>Time</em>, <em>OHB_StartTime</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Timeline_Plotter/Core.html#Simulator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Timeline_Plotter.Core.Simulator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Subfunction, Simulates the position and attitude of MATS depending on the Mode given in <em>ScienceMode</em>.</p>
-<p>Appends the data during each Timestep to Data_MATS, Data_LP, and Time.</p>
+<p>Appends the data during each timestep to <em>Data_MATS</em>, <em>Data_LP</em>, and <em>Time</em>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ScienceMode</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) -- List containing the name of the Science Mode, the start_date, the end_date, and settings related to the Science Mode.</p></li>
-<li><p><strong>Timestamp_fraction_of_second</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) -- The fraction of a second timestamp for the data. Used here to synchronize timestamps between Timeline Simulation datapoints and OHB datapoints.</p></li>
-<li><p><strong>Timestep</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- The Timestep [s] for the simulation.</p></li>
-<li><p><strong>Timeline_settings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) -- A dictionary containing settings for the Timeline given in the Science Mode Timeline or in the <em>Configuration File</em>.</p></li>
-<li><p><strong>TLE</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) -- A list containing the TLE given in the Science Mode Timeline or in the <em>Configuration File</em>.</p></li>
+<li><p><strong>ScienceMode</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a>) -- List containing the name of the Science Mode, the start_date, the end_date, and settings related to the Science Mode.</p></li>
+<li><p><strong>Timestamp_fraction_of_second</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) -- The fraction of a second timestamp for the data. Used here to synchronize timestamps between Timeline Simulation datapoints and OHB datapoints.</p></li>
+<li><p><strong>Timestep</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- The Timestep [s] for the simulation.</p></li>
+<li><p><strong>Timeline_settings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) -- A dictionary containing settings for the Timeline given in the <em>Science Mode Timeline</em> or in the <em>Configuration File</em>.</p></li>
+<li><p><strong>TLE</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a>) -- A list containing the TLE given in the Science Mode Timeline or in the <em>Configuration File</em>.</p></li>
 <li><p><strong>Data_MATS</strong> (<em>dict of lists</em>) -- Dictionary containing lists of simulated data of MATS.</p></li>
 <li><p><strong>Data_LP</strong> (<em>dict of lists</em>) -- Dictionary containing lists of simulated data of LP.</p></li>
-<li><p><strong>Time</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) -- List containing timestamps of the simulated data in Data_MATS and Data_LP.</p></li>
+<li><p><strong>Time</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a>) -- List containing timestamps (utc) of the simulated data in Data_MATS and Data_LP.</p></li>
 <li><p><strong>OHB_StartTime</strong> (<code class="xref py py-obj docutils literal notranslate"><span class="pre">ephem.Date</span></code>) -- Date and time of the first OHB data to be plotted. Used here to synchronize timestamps between Timeline Simulation datapoints and OHB datapoints.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><dl>
-<dt>Tuple containing:</dt><dd><p>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>): <strong>Data_MATS</strong>, updated with the new simulated values from the current Science Mode.</p>
-<p>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>): <strong>Data_LP</strong>, updated with the new simulated values from the current Science Mode.</p>
-<p>(list): <strong>Time</strong>, updated with new simulated timestamps from the current Science Mode.</p>
+<dt>Tuple containing:</dt><dd><p>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>): <strong>Data_MATS</strong>, updated with the new simulated values from the current Science Mode.</p>
+<p>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>): <strong>Data_LP</strong>, updated with the new simulated values from the current Science Mode.</p>
+<p>(list): <strong>Time</strong>, updated with new simulated timestamps (utc) from the current Science Mode.</p>
 </dd>
 </dl>
 </p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)">tuple</a>)</p>
+<dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)">tuple</a>)</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="OPT._Timeline_Plotter.Core.Timeline_Plotter">
-<code class="descclassname">OPT._Timeline_Plotter.Core.</code><code class="descname">Timeline_Plotter</code><span class="sig-paren">(</span><em>Science_Mode_Path</em>, <em>OHB_H5_Path</em>, <em>Timestep</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Timeline_Plotter/Core.html#Timeline_Plotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Timeline_Plotter.Core.Timeline_Plotter" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._Timeline_Plotter.Core.</code><code class="descname">Timeline_Plotter</code><span class="sig-paren">(</span><em>Science_Mode_Path</em>, <em>OHB_H5_Path</em>, <em>STK_CSV_FILE</em>, <em>Timestep</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Timeline_Plotter/Core.html#Timeline_Plotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Timeline_Plotter.Core.Timeline_Plotter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Core function of the Timeline_Plotter.</p>
 <p>Goes through the <em>Science Mode Timeline</em>, one mode at a time.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>Science_Mode_Path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Path to the Science Mode Timeline to be plotted.</p></li>
-<li><p><strong>OHB_H5_Path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- Path to the .h5 file containing position, time, and attitude data.</p></li>
-<li><p><strong>Timestep</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- The timestep used for the simulation and when accessing OHB data.</p></li>
+<li><p><strong>Science_Mode_Path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Science Mode Timeline to be plotted.</p></li>
+<li><p><strong>OHB_H5_Path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the .h5 file containing position, time, and attitude data.</p></li>
+<li><p><strong>STK_CSV_PATH</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the .csv file containing position (column 1-3), velocity (column 4-6), and time (column 7), generated in STK. Position and velocity data is assumed to be in km and in ICRF.</p></li>
+<li><p><strong>Timestep</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- The timestep used for the simulation and when accessing OHB data.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><dl>
-<dt>Tuple containing:</dt><dd><p>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>): <strong>Data_MATS</strong>, updated with the new simulated values from the current Science Mode.</p>
-<p>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>): <strong>Data_LP</strong>, updated with the new simulated values from the current Science Mode.</p>
-<p>(list): <strong>Time</strong>, updated with new simulated timestamps from the current Science Mode.</p>
-<p>(list): <strong>Time_OHB</strong>, Timestamps of the OHB data.</p>
+<dt>Tuple containing:</dt><dd><p>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>): <strong>Data_MATS</strong>, updated with the new simulated values from the current Science Mode.</p>
+<p>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>): <strong>Data_LP</strong>, updated with the new simulated values from the current Science Mode.</p>
+<p>(list): <strong>Time</strong>, updated with new simulated timestamps (utc) from the current Science Mode.</p>
+<p>(list): <strong>Time_OHB</strong>, Timestamps of the OHB data (utc).</p>
 </dd>
 </dl>
 </p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)">tuple</a>)</p>
+<dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)">tuple</a>)</p>
 </dd>
 </dl>
 </dd></dl>

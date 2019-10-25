@@ -72,6 +72,7 @@
 <span class="sd">        relativeTime (float): Time in seconds equal to the input &quot;relativeTime&quot; with added delay from the scheduling of commands.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     
+    <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span> <span class="o">+</span> <span class="s1">&#39;, Operational_Limb_Pointing_macro&#39;</span>
     
     <span class="n">CCDSEL</span><span class="p">,</span> <span class="n">NCCD</span><span class="p">,</span> <span class="n">TEXPIOFS</span><span class="p">,</span> <span class="n">TEXPIMS</span> <span class="o">=</span> <span class="n">_Library</span><span class="o">.</span><span class="n">SyncArgCalculator</span><span class="p">(</span><span class="n">CCD_settings</span><span class="p">,</span> <span class="n">_Globals</span><span class="o">.</span><span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;CCDSYNC_ExtraOffset&#39;</span><span class="p">],</span> <span class="n">_Globals</span><span class="o">.</span><span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;CCDSYNC_ExtraIntervalTime&#39;</span><span class="p">])</span>
     
@@ -163,7 +164,7 @@
 <span class="sd">        relativeTime (float): Time in seconds equal to the input &quot;relativeTime&quot; with added delay from the scheduling of commands.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     
-    
+    <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span> <span class="o">+</span> <span class="s1">&#39;, Operational_Sweep_macro&#39;</span>
     
     <span class="n">CCDSEL</span><span class="p">,</span> <span class="n">NCCD</span><span class="p">,</span> <span class="n">TEXPIOFS</span><span class="p">,</span> <span class="n">TEXPIMS</span> <span class="o">=</span> <span class="n">_Library</span><span class="o">.</span><span class="n">SyncArgCalculator</span><span class="p">(</span><span class="n">CCD_settings</span><span class="p">,</span> <span class="n">_Globals</span><span class="o">.</span><span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;CCDSYNC_ExtraOffset&#39;</span><span class="p">],</span> <span class="n">_Globals</span><span class="o">.</span><span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;CCDSYNC_ExtraIntervalTime&#39;</span><span class="p">])</span>
     
@@ -216,6 +217,8 @@
 <span class="sd">        relativeTime (float): Time in seconds equal to the input &quot;relativeTime&quot; with added delay from the scheduling of commands.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     
+    <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span> <span class="o">+</span> <span class="s1">&#39;, Snapshot_Inertial_macro&#39;</span>
+    
     <span class="n">Disregarded</span><span class="p">,</span> <span class="n">Disregarded</span><span class="p">,</span> <span class="n">Disregarded</span><span class="p">,</span> <span class="n">TEXPIMS</span> <span class="o">=</span> <span class="n">_Library</span><span class="o">.</span><span class="n">SyncArgCalculator</span><span class="p">(</span><span class="n">CCD_settings</span><span class="p">,</span> <span class="n">_Globals</span><span class="o">.</span><span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;CCDSYNC_ExtraOffset&#39;</span><span class="p">],</span> <span class="n">_Globals</span><span class="o">.</span><span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;CCDSYNC_ExtraIntervalTime&#39;</span><span class="p">])</span>
     
     <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafMode</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">)</span>
@@ -261,6 +264,8 @@
 <span class="sd">        relativeTime (float): Time in seconds equal to the input &quot;relativeTime&quot; with added delay from the scheduling of commands.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     
+    <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span> <span class="o">+</span> <span class="s1">&#39;, Snapshot_Limb_Pointing_macro&#39;</span>
+    
     <span class="n">Disregarded</span><span class="p">,</span> <span class="n">Disregarded</span><span class="p">,</span> <span class="n">Disregarded</span><span class="p">,</span> <span class="n">TEXPIMS</span> <span class="o">=</span> <span class="n">_Library</span><span class="o">.</span><span class="n">SyncArgCalculator</span><span class="p">(</span><span class="n">CCD_settings</span><span class="p">,</span> <span class="n">_Globals</span><span class="o">.</span><span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;CCDSYNC_ExtraOffset&#39;</span><span class="p">],</span> <span class="n">_Globals</span><span class="o">.</span><span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;CCDSYNC_ExtraIntervalTime&#39;</span><span class="p">])</span>
     
     <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafMode</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">)</span>
@@ -268,7 +273,7 @@
     <span class="c1">#relativeTime_SnapShot = relativeTime+_Globals.Timeline_settings[&#39;pointing_stabilization&#39;]</span>
     <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">Commands</span><span class="o">.</span><span class="n">TC_acfLimbPointingAltitudeOffset</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">Initial</span> <span class="o">=</span> <span class="n">pointing_altitude</span><span class="p">,</span> <span class="n">Final</span> <span class="o">=</span> <span class="n">pointing_altitude</span><span class="p">,</span> <span class="n">Rate</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">)</span>
     
-    <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">CCD_macro</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCD_settings</span><span class="p">,</span> <span class="n">TEXPIMS</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">)</span>
+    <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">CCD_macro</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCD_settings</span><span class="p">,</span> <span class="n">TEXPIMS</span><span class="o">=</span><span class="n">TEXPIMS</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">)</span>
     
     <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafPM</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">)</span>
     
@@ -301,6 +306,8 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        relativeTime (float): Time in seconds equal to the input &quot;relativeTime&quot; with added delay from the scheduling of commands.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
+    
+    <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span> <span class="o">+</span> <span class="s1">&#39;, NadirSnapshot_Limb_Pointing_macro&#39;</span>
     
     <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafMode</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">)</span>
     
@@ -339,10 +346,12 @@
 <span class="sd">        relativeTime (float): Time in seconds equal to the input &quot;relativeTime&quot; with added delay from the scheduling of commands.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     
+    <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span> <span class="o">+</span> <span class="s1">&#39;, PWRTOGGLE_macro&#39;</span>
+    
     <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafMode</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">)</span>
     
     <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafCCDMain</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCDSEL</span> <span class="o">=</span> <span class="mi">127</span><span class="p">,</span> <span class="n">PWR</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">TEXPIMS</span> <span class="o">=</span> <span class="mi">6000</span><span class="p">,</span> <span class="n">TEXPMS</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">NRSKIP</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">NRBIN</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">NROW</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> 
-                                          <span class="n">NCBIN</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">NCOL</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">WDW</span> <span class="o">=</span> <span class="mi">128</span><span class="p">,</span> <span class="n">JPEGQ</span> <span class="o">=</span> <span class="mi">110</span><span class="p">,</span> <span class="n">SYNC</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">NCBINFPGA</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">SIGMODE</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">GAIN</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> 
+                                          <span class="n">NCBIN</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">NCOL</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">WDW</span> <span class="o">=</span> <span class="mi">128</span><span class="p">,</span> <span class="n">JPEGQ</span> <span class="o">=</span> <span class="mi">110</span><span class="p">,</span> <span class="n">SYNC</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">NCBINFPGA</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">SIGMODE</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">GAIN</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> 
                                           <span class="n">NFLUSH</span> <span class="o">=</span> <span class="mi">1023</span><span class="p">,</span> <span class="n">NCSKIP</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">)</span>
     
     <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafPWRToggle</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CONST</span> <span class="o">=</span> <span class="n">CONST</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">)</span>
@@ -355,7 +364,7 @@
 <div class="viewcode-block" id="CCD_macro"><a class="viewcode-back" href="../../../../../OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.html#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.CCD_macro">[docs]</a><span class="k">def</span> <span class="nf">CCD_macro</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCD_settings</span><span class="p">,</span> <span class="n">TEXPIMS</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Macro that corresponds to configurating the settings of the CCDs</span>
 <span class="sd">    </span>
-<span class="sd">    Used when the Synchronization CMD is used to synchronize all the CCDs except nadir or when Snapshots are utilized where TEXPIMS is irrelevant.</span>
+<span class="sd">    Used when the Synchronization CMD is used to synchronize all the CCDs (except nadir), or when Snapshots are utilized where TEXPIMS is irrelevant.</span>
 <span class="sd">    TEXPIMS for all the CCDs except nadir is set to the same value to allow Synchronization.</span>
 <span class="sd">    </span>
 <span class="sd">    Arguments:</span>

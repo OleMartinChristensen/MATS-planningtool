@@ -36,6 +36,7 @@
 <span class="sd">    </span>
 <span class="sd">    - Copy_ConfigFile</span>
 <span class="sd">    - Set_ConfigFile</span>
+<span class="sd">    - SetTLE</span>
 <span class="sd">    - CheckConfigFile</span>
 <span class="sd">    - Timeline_gen</span>
 <span class="sd">    - XML_gen</span>
@@ -78,26 +79,27 @@
 <span class="sd">Example:</span>
 <span class="sd">    import OPT</span>
 <span class="sd">    </span>
-<span class="sd">    #Creates a new Configuration File named OPT_Config_File.</span>
+<span class="sd">    *#Create a new Configuration File named OPT_Config_File.#* \n</span>
 <span class="sd">    OPT.Copy_ConfigFile(&#39;OPT_Config_File&#39;)</span>
 <span class="sd">    </span>
-<span class="sd">    #Optionally change any settings in OPT_Config_File by using a text editor </span>
+<span class="sd">    *#Optionally change any settings in OPT_Config_File by using a text editor.#* \n</span>
 <span class="sd">    </span>
-<span class="sd">    #Choose the newly created Configuration File and set the starting date.</span>
+<span class="sd">    *#Choose the newly created Configuration File and set the starting date.#* \n</span>
 <span class="sd">    OPT.Set_ConfigFile(&#39;OPT_Config_File&#39;, &#39;2019/09/05 08:00:00&#39;)</span>
 <span class="sd">    </span>
-<span class="sd">    #Sanity check for values in the chosen Configuration File.</span>
+<span class="sd">    *#Sanity check for values in the chosen Configuration File.#* \n</span>
 <span class="sd">    OPT.CheckConfigFile()</span>
 <span class="sd">    </span>
-<span class="sd">    #Creates a Science Mode Timeline specified by settings given in the chosen Configuration File.</span>
+<span class="sd">    *#Creates a Science Mode Timeline specified by settings given in the chosen Configuration File.#* \n</span>
 <span class="sd">    OPT.Timeline_gen()</span>
 <span class="sd">    </span>
-<span class="sd">    #Converts the created Science Mode Timeline into an XML-file.</span>
+<span class="sd">    *#Converts the created Science Mode Timeline into an XML-file.#* \n</span>
 <span class="sd">    OPT.XML_gen(&#39;Output/Science_Mode_Timeline__OPT_Config_File.json&#39;)</span>
 <span class="sd">    </span>
-<span class="sd">    #Plots the Science Mode Timeline.</span>
+<span class="sd">    *#Plots the Science Mode Timeline.#* \n</span>
 <span class="sd">    Data_MATS, Data_LP, Time, Time_OHB  = OPT.Timeline_Plotter(&#39;Output/Science_Mode_Timeline__OPT_Config_File.json&#39;)</span>
 <span class="sd"> </span>
+<span class="sd">**Note:** \n</span>
 
 <span class="sd">Science Modes are separated into 2 different areas, *Operational Science Modes* (Mode 1,2,5) and *Calibration Modes*. \n</span>
 <span class="sd">*Calibration Modes* are scheduled at specific points of time and are usually only scheduled once per *Science Mode Timeline*. </span>
@@ -174,8 +176,32 @@
     <span class="n">Globals</span><span class="o">.</span><span class="n">StartTime</span> <span class="o">=</span> <span class="n">Date</span></div>
     
 
+<div class="viewcode-block" id="SetTLE"><a class="viewcode-back" href="../OPT.html#OPT.SetTLE">[docs]</a><span class="k">def</span> <span class="nf">SetTLE</span><span class="p">(</span><span class="n">TLE1</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">TLE2</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Sets the TLE, which is called in the configuration file. </span>
+<span class="sd">    </span>
+<span class="sd">    If no TLE is given, the *Configuration File* will use the default TLE stated in the *Configuration File*.</span>
+<span class="sd">    </span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        TLE1 (str): The first row of the TLE.</span>
+<span class="sd">        TLE2 (str): The second row of the TLE.</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">        </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">_Globals</span> <span class="k">as</span> <span class="n">Globals</span>
+    
+    <span class="n">Globals</span><span class="o">.</span><span class="n">TLE</span> <span class="o">=</span> <span class="p">(</span><span class="n">TLE1</span><span class="p">,</span><span class="n">TLE2</span><span class="p">)</span></div>
+
+
 <div class="viewcode-block" id="CheckConfigFile"><a class="viewcode-back" href="../OPT.html#OPT.CheckConfigFile">[docs]</a><span class="k">def</span> <span class="nf">CheckConfigFile</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;Checks the values of the settings in the *Configuration File* chosen with *Set_ConfigFile*.</span>
+<span class="sd">    </span>
+<span class="sd">    Also prints out the currently selected *Configuration File* and which starting date and TLE it currently uses.</span>
 <span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="kn">from</span> <span class="nn">._CheckConfigFile.Core</span> <span class="k">import</span> <span class="n">CheckConfigFile</span>
@@ -269,17 +295,19 @@
     <span class="n">Data_Plotter</span><span class="p">()</span></div>
     
     
-<div class="viewcode-block" id="Timeline_Plotter"><a class="viewcode-back" href="../OPT.html#OPT.Timeline_Plotter">[docs]</a><span class="k">def</span> <span class="nf">Timeline_Plotter</span><span class="p">(</span><span class="n">Science_Mode_Path</span><span class="p">,</span> <span class="n">OHB_H5_Path</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">Timestep</span> <span class="o">=</span> <span class="mi">16</span> <span class="p">):</span>
+<div class="viewcode-block" id="Timeline_Plotter"><a class="viewcode-back" href="../OPT.html#OPT.Timeline_Plotter">[docs]</a><span class="k">def</span> <span class="nf">Timeline_Plotter</span><span class="p">(</span><span class="n">Science_Mode_Path</span><span class="p">,</span> <span class="n">OHB_H5_Path</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">STK_CSV_PATH</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">Timestep</span> <span class="o">=</span> <span class="mi">16</span> <span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Invokes the *Timeline_Plotter* program part of *Operational_Planning_Tool*.</span>
 <span class="sd">    </span>
 <span class="sd">    Simulates the position and attitude of MATS from a given Science Mode Timeline and also optionally compares it to</span>
 <span class="sd">    positional and attitude data given in a .h5 data set, located at *OHB_H5_Path*. Plots both the simulated data and given data. \n</span>
+<span class="sd">    A .csv file, generated in STK, may also be included to plot the predicted positional error of the satellite compared to STK data.</span>
 <span class="sd">    Settings for the operation of the program are stated in the chosen *Configuration File*. </span>
 <span class="sd">    Settings stated in the *Science Mode Timeline* override settings given in the chosen *Configuration file*.</span>
 <span class="sd">    </span>
 <span class="sd">    Arguments:</span>
 <span class="sd">        Science_Mode_Path (str): Path to the Science Mode Timeline to be plotted.</span>
 <span class="sd">        OHB_H5_Path (str): *Optional*. Path to the .h5 file containing position, time, and attitude data.</span>
+<span class="sd">        STK_CSV_PATH (str): *Optional*. Path to the .csv file containing position (column 1-3), velocity (column 4-6), and time (column 7), generated in STK. Position and velocity data is assumed to be in km and in ICRF.</span>
 <span class="sd">        Timestep (int): *Optional*. The chosen timestep of the simulation [s].</span>
 <span class="sd">        </span>
 <span class="sd">    Returns:</span>
@@ -287,15 +315,15 @@
 <span class="sd">            </span>
 <span class="sd">            - **Data_MATS** (*dict*): Dictionary containing lists of simulated data of MATS. \n</span>
 <span class="sd">            - **Data_LP** (*dict*): Dictionary containing lists of simulated data of LP. \n</span>
-<span class="sd">            - **Time** (*list*): List containing timestamps of the simulated data in Data_MATS and Data_LP. \n</span>
-<span class="sd">            - **Time_OHB** (*list*): List containing timestamps of the plotted data in .h5 file. \n</span>
+<span class="sd">            - **Time** (*list*): List containing timestamps (utc) of the simulated data in Data_MATS and Data_LP. \n</span>
+<span class="sd">            - **Time_OHB** (*list*): List containing timestamps (utc) of the plotted data in the .h5 file. \n</span>
 <span class="sd">        </span>
 <span class="sd">        </span>
 <span class="sd">    &#39;&#39;&#39;</span>
     <span class="kn">from</span> <span class="nn">._Timeline_Plotter.Core</span> <span class="k">import</span> <span class="n">Timeline_Plotter</span>
     
     
-    <span class="n">Data_MATS</span><span class="p">,</span> <span class="n">Data_LP</span><span class="p">,</span> <span class="n">Time</span><span class="p">,</span> <span class="n">Time_OHB</span>  <span class="o">=</span> <span class="n">Timeline_Plotter</span><span class="p">(</span><span class="n">Science_Mode_Path</span> <span class="o">=</span> <span class="n">Science_Mode_Path</span><span class="p">,</span> <span class="n">OHB_H5_Path</span> <span class="o">=</span> <span class="n">OHB_H5_Path</span><span class="p">,</span> <span class="n">Timestep</span> <span class="o">=</span> <span class="n">Timestep</span><span class="p">)</span>
+    <span class="n">Data_MATS</span><span class="p">,</span> <span class="n">Data_LP</span><span class="p">,</span> <span class="n">Time</span><span class="p">,</span> <span class="n">Time_OHB</span>  <span class="o">=</span> <span class="n">Timeline_Plotter</span><span class="p">(</span><span class="n">Science_Mode_Path</span> <span class="o">=</span> <span class="n">Science_Mode_Path</span><span class="p">,</span> <span class="n">OHB_H5_Path</span> <span class="o">=</span> <span class="n">OHB_H5_Path</span><span class="p">,</span> <span class="n">STK_CSV_FILE</span> <span class="o">=</span> <span class="n">STK_CSV_PATH</span><span class="p">,</span> <span class="n">Timestep</span> <span class="o">=</span> <span class="n">Timestep</span><span class="p">)</span>
     
     <span class="k">return</span> <span class="n">Data_MATS</span><span class="p">,</span> <span class="n">Data_LP</span><span class="p">,</span> <span class="n">Time</span><span class="p">,</span> <span class="n">Time_OHB</span></div>
     

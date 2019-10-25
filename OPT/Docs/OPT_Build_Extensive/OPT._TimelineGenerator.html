@@ -43,12 +43,12 @@ expressed as a list in chronological order.</p>
 which can be seen in the order of the modes in the list fetched from the
 function <em>Scheduling_priority</em> in the <em>Configuration File</em>.</p>
 <p>For each mode/CMD, one at a time, an appropriate date is calculated, or
-a predetermined date is already set in the <em>Configuration File</em> (could be for example at the start of the timeline). A dictionary (Occupied_Timeline)
-keeps track of the planned runtime of all Modes, this to prevent colliding scheduling.</p>
+a predetermined date is already set in the <em>Configuration File</em> (or could also be at the start of the timeline if no specific date was given). A dictionary (Occupied_Timeline)
+keeps track of the planned runtime of all Modes/CMDs, this to prevent colliding scheduling.</p>
 <p>Mode1,2,5 are known as <em>Operational Science Modes</em>.
 These modes will fill out time left available after the rest of the Modes, set in <em>Scheduling_priority</em>, have been scheduled.</p>
 <p>If calculated starting dates for modes are occupied, they will be changed
-depending on a specialized filtering process (mode 120, 200...), or postponed until time is available (mode 130, 131...) using <em>_Library.scheduler</em>.</p>
+depending on a specialized filtering process (mode 120-124...), or postponed until time is available (CMDs and mode 130, 131...) using <em>_Library.scheduler</em>.</p>
 <p><strong>Adding your own Science Modes:</strong></p>
 <p>To add your own Mode to be scheduled using <em>Timeline_gen</em> you need to follow these steps:</p>
 <blockquote>

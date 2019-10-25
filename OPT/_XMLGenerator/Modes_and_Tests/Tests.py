@@ -35,23 +35,26 @@ from .Macros_Commands import Macros, Commands
 Logger = logging.getLogger(OPT_Config_File.Logger_name())
 
 
-def All_Tests(root, date, duration, relativeTime, params = []):
-    """ Simulates and schedules all Tests.
+def All_Tests(root, date, duration, relativeTime, params = ['Limb_functional_test', 'Photometer_test_1', 'CCD_stability_test', 'Nadir_functional_test']):
+    """ Runs all the Test functions which has their function name as a string in params.
+    
+    Allows the tests to be dynamically scheduled.
     
     """
     
     
     
     "Set duration to length of timeline to allow all tests to be scheduled"
-    duration = Timeline_settings = _Globals.Timeline_settings['duration']
+    duration = _Globals.Timeline_settings['duration']
     
-    relativeTime, date = Limb_functional_test(root, date, duration = duration, relativeTime = relativeTime)
-    
-    relativeTime, date = Photometer_test_1(root, date, relativeTime = relativeTime)
-    
-    relativeTime, date = CCD_stability_test(root, date, duration = duration, relativeTime = relativeTime)
-    
-    relativeTime, date = Nadir_functional_test(root, date, duration = duration, relativeTime = relativeTime)
+    if( 'Limb_functional_test' in params):
+        relativeTime, date = Limb_functional_test(root, date, duration = duration, relativeTime = relativeTime)
+    if( 'Photometer_test_1' in params):
+        relativeTime, date = Photometer_test_1(root, date, relativeTime = relativeTime)
+    if( 'CCD_stability_test' in params):
+        relativeTime, date = CCD_stability_test(root, date, duration = duration, relativeTime = relativeTime)
+    if( 'Nadir_functional_test' in params):
+        relativeTime, date = Nadir_functional_test(root, date, duration = duration, relativeTime = relativeTime)
     
     
     
@@ -67,7 +70,7 @@ def Limb_functional_test(root, date, duration, relativeTime, params = {'ExpTimes
     Logger.info('Start of Limb_functional_test')
     
     Logger.debug('params from Science Mode List: '+str(params))
-    #params = params_checker(params,Mode=X=_settings)
+    
     
     log_timestep = 500
     Logger.debug('log_timestep [s]: '+str(log_timestep))
@@ -91,6 +94,8 @@ def Limb_functional_test(root, date, duration, relativeTime, params = {'ExpTimes
     #lat = params['lat']/180*pi
     lat = 30
     
+    Mode_name = sys._getframe(0).f_code.co_name
+    
     "Estimation of the angle [degrees] between the sun and the LP when it enters eclipse"
     #NightDayAngle = arccos(R_mean/(R_mean+Altitude_defining_night))/pi*180 + 90
     
@@ -106,11 +111,13 @@ def Limb_functional_test(root, date, duration, relativeTime, params = {'ExpTimes
     
     initial_relativeTime = relativeTime
     
+    "Consecutively schedule all Macros for day, and then night"
     for mode in ['Day', 'Night']:
         
         "Altitudes that defines the LP"
         for altitude in altitudes:
             
+            "Start looping the CCD settings and call for macros"
             for JPEGQ, WDW in zip(JPEGQs, WDWs):
                 
                 for key in CCD_settings.keys():
@@ -173,8 +180,6 @@ def Limb_functional_test(root, date, duration, relativeTime, params = {'ExpTimes
                             Logger.debug('mode: '+str(mode))
                             Logger.debug('')
                             
-                            Mode_name = sys._getframe(0).f_code.co_name
-                            comment = Mode_name+', '+str(date)+', '+str(mode)
                             break
                         
                         
@@ -190,8 +195,10 @@ def Limb_functional_test(root, date, duration, relativeTime, params = {'ExpTimes
                     ########################## End of Orbit simulator ##########################
                     ############################################################################
                     
-                    Logger.debug('Snapshot_Limb_Pointing_macro: relativeTime = '+str(relativeTime)+', pointing_altitude = '+str(altitude)+
+                    
+                    comment = (Mode_name+', '+str(date)+', '+str(mode)+', pointing_altitude = '+str(altitude)+
                                 ', ExpTime = '+str(ExpTime)+', JPEGQ = '+str(JPEGQ))
+                    Logger.debug(comment)
                     
                     relativeTime = Macros.Snapshot_Limb_Pointing_macro(root, round(relativeTime,2), CCD_settings, pointing_altitude = altitude, 
                                         SnapshotSpacing = SnapshotSpacing, comment = comment)
@@ -200,8 +207,8 @@ def Limb_functional_test(root, date, duration, relativeTime, params = {'ExpTimes
                     #                           pointing_altitude = str(altitude), ExpTime = str(ExpTime), 
                     #                           JPEGQ = JPEGQ, comment=comment)
                     
-                    "Postpone next command until at least the end of ExpTime"
-                    relativeTime = round(relativeTime + ExpTime/1000,2)
+                    #"Postpone next command until at least the end of ExpTime"
+                    #relativeTime = round(relativeTime + ExpTime/1000,2)
          
     
     mode_relativeTime = relativeTime - initial_relativeTime
@@ -239,11 +246,14 @@ def Photometer_test_1(root, date, relativeTime, duration = 5400, params = {'ExpT
     
     session_duration = 120
     
+    Mode_name = sys._getframe(0).f_code.co_name
+    
     Photometer_test_1_duration = duration
     
     Timeline_settings = _Globals.Timeline_settings
     pointing_altitude = Timeline_settings['LP_pointing_altitude']
     
+    "Start looping the TEXPMS for the Photometer and call for macros"
     while( True ):
         mode_relativeTime = round(relativeTime - initial_relativeTime,2)
         
@@ -253,11 +263,11 @@ def Photometer_test_1(root, date, relativeTime, duration = 5400, params = {'ExpT
         for ExpTime in ExpTimes:
             ExpInt = ExpTime + 500
             
-            Mode_name = sys._getframe(0).f_code.co_name
-            comment = Mode_name+', '+str(date)+', '+str(params)+', '+'Operational_Limb_Pointing_macro'
             
-            Logger.debug('Operational_Limb_Pointing_macro: relativeTime = '+str(relativeTime)+
+            comment = (Mode_name+', '+str(date)+
                                 ', ExpTime = '+str(ExpTime)+', ExpInt = '+str(ExpInt))
+            
+            Logger.debug(comment)
             
             relativeTime = Macros.Operational_Limb_Pointing_macro(root, relativeTime = relativeTime, pointing_altitude = pointing_altitude, CCD_settings = CCD_settings, comment = comment)
             Commands.TC_pafPM(root, relativeTime = relativeTime, TEXPMS = ExpTime, TEXPIMS = ExpInt, comment = comment)
@@ -328,15 +338,16 @@ def Nadir_functional_test(root, date, duration, relativeTime, params = {'ExpTime
     Logger.debug('NightAngle : '+str(NightAngle))
     Logger.debug('')
     
-    
+    withinLat = 30
     
     Mode_name = sys._getframe(0).f_code.co_name
     
     t=0
     timestep = 4
     
-    latMargin = 360/5400 * timestep * 5 #Overly estimated change of latitude per timestep
+    #latMargin = 360/5400 * timestep * 5 #Overly estimated change of latitude per timestep
     
+    "Start looping the CCD nadir settings and call for macros"
     for mode in ['Day', 'Night']:
         
         for JPEGQ, WDW in zip(JPEGQs, WDWs):
@@ -352,82 +363,85 @@ def Nadir_functional_test(root, date, duration, relativeTime, params = {'ExpTime
                 ########################## Orbit simulator #################################
                 ############################################################################
                 
-                for lat in [-60, 0, 60]:
+                #for lat in [-30, 0, 30]:
+                
+                "Calculate the current angle between MATS and the Sun"
+                "and Loop until it is either day or night and the right latitude"
+                while(True):
                     
-                    "Calculate the current angle between MATS and the Sun"
-                    "and Loop until it is either day or night and the right latitude"
-                    while(True):
-                        
-                        mode_relativeTime = relativeTime - initial_relativeTime
-                        current_time = ephem.Date(date+ephem.second*mode_relativeTime)
-                        
-                        if(mode_relativeTime > duration and duration_flag == 0):
-                            Logger.warning('Warning!! The scheduled time for the Test has ran out.')
-                            #input('Enter anything to continue:\n')
-                            duration_flag = 1
-                        
-                        if( t*timestep % log_timestep == 0):
-                                LogFlag = True
-                        else:
-                            LogFlag = False
-                        
-                        
-                        Satellite_dict = _Library.Satellite_Simulator( 
-                                        MATS_skyfield, current_time, Timeline_settings, altitude/1000, LogFlag, Logger )
-                        
-                        r_MATS = Satellite_dict['Position [km]']
-                        lat_MATS = Satellite_dict['Latitude [degrees]']
-                        
-                        
-                        sun_angle = _Library.SunAngle( r_MATS, current_time)
-                        
-                        
-                        if( t*timestep % log_timestep == 0 == 0 or t == 1):
-                            Logger.debug('')
-                            Logger.debug('current_time: '+str(current_time))
-                            Logger.debug('lat_MATS [degrees]: '+str(lat_MATS))
-                            Logger.debug('sun_angle [degrees]: '+str(sun_angle))
-                            Logger.debug('mode: '+str(mode))
-                            Logger.debug('')
-                        
-                        if( (sun_angle < DayAngle and lat-latMargin <= lat_MATS <= lat+latMargin and mode == 'Day' ) or 
-                           (sun_angle > NightAngle and lat-latMargin <= lat_MATS <= lat+latMargin and mode == 'Night' )):
-                            
-                            Logger.debug('!!Break of Loop!!')
-                            Logger.debug('Loop Counter (t): '+str(t))
-                            Logger.debug('current_time: '+str(current_time))
-                            Logger.debug('lat_MATS [degrees]: '+str(lat_MATS))
-                            Logger.debug('sun_angle [degrees]: '+str(sun_angle))
-                            Logger.debug('mode: '+str(mode))
-                            
-                            Logger.debug('')
-                            break
-                            
-                            
-                        "Increase Loop counter"
-                        t= t+1
-                        
-                        "Timestep for propagation of MATS"
-                        relativeTime = round(relativeTime + timestep,1)
-                        
-                            
-                    ############################################################################
-                    ########################## End of Orbit simulator ##########################
-                    ############################################################################
+                    mode_relativeTime = relativeTime - initial_relativeTime
+                    current_time = ephem.Date(date+ephem.second*mode_relativeTime)
                     
-                    Logger.debug('NadirSnapshot_Limb_Pointing_macro: relativeTime = '+str(relativeTime)+', pointing_altitude = '+str(altitude)+
-                                ', ExpTime = '+str(ExpTime)+', JPEGQ = '+str(JPEGQ))
+                    if(mode_relativeTime > duration and duration_flag == 0):
+                        Logger.warning('Warning!! The scheduled time for the Test has ran out.')
+                        #input('Enter anything to continue:\n')
+                        duration_flag = 1
                     
-                    comment = Mode_name+', '+str(date)+', '+str(params)+', '+'NadirSnapshot_Limb_Pointing_macro'
-                    
-                    relativeTime = Macros.NadirSnapshot_Limb_Pointing_macro(root = root, relativeTime = relativeTime, 
-                                               pointing_altitude = altitude, CCD_settings = CCD_settings, 
-                                               comment = comment)
+                    if( t*timestep % log_timestep == 0):
+                            LogFlag = True
+                    else:
+                        LogFlag = False
                     
                     
-                    "Postpone next command until at least the end of ExpTime"
-                    relativeTime = round(float(relativeTime) + ExpTime/1000,2)
+                    Satellite_dict = _Library.Satellite_Simulator( 
+                                    MATS_skyfield, current_time, Timeline_settings, altitude/1000, LogFlag, Logger )
                     
+                    r_MATS = Satellite_dict['Position [km]']
+                    lat_MATS = Satellite_dict['Latitude [degrees]']
+                    
+                    
+                    sun_angle = _Library.SunAngle( r_MATS, current_time)
+                    
+                    
+                    if( t*timestep % log_timestep == 0 == 0 or t == 1):
+                        Logger.debug('')
+                        Logger.debug('current_time: '+str(current_time))
+                        Logger.debug('lat_MATS [degrees]: '+str(lat_MATS))
+                        Logger.debug('sun_angle [degrees]: '+str(sun_angle))
+                        Logger.debug('mode: '+str(mode))
+                        Logger.debug('')
+                    
+                    #if( (sun_angle < DayAngle and lat-latMargin <= lat_MATS <= lat+latMargin and mode == 'Day' ) or 
+                    #   (sun_angle > NightAngle and lat-latMargin <= lat_MATS <= lat+latMargin and mode == 'Night' )):
+                    if( (sun_angle < DayAngle and abs(lat_MATS) < withinLat and mode == 'Day' ) or 
+                        (sun_angle > NightAngle and abs(lat_MATS) < withinLat and mode == 'Night' )):
+                        
+                        Logger.debug('!!Break of Loop!!')
+                        Logger.debug('Loop Counter (t): '+str(t))
+                        Logger.debug('current_time: '+str(current_time))
+                        Logger.debug('lat_MATS [degrees]: '+str(lat_MATS))
+                        Logger.debug('sun_angle [degrees]: '+str(sun_angle))
+                        Logger.debug('mode: '+str(mode))
+                        
+                        Logger.debug('')
+                        break
+                        
+                        
+                    "Increase Loop counter"
+                    t= t+1
+                    
+                    "Timestep for propagation of MATS"
+                    relativeTime = round(relativeTime + timestep,1)
+                    
+                
+                ############################################################################
+                ########################## End of Orbit simulator ##########################
+                ############################################################################
+                
+                
+                comment = (Mode_name+', '+str(date)+', '+', pointing_altitude = '+str(altitude)+
+                            ', ExpTime = '+str(ExpTime)+', JPEGQ = '+str(JPEGQ))
+                
+                Logger.debug(comment)
+                
+                relativeTime = Macros.NadirSnapshot_Limb_Pointing_macro(root = root, relativeTime = relativeTime, 
+                                           pointing_altitude = altitude, CCD_settings = CCD_settings, 
+                                           comment = comment)
+                
+                
+                #"Postpone next command until at least the end of ExpTime"
+                #relativeTime = round(float(relativeTime) + ExpTime/1000,2)
+                
                     
     mode_relativeTime = relativeTime - initial_relativeTime
     current_time = ephem.Date(date+ephem.second*mode_relativeTime)
@@ -465,11 +479,13 @@ def CCD_stability_test(root, date, duration, relativeTime, params = {'ExpTimes':
     
     Mode_name = sys._getframe(0).f_code.co_name
     
-    "Altitudes that defines the LP"
+    "Loop thorugh pointing altitudes"
     for altitude in altitudes:
         
+        "Start looping the CCD settings and call for macros"
         for JPEGQ, WDW in zip(JPEGQs, WDWs):
             
+            "Set all CCDs"
             for key in CCD_settings.keys():
                 CCD_settings[key]['JPEGQ'] = JPEGQ
                 CCD_settings[key]['WDW'] = WDW
@@ -479,16 +495,18 @@ def CCD_stability_test(root, date, duration, relativeTime, params = {'ExpTimes':
                 for key in CCD_settings.keys():
                     CCD_settings[key]['TEXPMS'] = ExpTime
                 
-                Logger.debug('Snapshot_Limb_Pointing_macro: relativeTime = '+str(relativeTime)+', pointing_altitude = '+str(altitude)+
+                
+                
+                comment = (Mode_name+', '+str(date)+', pointing_altitude = '+str(altitude)+
                             ', ExpTime = '+str(ExpTime)+', JPEGQ = '+str(JPEGQ))
                 
-                comment = Mode_name+', '+str(date)+', '+str(params)+', '+'Snapshot_Limb_Pointing_macro'
+                Logger.debug(comment)
                 
                 relativeTime = Macros.Snapshot_Limb_Pointing_macro(root, round(relativeTime,2), CCD_settings, pointing_altitude = altitude, 
                                     SnapshotSpacing = SnapshotSpacing, comment = comment)
                 
-                "Postpone next command until at least the end of ExpTime"
-                relativeTime = round(relativeTime + ExpTime/1000,2)
+                #"Postpone next command until at least the end of ExpTime"
+                #relativeTime = round(relativeTime + ExpTime/1000,2)
      
     
     mode_relativeTime = relativeTime - initial_relativeTime

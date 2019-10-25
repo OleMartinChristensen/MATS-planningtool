@@ -97,12 +97,12 @@ def XML_generator(SCIMOD_Path):
     for x in range(len(SCIMOD)):
         Logger.info('')
         Logger.info('Iteration number: '+str(x+1))
+        Logger.info(str(SCIMOD[x][0]))
         
         "Skip the first entry if it only contains Timeline_settings"
         if( str(SCIMOD[x][0]) == 'Timeline_settings' ):
             continue
         
-        Logger.info(str(SCIMOD[x][0]))
         Logger.debug('Start Date: '+str(SCIMOD[x][1]))
         Logger.debug('End Date: '+str(SCIMOD[x][2]))
         
@@ -131,11 +131,17 @@ def XML_generator(SCIMOD_Path):
     SCIMOD_Path = SCIMOD_Path.replace('.json','')
     
     ### Write finished XML-tree with all commands to a file #######
-    MATS_COMMANDS = os.path.join('Output','MATS_COMMANDS__'+_Globals.Config_File+'__TimelineUSED__'+SCIMOD_Path+'.xml')
-    Logger.info('Write XML-tree to: '+MATS_COMMANDS)
-    f = open(MATS_COMMANDS, 'w')
+    XML_TIMELINE = os.path.join('Output','XML_TIMELINE__'+'FROM__'+SCIMOD_Path+'.xml')
+    Logger.info('Write XML-tree to: '+XML_TIMELINE)
+    f = open(XML_TIMELINE, 'w')
     f.write(etree.tostring(root, pretty_print=True, encoding = 'unicode'))
     f.close()
+    
+    statinfo = os.stat(XML_TIMELINE)
+    SizeOfXML = statinfo.st_size
+    DataLimitInBytes = 20*10**6
+    if( SizeOfXML > DataLimitInBytes ):
+        input('Size of XML Timeline file exceeds allowed datalimit (20Mb). Press enter to acknowledge')
     
     logging.shutdown()
 
@@ -240,7 +246,6 @@ def XML_generator_select(name, root, date, duration, relativeTime, params):
     else:
         Mode_Test_SeparateCmd_func(root, date, duration, relativeTime, params = params)
         
-    "Return relativeTime for the dynamic length of Commisioning phase tests."
-    return relativeTime
+    
 ####################### End of Mode selecter #############################
 

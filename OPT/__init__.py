@@ -3,6 +3,7 @@
     
     - Copy_ConfigFile
     - Set_ConfigFile
+    - SetTLE
     - CheckConfigFile
     - Timeline_gen
     - XML_gen
@@ -45,26 +46,27 @@ Generated logs are saved in folders created in the working directory.
 Example:
     import OPT
     
-    #Creates a new Configuration File named OPT_Config_File.
+    *#Create a new Configuration File named OPT_Config_File.#* \n
     OPT.Copy_ConfigFile('OPT_Config_File')
     
-    #Optionally change any settings in OPT_Config_File by using a text editor 
+    *#Optionally change any settings in OPT_Config_File by using a text editor.#* \n
     
-    #Choose the newly created Configuration File and set the starting date.
+    *#Choose the newly created Configuration File and set the starting date.#* \n
     OPT.Set_ConfigFile('OPT_Config_File', '2019/09/05 08:00:00')
     
-    #Sanity check for values in the chosen Configuration File.
+    *#Sanity check for values in the chosen Configuration File.#* \n
     OPT.CheckConfigFile()
     
-    #Creates a Science Mode Timeline specified by settings given in the chosen Configuration File.
+    *#Creates a Science Mode Timeline specified by settings given in the chosen Configuration File.#* \n
     OPT.Timeline_gen()
     
-    #Converts the created Science Mode Timeline into an XML-file.
+    *#Converts the created Science Mode Timeline into an XML-file.#* \n
     OPT.XML_gen('Output/Science_Mode_Timeline__OPT_Config_File.json')
     
-    #Plots the Science Mode Timeline.
+    *#Plots the Science Mode Timeline.#* \n
     Data_MATS, Data_LP, Time, Time_OHB  = OPT.Timeline_Plotter('Output/Science_Mode_Timeline__OPT_Config_File.json')
  
+**Note:** \n
 
 Science Modes are separated into 2 different areas, *Operational Science Modes* (Mode 1,2,5) and *Calibration Modes*. \n
 *Calibration Modes* are scheduled at specific points of time and are usually only scheduled once per *Science Mode Timeline*. 
@@ -141,8 +143,32 @@ def Set_ConfigFile(Config_File_Name, Date):
     Globals.StartTime = Date
     
 
+def SetTLE(TLE1 = '', TLE2 = ''):
+    """Sets the TLE, which is called in the configuration file. 
+    
+    If no TLE is given, the *Configuration File* will use the default TLE stated in the *Configuration File*.
+    
+    Arguments:
+        TLE1 (str): The first row of the TLE.
+        TLE2 (str): The second row of the TLE.
+        
+    Returns:
+        None
+        
+    Returns:
+        None
+    
+    """
+    
+    from . import _Globals as Globals
+    
+    Globals.TLE = (TLE1,TLE2)
+
+
 def CheckConfigFile():
     """Checks the values of the settings in the *Configuration File* chosen with *Set_ConfigFile*.
+    
+    Also prints out the currently selected *Configuration File* and which starting date and TLE it currently uses.
     
     """
     from ._CheckConfigFile.Core import CheckConfigFile
@@ -236,17 +262,19 @@ def Data_Plotter():
     Data_Plotter()
     
     
-def Timeline_Plotter(Science_Mode_Path, OHB_H5_Path = '', Timestep = 16 ):
+def Timeline_Plotter(Science_Mode_Path, OHB_H5_Path = '', STK_CSV_PATH = '', Timestep = 16 ):
     '''Invokes the *Timeline_Plotter* program part of *Operational_Planning_Tool*.
     
     Simulates the position and attitude of MATS from a given Science Mode Timeline and also optionally compares it to
     positional and attitude data given in a .h5 data set, located at *OHB_H5_Path*. Plots both the simulated data and given data. \n
+    A .csv file, generated in STK, may also be included to plot the predicted positional error of the satellite compared to STK data.
     Settings for the operation of the program are stated in the chosen *Configuration File*. 
     Settings stated in the *Science Mode Timeline* override settings given in the chosen *Configuration file*.
     
     Arguments:
         Science_Mode_Path (str): Path to the Science Mode Timeline to be plotted.
         OHB_H5_Path (str): *Optional*. Path to the .h5 file containing position, time, and attitude data.
+        STK_CSV_PATH (str): *Optional*. Path to the .csv file containing position (column 1-3), velocity (column 4-6), and time (column 7), generated in STK. Position and velocity data is assumed to be in km and in ICRF.
         Timestep (int): *Optional*. The chosen timestep of the simulation [s].
         
     Returns:
@@ -254,15 +282,15 @@ def Timeline_Plotter(Science_Mode_Path, OHB_H5_Path = '', Timestep = 16 ):
             
             - **Data_MATS** (*dict*): Dictionary containing lists of simulated data of MATS. \n
             - **Data_LP** (*dict*): Dictionary containing lists of simulated data of LP. \n
-            - **Time** (*list*): List containing timestamps of the simulated data in Data_MATS and Data_LP. \n
-            - **Time_OHB** (*list*): List containing timestamps of the plotted data in .h5 file. \n
+            - **Time** (*list*): List containing timestamps (utc) of the simulated data in Data_MATS and Data_LP. \n
+            - **Time_OHB** (*list*): List containing timestamps (utc) of the plotted data in the .h5 file. \n
         
         
     '''
     from ._Timeline_Plotter.Core import Timeline_Plotter
     
     
-    Data_MATS, Data_LP, Time, Time_OHB  = Timeline_Plotter(Science_Mode_Path = Science_Mode_Path, OHB_H5_Path = OHB_H5_Path, Timestep = Timestep)
+    Data_MATS, Data_LP, Time, Time_OHB  = Timeline_Plotter(Science_Mode_Path = Science_Mode_Path, OHB_H5_Path = OHB_H5_Path, STK_CSV_FILE = STK_CSV_PATH, Timestep = Timestep)
     
     return Data_MATS, Data_LP, Time, Time_OHB
     

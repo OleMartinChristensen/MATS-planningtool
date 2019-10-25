@@ -70,7 +70,7 @@ then calls for Macros/Commands functions located in the <em>Macros_Commands</em>
 </dl>
 </div></blockquote>
 <p>When creating new Mode functions it is crucial that the function name is
-<em>X</em>, where <em>X</em> is the same as the string used in the <em>Science Mode Timeline</em>. Because OPT will automatically look for any function named the same as the string in the <em>Science Mode Timeline</em></p>
+<em>X</em>, where <em>X</em> is the same as the string used in the <em>Science Mode Timeline</em>. Because OPT will automatically look for any function with the same name as the string in the <em>Science Mode Timeline</em></p>
 <p>&#64;author: David</p>
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.MODES.Mode1">
@@ -150,7 +150,7 @@ Used for moon calibration.</p>
 <p><strong>Macro</strong>: Snapshot_Inertial_macro.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>CCD_settings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of int) -- Settings for the CCDs. Defined in the <em>Configuration File</em>.</p>
+<dd class="field-odd"><p><strong>CCD_settings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of int) -- Settings for the CCDs. Defined in the <em>Configuration File</em>.</p>
 </dd>
 </dl>
 <p>Stare at a point in inertial reference frame and take a Snapshot with each CCD except nadir.</p>
@@ -187,7 +187,7 @@ Used for moon calibration.</p>
 <p><strong>Macro</strong>: Operational_Limb_Pointing_macro.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>CCD_settings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of int) -- Settings for the CCDs. Defined in the <em>Configuration File</em>.</p>
+<dd class="field-odd"><p><strong>CCD_settings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of int) -- Settings for the CCDs. Defined in the <em>Configuration File</em>.</p>
 </dd>
 </dl>
 <p>Look at fixed limb altitude in operational mode with a set of exposure times for UV and IR CCDs.</p>
@@ -241,7 +241,7 @@ Simulates MATS to determine when a point below MATS is at night or daytime.</p>
 <p>For PWRTOGGLE, PM, CCDBadColumn, CCDFlushBadColumns: Compares parameters given in the Science Mode Timeline to default parameters
 given in the set <em>Configuration File</em> and fills in any parameters missing in the Science Mode Timeline.</p>
 <p>For the rest CMDS, each parameter must be given in the Science Mode Timeline.</p>
-<p>PWRTOGGLE will always call a PWRTOGGLE_macro will also turns off all CCDs before power toggling.</p>
+<p>PWRTOGGLE will always call a PWRTOGGLE_macro which also turns off all CCDs before power toggling.</p>
 <dl>
 <dt>Functions on the form &quot;X&quot;, where X is any CMD:</dt><dd><dl>
 <dt>Arguments:</dt><dd><p>root (lxml.etree.Element):  XML tree structure. Main container object for the ElementTree API. lxml.etree.Element class</p>
@@ -365,8 +365,9 @@ Test_name, where Test_name is the same as the string used in the Science Mode Ti
 <p>&#64;author: David</p>
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.Tests.All_Tests">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Tests.</code><code class="descname">All_Tests</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params=[]</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Tests.html#All_Tests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Tests.All_Tests" title="Permalink to this definition">¶</a></dt>
-<dd><p>Simulates and schedules all Tests.</p>
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Tests.</code><code class="descname">All_Tests</code><span class="sig-paren">(</span><em>root, date, duration, relativeTime, params=['Limb_functional_test', 'Photometer_test_1', 'CCD_stability_test', 'Nadir_functional_test']</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Tests.html#All_Tests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Tests.All_Tests" title="Permalink to this definition">¶</a></dt>
+<dd><p>Runs all the Test functions which has their function name as a string in params.</p>
+<p>Allows the tests to be dynamically scheduled.</p>
 </dd></dl>
 
 <dl class="function">

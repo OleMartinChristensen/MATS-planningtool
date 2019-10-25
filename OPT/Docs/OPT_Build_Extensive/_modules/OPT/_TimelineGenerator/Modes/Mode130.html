@@ -51,13 +51,12 @@
     <span class="sd">&quot;&quot;&quot;Core function for the scheduling of Mode130.</span>
 <span class="sd">    </span>
 <span class="sd">    Arguments:</span>
-<span class="sd">        Occupied_Timeline (:obj:`dict` of :obj:`list`): Dictionary with keys equal to planned and scheduled Modes with entries equal to their start and end time as a list.</span>
+<span class="sd">        Occupied_Timeline (:obj:`dict` of :obj:`list`): Dictionary with keys equal to planned and scheduled Modes/CMDs with entries equal to their start and end time as a list.</span>
 <span class="sd">        </span>
 <span class="sd">    Returns:</span>
 <span class="sd">        (tuple): tuple containing:</span>
 <span class="sd">            (:obj:`dict` of :obj:`list`): Occupied_Timeline (updated with the result from the scheduled Mode). \n</span>
 <span class="sd">            (str): Comment regarding the result of scheduling of the mode.</span>
-<span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
     <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Timeline_settings</span><span class="p">()</span>
