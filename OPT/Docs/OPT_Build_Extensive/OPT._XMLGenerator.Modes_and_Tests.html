@@ -63,6 +63,7 @@ then calls for Macros/Commands functions located in the <em>Macros_Commands</em>
 <p><strong>date</strong> (<em>ephem.Date</em>): Starting date of the Mode. On the form of the ephem.Date class.</p>
 <p><strong>duration</strong> (<em>int</em>): The duration of the mode [s].</p>
 <p><strong>relativeTime</strong> (<em>int</em>): The starting time of the mode with regard to the start of the timeline [s].</p>
+<p><strong>Timeline_settings</strong> (<em>dict</em>): Dictionary containing the settings of the Timeline given in either the <em>Science_Mode_Timeline</em> or the <em>Configuration File</em>.</p>
 <p><strong>params</strong> (<em>dict</em>): Dictionary containing the settings of the Mode given in the <em>Science_Mode_Timeline</em>.</p>
 </dd>
 <dt><strong>Returns:</strong></dt><dd><p>None</p>
@@ -74,7 +75,7 @@ then calls for Macros/Commands functions located in the <em>Macros_Commands</em>
 <p>&#64;author: David</p>
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.MODES.Mode1">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">Mode1</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode1" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">Mode1</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>Timeline_settings</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode1" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>Macro:</strong> Operational_Limb_Pointing_macro</p>
 <p><strong>CCD_Macro:</strong> HighResUV</p>
 <p>Disable exposure on UV channels for +-lat degrees latitude equatorwards.
@@ -84,7 +85,7 @@ Simulates MATS and the LP with or without yaw movement to be able to predict and
 
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.MODES.Mode100">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">Mode100</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode100"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode100" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">Mode100</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>Timeline_settings</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode100"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode100" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>Macro</strong>: Operational_Limb_Pointing_macro.</p>
 <p><strong>CCD_Macro</strong>: BinnedCalibration with configurable exposure time of UV and IR CCDs.</p>
 <p>Successively point at altitudes from X-Y in Operational Mode in intervals of Z with increasing Exposure Times.
@@ -94,7 +95,7 @@ All defined in <em>Mode100_settings</em>.</p>
 
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.MODES.Mode110">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">Mode110</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode110"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode110" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">Mode110</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>Timeline_settings</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode110"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode110" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>Macro</strong>: Operational_Sweep_macro.</p>
 <p><strong>CCD_Macro</strong>: BinnedCalibration with configurable exposure time of UV and IR CCDs.</p>
 <p>Scan atmosphere from X to Y altitudes with a rate of Z.
@@ -103,7 +104,7 @@ Where X, Y, Z is defined in <em>Mode110_settings</em>.</p>
 
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.MODES.Mode120">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">Mode120</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode120"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode120" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">Mode120</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>Timeline_settings</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode120"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode120" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>Macro</strong>: Snapshot_Inertial_macro.</p>
 <p><strong>CCD_Macro</strong>: FullReadout</p>
 <p>Stare at a point in inertial reference frame and take a Snapshot with each CCD except nadir.
@@ -112,7 +113,7 @@ Used for star calibration.</p>
 
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.MODES.Mode121">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">Mode121</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode121"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode121" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">Mode121</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>Timeline_settings</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode121"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode121" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>Macro</strong>: Snapshot_Inertial_macro.</p>
 <p><strong>CCD_Macro</strong>: FullReadout</p>
 <p>Stare at a point in inertial reference frame and take a Snapshot with each CCD except nadir.</p>
@@ -120,7 +121,7 @@ Used for star calibration.</p>
 
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.MODES.Mode122">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">Mode122</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode122"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode122" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">Mode122</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>Timeline_settings</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode122"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode122" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>Macro</strong>: Snapshot_Inertial_macro.</p>
 <p><strong>CCD_Macro</strong>: BinnedCalibration with configurable exposure time of UV and IR CCDs.</p>
 <p>Stare at a point in inertial reference frame and take a Snapshot with each CCD except nadir.</p>
@@ -128,7 +129,7 @@ Used for star calibration.</p>
 
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.MODES.Mode123">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">Mode123</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode123"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode123" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">Mode123</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>Timeline_settings</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode123"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode123" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>Macro</strong>: Snapshot_Inertial_macro.</p>
 <p><strong>CCD_Macro</strong>: LowPixel with configurable exposure time of UV and IR CCDs.</p>
 <p>Stare at a point in inertial reference frame and take a Snapshot with each CCD except nadir.</p>
@@ -136,7 +137,7 @@ Used for star calibration.</p>
 
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.MODES.Mode124">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">Mode124</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode124"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode124" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">Mode124</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>Timeline_settings</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode124"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode124" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>Macro</strong>: Snapshot_Inertial_macro.</p>
 <p><strong>CCD_Macro</strong>: FullReadout.</p>
 <p>Stare at a point in inertial reference frame and take one Snapshot with each CCD except Nadir.
@@ -145,7 +146,7 @@ Used for moon calibration.</p>
 
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.MODES.Mode12X">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">Mode12X</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params</em>, <em>CCD_settings</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode12X"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode12X" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">Mode12X</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>Timeline_settings</em>, <em>params</em>, <em>CCD_settings</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode12X"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode12X" title="Permalink to this definition">¶</a></dt>
 <dd><p>Subfunction of Mode12X, where X is 1,2,3....</p>
 <p><strong>Macro</strong>: Snapshot_Inertial_macro.</p>
 <dl class="field-list simple">
@@ -158,7 +159,7 @@ Used for moon calibration.</p>
 
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.MODES.Mode130">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">Mode130</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode130"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode130" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">Mode130</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>Timeline_settings</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode130"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode130" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>Macro</strong>: Snapshot_Limb_Pointing_macro.</p>
 <p><strong>CCD_Macro</strong>: FullReadout.</p>
 <p>Look at fixed limb altitude and take Snapshots with all CCD except nadir.</p>
@@ -166,7 +167,7 @@ Used for moon calibration.</p>
 
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.MODES.Mode131">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">Mode131</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode131"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode131" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">Mode131</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>Timeline_settings</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode131"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode131" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>Macro</strong>: Operational_Limb_Pointing_macro.</p>
 <p><strong>CCD_Macro</strong>: FullReadout.</p>
 <p>Look at fixed limb altitude in operational mode.</p>
@@ -174,7 +175,7 @@ Used for moon calibration.</p>
 
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.MODES.Mode132">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">Mode132</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode132"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode132" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">Mode132</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>Timeline_settings</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode132"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode132" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>Macro</strong>: Operational_Limb_Pointing_macro.</p>
 <p><strong>CCD_Macro</strong>: BinnedCalibration with changing exposure times for UV and IR CCDs.</p>
 <p>Look at fixed limb altitude in operational mode for a set duration with each exposure time.</p>
@@ -182,7 +183,7 @@ Used for moon calibration.</p>
 
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.MODES.Mode132_133">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">Mode132_133</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params</em>, <em>CCD_settings</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode132_133"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode132_133" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">Mode132_133</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>Timeline_settings</em>, <em>params</em>, <em>CCD_settings</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode132_133"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode132_133" title="Permalink to this definition">¶</a></dt>
 <dd><p>Subfunction of Mode132 and Mode133</p>
 <p><strong>Macro</strong>: Operational_Limb_Pointing_macro.</p>
 <dl class="field-list simple">
@@ -195,7 +196,7 @@ Used for moon calibration.</p>
 
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.MODES.Mode133">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">Mode133</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode133"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode133" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">Mode133</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>Timeline_settings</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode133"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode133" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mode133,</p>
 <p><strong>Macro</strong>: Operational_Limb_Pointing_macro.</p>
 <p><strong>CCD_Macro</strong>: LowPixel with changing exposure times for UV and IR CCDs.</p>
@@ -204,7 +205,7 @@ Used for moon calibration.</p>
 
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.MODES.Mode134">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">Mode134</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode134"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode134" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">Mode134</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>Timeline_settings</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode134"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode134" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mode134, Operational_Limb_Pointing_macro.</p>
 <p><strong>Macro</strong>: Operational_Limb_Pointing_macro.</p>
 <p><strong>CCD_Macro</strong>: CustomBinning</p>
@@ -213,7 +214,7 @@ Used for moon calibration.</p>
 
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.MODES.Mode2">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">Mode2</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode2" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">Mode2</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>Timeline_settings</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode2"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode2" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>Macro</strong>: Operational_Limb_Pointing_macro.</p>
 <p><strong>CCD_Macro</strong>: HighResIR (High-resolution IR binning).</p>
 <p>Stop/Start Nadir at dusk/dawn below MATS.
@@ -222,123 +223,134 @@ Simulates MATS to determine when a point below MATS is at night or daytime.</p>
 
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.MODES.Mode5">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">Mode5</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode5" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">Mode5</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>Timeline_settings</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode5"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode5" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>Macro:</strong> Operational_Limb_Pointing_macro</p>
 <p><strong>CCD_Macro:</strong> Chosen in the settings of the Mode.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.MODES.X">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">X</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#X"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.X" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="descname">X</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>Timeline_settings</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#X"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.X" title="Permalink to this definition">¶</a></dt>
 <dd><p>This is a template for a new mode or test. Exchange 'X' for the name of the new mode/test&quot;</p>
 <p>Currently this template mode only schedules a <em>TC_acfLimbPointingAltitudeOffset</em> CMD.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-OPT._XMLGenerator.Modes_and_Tests.SeparateCmds">
-<span id="opt-xmlgenerator-modes-and-tests-separatecmds-module"></span><h2>OPT._XMLGenerator.Modes_and_Tests.SeparateCmds module<a class="headerlink" href="#module-OPT._XMLGenerator.Modes_and_Tests.SeparateCmds" title="Permalink to this headline">¶</a></h2>
-<p>Calls CMDs, which will generate commands in the XML-file.</p>
-<p>For PWRTOGGLE, PM, CCDBadColumn, CCDFlushBadColumns: Compares parameters given in the Science Mode Timeline to default parameters
+<div class="section" id="module-OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures">
+<span id="opt-xmlgenerator-modes-and-tests-separatecmdsandprocedures-module"></span><h2>OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures module<a class="headerlink" href="#module-OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures" title="Permalink to this headline">¶</a></h2>
+<p>Calls CMDs/Procedures, which will generate commands in the XML-file.</p>
+<p>For PM, CCDBadColumn, CCDFlushBadColumns: Compares parameters given in the Science Mode Timeline to default parameters
 given in the set <em>Configuration File</em> and fills in any parameters missing in the Science Mode Timeline.</p>
 <p>For the rest CMDS, each parameter must be given in the Science Mode Timeline.</p>
-<p>PWRTOGGLE will always call a PWRTOGGLE_macro which also turns off all CCDs before power toggling.</p>
-<dl>
-<dt>Functions on the form &quot;X&quot;, where X is any CMD:</dt><dd><dl>
-<dt>Arguments:</dt><dd><p>root (lxml.etree.Element):  XML tree structure. Main container object for the ElementTree API. lxml.etree.Element class</p>
-<p>date (ephem.Date): Starting date of the CMD. On the form of the ephem.Date class.</p>
-<p>duration (int): The duration of the CMD [s] as an integer class.</p>
-<p>relativeTime (int): The starting time [s] of the CMD with regard to the start of the timeline as an integer class</p>
-<p>params (dict): Dictionary containing the parameters of the CMD given in the Science_Mode_Timeline.</p>
+<p>TurnONCCDs will always call TC_pafCCDMain with fixed arguments to turn ON all CCDs.</p>
+<p>Functions on the form &quot;X&quot;, where X is any CMD:</p>
+<blockquote>
+<div><dl>
+<dt><strong>Arguments:</strong></dt><dd><p><strong>root</strong> (<em>lxml.etree.Element</em>):  XML tree structure. Main container object for the ElementTree API. lxml.etree.Element class</p>
+<p><strong>date</strong> (<em>ephem.Date</em>): Starting date of the CMD. On the form of the ephem.Date class.</p>
+<p><strong>duration</strong> (<em>int</em>): The duration of the CMD [s] as an integer class.</p>
+<p><strong>relativeTime</strong> (<em>int</em>): The starting time [s] of the CMD with regard to the start of the timeline as an integer class</p>
+<p><strong>Timeline_settings</strong> (<em>dict</em>): Dictionary containing the settings of the Timeline given in either the <em>Science_Mode_Timeline</em> or the <em>Configuration File</em>.</p>
+<p><strong>params</strong> (<em>dict</em>): Dictionary containing the parameters of the CMD given in the Science_Mode_Timeline.</p>
 </dd>
 <dt>Returns:</dt><dd><p>None</p>
 </dd>
 </dl>
-</dd>
-</dl>
+</div></blockquote>
 <p>&#64;author: David</p>
 <dl class="function">
-<dt id="OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.ArgEnableYawComp">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.</code><code class="descname">ArgEnableYawComp</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/SeparateCmds.html#ArgEnableYawComp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.ArgEnableYawComp" title="Permalink to this definition">¶</a></dt>
+<dt id="OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.ArgEnableYawComp">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.</code><code class="descname">ArgEnableYawComp</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>Timeline_settings</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/SeparateCMDsAndProcedures.html#ArgEnableYawComp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.ArgEnableYawComp" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
-<dt id="OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.ArgFreezeDuration">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.</code><code class="descname">ArgFreezeDuration</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/SeparateCmds.html#ArgFreezeDuration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.ArgFreezeDuration" title="Permalink to this definition">¶</a></dt>
+<dt id="OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.ArgFreezeDuration">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.</code><code class="descname">ArgFreezeDuration</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>Timeline_settings</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/SeparateCMDsAndProcedures.html#ArgFreezeDuration"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.ArgFreezeDuration" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
-<dt id="OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.ArgFreezeStart">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.</code><code class="descname">ArgFreezeStart</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/SeparateCmds.html#ArgFreezeStart"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.ArgFreezeStart" title="Permalink to this definition">¶</a></dt>
+<dt id="OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.ArgFreezeStart">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.</code><code class="descname">ArgFreezeStart</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>Timeline_settings</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/SeparateCMDsAndProcedures.html#ArgFreezeStart"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.ArgFreezeStart" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
-<dt id="OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.CCD">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.</code><code class="descname">CCD</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/SeparateCmds.html#CCD"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.CCD" title="Permalink to this definition">¶</a></dt>
+<dt id="OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.CCD">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.</code><code class="descname">CCD</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>Timeline_settings</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/SeparateCMDsAndProcedures.html#CCD"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.CCD" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
-<dt id="OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.CCDBIAS">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.</code><code class="descname">CCDBIAS</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/SeparateCmds.html#CCDBIAS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.CCDBIAS" title="Permalink to this definition">¶</a></dt>
+<dt id="OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.CCDBIAS">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.</code><code class="descname">CCDBIAS</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>Timeline_settings</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/SeparateCMDsAndProcedures.html#CCDBIAS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.CCDBIAS" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
-<dt id="OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.CCDBadColumn">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.</code><code class="descname">CCDBadColumn</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/SeparateCmds.html#CCDBadColumn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.CCDBadColumn" title="Permalink to this definition">¶</a></dt>
+<dt id="OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.CCDBadColumn">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.</code><code class="descname">CCDBadColumn</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>Timeline_settings</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/SeparateCMDsAndProcedures.html#CCDBadColumn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.CCDBadColumn" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
-<dt id="OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.CCDFlushBadColumns">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.</code><code class="descname">CCDFlushBadColumns</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/SeparateCmds.html#CCDFlushBadColumns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.CCDFlushBadColumns" title="Permalink to this definition">¶</a></dt>
+<dt id="OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.CCDFlushBadColumns">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.</code><code class="descname">CCDFlushBadColumns</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>Timeline_settings</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/SeparateCMDsAndProcedures.html#CCDFlushBadColumns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.CCDFlushBadColumns" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
-<dt id="OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.CCDSNAPSHOT">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.</code><code class="descname">CCDSNAPSHOT</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/SeparateCmds.html#CCDSNAPSHOT"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.CCDSNAPSHOT" title="Permalink to this definition">¶</a></dt>
+<dt id="OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.CCDSNAPSHOT">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.</code><code class="descname">CCDSNAPSHOT</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>Timeline_settings</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/SeparateCMDsAndProcedures.html#CCDSNAPSHOT"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.CCDSNAPSHOT" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
-<dt id="OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.CCDSynchronize">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.</code><code class="descname">CCDSynchronize</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/SeparateCmds.html#CCDSynchronize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.CCDSynchronize" title="Permalink to this definition">¶</a></dt>
+<dt id="OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.CCDSynchronize">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.</code><code class="descname">CCDSynchronize</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>Timeline_settings</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/SeparateCMDsAndProcedures.html#CCDSynchronize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.CCDSynchronize" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
-<dt id="OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.CCDTRANSPARENTCMD">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.</code><code class="descname">CCDTRANSPARENTCMD</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/SeparateCmds.html#CCDTRANSPARENTCMD"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.CCDTRANSPARENTCMD" title="Permalink to this definition">¶</a></dt>
+<dt id="OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.CCDTRANSPARENTCMD">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.</code><code class="descname">CCDTRANSPARENTCMD</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>Timeline_settings</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/SeparateCMDsAndProcedures.html#CCDTRANSPARENTCMD"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.CCDTRANSPARENTCMD" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
-<dt id="OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.Dbg">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.</code><code class="descname">Dbg</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/SeparateCmds.html#Dbg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.Dbg" title="Permalink to this definition">¶</a></dt>
+<dt id="OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.Dbg">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.</code><code class="descname">Dbg</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>Timeline_settings</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/SeparateCMDsAndProcedures.html#Dbg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.Dbg" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
-<dt id="OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.HTR">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.</code><code class="descname">HTR</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/SeparateCmds.html#HTR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.HTR" title="Permalink to this definition">¶</a></dt>
+<dt id="OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.HTR">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.</code><code class="descname">HTR</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>Timeline_settings</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/SeparateCMDsAndProcedures.html#HTR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.HTR" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
-<dt id="OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.LimbPointingAltitudeOffset">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.</code><code class="descname">LimbPointingAltitudeOffset</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/SeparateCmds.html#LimbPointingAltitudeOffset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.LimbPointingAltitudeOffset" title="Permalink to this definition">¶</a></dt>
+<dt id="OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.LimbPointingAltitudeOffset">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.</code><code class="descname">LimbPointingAltitudeOffset</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>Timeline_settings</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/SeparateCMDsAndProcedures.html#LimbPointingAltitudeOffset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.LimbPointingAltitudeOffset" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
-<dt id="OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.MODE">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.</code><code class="descname">MODE</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/SeparateCmds.html#MODE"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.MODE" title="Permalink to this definition">¶</a></dt>
+<dt id="OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.MODE">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.</code><code class="descname">MODE</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>Timeline_settings</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/SeparateCMDsAndProcedures.html#MODE"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.MODE" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
-<dt id="OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.PM">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.</code><code class="descname">PM</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/SeparateCmds.html#PM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.PM" title="Permalink to this definition">¶</a></dt>
+<dt id="OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.PM">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.</code><code class="descname">PM</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>Timeline_settings</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/SeparateCMDsAndProcedures.html#PM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.PM" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
-<dt id="OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.PWRTOGGLE">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.</code><code class="descname">PWRTOGGLE</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/SeparateCmds.html#PWRTOGGLE"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.PWRTOGGLE" title="Permalink to this definition">¶</a></dt>
+<dt id="OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.PWRTOGGLE">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.</code><code class="descname">PWRTOGGLE</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>Timeline_settings</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/SeparateCMDsAndProcedures.html#PWRTOGGLE"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.PWRTOGGLE" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
-<dt id="OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.UPLOAD">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.</code><code class="descname">UPLOAD</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/SeparateCmds.html#UPLOAD"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.SeparateCmds.UPLOAD" title="Permalink to this definition">¶</a></dt>
+<dt id="OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.Payload_Power_Toggle">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.</code><code class="descname">Payload_Power_Toggle</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>Timeline_settings</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/SeparateCMDsAndProcedures.html#Payload_Power_Toggle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.Payload_Power_Toggle" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.TurnONCCDs">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.</code><code class="descname">TurnONCCDs</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>Timeline_settings</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/SeparateCMDsAndProcedures.html#TurnONCCDs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.TurnONCCDs" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="function">
+<dt id="OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.UPLOAD">
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.</code><code class="descname">UPLOAD</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>Timeline_settings</em>, <em>params={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/SeparateCMDsAndProcedures.html#UPLOAD"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.UPLOAD" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -347,39 +359,40 @@ given in the set <em>Configuration File</em> and fills in any parameters missing
 <p>Created on Fri Mar 22 12:34:33 2019</p>
 <p>Generates and calculates parameters for each Test, and converts them to strings,
 then calls for macros, which will generate commands in the XML-file.</p>
-<dl>
-<dt>Functions on the form &quot;X&quot;, where the last X is any Test:</dt><dd><dl>
-<dt>Arguments:</dt><dd><p>root =  XML tree structure. Main container object for the ElementTree API. lxml.etree.Element class</p>
-<p>date = Starting date of the Test. On the form of the ephem.Date class.</p>
-<p>duration = The duration of the Test [s] as an integer class.</p>
-<p>relativeTime = The starting time of the Test with regard to the start of the timeline [s] as an integer class.</p>
-<p>params = Dictionary containing the parameters of the Test given in the Science_Mode_Timeline.</p>
+<p>Functions on the form &quot;X&quot;, where the last X is any Test:</p>
+<blockquote>
+<div><dl>
+<dt><strong>Arguments:</strong></dt><dd><p><strong>root</strong> (<em>lxml.etree.Element</em>):  XML tree structure. Main container object for the ElementTree API.</p>
+<p><strong>date</strong> (<em>ephem.Date</em>): Starting date of the Test. On the form of the ephem.Date class.</p>
+<p><strong>duration</strong> (<em>int</em>): The duration of the test [s].</p>
+<p><strong>relativeTime</strong> (<em>int</em>): The starting time of the mode with regard to the start of the timeline [s].</p>
+<p><strong>Timeline_settings</strong> (<em>dict</em>): Dictionary containing the settings of the Timeline given in either the <em>Science_Mode_Timeline</em> or the <em>Configuration File</em>.</p>
+<p><strong>params</strong> (<em>dict</em>): Dictionary containing the settings of the <em>Test</em> given in the <em>Science_Mode_Timeline</em>.</p>
 </dd>
 <dt>Returns:</dt><dd><p>None</p>
 </dd>
 </dl>
-</dd>
-</dl>
+</div></blockquote>
 <p>When creating new Test functions it is crucial that the function name is
 Test_name, where Test_name is the same as the string used in the Science Mode Timeline</p>
 <p>&#64;author: David</p>
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.Tests.All_Tests">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Tests.</code><code class="descname">All_Tests</code><span class="sig-paren">(</span><em>root, date, duration, relativeTime, params=['Limb_functional_test', 'Photometer_test_1', 'CCD_stability_test', 'Nadir_functional_test']</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Tests.html#All_Tests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Tests.All_Tests" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Tests.</code><code class="descname">All_Tests</code><span class="sig-paren">(</span><em>root, date, duration, relativeTime, Timeline_settings, params=['Limb_functional_test', 'Photometer_test_1', 'CCD_stability_test', 'Nadir_functional_test']</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Tests.html#All_Tests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Tests.All_Tests" title="Permalink to this definition">¶</a></dt>
 <dd><p>Runs all the Test functions which has their function name as a string in params.</p>
 <p>Allows the tests to be dynamically scheduled.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.Tests.CCD_stability_test">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Tests.</code><code class="descname">CCD_stability_test</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={'ExpTimes': [1000</em>, <em>2000</em>, <em>4000</em>, <em>8000</em>, <em>16000</em>, <em>32000]}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Tests.html#CCD_stability_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Tests.CCD_stability_test" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Tests.</code><code class="descname">CCD_stability_test</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>Timeline_settings</em>, <em>params={'ExpTimes': [1000</em>, <em>2000</em>, <em>4000</em>, <em>8000</em>, <em>16000</em>, <em>32000]}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Tests.html#CCD_stability_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Tests.CCD_stability_test" title="Permalink to this definition">¶</a></dt>
 <dd><p>CCD_stability_test.</p>
 <p>Schedules CCD_stability_test with defined parameters and simulates MATS propagation from TLE.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.Tests.Limb_functional_test">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Tests.</code><code class="descname">Limb_functional_test</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={'ExpTimes': [1000</em>, <em>2000</em>, <em>4000</em>, <em>8000</em>, <em>16000]}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Tests.html#Limb_functional_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Tests.Limb_functional_test" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Tests.</code><code class="descname">Limb_functional_test</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>Timeline_settings</em>, <em>params={'ExpTimes': [1000</em>, <em>2000</em>, <em>4000</em>, <em>8000</em>, <em>16000]}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Tests.html#Limb_functional_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Tests.Limb_functional_test" title="Permalink to this definition">¶</a></dt>
 <dd><p>Limb_functional_test.</p>
 <p>Schedules Limb_functional_test with defined parameters and simulates MATS propagation from TLE.
 Scheduling of all daylight and nighttime commands are separated timewise and all commands for one of the two is scheduled first.</p>
@@ -387,14 +400,14 @@ Scheduling of all daylight and nighttime commands are separated timewise and all
 
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.Tests.Nadir_functional_test">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Tests.</code><code class="descname">Nadir_functional_test</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params={'ExpTimes': [1000</em>, <em>2000</em>, <em>4000</em>, <em>8000</em>, <em>16000]}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Tests.html#Nadir_functional_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Tests.Nadir_functional_test" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Tests.</code><code class="descname">Nadir_functional_test</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>Timeline_settings</em>, <em>params={'ExpTimes': [1000</em>, <em>2000</em>, <em>4000</em>, <em>8000</em>, <em>16000]}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Tests.html#Nadir_functional_test"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Tests.Nadir_functional_test" title="Permalink to this definition">¶</a></dt>
 <dd><p>Schedules Nadir_functional_test with defined parameters and simulates MATS propagation from TLE.
 Scheduling of all daylight and nighttime commands are separated timewise and all commands for one of the two is scheduled first.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.Tests.Photometer_test_1">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Tests.</code><code class="descname">Photometer_test_1</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>relativeTime</em>, <em>duration=5400</em>, <em>params={'ExpTimes': [1000</em>, <em>2000</em>, <em>4000</em>, <em>8000</em>, <em>16000]}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Tests.html#Photometer_test_1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Tests.Photometer_test_1" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Tests.</code><code class="descname">Photometer_test_1</code><span class="sig-paren">(</span><em>root</em>, <em>date</em>, <em>relativeTime</em>, <em>duration</em>, <em>Timeline_settings</em>, <em>params={'ExpTimes': [1000</em>, <em>2000</em>, <em>4000</em>, <em>8000</em>, <em>16000]}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Tests.html#Photometer_test_1"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Tests.Photometer_test_1" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets the payload in operational mode and then cycles PM settings as defined in the Test.</p>
 </dd></dl>
 
@@ -423,13 +436,16 @@ Scheduling of all daylight and nighttime commands are separated timewise and all
 <li class="toctree-l2 current"><a class="reference internal" href="OPT.html#subpackages">Subpackages</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="OPT._CheckConfigFile.html">OPT._CheckConfigFile package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="OPT._DataPlotter.html">OPT._DataPlotter package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="OPT._MinimalScienceXMLGenerator.html">OPT._MinimalScienceXMLGenerator package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="OPT._Plot_Timeline_Plotter_Plots.html">OPT._Plot_Timeline_Plotter_Plots package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="OPT._TimelineAnalyzer.html">OPT._TimelineAnalyzer package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="OPT._TimelineGenerator.html">OPT._TimelineGenerator package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="OPT._Timeline_Plotter.html">OPT._Timeline_Plotter package</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="OPT._XMLGenerator.html">OPT._XMLGenerator package</a><ul class="current">
 <li class="toctree-l4 current"><a class="reference internal" href="OPT._XMLGenerator.html#subpackages">Subpackages</a></li>
 <li class="toctree-l4"><a class="reference internal" href="OPT._XMLGenerator.html#submodules">Submodules</a></li>
-<li class="toctree-l4"><a class="reference internal" href="OPT._XMLGenerator.html#module-OPT._XMLGenerator.Core">OPT._XMLGenerator.Core module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="OPT._XMLGenerator.html#module-OPT._XMLGenerator.MinimalScienceXML_gen">OPT._XMLGenerator.MinimalScienceXML_gen module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="OPT._XMLGenerator.html#module-OPT._XMLGenerator.XML_gen">OPT._XMLGenerator.XML_gen module</a></li>
 </ul>
 </li>
 </ul>

@@ -13,6 +13,7 @@ Subpackages
 
     OPT._CheckConfigFile
     OPT._DataPlotter
+    OPT._Plot_Timeline_Plotter_Plots
     OPT._TimelineAnalyzer
     OPT._TimelineGenerator
     OPT._Timeline_Plotter

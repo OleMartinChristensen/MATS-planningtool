@@ -152,23 +152,23 @@ Also saves relevant data to an .csv file located in Output/.</p>
 <dd class="field-odd"><p>A list containing dictionaries containing parameters for each time a star is spotted. Or just a date depending on 'automatic' in <em>Mode124_settings</em>.</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p>star_list ((<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>)) or (str)</p>
+<dd class="field-even"><p>SpottedStarList ((<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>)) or (str)</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="OPT._TimelineGenerator.Modes.Mode120.Mode120_date_select">
-<code class="descclassname">OPT._TimelineGenerator.Modes.Mode120.</code><code class="descname">Mode120_date_select</code><span class="sig-paren">(</span><em>Occupied_Timeline</em>, <em>star_list</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/Mode120.html#Mode120_date_select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.Mode120.Mode120_date_select" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._TimelineGenerator.Modes.Mode120.</code><code class="descname">Mode120_date_select</code><span class="sig-paren">(</span><em>Occupied_Timeline</em>, <em>SpottedStarList</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/Mode120.html#Mode120_date_select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.Mode120.Mode120_date_select" title="Permalink to this definition">¶</a></dt>
 <dd><p>Subfunction, Schedules a simulated date.</p>
 <p>A date is selected for which the brightest star is visible at the minimum amount of H-offset in the FOV.
-If the date is occupied the same star will be selected with the 2nd least amount of H-offset and so on. Another star will not be chosen and if
-no date is available for the brightest star; the Mode will not be scheduled.</p>
+If the date is occupied the same star will be selected with the 2nd least amount of H-offset and so on. Another star will be chosen in chronological
+order of availabilty if all the times the brightest star is available are occupied.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>Occupied_Timeline</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>) -- Dictionary with keys equal to planned and scheduled Modes/CMDs with entries equal to their start and end time as a list.</p></li>
-<li><p><strong>star_list</strong> ((<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>)) -- A list containing dictionaries containing parameters for each time a star is spotted.</p></li>
+<li><p><strong>SpottedStarList</strong> ((<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>)) -- A list containing dictionaries containing parameters for each time a star is spotted.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -315,14 +315,14 @@ Also saves relevant data to an .csv file located in Output/.</p>
 <dd class="field-odd"><p>A list containing dictionaries containing parameters for each time the Moon is spotted. Or just a date depending on 'automatic' in <em>Mode124_settings</em>.</p>
 </dd>
 <dt class="field-even">Return type</dt>
-<dd class="field-even"><p>dates ((<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>)) or (str)</p>
+<dd class="field-even"><p>SpottedMoonList ((<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>)) or (str)</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="function">
 <dt id="OPT._TimelineGenerator.Modes.Mode124.date_select">
-<code class="descclassname">OPT._TimelineGenerator.Modes.Mode124.</code><code class="descname">date_select</code><span class="sig-paren">(</span><em>Occupied_Timeline</em>, <em>dates</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/Mode124.html#date_select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.Mode124.date_select" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._TimelineGenerator.Modes.Mode124.</code><code class="descname">date_select</code><span class="sig-paren">(</span><em>Occupied_Timeline</em>, <em>SpottedMoonList</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/Mode124.html#date_select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.Mode124.date_select" title="Permalink to this definition">¶</a></dt>
 <dd><p>Subfunction, Schedules a simulated date.</p>
 <p>A date is selected for which the Moon is visible at an minimum amount of H-offset in the FOV.
 If the date is occupied a date will be selected with the 2nd least amount of H-offset and so on.</p>
@@ -330,7 +330,7 @@ If the date is occupied a date will be selected with the 2nd least amount of H-o
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>Occupied_Timeline</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>) -- Dictionary with keys equal to planned and scheduled Modes together with their start and end time in a list. The list is empty if the Mode is unscheduled.</p></li>
-<li><p><strong>dates</strong> ((<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>)) -- A list containing dictionaries containing parameters for each time the Moon is spotted.</p></li>
+<li><p><strong>SpottedMoonList</strong> ((<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>)) -- A list containing dictionaries containing parameters for each time the Moon is spotted.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -648,9 +648,9 @@ Remember to also add the name of this Mode into the <em>Scheduling_priority</em>
 <p>Header containing the functions which schedules each mode and CMD.</p>
 <p>&#64;author: David</p>
 </div>
-<div class="section" id="module-OPT._TimelineGenerator.Modes.StartUpCmds">
-<span id="opt-timelinegenerator-modes-startupcmds-module"></span><h2>OPT._TimelineGenerator.Modes.StartUpCmds module<a class="headerlink" href="#module-OPT._TimelineGenerator.Modes.StartUpCmds" title="Permalink to this headline">¶</a></h2>
-<p>Schedules the PayloadCMDs at the start of the timeline and saves the result in the Occupied_Timeline dictionary.</p>
+<div class="section" id="module-OPT._TimelineGenerator.Modes.StartUpCmdsAndProcedures">
+<span id="opt-timelinegenerator-modes-startupcmdsandprocedures-module"></span><h2>OPT._TimelineGenerator.Modes.StartUpCmdsAndProcedures module<a class="headerlink" href="#module-OPT._TimelineGenerator.Modes.StartUpCmdsAndProcedures" title="Permalink to this headline">¶</a></h2>
+<p>Schedules PayloadCMDs and Procedures at the start of the timeline and saves the result in the Occupied_Timeline dictionary.</p>
 <p>Part of Timeline_generator, as part of OPT.</p>
 <blockquote>
 <div><dl class="simple">
@@ -662,29 +662,29 @@ Remember to also add the name of this Mode into the <em>Scheduling_priority</em>
 </dl>
 </div></blockquote>
 <dl class="function">
-<dt id="OPT._TimelineGenerator.Modes.StartUpCmds.ArgEnableYawComp">
-<code class="descclassname">OPT._TimelineGenerator.Modes.StartUpCmds.</code><code class="descname">ArgEnableYawComp</code><span class="sig-paren">(</span><em>Occupied_Timeline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/StartUpCmds.html#ArgEnableYawComp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.StartUpCmds.ArgEnableYawComp" title="Permalink to this definition">¶</a></dt>
+<dt id="OPT._TimelineGenerator.Modes.StartUpCmdsAndProcedures.ArgEnableYawComp">
+<code class="descclassname">OPT._TimelineGenerator.Modes.StartUpCmdsAndProcedures.</code><code class="descname">ArgEnableYawComp</code><span class="sig-paren">(</span><em>Occupied_Timeline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/StartUpCmdsAndProcedures.html#ArgEnableYawComp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.StartUpCmdsAndProcedures.ArgEnableYawComp" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
-<dt id="OPT._TimelineGenerator.Modes.StartUpCmds.CCDBIAS">
-<code class="descclassname">OPT._TimelineGenerator.Modes.StartUpCmds.</code><code class="descname">CCDBIAS</code><span class="sig-paren">(</span><em>Occupied_Timeline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/StartUpCmds.html#CCDBIAS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.StartUpCmds.CCDBIAS" title="Permalink to this definition">¶</a></dt>
+<dt id="OPT._TimelineGenerator.Modes.StartUpCmdsAndProcedures.CCDBIAS">
+<code class="descclassname">OPT._TimelineGenerator.Modes.StartUpCmdsAndProcedures.</code><code class="descname">CCDBIAS</code><span class="sig-paren">(</span><em>Occupied_Timeline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/StartUpCmdsAndProcedures.html#CCDBIAS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.StartUpCmdsAndProcedures.CCDBIAS" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
-<dt id="OPT._TimelineGenerator.Modes.StartUpCmds.CCDBadColumn">
-<code class="descclassname">OPT._TimelineGenerator.Modes.StartUpCmds.</code><code class="descname">CCDBadColumn</code><span class="sig-paren">(</span><em>Occupied_Timeline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/StartUpCmds.html#CCDBadColumn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.StartUpCmds.CCDBadColumn" title="Permalink to this definition">¶</a></dt>
+<dt id="OPT._TimelineGenerator.Modes.StartUpCmdsAndProcedures.CCDBadColumn">
+<code class="descclassname">OPT._TimelineGenerator.Modes.StartUpCmdsAndProcedures.</code><code class="descname">CCDBadColumn</code><span class="sig-paren">(</span><em>Occupied_Timeline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/StartUpCmdsAndProcedures.html#CCDBadColumn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.StartUpCmdsAndProcedures.CCDBadColumn" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
-<dt id="OPT._TimelineGenerator.Modes.StartUpCmds.CCDFlushBadColumns">
-<code class="descclassname">OPT._TimelineGenerator.Modes.StartUpCmds.</code><code class="descname">CCDFlushBadColumns</code><span class="sig-paren">(</span><em>Occupied_Timeline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/StartUpCmds.html#CCDFlushBadColumns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.StartUpCmds.CCDFlushBadColumns" title="Permalink to this definition">¶</a></dt>
+<dt id="OPT._TimelineGenerator.Modes.StartUpCmdsAndProcedures.CCDFlushBadColumns">
+<code class="descclassname">OPT._TimelineGenerator.Modes.StartUpCmdsAndProcedures.</code><code class="descname">CCDFlushBadColumns</code><span class="sig-paren">(</span><em>Occupied_Timeline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/StartUpCmdsAndProcedures.html#CCDFlushBadColumns"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.StartUpCmdsAndProcedures.CCDFlushBadColumns" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
-<dt id="OPT._TimelineGenerator.Modes.StartUpCmds.CMD_scheduler">
-<code class="descclassname">OPT._TimelineGenerator.Modes.StartUpCmds.</code><code class="descname">CMD_scheduler</code><span class="sig-paren">(</span><em>Occupied_Timeline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/StartUpCmds.html#CMD_scheduler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.StartUpCmds.CMD_scheduler" title="Permalink to this definition">¶</a></dt>
-<dd><p>Subfuncton, Schedules a CMD and saves it to the <em>Occupied_Timeline</em> variable</p>
+<dt id="OPT._TimelineGenerator.Modes.StartUpCmdsAndProcedures.CMD_scheduler">
+<code class="descclassname">OPT._TimelineGenerator.Modes.StartUpCmdsAndProcedures.</code><code class="descname">CMD_scheduler</code><span class="sig-paren">(</span><em>Occupied_Timeline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/StartUpCmdsAndProcedures.html#CMD_scheduler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.StartUpCmdsAndProcedures.CMD_scheduler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Subfuncton, Schedules a CMD/Procedure and saves it to the <em>Occupied_Timeline</em> variable</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>Occupied_Timeline</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>) -- Dictionary with keys equal to planned and scheduled Modes/CMDs with entries equal to their start and end time as a list.</p>
@@ -704,18 +704,31 @@ Remember to also add the name of this Mode into the <em>Scheduling_priority</em>
 </dd></dl>
 
 <dl class="function">
-<dt id="OPT._TimelineGenerator.Modes.StartUpCmds.HTR">
-<code class="descclassname">OPT._TimelineGenerator.Modes.StartUpCmds.</code><code class="descname">HTR</code><span class="sig-paren">(</span><em>Occupied_Timeline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/StartUpCmds.html#HTR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.StartUpCmds.HTR" title="Permalink to this definition">¶</a></dt>
+<dt id="OPT._TimelineGenerator.Modes.StartUpCmdsAndProcedures.HTR">
+<code class="descclassname">OPT._TimelineGenerator.Modes.StartUpCmdsAndProcedures.</code><code class="descname">HTR</code><span class="sig-paren">(</span><em>Occupied_Timeline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/StartUpCmdsAndProcedures.html#HTR"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.StartUpCmdsAndProcedures.HTR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="data">
+<dt id="OPT._TimelineGenerator.Modes.StartUpCmdsAndProcedures.Logger">
+<code class="descclassname">OPT._TimelineGenerator.Modes.StartUpCmdsAndProcedures.</code><code class="descname">Logger</code><em class="property"> = &lt;Logger OPT_logger (WARNING)&gt;</em><a class="reference internal" href="_modules/logging.html#Logger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.StartUpCmdsAndProcedures.Logger" title="Permalink to this definition">¶</a></dt>
+<dd><p>def PWRTOGGLE(Occupied_Timeline):</p>
+<p>Occupied_Timeline, comment = CMD_scheduler(Occupied_Timeline)</p>
+<p>return Occupied_Timeline, comment</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="OPT._TimelineGenerator.Modes.StartUpCmdsAndProcedures.PM">
+<code class="descclassname">OPT._TimelineGenerator.Modes.StartUpCmdsAndProcedures.</code><code class="descname">PM</code><span class="sig-paren">(</span><em>Occupied_Timeline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/StartUpCmdsAndProcedures.html#PM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.StartUpCmdsAndProcedures.PM" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
-<dt id="OPT._TimelineGenerator.Modes.StartUpCmds.PM">
-<code class="descclassname">OPT._TimelineGenerator.Modes.StartUpCmds.</code><code class="descname">PM</code><span class="sig-paren">(</span><em>Occupied_Timeline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/StartUpCmds.html#PM"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.StartUpCmds.PM" title="Permalink to this definition">¶</a></dt>
+<dt id="OPT._TimelineGenerator.Modes.StartUpCmdsAndProcedures.Payload_Power_Toggle">
+<code class="descclassname">OPT._TimelineGenerator.Modes.StartUpCmdsAndProcedures.</code><code class="descname">Payload_Power_Toggle</code><span class="sig-paren">(</span><em>Occupied_Timeline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/StartUpCmdsAndProcedures.html#Payload_Power_Toggle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.StartUpCmdsAndProcedures.Payload_Power_Toggle" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
-<dt id="OPT._TimelineGenerator.Modes.StartUpCmds.PWRTOGGLE">
-<code class="descclassname">OPT._TimelineGenerator.Modes.StartUpCmds.</code><code class="descname">PWRTOGGLE</code><span class="sig-paren">(</span><em>Occupied_Timeline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/StartUpCmds.html#PWRTOGGLE"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.StartUpCmds.PWRTOGGLE" title="Permalink to this definition">¶</a></dt>
+<dt id="OPT._TimelineGenerator.Modes.StartUpCmdsAndProcedures.TurnONCCDs">
+<code class="descclassname">OPT._TimelineGenerator.Modes.StartUpCmdsAndProcedures.</code><code class="descname">TurnONCCDs</code><span class="sig-paren">(</span><em>Occupied_Timeline</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_TimelineGenerator/Modes/StartUpCmdsAndProcedures.html#TurnONCCDs"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._TimelineGenerator.Modes.StartUpCmdsAndProcedures.TurnONCCDs" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -743,6 +756,8 @@ Remember to also add the name of this Mode into the <em>Scheduling_priority</em>
 <li class="toctree-l2 current"><a class="reference internal" href="OPT.html#subpackages">Subpackages</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="OPT._CheckConfigFile.html">OPT._CheckConfigFile package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="OPT._DataPlotter.html">OPT._DataPlotter package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="OPT._MinimalScienceXMLGenerator.html">OPT._MinimalScienceXMLGenerator package</a></li>
+<li class="toctree-l3"><a class="reference internal" href="OPT._Plot_Timeline_Plotter_Plots.html">OPT._Plot_Timeline_Plotter_Plots package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="OPT._TimelineAnalyzer.html">OPT._TimelineAnalyzer package</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="OPT._TimelineGenerator.html">OPT._TimelineGenerator package</a><ul class="current">
 <li class="toctree-l4 current"><a class="reference internal" href="OPT._TimelineGenerator.html#subpackages">Subpackages</a></li>

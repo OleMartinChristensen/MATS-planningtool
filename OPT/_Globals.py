@@ -10,9 +10,9 @@ current_pointing = Only applicable to XML_generator. Contains the pointing altit
 
 TLE = Contains a TLE as a duple of strings which is used by the *Configuration File*. If the strings are empty, the Configuration File will used a default TLE specified in the *Configuration File*. \n
 
-Timeline_settings = Only applicable to XML_generator. Contains the Timeline_settings used, set by the *Science Mode Timeline* or *Configuration File*.
+latestRelativeTime = Only applicable to XML_generator. The *relativeTime* of the latest scheduled CMD. Used to make sure that CMDs always are scheduled in a chronological order. \n
 
-latestRelativeTime = Only applicable to XML_generator. The *relativeTime* of the latest scheduled CMD. Used to make sure that CMDs always are scheduled in a chronological order.
+LargestSetTEXPMS = The latest largest set TEXPMS on the CCDs whenever CCD_macro is ran. This is the least amount of time that need to pass from going into idle mode and settings new CCD settings.
 """
 
 Config_File = 'OPT_Config_File'
@@ -20,8 +20,8 @@ current_pointing = None
 #science_mode_timeline_path = None
 StartTime = None
 TLE = ('','')
-Timeline_settings = None
 latestRelativeTime = 0
+LargestSetTEXPMS = 0
 
 #TLE = ['1 54321U 19100G   20172.75043981 0.00000000  00000-0  75180-4 0  0014', 
 #       '2 54321  97.7044   6.9210 0014595 313.2372  91.8750 14.93194142000010']

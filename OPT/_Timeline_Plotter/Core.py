@@ -4,10 +4,10 @@
 """
 
 from scipy.spatial.transform import Rotation as R
-from pylab import scatter, pi, cross, array, arccos, arctan, dot, norm, transpose, zeros, sqrt, floor, figure, plot_date, datestr2num, xlabel, ylabel, title, legend, date2num
+from pylab import rcParams, savefig, scatter, pi, cross, array, arccos, arctan, dot, norm, transpose, zeros, sqrt, floor, figure, plot_date, datestr2num, xlabel, ylabel, title, legend, date2num
 from skyfield.api import load, EarthSatellite
 import ephem, logging, importlib, h5py, json, csv
-import datetime
+import datetime, os, pickle
 
 from OPT import _Library, _MATS_coordinates, _Globals
 
@@ -15,6 +15,7 @@ from OPT import _Library, _MATS_coordinates, _Globals
 OPT_Config_File = importlib.import_module(_Globals.Config_File)
 Logger = logging.getLogger(OPT_Config_File.Logger_name())
 
+rcParams['figure.max_open_warning'] = 30
 
 
 def Timeline_Plotter(Science_Mode_Path, OHB_H5_Path, STK_CSV_FILE, Timestep):
@@ -123,8 +124,9 @@ def Timeline_Plotter(Science_Mode_Path, OHB_H5_Path, STK_CSV_FILE, Timestep):
     ################# Read Science Mode Timeline json file ############
     with open(Science_Mode_Path, "r") as read_file:
         ScienceMode= json.load(read_file)
-    ################# Read Science Mode Timeline json file ############
+    ################# End of Read Science Mode Timeline json file ############
     
+    "Loop through Science Mode Timeline"
     for x in range(len(ScienceMode)):
         Logger.info('')
         Logger.info('Iteration number: '+str(x+1))
@@ -141,6 +143,21 @@ def Timeline_Plotter(Science_Mode_Path, OHB_H5_Path, STK_CSV_FILE, Timestep):
                                              Data_LP = Data_LP, Time = Time, OHB_StartTime = OHB_StartTime )
         
     Logger.info('End of Simulation')
+    
+    
+    
+    
+    
+    #with open(DataPath, "w") as write_file:
+    #    json.dump(Data_MATS, write_file, indent = 2)
+        
+    #DataPath = os.path.join(figureDirectory, 'Data_LP.json')
+    #with open(DataPath, "w") as write_file:
+    #    json.dump(Data_LP, write_file, indent = 2)
+        
+    #DataPath = os.path.join(figureDirectory, 'Time.json')
+    #with open(DataPath, "w") as write_file:
+    #    json.dump(Time, write_file, indent = 2)
     
     #Data_MATS['ScienceMode'] = Data_MATS['ScienceMode']
     #Data_MATS['ColorRGB'] = array( Data_MATS['ColorRGB'] )
@@ -176,7 +193,7 @@ def Timeline_Plotter(Science_Mode_Path, OHB_H5_Path, STK_CSV_FILE, Timestep):
     Data_LP['r_LP_ECEF'] = array( Data_LP['r_LP_ECEF'] )
     
     
-    Time_OHB = Plotter( Data_MATS, Data_LP, Time, int(Timestep/timestep_OHB_data), OHB_StartIndex, OHB_H5_Path, STK_CSV_FILE)
+    Time_OHB = Plotter( Data_MATS, Data_LP, Time, int(Timestep/timestep_OHB_data), OHB_StartIndex, OHB_H5_Path, STK_CSV_FILE, Science_Mode_Path)
     
     return Data_MATS, Data_LP, Time, Time_OHB
 
@@ -215,6 +232,8 @@ def Simulator( ScienceMode, Timestamp_fraction_of_second, Timestep, Timeline_set
     
     ModeName = ScienceMode[0]
     Settings = ScienceMode[3]
+    
+    
     
     "Synchronize simulation Timesteps with OHB Data"
     Mode_start_date = ephem.Date( ephem.Date(ScienceMode[1]) + ephem.second * Timestamp_fraction_of_second )
@@ -259,7 +278,7 @@ def Simulator( ScienceMode, Timestamp_fraction_of_second, Timestep, Timeline_set
         
     elif( ModeName == 'Mode1' or ModeName == 'Mode2' or ModeName ==  'Mode5' ):
         Simulator_Select = 'ModeX'
-        pointing_altitude = Timeline_settings['LP_pointing_altitude']
+        pointing_altitude = Timeline_settings['StandardPointingAltitude']
         
         if( ModeName == 'Mode1'):
             Color = (0,0,0.5)
@@ -384,9 +403,9 @@ def Simulator( ScienceMode, Timestamp_fraction_of_second, Timestep, Timeline_set
                     pointing_altitude += sweep_rate * Timestep
                 elif( pointing_altitude_to >= pointing_altitude):
                     pointing_altitude = pointing_altitude_to
-        #Looking at LP_pointing_altitude after attitude freeze for Mode12X
+        #Looking at StandardPointingAltitude after attitude freeze for Mode12X
         elif( Simulator_Select == 'Mode12X' and t*Timestep >= freeze_duration+freeze_start):
-            pointing_altitude = Timeline_settings['LP_pointing_altitude']
+            pointing_altitude = Timeline_settings['StandardPointingAltitude']
         #Looking at pointing_altitude
         else:
             pass
@@ -441,6 +460,9 @@ def Simulator( ScienceMode, Timestamp_fraction_of_second, Timestep, Timeline_set
         
         v_MATS_ECEF[t,0], v_MATS_ECEF[t,1], v_MATS_ECEF[t,2] = _MATS_coordinates.eci2ecef(
                 v_MATS[t,0], v_MATS[t,1], v_MATS[t,2], current_time_datetime)
+        
+        normal_orbit_ECEF[t,0], normal_orbit_ECEF[t,1], normal_orbit_ECEF[t,2] = _MATS_coordinates.eci2ecef(
+                normal_orbit[t,0], normal_orbit[t,1], normal_orbit[t,2], current_time_datetime)
         
         
         #orbangle_between_LP_MATS_array_dotproduct[t] = arccos( dot(r_MATS_unit_vector[t], r_LP[t]) / norm(r_LP[t]) ) / pi*180
@@ -596,7 +618,7 @@ def Simulator( ScienceMode, Timestamp_fraction_of_second, Timestep, Timeline_set
     
 
     
-def Plotter(Data_MATS, Data_LP, Time, DataIndexStep, OHB_StartIndex, OHB_H5_Path = '', STK_CSV_FILE = ''):
+def Plotter(Data_MATS, Data_LP, Time, DataIndexStep, OHB_StartIndex, OHB_H5_Path = '', STK_CSV_FILE = '', Science_Mode_Path = ''):
     """Subfunction, Performs calculations and plots the position and attitude data of MATS and LP.
     
     Performs calculations on the data given in the file located at *OHB_H5_Path* and plots the results. 
@@ -617,7 +639,17 @@ def Plotter(Data_MATS, Data_LP, Time, DataIndexStep, OHB_StartIndex, OHB_H5_Path
         
     """
     
+    
+    
+    
     Time_MPL = date2num(Time[:])
+    
+    ######## Try to Create a directory for storage of Timeline_Plotter plots and data files #######
+    figureDirectory = os.path.join(Science_Mode_Path.strip('.json'), 'Timeline_Plotter_PlotsAndData')
+    try:
+        os.makedirs(figureDirectory)
+    except:
+        pass
     
     ############################## OHB DATA CALCULATIONS #########################
     ##############################################################################
@@ -910,13 +942,16 @@ def Plotter(Data_MATS, Data_LP, Time, DataIndexStep, OHB_StartIndex, OHB_H5_Path
                     Time_error_STK_MPL.append( Time_MPL_STK[t2] )
                     break
                     
-        figure()
+        fig = figure()
         plot_date(Time_error_STK_MPL[:],x_MATS_error_STK[:], markersize = 1, label = 'x')
         plot_date(Time_error_STK_MPL[:],y_MATS_error_STK[:], markersize = 1, label = 'y')
         plot_date(Time_error_STK_MPL[:],z_MATS_error_STK[:], markersize = 1, label = 'z')
         xlabel('Date')
         ylabel('Absolute error in ECEF position of MATS in m (prediction vs STK')
         legend()
+        figurePath = os.path.join(figureDirectory, 'PosErrorMATS_STK')
+        pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
+    
         
     ########################## End of STK DATA ################################################
     ####################################################################################
@@ -927,6 +962,9 @@ def Plotter(Data_MATS, Data_LP, Time, DataIndexStep, OHB_StartIndex, OHB_H5_Path
     ##############################################################################
     
     from mpl_toolkits.mplot3d import axes3d
+    
+    
+    
     
     #current_time_MPL_STK = ephemDate2MatplotDate + current_time_STK[:]
     #Time_MPL = [ephemDate2MatplotDate+x for x in Time]
@@ -944,18 +982,24 @@ def Plotter(Data_MATS, Data_LP, Time, DataIndexStep, OHB_StartIndex, OHB_H5_Path
     #ax.scatter(r_MATS_ECEF[1:100,0]*1000, r_MATS_ECEF[1:100,1]*1000, r_MATS_ECEF[1:100,2]*1000)
     #ax.scatter(r_LP_ECEF[1:100,0], r_LP_ECEF[1:100,1], r_LP_ECEF[1:100,2])
     
-    figure()
+    fig = figure()
     plot_date(Time_MPL[:], Data_MATS['ScienceMode'][:], markersize = 1, label = 'Predicted')
     xlabel('Date')
     ylabel('Active ScienceMode')
     legend()
+    figurePath = os.path.join(figureDirectory, 'ActiveScienceMode')
+    pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
     
+    
+    """
     figure()
     scatter(Time[:], Data_MATS['yaw_MATS'][:], s=10, c=Data_MATS['ColorRGB'], label = 'Predicted')
     #scatter(Time_OHB[:],Euler_angles_SLOF_OHB[:,0], s=10, c='r', marker="x", label = 'OHB-Data')
     xlabel('Date')
     ylabel('Yaw in degrees [z-axis SLOF]')
     legend()
+    
+    """
     
     """
     from pylab import plt
@@ -967,37 +1011,47 @@ def Plotter(Data_MATS, Data_LP, Time, DataIndexStep, OHB_StartIndex, OHB_H5_Path
     legend()
     """
     
-    figure()
+    fig = figure()
     plot_date(Time_MPL[:], Data_MATS['yaw_MATS'][:], markersize = 1, label = 'Predicted')
     plot_date(Time_MPL_OHB[:],Euler_angles_SLOF_OHB[:,0], markersize = 1, label = 'OHB-Data')
     xlabel('Date')
     ylabel('Yaw in degrees [z-axis SLOF]')
     legend()
+    figurePath = os.path.join(figureDirectory, 'Yaw')
+    pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
     
     
-    figure()
+    fig = figure()
     plot_date(Time_MPL[:], Data_MATS['pitch_MATS'][:] , markersize = 1, label = 'Predicted')
     plot_date(Time_MPL_OHB[:],Euler_angles_SLOF_OHB[:,1], markersize = 1, label = 'OHB-Data')
     xlabel('Date')
     ylabel('Pitch in degrees [intrinsic y-axis SLOF]')
     legend()
+    figurePath = os.path.join(figureDirectory, 'Pitch')
+    pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
     
-    figure()
+    
+    fig = figure()
     plot_date(Time_MPL[:],Data_MATS['roll_MATS'][:], markersize = 1, label = 'Predicted')
     plot_date(Time_MPL_OHB[:],Euler_angles_SLOF_OHB[:,2], markersize = 1, label = 'OHB-Data')
-    
     xlabel('Date')
     ylabel('Roll in degrees [intrinsic z-axis SLOF]')
     legend()
+    figurePath = os.path.join(figureDirectory, 'Roll')
+    pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
+    
     
     ###################################
     
-    figure()
+    fig = figure()
     plot_date(Time_MPL[:], Data_MATS['lat_MATS'][:], markersize = 1, label = 'Predicted')
     plot_date(Time_MPL_OHB[:], lat_MATS_OHB[:], markersize = 1, label = 'OHB-Data')
     xlabel('Date')
     ylabel('Geodetic Latitude of MATS (Fixed) in degrees')
     legend()
+    figurePath = os.path.join(figureDirectory, 'Lat')
+    pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
+    
     
     
     """
@@ -1009,7 +1063,7 @@ def Plotter(Data_MATS, Data_LP, Time, DataIndexStep, OHB_StartIndex, OHB_H5_Path
         abs_long_MATS_error_OHB[t] = abs( long_MATS_OHB[t] - Data_MATS['long_MATS'][t] )
     
     
-    figure()
+    fig = figure()
     plot_date(current_time_MPL_STK[1:], abs_lat_MATS_error_STK[1:], markersize = 1, label = 'Prediction vs STK')
     plot_date(Time_MPL_OHB[1:], abs_lat_MATS_error_OHB[1:], markersize = 1, label = 'Prediction vs OHB')
     xlabel('Date')
@@ -1017,16 +1071,19 @@ def Plotter(Data_MATS, Data_LP, Time, DataIndexStep, OHB_StartIndex, OHB_H5_Path
     legend()
     """
     
-    figure()
+    fig = figure()
     plot_date(Time_MPL[:], Data_MATS['long_MATS'][:], markersize = 1, label = 'Predicted')
     #plot_date(current_time_MPL_STK[1:], long_MATS_STK_FIXED[1:], markersize = 1, label = 'STK-Data_Fixed')
     plot_date(Time_MPL_OHB[:], long_MATS_OHB[:], markersize = 1, label = 'OHB-Data')
     xlabel('Date')
     ylabel('Longitude of MATS (Fixed) in degrees')
     legend()
+    figurePath = os.path.join(figureDirectory, 'Long')
+    pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
+    
     
     """
-    figure()
+    fig = figure()
     plot_date(current_time_MPL[1:], abs_long_MATS_error_STK[1:], markersize = 1, label = 'Prediction vs STK')
     plot_date(Time_MPL_OHB[1:], abs_long_MATS_error_STK[1:], markersize = 1, label = 'Prediction vs OHB')
     xlabel('Date')
@@ -1034,12 +1091,15 @@ def Plotter(Data_MATS, Data_LP, Time, DataIndexStep, OHB_StartIndex, OHB_H5_Path
     legend()
     """
     
-    figure()
+    fig = figure()
     plot_date(Time_MPL[:],Data_MATS['alt_MATS'][:], markersize = 1, label = 'Predicted')
     plot_date(Time_MPL_OHB[:],alt_MATS_OHB[:], markersize = 1, label = 'OHB-Data')
     xlabel('Date')
     ylabel('Altitude of MATS in m')
     legend()
+    figurePath = os.path.join(figureDirectory, 'Alt')
+    pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
+    
     
     ####################################
     
@@ -1134,28 +1194,36 @@ def Plotter(Data_MATS, Data_LP, Time, DataIndexStep, OHB_StartIndex, OHB_H5_Path
     
     
     
-    figure()
+    fig = figure()
     plot_date(Time_error_MPL[:],x_MATS_error_OHB[:], markersize = 1, label = 'x')
     plot_date(Time_error_MPL[:],y_MATS_error_OHB[:], markersize = 1, label = 'y')
     plot_date(Time_error_MPL[:],z_MATS_error_OHB[:], markersize = 1, label = 'z')
     xlabel('Date')
     ylabel('Absolute error in ECEF position of MATS in m (prediction vs OHB')
     legend()
+    figurePath = os.path.join(figureDirectory, 'PosError')
+    pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
     
-    figure()
+    
+    fig = figure()
     plot_date(Time_error_MPL[:],r_MATS_error_OHB_Radial[:], markersize = 1, label = 'Radial')
     plot_date(Time_error_MPL[:],r_MATS_error_OHB_CrossTrack[:], markersize = 1, label = 'Cross-track')
     plot_date(Time_error_MPL[:],r_MATS_error_OHB_InTrack[:], markersize = 1, label = 'Intrack')
     xlabel('Date')
     ylabel('Absolute error in ECEF position of MATS as RCI in m (prediction vs OHB')
     legend()
+    figurePath = os.path.join(figureDirectory, 'PosErrorRCI')
+    pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
     
-    figure()
+    
+    fig = figure()
     plot_date(Time_error_MPL[:],total_r_MATS_error_OHB[:], markersize = 1, label = 'XYZ')
     plot_date(Time_error_MPL[:],total_r_MATS_error_OHB_RCI[:], markersize = 1, label = 'RCI')
     xlabel('Date')
     ylabel('Magnitude of Absolute error in ECEF position of MATS in m (prediction vs OHB')
     legend()
+    figurePath = os.path.join(figureDirectory, 'MagPosError')
+    pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
     
     
     
@@ -1163,30 +1231,37 @@ def Plotter(Data_MATS, Data_LP, Time, DataIndexStep, OHB_StartIndex, OHB_H5_Path
     
     
     
-    figure()
+    
+    fig = figure()
     plot_date(Time_MPL[:], Data_LP['lat_LP'][:], markersize = 1, label = 'Predicted')
     plot_date(Time_MPL_OHB[:], lat_LP_OHB[:], markersize = 1, label = 'OHB-Data')
     xlabel('Date')
     ylabel('Latitude of LP in degrees')
     legend()
+    figurePath = os.path.join(figureDirectory, 'Lat_LP')
+    pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
+    
     
     """
-    figure()
+    fig = figure()
     plot_date(Time_MPL_OHB[1:],abs(lat_LP_OHB[1:]-Data_LP['lat_LP'][1:]), markersize = 1, label = 'Prediction vs OHB')
     xlabel('Date')
     ylabel('Absolute error in Latitude of LP in degrees [J2000]')
     legend()
     """
     
-    figure()
+    fig = figure()
     plot_date(Time_MPL[:],Data_LP['long_LP'][:], markersize = 1, label = 'Predicted')
     plot_date(Time_MPL_OHB[:],long_LP_OHB[:], markersize = 1, label = 'OHB-Data')
     xlabel('Date')
     ylabel('Longitude of LP in degrees')
     legend()
+    figurePath = os.path.join(figureDirectory, 'Long_LP')
+    pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
+    
     
     """
-    figure()
+    fig = figure()
     plot_date(current_time_MPL_STK[1:],abs(long_LP_STK[1:]-Data_LP['long_LP'][1:]), markersize = 1, label = 'Prediction vs STK')
     plot_date(Time_MPL_OHB[1:],abs(long_LP_OHB[1:]-Data_LP['long_LP'][1:]), markersize = 1, label = 'Prediction vs OHB')
     xlabel('Date')
@@ -1194,76 +1269,116 @@ def Plotter(Data_MATS, Data_LP, Time, DataIndexStep, OHB_StartIndex, OHB_H5_Path
     legend()
     """
     
-    figure()
+    fig = figure()
     plot_date(Time_MPL[:],Data_LP['alt_LP'][:], markersize = 1, label = 'Predicted')
     plot_date(Time_MPL_OHB[:],alt_LP_OHB[:], markersize = 1, label = 'OHB-Data')
     xlabel('Date')
     ylabel('Altitude of LP in m')
     legend()
+    figurePath = os.path.join(figureDirectory, 'Alt_LP')
+    pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
     
-    figure()
+    
+    fig = figure()
     plot_date(Time_error_MPL[:],alt_LP_error[:], markersize = 1, label = 'Predicted - OHB')
     xlabel('Date')
     ylabel('Error in Altitude of LP in m')
     legend()
+    figurePath = os.path.join(figureDirectory, 'AltError_LP')
+    pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
     
-    figure()
+    
+    fig = figure()
     plot_date(Time_error_MPL[:],x_LP_error_OHB[:], markersize = 1, label = 'x')
     plot_date(Time_error_MPL[:],y_LP_error_OHB[:], markersize = 1, label = 'y')
     plot_date(Time_error_MPL[:],z_LP_error_OHB[:], markersize = 1, label = 'z')
     xlabel('Date')
     ylabel('Absolute error in ECEF position of LP in m')
     legend()
+    figurePath = os.path.join(figureDirectory, 'PosError_LP')
+    pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
     
-    figure()
+    
+    fig = figure()
     plot_date(Time_error_MPL[:],r_LP_error_OHB_Radial[:], markersize = 1, label = 'Radial')
     plot_date(Time_error_MPL[:],r_LP_error_OHB_CrossTrack[:], markersize = 1, label = 'Cross-track')
     plot_date(Time_error_MPL[:],r_LP_error_OHB_InTrack[:], markersize = 1, label = 'Intrack')
     xlabel('Date')
     ylabel('Absolute error in ECEF position of LP as RCI in m (prediction vs OHB')
     legend()
+    figurePath = os.path.join(figureDirectory, 'PosErrorRCI_LP')
+    pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
     
-    figure()
+    
+    fig = figure()
     plot_date(Time_error_MPL[:],total_r_LP_error_OHB[:], markersize = 1, label = 'XYZ')
     plot_date(Time_error_MPL[:],total_r_LP_error_OHB_RCI[:], markersize = 1, label = 'RCI')
     xlabel('Date')
     ylabel('Magnitude of Absolute error of LP ECEF position in m')
     legend()
+    figurePath = os.path.join(figureDirectory, 'MagPosError_LP')
+    pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
     
     
     
     
-    figure()
+    fig = figure()
     plot_date(Time_MPL[:],Data_MATS['optical_axis_RA'][:], markersize = 1, label = 'Predicted')
     plot_date(Time_MPL_OHB[:],RA_OHB[:], markersize = 1, label = 'OHB-Data')
     xlabel('Date')
     ylabel('Right Ascension of optical axis in degrees [J2000] (Parallax assumed negligable)')
     legend()
+    figurePath = os.path.join(figureDirectory, 'RA_OpticalAxis')
+    pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
     
     
-    figure()
+    
+    fig = figure()
     plot_date(Time_error_MPL[:],optical_axis_RA_ERROR[:], markersize = 1, label = 'Prediction vs OHB')
     xlabel('Date')
     ylabel('Absolute error in Right Ascension in degrees [J2000] (Parallax assumed negligable)')
     legend()
+    figurePath = os.path.join(figureDirectory, 'RA_OpticalAxisError')
+    pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
     
     
-    figure()
+    
+    fig = figure()
     plot_date(Time_MPL[:],Data_MATS['optical_axis_Dec'][:], markersize = 1, label = 'Predicted')
     #plot_date(current_time_MPL_STK[1:],Dec_STK[1:], markersize = 1, label = 'STK-Data')
     plot_date(Time_MPL_OHB[:],Dec_OHB[:], markersize = 1, label = 'OHB-Data')
     xlabel('Date')
     ylabel('Declination of optical axis in degrees [J2000] (Parallax assumed negligable)')
     legend()
+    figurePath = os.path.join(figureDirectory, 'Dec_OpticalAxis')
+    pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
     
-    figure()
+    
+    fig = figure()
     plot_date(Time_error_MPL[:],optical_axis_Dec_ERROR[:], markersize = 1, label = 'Prediction vs OHB')
     xlabel('Date')
     ylabel('Absolute error in Declination in degrees [J2000] (Parallax assumed negligable)')
     legend()
+    figurePath = os.path.join(figureDirectory, 'Dec_OpticalAxisError')
+    pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
     
+    
+    "Save data to pickle files"
+    DataPath = os.path.join(figureDirectory, 'Data_MATS.data.pickle')
+    f = open(DataPath,"wb")
+    pickle.dump(Data_MATS,f)
+    f.close()
+    
+    DataPath = os.path.join(figureDirectory, 'Data_LP.data.pickle')
+    f = open(DataPath,"wb")
+    pickle.dump(Data_LP,f)
+    f.close()
+    
+    DataPath = os.path.join(figureDirectory, 'Time.data.pickle')
+    f = open(DataPath,"wb")
+    pickle.dump(Time,f)
+    f.close()
     
     logging.shutdown()
     return Time_OHB
     
-

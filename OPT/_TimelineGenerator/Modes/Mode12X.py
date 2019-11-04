@@ -4,9 +4,10 @@
 """
 
 import logging, sys, importlib
-import ephem, skyfield.api
+import ephem
 from pylab import array, ceil, cos, sin, dot, zeros, norm, pi, arccos, floor
 from astroquery.vizier import Vizier
+from skyfield import api
 
 from OPT._Library import Satellite_Simulator, deg2HMS, scheduler
 from OPT import _Globals, _MATS_coordinates
@@ -108,7 +109,7 @@ def date_calculator(Settings):
         Logger.info('Duration set to: '+str(duration)+' s')
         
         timesteps = int(ceil(duration / timestep)) + 2
-        Logger.info('Total number of timesteps set to: '+str(timesteps)+' s')
+        Logger.info('Maximum number of timesteps set to: '+str(timesteps)+' s')
         
         timeline_start = ephem.Date(Timeline_settings['start_date'])
         
@@ -185,11 +186,10 @@ def date_calculator(Settings):
         TLE = OPT_Config_File.getTLE()
         Logger.debug('TLE used: '+TLE[0]+TLE[1])
         
-        MATS_skyfield = skyfield.api.EarthSatellite(TLE[0], TLE[1])
-        MATS = ephem.readtle('MATS',TLE[0],TLE[1])
+        MATS_skyfield = api.EarthSatellite(TLE[0], TLE[1])
         
         "Loop counter"
-        t=-1
+        t=0
         
         TimeSkips = 0
         #time_skip_counter = 0
@@ -203,16 +203,6 @@ def date_calculator(Settings):
         ################## Start of Simulation ########################################
         "Loop and calculate the relevant angle of each star to each direction of MATS's FOV"
         while(current_time < timeline_start+ephem.second*duration):
-            
-            
-            t += 1
-            
-            if( t != 0 ):
-                if( t*timestep >= MATS_P[t-1]*(TimeSkips+1) ):
-                    current_time = ephem.Date(current_time+ephem.second*Timeskip)
-                    TimeSkips += 1
-                else:
-                    current_time = ephem.Date(current_time+ephem.second*timestep)
             
             
             if( t*timestep % log_timestep == 0):
@@ -293,6 +283,18 @@ def date_calculator(Settings):
                     star_counter = star_counter + 1
                     
             ######################### End of star_mapper #############################
+            
+            
+            "Increase Simulation Time with a timestep, or skip ahead if 1 orbit is completed"
+            t += 1
+            if( t*timestep >= MATS_P[t-1]*(TimeSkips+1) ):
+                current_time = ephem.Date(current_time+ephem.second*Timeskip)
+                TimeSkips += 1
+            else:
+                current_time = ephem.Date(current_time+ephem.second*timestep)
+            
+            
+            
             '''
             "Increment time with timestep or jump ahead in time if a whole orbit was completed"
             if( (current_time - initial_time)/ephem.second > (timeskip/ephem.second * time_skip_counter + MATS_P[t] * (time_skip_counter+1)) ):

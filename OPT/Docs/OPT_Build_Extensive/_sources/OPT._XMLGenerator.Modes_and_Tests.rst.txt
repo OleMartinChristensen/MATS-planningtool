@@ -24,10 +24,10 @@ OPT.\_XMLGenerator.Modes\_and\_Tests.MODES module
     :undoc-members:
     :show-inheritance:
 
-OPT.\_XMLGenerator.Modes\_and\_Tests.SeparateCmds module
---------------------------------------------------------
+OPT.\_XMLGenerator.Modes\_and\_Tests.SeparateCMDsAndProcedures module
+---------------------------------------------------------------------
 
-.. automodule:: OPT._XMLGenerator.Modes_and_Tests.SeparateCmds
+.. automodule:: OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures
     :members:
     :undoc-members:
     :show-inheritance:

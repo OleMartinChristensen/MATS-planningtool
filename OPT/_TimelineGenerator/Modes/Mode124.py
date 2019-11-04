@@ -6,8 +6,9 @@ Part of Timeline_generator, as part of OPT.
 """
 
 
-import ephem, sys, logging, importlib, skyfield.api
+import ephem, sys, logging, importlib
 from pylab import cross, ceil, dot, zeros, sqrt, norm, pi, arccos, arctan
+from skyfield import api
 
 from OPT._Library import Satellite_Simulator, scheduler
 from OPT import _Globals
@@ -37,9 +38,9 @@ def Mode124(Occupied_Timeline):
     if( Settings['automatic'] == False ):
         Occupied_Timeline, comment = UserProvidedDateScheduler(Occupied_Timeline, Settings)
     elif( Settings['automatic'] == True ):
-        dates = date_calculator()
+        SpottedMoonList = date_calculator()
         
-        Occupied_Timeline, comment = date_select(Occupied_Timeline, dates)
+        Occupied_Timeline, comment = date_select(Occupied_Timeline, SpottedMoonList)
       
     return Occupied_Timeline, comment
 
@@ -69,7 +70,7 @@ def date_calculator():
     Arguments:
         
     Returns:
-        dates ((:obj:`list` of :obj:`dict`)) or (str): A list containing dictionaries containing parameters for each time the Moon is spotted. Or just a date depending on 'automatic' in *Mode124_settings*.
+        SpottedMoonList ((:obj:`list` of :obj:`dict`)) or (str): A list containing dictionaries containing parameters for each time the Moon is spotted. Or just a date depending on 'automatic' in *Mode124_settings*.
     
     """
     
@@ -115,7 +116,7 @@ def date_calculator():
     Moon_vert_offset = zeros((timesteps,1))
     Moon_hori_offset = zeros((timesteps,1))
     angle_between_orbital_plane_and_moon = zeros((timesteps,1))
-    dates = []
+    SpottedMoonList = []
     r_Moon_unit_vector = zeros((timesteps,3))
     
     Dec_optical_axis = zeros((timesteps,1))
@@ -137,10 +138,10 @@ def date_calculator():
     Logger.debug('TLE used: '+TLE[0]+TLE[1])
     
     
-    ts = skyfield.api.load.timescale()
-    MATS_skyfield = skyfield.api.EarthSatellite(TLE[0], TLE[1])
+    ts = api.load.timescale(builtin=True)
+    MATS_skyfield = api.EarthSatellite(TLE[0], TLE[1])
     
-    planets = skyfield.api.load('de421.bsp')
+    planets = api.load('de421.bsp')
     Moon = planets['Moon']
     Earth = planets['Earth']
     
@@ -152,6 +153,7 @@ def date_calculator():
     Logger.info('')
     Logger.info('Start of simulation for Mode124')
     
+    ######### SIMULATION ################
     while(current_time < initial_time+ephem.second*duration):
         
         if( t*timestep % log_timestep == 0):
@@ -200,7 +202,7 @@ def date_calculator():
         r_MATS_2_Moon[t] = r_Moon[t]-r_MATS[t]
         r_MATS_2_Moon_norm[t] = r_MATS_2_Moon[t]/norm(r_MATS_2_Moon[t])
         
-        "Calculate Dec and RA of moon (disregarding parallax)"
+        "Calculate Dec and RA of moon"
         Dec_Moon = arctan(  r_Moon[t,2] / sqrt(r_Moon[t,0]**2 + r_Moon[t,1]**2) ) /pi * 180
         RA_Moon = arccos( dot( [1,0,0], [r_Moon[t,0],r_Moon[t,1],0] ) / norm([r_Moon[t,0],r_Moon[t,1],0]) ) / pi * 180
         
@@ -271,9 +273,9 @@ def date_calculator():
                 Logger.debug('')
                 
                 
-                dates.append({ 'Date': str(current_time), 'V-offset': Moon_vert_offset[t], 'H-offset': Moon_hori_offset[t], 
-                                  'long_MATS': float(long_MATS[t]/pi*180), 'lat_MATS': float(lat_MATS[t]/pi*180), 'Dec': Dec_Moon, 'RA': RA_Moon,
-                                   'Dec FOV': Dec_optical_axis, 'RA FOV': RA_optical_axis})
+                SpottedMoonList.append({ 'Date': str(current_time), 'V-offset': Moon_vert_offset[t], 'H-offset': Moon_hori_offset[t], 
+                                  'long_MATS': float(long_MATS[t]), 'lat_MATS': float(lat_MATS[t]), 'Dec': Dec_Moon, 'RA': RA_Moon,
+                                   'Dec FOV': Dec_optical_axis[t], 'RA FOV': RA_optical_axis[t]})
                 
                 Logger.debug('Jump ahead half an orbit in time')
                 "Skip ahead half an orbit"
@@ -302,33 +304,11 @@ def date_calculator():
         
         
     Logger.info('End of simulation for Mode124')
-    Logger.debug('dates: '+str(dates))
+    Logger.debug('SpottedMoonList: '+str(SpottedMoonList))
     
     
-    ########################## Optional plotter ###########################################
-    '''
-    from mpl_toolkits.mplot3d import axes3d
-    from pylab import figure
     
-    "Orbital points to plot"
-    points_2_plot_start = 0#0*24*120
-    points_2_plot = points_2_plot_start+1000
-    
-    "Plotting of orbit and FOV"
-    fig = figure(1)
-    ax = fig.add_subplot(111,projection='3d')
-    ax.set_xlim3d(-1, 1)
-    ax.set_ylim3d(-1, 1)
-    ax.set_zlim3d(-1, 1)
-    
-    ax.scatter(r_MATS_unit_vector[points_2_plot_start:points_2_plot,0],r_MATS_unit_vector[points_2_plot_start:points_2_plot,1],r_MATS_unit_vector[points_2_plot_start:points_2_plot,2])
-    ax.scatter(r_Moon_unit_vector[points_2_plot_start:points_2_plot,0],r_Moon_unit_vector[points_2_plot_start:points_2_plot,1],r_Moon_unit_vector[points_2_plot_start:points_2_plot,2])
-    
-    
-    ########################### END of Optional plotter ########################################
-    '''
-    
-    return dates
+    return SpottedMoonList
 
 
 
@@ -337,7 +317,7 @@ def date_calculator():
 
 
 
-def date_select(Occupied_Timeline, dates):
+def date_select(Occupied_Timeline, SpottedMoonList):
     """Subfunction, Schedules a simulated date.
     
     A date is selected for which the Moon is visible at an minimum amount of H-offset in the FOV.
@@ -345,7 +325,7 @@ def date_select(Occupied_Timeline, dates):
     
     Arguments:
         Occupied_Timeline (:obj:`dict` of :obj:`list`): Dictionary with keys equal to planned and scheduled Modes together with their start and end time in a list. The list is empty if the Mode is unscheduled.
-        dates ((:obj:`list` of :obj:`dict`)): A list containing dictionaries containing parameters for each time the Moon is spotted.
+        SpottedMoonList ((:obj:`list` of :obj:`dict`)): A list containing dictionaries containing parameters for each time the Moon is spotted.
         
     Returns:
         (tuple): tuple containing:
@@ -357,19 +337,19 @@ def date_select(Occupied_Timeline, dates):
     
     Mode124_settings = OPT_Config_File.Mode124_settings()
     
-    if( len(dates) == 0):
+    if( len(SpottedMoonList) == 0):
         
-        comment = 'Moon not visible (dates is empty)'
+        comment = 'Moon not visible (SpottedMoonList is empty)'
         Logger.warning('')
         Logger.warning(comment)
         #input('Enter anything to acknowledge and continue\n')
         return Occupied_Timeline, comment
     
-    Moon_H_offset = [dates[x]['H-offset'] for x in range(len(dates))]
-    Moon_V_offset = [dates[x]['V-offset'] for x in range(len(dates))]
-    Moon_date = [dates[x]['Date'] for x in range(len(dates))]
-    Moon_long = [dates[x]['long_MATS'] for x in range(len(dates))]
-    Moon_lat = [dates[x]['lat_MATS'] for x in range(len(dates))]
+    Moon_H_offset = [SpottedMoonList[x]['H-offset'] for x in range(len(SpottedMoonList))]
+    Moon_V_offset = [SpottedMoonList[x]['V-offset'] for x in range(len(SpottedMoonList))]
+    Moon_date = [SpottedMoonList[x]['Date'] for x in range(len(SpottedMoonList))]
+    MATS_long = [SpottedMoonList[x]['long_MATS'] for x in range(len(SpottedMoonList))]
+    MATS_lat = [SpottedMoonList[x]['lat_MATS'] for x in range(len(SpottedMoonList))]
     
     Moon_H_offset_abs = [abs(x) for x in Moon_H_offset]
     Moon_H_offset_sorted = [abs(x) for x in Moon_H_offset]
@@ -423,10 +403,10 @@ def date_select(Occupied_Timeline, dates):
                         restart = True
                         break
         
-    comment = ('V-offset: '+str(round(Moon_V_offset[x],2))+' H-offset: '+str(round(Moon_H_offset[x],2))+', Number of times date changed: '+str(iterations)+
-                                      ', MATS (long,lat) in degrees = ('+str(Moon_long[x])+', '+str(Moon_lat[x])+'), Moon Dec (J2000) [degrees]: '+
-                                      str(dates[x]['Dec'])+', Moon RA (J2000) [degrees]: '+str(dates[x]['RA'])+', Dec = '+str(dates[x]['Dec FOV'])+
-                                      ', RA = '+str(dates[x]['RA FOV']))
+    comment = ('V-offset: '+str(round(Moon_V_offset[x][0],2))+', H-offset: '+str(round(Moon_H_offset[x][0],2))+', Times date changed: '+str(iterations)+
+                                      ', MATS (long,lat) in degrees = ('+str(round(MATS_long[x],2))+', '+str(round(MATS_lat[x],2))+'), Moon Dec (J2000) [degrees]: '+
+                                      str(round(SpottedMoonList[x]['Dec'],2))+', Moon RA (J2000) [degrees]: '+str(round(SpottedMoonList[x]['RA'],2))+', OpticalAxis Dec = '+str(round(SpottedMoonList[x]['Dec FOV'][0],2))+
+                                      ', Optical Axis RA = '+str(round(SpottedMoonList[x]['RA FOV'][0],2)) )
     
     
     Occupied_Timeline['Mode124'].append( (date, endDate) )

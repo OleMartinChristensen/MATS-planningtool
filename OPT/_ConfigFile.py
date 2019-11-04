@@ -35,12 +35,13 @@ def Version():
 
 
 def Scheduling_priority():
-    '''Returns the Modes (except *Operational Science Modes* (Mode 1,2,5)) and CMDs planned to be schedueled in a *Science Mode Timeline* using *Timeline_gen*.
+    '''Returns the Modes (except *Operational Science Modes* (Mode 1,2,5)) and StartUpCMDs planned to be schedueled in a *Science Mode Timeline* using *Timeline_gen*.
     
     **Available choices are:** \n
     
-        - 'PWRTOGGLE',
         - 'ArgEnableYawComp',
+        - 'Payload_Power_Toggle',
+        - 'TurnONCCDs',
         - 'CCDFlushBadColumns',
         - 'CCDBadColumn',
         - 'PM',
@@ -59,11 +60,13 @@ def Scheduling_priority():
         - 'Mode130', 
         - 'Mode134'
      
-    The order of which the Modes/CMDs appear is also their priority order (top-down).
-    The name must be equal to the name of a function imported in the *_Timeline_generator.Modes.Modes_Header* module. \n
+    The order of which the Modes/CMDs appear is also their priority order (top-down). \n
+    Repeat Modes/CMDs to schedule them several times, though there is currently not feature that allows multiple Modes/CMDs 
+    to be scheduled with different settings unless they are manually changed in the generated *Science Mode Timeline*.
+    Each string must be equal to the name of a function imported in the *_Timeline_generator.Modes.Modes_Header* module. \n
     
-    'PWRTOGGLE', 'ArgEnableYawComp', 'CCDFlushBadColumns', 'CCDBadColumn', 'PM', 'CCDBIAS' are recommended to run at the start of each 
-    timeline, as they together reset and initialize the intrument. If "HTR" is scheduled, arguments is needed to be entered manually into the created Science Mode Timeline because of safety reasons.
+    'Payload_Power_Toggle', 'TurnONCCDs', 'ArgEnableYawComp', 'CCDFlushBadColumns', 'CCDBadColumn', 'PM', 'CCDBIAS' are recommended to run at the start of each 
+    timeline, as they together reset and initialize the intrument. If "HTR" is scheduled, arguments is needed to be entered manually into the created *Science Mode Timeline* because of safety reasons.
     
     Returns:
         (:obj:`list` of :obj:`str`): Modes_priority
@@ -71,12 +74,13 @@ def Scheduling_priority():
     '''
     
     Modes_priority = [
-            'PWRTOGGLE',
+            'Payload_Power_Toggle',
             'ArgEnableYawComp',
             'CCDFlushBadColumns',
             'CCDBadColumn',
             'CCDBIAS',
             'PM',
+            'TurnONCCDs',
             'Mode130', 
             'Mode124',
             'Mode120',
@@ -141,9 +145,9 @@ def Timeline_settings():
         'yaw_amplitude': Amplitude of the yaw function (float). \n
         'yaw_phase': Phase of the yaw function (float). \n
         'Choose_Operational_Science_Mode': Set to 1, 2, or 5 to choose either Mode1, Mode2, or Mode5 as the *Operational Science Mode*. Set to 0 to schedule either Mode1 or Mode2 depending of the time of the year.
-        'LP_pointing_altitude': Sets altitude of LP in meters for the timeline. Used to set the pointing altitude of *Operational Science Modes* and to calculate the duration of attitude freezes (because attitude freezes last until the pointing altitude is once again set to this value).  (int) \n
+        'StandardPointingAltitude': Sets pointing altitude in meters for the timeline. Used to set the pointing altitude of *Operational Science Modes* and to calculate the duration of attitude freezes (because attitude freezes last until the pointing altitude is once again set to this value).  (int) \n
         
-        'CMD_separation': Changes the separation in time [s] between commands that are scheduled in *XML_gen*. If set too large without increasing Timeline_settings['mode_separation'], it is possible that not enough time is scheduled for the duration of Modes, causing Modes to overlap in time. (float) \n
+        'CMD_separation': Changes the separation in time [s] between commands that are scheduled in *XML_gen*. If set too large, it is possible that not enough time is scheduled for the duration of Modes, causing Modes to overlap in time. (float) \n
         'pointing_stabilization': The maximum time it takes for an attitude change to stabilize [s]. Used before scheduling certain Commands in *XML_gen* to make sure that the attitude has been stabilized after running *TC_acfLimbPointingAltitudeOffset*. Also impact the estimated duration of Science Modes in *Timeline_gen*. (int) \n
         'CCDSYNC_ExtraOffset': Extra offset time [ms] that is added to an estimated ReadoutTime when calculating TEXPIOFS for the CCD Synchronize CMD. (int) \n
         'CCDSYNC_ExtraIntervalTime': Extra time [ms] that is added to the calculated Exposure Interval Time (for example when calculating arguments for the CCD Synchronize CMD or nadir TEXPIMS). (int) \n
@@ -154,7 +158,7 @@ def Timeline_settings():
     Timeline_settings = {'start_date': _Globals.StartTime, 'duration': 1*4*3600, 
                          'Mode1_2_5_minDuration': 300, 'mode_separation': 15,
                        'CMD_duration': 30, 'yaw_correction': True, 'yaw_amplitude': -3.8, 'yaw_phase': -20, 
-                       'Choose_Operational_Science_Mode': 0, 'LP_pointing_altitude': 92500, 
+                       'Choose_Operational_Science_Mode': 0, 'StandardPointingAltitude': 92500, 
                        'CMD_separation': 1, 'pointing_stabilization': 110, 'CCDSYNC_ExtraOffset': 50, 'CCDSYNC_ExtraIntervalTime': 200}
     
     
@@ -182,7 +186,7 @@ def Mode5_settings():
     '''Returns settings related to Mode5.
     
     **Keys in returned dict:**
-        'pointing_altitude': Sets in meters the altitude of the pointing command. If set to 0, Timeline_settings['LP_pointing_altitude'] will be used (int) 
+        'pointing_altitude': Sets in meters the altitude of the pointing command. If set to 0, Timeline_settings['StandardPointingAltitude'] will be used (int) 
         
     Returns:
         (:obj:`dict`): settings
@@ -213,7 +217,7 @@ def Mode100_settings():
             
     '''
     settings = {'pointing_altitude_from': 40000, 'pointing_altitude_to': 150000, 
-                'pointing_altitude_interval': 5000, 'pointing_duration': 180, 'Exp_Time_UV': 1000, 
+                'pointing_altitude_interval': 5000, 'pointing_duration': 60, 'Exp_Time_UV': 1000, 
                 'Exp_Time_IR': 1000, 'ExpTime_step': 500,  'start_date': '0'}
     return settings
 
@@ -253,7 +257,7 @@ def Mode120_settings():
         'start_date':  Note! only applies if *automatic* is set to False. Used only in *Timeline_gen*. Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). If set to '0', Timeline_settings['start_date'] will be used. \n
         'freeze_start': Sets in seconds the time from start of the Mode to when the attitude freezes. (int) \n
         'freeze_duration': Sets in seconds the duration of the attitude freeze. If set to 0, it will be estimated to a 
-        value corresponding to the attitude being frozen until realigned with *Timeline_settings['LP_pointing_altitude']* (Normally around 50 s). (int) \n
+        value corresponding to the attitude being frozen until realigned with *Timeline_settings['StandardPointingAltitude']* (Normally around 50 s). (int) \n
         'SnapshotTime': Sets in seconds the time, from the start of the attitude freeze, to when the first Snapshot is taken. (int) \n
         'SnapshotSpacing': Sets in seconds the time inbetween Snapshots with individual CCDs. (int)
         
@@ -267,7 +271,7 @@ def Mode120_settings():
                       'freeze_duration': 0, 'SnapshotTime': 3, 'SnapshotSpacing': 3}
     
     if( settings['freeze_duration'] == 0):
-        settings['freeze_duration'] = _Library.FreezeDuration_calculator( Timeline_settings()['LP_pointing_altitude'], settings['pointing_altitude'], getTLE()[1])
+        settings['freeze_duration'] = _Library.FreezeDuration_calculator( Timeline_settings()['StandardPointingAltitude'], settings['pointing_altitude'], getTLE()[1])
     
     return settings
 
@@ -285,7 +289,7 @@ def Mode121_122_123_settings():
         'log_timestep': Sets the timestep of data being logged [s]. Only determines how much of simulated data is logged for debugging purposes. (int) \n
         'freeze_start': Sets in seconds, the time from start of the Mode to when the attitude freezes. (int) \n
         'freeze_duration': Sets in seconds the duration of the attitude freeze. If set to 0, it will be estimated to a 
-        value corresponding to the attitude being frozen until realigned with *Timeline_settings['LP_pointing_altitude']* (Normally around 50 s). (int) \n
+        value corresponding to the attitude being frozen until realigned with *Timeline_settings['StandardPointingAltitude']* (Normally around 50 s). (int) \n
         'SnapshotTime': Sets in seconds the time, from the start of the attitude freeze, to when the first Snapshot is taken. (int) \n
         'SnapshotSpacing': Sets in seconds the time inbetween Snapshots with individual CCDs. (int)
     
@@ -293,12 +297,12 @@ def Mode121_122_123_settings():
         (:obj:`dict`): settings
     
     '''
-    settings = {'pointing_altitude': 230000, 'H_FOV': 5.67, 'V_FOV': 0.91, 'Vmag': '<4', 'timestep': 5, 'TimeSkip': 3600*4, 'log_timestep': 3600, 
+    settings = {'pointing_altitude': 230000, 'H_FOV': 5.67, 'V_FOV': 0.91, 'Vmag': '<5', 'timestep': 5, 'TimeSkip': 3600*4, 'log_timestep': 3600, 
                       'freeze_start': 150, 
                       'freeze_duration': 0, 'SnapshotTime': 2, 'SnapshotSpacing': 3}
     
     if( settings['freeze_duration'] == 0):
-        settings['freeze_duration'] = _Library.FreezeDuration_calculator( Timeline_settings()['LP_pointing_altitude'], settings['pointing_altitude'], getTLE()[1])
+        settings['freeze_duration'] = _Library.FreezeDuration_calculator( Timeline_settings()['StandardPointingAltitude'], settings['pointing_altitude'], getTLE()[1])
     
     
     return settings
@@ -379,7 +383,7 @@ def Mode124_settings():
         'start_date':  Note! only applies if *automatic* is set to False. Used only in *Timeline_gen*. Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). If set to '0', Timeline_settings['start_date'] will be used. \n
         'freeze_start': Sets in seconds the time from start of the Mode to when the attitude freeze command is scheduled. (int) \n
         'freeze_duration': Sets in seconds the duration of the attitude freeze. If set to 0, it will be estimated to a 
-        value corresponding to the attitude being frozen until realigned with *Timeline_settings['LP_pointing_altitude']*. (int) \n
+        value corresponding to the attitude being frozen until realigned with *Timeline_settings['StandardPointingAltitude']*. (int) \n
         'SnapshotTime': Sets in seconds the time, from the start of the attitude freeze, to when the first Snapshot is taken. (int) \n
         'SnapshotSpacing': Sets in seconds the time inbetween Snapshots with individual CCDs. (int)
     
@@ -392,7 +396,7 @@ def Mode124_settings():
                       'SnapshotTime': 2, 'SnapshotSpacing': 3}
     
     if( settings['freeze_duration'] == 0):
-        settings['freeze_duration'] = _Library.FreezeDuration_calculator( Timeline_settings()['LP_pointing_altitude'], settings['pointing_altitude'], getTLE()[1])
+        settings['freeze_duration'] = _Library.FreezeDuration_calculator( Timeline_settings()['StandardPointingAltitude'], settings['pointing_altitude'], getTLE()[1])
     
     return settings
 
@@ -418,7 +422,7 @@ def Mode131_settings():
     
     **Keys in returned dict:**
         'pointing_altitude': Sets in meters the altitude of the pointing command. (int) \n
-        'mode_duration': Sets the scheduled duration of the Mode in seconds. Must be long enough to allow any pointing stabilization to occur. (int) \n
+        'mode_duration': Sets the scheduled duration of the Mode in seconds. Must be long enough to allow any pointing stabilization and execution of CMDs to occur. (int) \n
         'start_date': Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). If the date is set to '0', Timeline start_date will be used.
     
     Returns:
@@ -590,6 +594,7 @@ def CCDBIAS_settings():
     settings = {'CCDSEL': 127, 'VGATE': 0, 'VSUBST': 128, 'VRD': 126, 'VOD': 100}
     return settings
 
+"""
 def HTR_settings():
     '''Returns settings related to the HTR CMD.
     
@@ -604,8 +609,9 @@ def HTR_settings():
         (:obj:`dict`): settings
     
     '''
-    settings = {'CCDSEL': 3, 'SET': 1402, 'PVALUE': 1, 'IVALUE': 0.391, 'DVALUE': 0}
+    settings = {'CCDSEL': 3, 'SET': 1402, 'PVALUE': 256, 'IVALUE': 10, 'DVALUE': 0}
     return settings
+"""
 
 
 
@@ -778,33 +784,3 @@ def CCD_macro_settings(CCDMacroSelect):
         
 
 #################################################################################
-#################################################################################
-"""
-def FreezeDuration_calculator(pointing_altitude1, pointing_altitude2):
-    '''Function that calculates the angle between two tangential altitudes and then calculates
-    the time it takes for orbital position angle of a satellite in a circular orbit to change by the same amount.
-    
-    Arguments:
-        pointing_altitude1 (int): First tangential pointing altitude in m
-        pointing_altitude2 (int): Second tangential pointing altitude in m
-        
-    Returns:
-        (int): FreezeDuration, Time [s] it takes for the satellites orbital position angle to change 
-        by the same amount as the angle between the two tangential pointing altitudes as seen from the satellite.
-    '''
-    
-    TLE2 = getTLE()[1] #Orbits per day
-    U = 398600.4418 #Earth gravitational parameter
-    MATS_P = 24*3600/float(TLE2[52:63]) #Orbital Period of MATS [s]
-    MATS_p = ((MATS_P/2/pi)**2*U)**(1/3) #Semi-major axis of MATS assuming circular orbit [km]
-    R_mean = 6371 #Mean Earth radius [km]
-    pitch1 = arccos((R_mean+pointing_altitude1/1000)/(MATS_p))/pi*180
-    pitch2 = arccos((R_mean+pointing_altitude2/1000 )/(MATS_p))/pi*180
-    pitch_angle_difference = abs(pitch1 - pitch2)
-    
-    #The time it takes for the orbital position angle to change by the same amount as
-    #the angle between the pointing axes
-    FreezeDuration = int(round(MATS_P*(pitch_angle_difference)/360,0))
-    
-    return FreezeDuration
-"""

@@ -100,7 +100,7 @@ def Data_Plotter():
     
     Timeline_settings = OPT_Config_File.Timeline_settings()
     
-    pointing_altitude = Timeline_settings['LP_pointing_altitude']/1000  #Altitude of LP at which MATS center of FOV is looking [km]
+    pointing_altitude = Timeline_settings['StandardPointingAltitude']/1000  #Altitude of LP at which MATS center of FOV is looking [km]
     
     
     TLE1 = OPT_Config_File.getTLE()[0]

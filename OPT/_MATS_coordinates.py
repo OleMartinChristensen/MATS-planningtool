@@ -39,7 +39,7 @@ import astropy.coordinates as coord
 
 
 from astropy.utils import iers
-iers.conf.auto_max_age=10
+iers.conf.auto_max_age=30
 
 
 def ecef2tanpoint(x,y,z,dx,dy,dz):

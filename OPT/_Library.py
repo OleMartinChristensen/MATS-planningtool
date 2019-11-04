@@ -2,13 +2,16 @@
 """Functions that are commonly used by the Operational Planning Tool.
 """
 
-import ephem, importlib, time, logging, os, sys, skyfield.api, astropy
+import ephem, importlib, time, logging, os, sys, astropy
 from pylab import cos, sin, cross, dot, arctan, sqrt, array, arccos, pi, floor, around, norm
+from skyfield import api
 
 from OPT import _Globals, _MATS_coordinates
 
-timescale_skyfield = skyfield.api.load.timescale()
-database_skyfield = skyfield.api.load('de421.bsp')
+timescale_skyfield = api.load.timescale(builtin=True)
+database_skyfield = api.load('de421.bsp')
+
+
 #OPT_Config_File = importlib.import_module(_Globals.Config_File)
 #Logger = logging.getLogger(OPT_Config_File.Logger_name())
 
@@ -638,6 +641,49 @@ def SyncArgCalculator(CCD_settings, ExtraOffset, ExtraIntervalTime):
     return CCDSEL, NCCD, TEXPIOFS, TEXPIMS
 
 
+def OrderingOfCCDSnapshots(CCD_settings):
+    """Calculates a list of CCDSEL (1,2,4,8,16,32) arguments corresponding to their TEXPMS in increasing order.
+    
+    Used to take snapshots in increasing order of TEXPMS, which will prevent streak from simultaneous readouts to occur when snapshots are staggered.
+    
+    Arguments:
+        CCD_settings (dict of dict of int): Dictionary containing settings for the CCDs.
+    
+    Returns:
+        (list of int): List containing CCDSEL arguments in the order of increasing TEXPMS.
+    
+    """
+    
+    CCDSEL_16 = CCD_settings['CCDSEL_16']
+    CCDSEL_32 = CCD_settings['CCDSEL_32']
+    CCDSEL_1 = CCD_settings['CCDSEL_1']
+    CCDSEL_8 = CCD_settings['CCDSEL_8']
+    CCDSEL_2 = CCD_settings['CCDSEL_2']
+    CCDSEL_4 = CCD_settings['CCDSEL_4']
+    
+    "Sort ExposureTimes of the CCDs"
+    ExpTimes = [CCDSEL_16['TEXPMS'], CCDSEL_32['TEXPMS'], CCDSEL_1['TEXPMS'], CCDSEL_8['TEXPMS'], CCDSEL_2['TEXPMS'], CCDSEL_4['TEXPMS']]
+    ExpTimes.sort()
+    
+    CCDSEL = []
+    
+    for ExpTime in ExpTimes:
+        if( CCDSEL_16['TEXPMS'] == ExpTime and 16 not in CCDSEL and ExpTime != 0):
+            CCDSEL.append(16)
+        elif( CCDSEL_32['TEXPMS'] == ExpTime and 32 not in CCDSEL and ExpTime != 0):
+            CCDSEL.append(32)
+        elif( CCDSEL_1['TEXPMS'] == ExpTime and 1 not in CCDSEL and ExpTime != 0):
+            CCDSEL.append(1)
+        elif( CCDSEL_8['TEXPMS'] == ExpTime and 8 not in CCDSEL and ExpTime != 0):
+            CCDSEL.append(8)
+        elif( CCDSEL_2['TEXPMS'] == ExpTime and 2 not in CCDSEL and ExpTime != 0):
+            CCDSEL.append(2)
+        elif( CCDSEL_4['TEXPMS'] == ExpTime and 4 not in CCDSEL and ExpTime != 0):
+            CCDSEL.append(4)
+            
+    return CCDSEL
+
+
 def Satellite_Simulator( Satellite_skyfield, SimulationTime, Timeline_settings, pointing_altitude, LogFlag = False, Logger = None ):
     """Simulates a single point in time for a Satellite using Skyfield and also the pointing of the satellite.
     
@@ -963,4 +1009,4 @@ def Operational_Images_Size_Calculator(CCD_settings, duration, ExtraOffset, Extr
         else:
             SizeOfImages += round(CCD_settings[CCDSEL]['NCOL'] * CCD_settings[CCDSEL]['NROW'] * SizeOfImagePerPixel * duration/TEXPIMS, 0)
             
-    
+    return SizeOfImages

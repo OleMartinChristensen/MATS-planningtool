@@ -9,7 +9,7 @@ import logging, sys, csv, os, importlib
 import ephem
 from pylab import array, ceil, cos, sin, cross, dot, zeros, norm, pi, arccos, floor
 from astroquery.vizier import Vizier
-import skyfield.api
+from skyfield import api
 
 
 from OPT._Library import deg2HMS, Satellite_Simulator
@@ -40,9 +40,9 @@ def Mode120(Occupied_Timeline):
     if( Settings['automatic'] == False ):
         Occupied_Timeline, comment = UserProvidedDateScheduler(Occupied_Timeline, Settings)
     elif( Settings['automatic'] == True ):
-        star_list = Mode120_date_calculator()
+        SpottedStarList = Mode120_date_calculator()
         
-        Occupied_Timeline, comment = Mode120_date_select(Occupied_Timeline, star_list)
+        Occupied_Timeline, comment = Mode120_date_select(Occupied_Timeline, SpottedStarList)
     
     return Occupied_Timeline, comment
 
@@ -57,8 +57,7 @@ def Mode120_date_calculator():
     """Subfunction, Simulates MATS FOV and stars.
     
     Determines when stars are entering the FOV at an vertical offset-angle equal to *#V-offset*, and also being 
-    located at a horizontal off-set angle equal to less than *#H-offset*, when pointing at the LP located at an altitude equal to *#pointing_altitude*. 
-    Also determines when the optical axis is pointing towards a LP located at an altitude equal to *#LP_pointing_altitude* during the hypothetical attitude freeze. \n
+    located at a horizontal off-set angle equal to less than *#H-offset*, when pointing at the LP located at an altitude equal to *#pointing_altitude*. \n
     
     (# as defined in the *Configuration File*). \n
     
@@ -68,7 +67,7 @@ def Mode120_date_calculator():
     Arguments:
         
     Returns:
-        star_list ((:obj:`list` of :obj:`dict`)) or (str): A list containing dictionaries containing parameters for each time a star is spotted. Or just a date depending on 'automatic' in *Mode124_settings*.
+        SpottedStarList ((:obj:`list` of :obj:`dict`)) or (str): A list containing dictionaries containing parameters for each time a star is spotted. Or just a date depending on 'automatic' in *Mode124_settings*.
     
     """
     
@@ -142,7 +141,7 @@ def Mode120_date_calculator():
     star_list_excel.append(['Star RA (ICRS J2000, eq)'])
     
     "Prepare the output"
-    star_list = []
+    SpottedStarList = []
     
     "Pre-allocate space"
     lat_MATS = zeros((timesteps,1))
@@ -190,9 +189,9 @@ def Mode120_date_calculator():
     TimeSkips = 0
     Timeskip = Mode120_settings['TimeSkip']
     
-    MATS_skyfield = skyfield.api.EarthSatellite(TLE[0], TLE[1])
+    MATS_skyfield = api.EarthSatellite(TLE[0], TLE[1])
     
-    t = -1
+    t = 0
     
     Logger.info('')
     Logger.info('Start of simulation of MATS for Mode120')
@@ -201,15 +200,7 @@ def Mode120_date_calculator():
     #for t in range(timesteps):
     while( current_time-initial_time < ephem.second*duration):
         
-        t += 1
         
-        if( t != 0 ):
-            if( t*timestep >= MATS_P[t-1]*(TimeSkips+1) ):
-                current_time = ephem.Date(current_time+ephem.second*Timeskip)
-                TimeSkips += 1
-            else:
-                current_time = ephem.Date(current_time+ephem.second*timestep)
-            
         #current_time = ephem.Date(date+ephem.second*timestep*t)
         
         if( t*timestep % log_timestep == 0):
@@ -317,7 +308,7 @@ def Mode120_date_calculator():
                     star_list_excel[14].append(str(stars_ra[x]/pi*180))
                     
                     "Log data of star relevant to filtering process"
-                    star_list.append({ 'Date': str(current_time), 'V-offset': stars_vert_offset[t][x], 'H-offset': stars_hori_offset[t][x], 
+                    SpottedStarList.append({ 'Date': str(current_time), 'V-offset': stars_vert_offset[t][x], 'H-offset': stars_hori_offset[t][x], 
                                       'long_MATS': float(long_MATS[t]), 'lat_MATS': float(lat_MATS[t]), 
                                       'Dec_optical_axis': Dec_optical_axis[t], 'RA_optical_axis': RA_optical_axis[t], 
                                       'Vmag': stars[x].mag, 'Name': stars[x].name, 'Dec': stars_dec[x]/pi*180, 'RA': stars_ra[x]/pi*180 })
@@ -326,6 +317,16 @@ def Mode120_date_calculator():
                     
             ######################### End of star_mapper #############################
         
+        "Increase Simulation Time with a timestep, or skip ahead if 1 orbit is completed"
+        t += 1
+        if( t*timestep >= MATS_P[t-1]*(TimeSkips+1) ):
+            current_time = ephem.Date(current_time+ephem.second*Timeskip)
+            TimeSkips += 1
+        else:
+            current_time = ephem.Date(current_time+ephem.second*timestep)
+        
+        
+    ########################## END OF SIMULATION ############################
     
     
     Logger.info('End of simulation for Mode120')
@@ -353,15 +354,15 @@ def Mode120_date_calculator():
                 sys.exit()
     
     Logger.debug('Visible star list to be filtered:')
-    for x in range(len(star_list)):
-        Logger.debug(str(star_list[x]))
+    for x in range(len(SpottedStarList)):
+        Logger.debug(str(SpottedStarList[x]))
     Logger.debug('')
     
     Logger.debug('Exit '+str(__name__))
     Logger.debug('')
     
     
-    return(star_list)
+    return(SpottedStarList)
 
 
 
@@ -370,7 +371,7 @@ def Mode120_date_calculator():
 
 
 
-def Mode120_date_select(Occupied_Timeline, star_list):
+def Mode120_date_select(Occupied_Timeline, SpottedStarList):
     """Subfunction, Schedules a simulated date.
     
     A date is selected for which the brightest star is visible at the minimum amount of H-offset in the FOV.
@@ -379,7 +380,7 @@ def Mode120_date_select(Occupied_Timeline, star_list):
     
     Arguments:
         Occupied_Timeline (:obj:`dict` of :obj:`list`): Dictionary with keys equal to planned and scheduled Modes/CMDs with entries equal to their start and end time as a list.
-        star_list ((:obj:`list` of :obj:`dict`)): A list containing dictionaries containing parameters for each time a star is spotted.
+        SpottedStarList ((:obj:`list` of :obj:`dict`)): A list containing dictionaries containing parameters for each time a star is spotted.
         
     Returns:
         (tuple): tuple containing:
@@ -395,8 +396,8 @@ def Mode120_date_select(Occupied_Timeline, star_list):
     Logger.info('Start of filtering function')
     
     
-    if( len(star_list) == 0):
-        Mode120_comment = 'Stars not visible (Empty star_list)'
+    if( len(SpottedStarList) == 0):
+        Mode120_comment = 'Stars not visible (Empty SpottedStarList)'
         
         Logger.warning(Mode120_comment)
         #input('Enter anything to acknowledge and continue')
@@ -405,17 +406,17 @@ def Mode120_date_select(Occupied_Timeline, star_list):
     
     star_min_mag_H_offset = []
     
-    star_H_offset = [star_list[x]['H-offset'] for x in range(len(star_list))]
+    star_H_offset = [SpottedStarList[x]['H-offset'] for x in range(len(SpottedStarList))]
     #print('star_H_offset')
     #print(star_H_offset)
-    star_V_offset = [star_list[x]['V-offset'] for x in range(len(star_list))]
-    star_date = [star_list[x]['Date'] for x in range(len(star_list))]
-    star_mag = [star_list[x]['Vmag'] for x in range(len(star_list))]
-    star_name = [star_list[x]['Name'] for x in range(len(star_list))]
-    long_MATS = [star_list[x]['long_MATS'] for x in range(len(star_list))]
-    lat_MATS = [star_list[x]['lat_MATS'] for x in range(len(star_list))]
-    Dec_optical_axis = [star_list[x]['Dec_optical_axis'] for x in range(len(star_list))]
-    RA_optical_axis = [star_list[x]['RA_optical_axis'] for x in range(len(star_list))]
+    star_V_offset = [SpottedStarList[x]['V-offset'] for x in range(len(SpottedStarList))]
+    star_date = [SpottedStarList[x]['Date'] for x in range(len(SpottedStarList))]
+    star_mag = [SpottedStarList[x]['Vmag'] for x in range(len(SpottedStarList))]
+    star_name = [SpottedStarList[x]['Name'] for x in range(len(SpottedStarList))]
+    long_MATS = [SpottedStarList[x]['long_MATS'] for x in range(len(SpottedStarList))]
+    lat_MATS = [SpottedStarList[x]['lat_MATS'] for x in range(len(SpottedStarList))]
+    Dec_optical_axis = [SpottedStarList[x]['Dec_optical_axis'] for x in range(len(SpottedStarList))]
+    RA_optical_axis = [SpottedStarList[x]['RA_optical_axis'] for x in range(len(SpottedStarList))]
     
     star_mag_sorted = [abs(x) for x in star_mag]
     star_mag_sorted.sort()
@@ -424,7 +425,7 @@ def Mode120_date_select(Occupied_Timeline, star_list):
     arbitraryLargeNumber = 1000
     
     "Extract all the H-offsets for the brightest star. Allows scheduling in order of rising H-offset for the brightest star"
-    for x in range(len(star_list)):
+    for x in range(len(SpottedStarList)):
         if( min(star_mag) == star_mag[x]):
             star_min_mag_H_offset.append( star_H_offset[x])
             
@@ -496,7 +497,7 @@ def Mode120_date_select(Occupied_Timeline, star_list):
     
     comment = ('Star name:'+star_name[x]+', V-offset: '+str(round(star_V_offset[x],2))+', H-offset: '+str(round(star_H_offset[x],2))+', V-mag: '+str(star_mag[x])+', Number of times date changed: '+str(iterations)
         +', MATS (long,lat) in degrees = ('+str(long_MATS[x])+', '+str(lat_MATS[x])+'), optical-axis Dec (J2000 ICRS): '+str(Dec_optical_axis[x])+'), optical-axis RA (J2000 ICRS): '+str(RA_optical_axis[x])+
-    '), star Dec (J2000 ICRS): '+str(star_list[x]['Dec'])+', star RA (J2000 ICRS): '+str(star_list[x]['RA']))
+    '), star Dec (J2000 ICRS): '+str(SpottedStarList[x]['Dec'])+', star RA (J2000 ICRS): '+str(SpottedStarList[x]['RA']))
     
     
     Occupied_Timeline['Mode120'].append( (StartDate, endDate) )

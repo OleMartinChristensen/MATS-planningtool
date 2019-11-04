@@ -153,10 +153,10 @@ OPT.\_TimelineGenerator.Modes.Modes\_Header module
     :undoc-members:
     :show-inheritance:
 
-OPT.\_TimelineGenerator.Modes.StartUpCmds module
-------------------------------------------------
+OPT.\_TimelineGenerator.Modes.StartUpCmdsAndProcedures module
+-------------------------------------------------------------
 
-.. automodule:: OPT._TimelineGenerator.Modes.StartUpCmds
+.. automodule:: OPT._TimelineGenerator.Modes.StartUpCmdsAndProcedures
     :members:
     :undoc-members:
     :show-inheritance:

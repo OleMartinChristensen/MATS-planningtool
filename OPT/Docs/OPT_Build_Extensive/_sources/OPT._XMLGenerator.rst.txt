@@ -16,10 +16,18 @@ Subpackages
 Submodules
 ----------
 
-OPT.\_XMLGenerator.Core module
-------------------------------
+OPT.\_XMLGenerator.MinimalScienceXML\_gen module
+------------------------------------------------
 
-.. automodule:: OPT._XMLGenerator.Core
+.. automodule:: OPT._XMLGenerator.MinimalScienceXML_gen
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+OPT.\_XMLGenerator.XML\_gen module
+----------------------------------
+
+.. automodule:: OPT._XMLGenerator.XML_gen
     :members:
     :undoc-members:
     :show-inheritance:

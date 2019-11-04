@@ -14,4 +14,4 @@ $ conda install pip
 
 $ conda install -c anaconda h5py 
 
-$ conda install -c conda-forge skyfield=1.10
+$ conda install -c conda-forge skyfield=1.13

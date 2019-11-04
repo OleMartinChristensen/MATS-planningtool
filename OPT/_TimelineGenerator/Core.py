@@ -216,9 +216,9 @@ def Timeline_generator():
             elif( x[2] == 'ArgEnableYawComp' ):
                 Config_File = { 'EnableYawComp': int(Timeline_settings['yaw_correction']) }
                 
-            #elif( x[2] == 'HTR' ):
-            #    Config_File = { 'HTRSEL': '?', 'SET': '?', 
-            #              'PVALUE': '?' , 'IVALUE': '?', 'DVALUE': '?'}
+            elif( x[2] == 'HTR' ):
+                Config_File = { 'HTRSEL': '?', 'SET': '?', 
+                          'PVALUE': '?' , 'IVALUE': '?', 'DVALUE': '?'}
             else:
                 Logger.error('No Config function for '+x[2])
                 Config_File = {}
