@@ -21,10 +21,11 @@
 **Description:**
 *Operational_Planning_Tool* uses a hiearchy structure with a procedural programming paradigm. Meaning that only the top level functions (the ones mentioned above) are supposed to be called by a user. \n
 
-*Operational_Planning_Tool* uses a special .py file as a *Configuration File*, meaning that the settings inside the *Configuration File* dictate the operation of the program (unless the same settings are explicitly stated in the input of a function, see *XML_gen* and *Timeline_Plotter*). An example of a *Configuration_File* with default values is located in the Operational_Planning_Tool and is called *_ConfigFile.py*.  \n
+*Operational_Planning_Tool* uses a special .py file as a *Configuration File*, meaning that the settings inside the *Configuration File* dictate the operation of the program (unless the same settings are explicitly stated in the input of a function, see *XML_gen* and *Timeline_Plotter*). 
+An example of a *Configuration_File* with default values is located in the Operational_Planning_Tool and is called *_ConfigFile.py*.  \n
 
 Create your own *Configuration File* with an appropriate name by running *Copy_ConfigFile* with a chosen name as an input. 
-*Copy_ConfigFile* makes a copy of *_ConfigFile.py*. The settings in your copy is modified manually in a text editor. \n
+*Copy_ConfigFile* makes a copy of *_ConfigFile.py*. The settings in your copy are modified manually in a text editor. \n
 
 Your *Configuration File* and its date must be chosen by running *Set_ConfigFile*. \n
 
@@ -37,7 +38,7 @@ by running *XML_gen* with the *Science Mode Timeline* as the input. The *_XMLGen
 The *Science Mode Timeline* can also be simulated and and plotted by running *Timeline_Plotter* with the *Science Mode Timeline* as the input. 
 *Timeline_Plotter* can also optionally plot a special kind of .h5 data-files, created by OHB SWEDEN. \n
 
-Note: A *Science Mode Timeline* usually contains settings that are taken from the chosen *Configuration File* when the *Science Mode Timeline* was created. 
+**Note:** A *Science Mode Timeline* usually contains settings that are taken from the chosen *Configuration File* when the *Science Mode Timeline* was created. 
 Any time a function uses a *Science Mode Timeline* as an input, these settings will be given priority over any similar settings stated in the currently chosen *Configuration File*. \n
 
 *Check_ConfigFile* is used to check if the values stated in the chosen *Configuration File* are plausible. \n
@@ -63,7 +64,7 @@ Example:
     *#Creates a Science Mode Timeline specified by settings given in the chosen Configuration File.#* \n
     OPT.Timeline_gen()
     
-    *#Converts the created Science Mode Timeline into an XML-file.#* \n
+    *#Converts the created Science Mode Timeline into an XML-file. Settings stated in the Science Mode Timeline overrides settings in the Configuration File#* \n
     OPT.XML_gen('Output/Science_Mode_Timeline__OPT_Config_File.json')
     
     *#Plots the Science Mode Timeline.#* \n
@@ -73,7 +74,7 @@ Example:
 
 Science Modes are separated into 2 different areas, *Operational Science Modes* (Mode 1,2,5) and *Calibration Modes*. \n
 *Calibration Modes* are scheduled at specific points of time and are usually only scheduled once per *Science Mode Timeline*. 
-*Operational Science Modes* (Mode 1,2,5) are scheduled wherever time is available (after the scheduling of *Calibration Modes*) and only 1 *Operational Science Mode* is scheduled per Timeline.
+*Operational Science Modes* (Mode 1,2,5) are scheduled whenever time is available (after the scheduling of *Calibration Modes*) and only 1 *Operational Science Mode* is scheduled per Timeline.
 
 """
 
@@ -270,7 +271,8 @@ def Timeline_Plotter(Science_Mode_Path, OHB_H5_Path = '', STK_CSV_PATH = '', Tim
     '''Invokes the *Timeline_Plotter* program part of *Operational_Planning_Tool*.
     
     Simulates the position and attitude of MATS from a given Science Mode Timeline and also optionally compares it to
-    positional and attitude data given in a .h5 data set, located at *OHB_H5_Path*. Plots both the simulated data and given data. \n
+    positional and attitude data given in a .h5 data set, located at *OHB_H5_Path*. Plots both the simulated data and given data. 
+    The timesteps of both the .h5 data and the Science Mode is synchronized to allow direct comparison if possible. \n
     A .csv file, generated in STK, may also be included to plot the predicted positional error of the satellite compared to STK data.
     Saves generated plots as binary files. \n
     Settings for the operation of the program are stated in the chosen *Configuration File*. 

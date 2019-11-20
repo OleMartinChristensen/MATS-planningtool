@@ -34,7 +34,7 @@
             
   <div class="section" id="module-OPT._XMLGenerator.Modes_and_Tests">
 <span id="opt-xmlgenerator-modes-and-tests-package"></span><h1>OPT._XMLGenerator.Modes_and_Tests package<a class="headerlink" href="#module-OPT._XMLGenerator.Modes_and_Tests" title="Permalink to this headline">¶</a></h1>
-<p>This package consist of modules which contain functions that are called exclusively from the <em>XML_generator_select</em> function.</p>
+<p>This package consist of modules which contain functions that are called exclusively from the <em>XML_generator_select</em>.</p>
 <p>The functions are separated into modules depending on if they define a Mode, a Test, or a separate CMD. Depending on their definition, the functions either call for Macros and/or CMDs from the <em>Macros_Commands</em> package.</p>
 <div class="section" id="subpackages">
 <h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
@@ -241,7 +241,7 @@ Simulates MATS to determine when a point below MATS is at night or daytime.</p>
 <p>Calls CMDs/Procedures, which will generate commands in the XML-file.</p>
 <p>For PM, CCDBadColumn, CCDFlushBadColumns: Compares parameters given in the Science Mode Timeline to default parameters
 given in the set <em>Configuration File</em> and fills in any parameters missing in the Science Mode Timeline.</p>
-<p>For the rest CMDS, each parameter must be given in the Science Mode Timeline.</p>
+<p>For the rest CMDS, each parameter must be given in the <em>Science Mode Timeline</em> as a dictionary with each key representing a parameter.</p>
 <p>TurnONCCDs will always call TC_pafCCDMain with fixed arguments to turn ON all CCDs.</p>
 <p>Functions on the form &quot;X&quot;, where X is any CMD:</p>
 <blockquote>
@@ -374,12 +374,12 @@ then calls for macros, which will generate commands in the XML-file.</p>
 </dl>
 </div></blockquote>
 <p>When creating new Test functions it is crucial that the function name is
-Test_name, where Test_name is the same as the string used in the Science Mode Timeline</p>
+<em>Test_name</em>, where <em>Test_name</em> is the same as the string used in the Science Mode Timeline.</p>
 <p>&#64;author: David</p>
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.Tests.All_Tests">
 <code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Tests.</code><code class="descname">All_Tests</code><span class="sig-paren">(</span><em>root, date, duration, relativeTime, Timeline_settings, params=['Limb_functional_test', 'Photometer_test_1', 'CCD_stability_test', 'Nadir_functional_test']</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Tests.html#All_Tests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Tests.All_Tests" title="Permalink to this definition">¶</a></dt>
-<dd><p>Runs all the Test functions which has their function name as a string in params.</p>
+<dd><p>Runs all the Test functions which have their function name as a string in the input <em>params</em>.</p>
 <p>Allows the tests to be dynamically scheduled.</p>
 </dd></dl>
 
@@ -436,7 +436,6 @@ Scheduling of all daylight and nighttime commands are separated timewise and all
 <li class="toctree-l2 current"><a class="reference internal" href="OPT.html#subpackages">Subpackages</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="OPT._CheckConfigFile.html">OPT._CheckConfigFile package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="OPT._DataPlotter.html">OPT._DataPlotter package</a></li>
-<li class="toctree-l3"><a class="reference internal" href="OPT._MinimalScienceXMLGenerator.html">OPT._MinimalScienceXMLGenerator package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="OPT._Plot_Timeline_Plotter_Plots.html">OPT._Plot_Timeline_Plotter_Plots package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="OPT._TimelineAnalyzer.html">OPT._TimelineAnalyzer package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="OPT._TimelineGenerator.html">OPT._TimelineGenerator package</a></li>

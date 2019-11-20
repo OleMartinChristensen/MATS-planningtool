@@ -12,7 +12,7 @@ TLE = Contains a TLE as a duple of strings which is used by the *Configuration F
 
 latestRelativeTime = Only applicable to XML_generator. The *relativeTime* of the latest scheduled CMD. Used to make sure that CMDs always are scheduled in a chronological order. \n
 
-LargestSetTEXPMS = The latest largest set TEXPMS on the CCDs whenever CCD_macro is ran. This is the least amount of time that need to pass from going into idle mode and settings new CCD settings.
+LargestSetTEXPMS = The latest largest set TEXPMS on the CCDs whenever CCD_macro is ran. This is the least amount of time that need to pass from going into idle mode and and changing CCD settings.
 """
 
 Config_File = 'OPT_Config_File'

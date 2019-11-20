@@ -415,12 +415,12 @@ def SyncArgCalculator(CCD_settings, ExtraOffset, ExtraIntervalTime):
         
     """
     
-    CCDSEL_16 = CCD_settings['CCDSEL_16']
-    CCDSEL_32 = CCD_settings['CCDSEL_32']
-    CCDSEL_1 = CCD_settings['CCDSEL_1']
-    CCDSEL_8 = CCD_settings['CCDSEL_8']
-    CCDSEL_2 = CCD_settings['CCDSEL_2']
-    CCDSEL_4 = CCD_settings['CCDSEL_4']
+    CCDSEL_16 = CCD_settings[16]
+    CCDSEL_32 = CCD_settings[32]
+    CCDSEL_1 = CCD_settings[1]
+    CCDSEL_8 = CCD_settings[8]
+    CCDSEL_2 = CCD_settings[2]
+    CCDSEL_4 = CCD_settings[4]
     
     
     
@@ -654,12 +654,12 @@ def OrderingOfCCDSnapshots(CCD_settings):
     
     """
     
-    CCDSEL_16 = CCD_settings['CCDSEL_16']
-    CCDSEL_32 = CCD_settings['CCDSEL_32']
-    CCDSEL_1 = CCD_settings['CCDSEL_1']
-    CCDSEL_8 = CCD_settings['CCDSEL_8']
-    CCDSEL_2 = CCD_settings['CCDSEL_2']
-    CCDSEL_4 = CCD_settings['CCDSEL_4']
+    CCDSEL_16 = CCD_settings[16]
+    CCDSEL_32 = CCD_settings[32]
+    CCDSEL_1 = CCD_settings[1]
+    CCDSEL_8 = CCD_settings[8]
+    CCDSEL_2 = CCD_settings[2]
+    CCDSEL_4 = CCD_settings[4]
     
     "Sort ExposureTimes of the CCDs"
     ExpTimes = [CCDSEL_16['TEXPMS'], CCDSEL_32['TEXPMS'], CCDSEL_1['TEXPMS'], CCDSEL_8['TEXPMS'], CCDSEL_2['TEXPMS'], CCDSEL_4['TEXPMS']]
@@ -795,6 +795,7 @@ def Satellite_Simulator( Satellite_skyfield, SimulationTime, Timeline_settings, 
         yaw_offset_angle = Timeline_settings['yaw_amplitude'] * cos( arg_of_lat/180*pi - (Pitch-90)/180*pi + Timeline_settings['yaw_phase']/180*pi )
     elif( yaw_correction == False):
         yaw_offset_angle = 0
+    
     
     
     "Rotate 'vector to Satellite', to represent pointing direction"
@@ -980,33 +981,6 @@ def FreezeDuration_calculator(pointing_altitude1, pointing_altitude2, TLE2):
     return FreezeDuration
 
 
-def Snapshot_Images_Size_Calculator(CCD_settings):
-    
-    SizeOfImages = 0
-    SizeOfImagePerPixel = 2 #Bytes
-    
-    for CCDSEL in ['CCDSEL_1', 'CCDSEL_2', 'CCDSEL_4', 'CCDSEL_8', 'CCDSEL_16', 'CCDSEL_32', 'CCDSEL_64']:
-        if( CCD_settings[CCDSEL]['TEXPMS'] == 0 or CCD_settings[CCDSEL]['PWR'] == 0 ):
-            continue
-        else:
-            SizeOfImages += CCD_settings[CCDSEL]['NCOL'] * CCD_settings[CCDSEL]['NROW'] * SizeOfImagePerPixel
-            
-    return SizeOfImages
+
     
 
-def Operational_Images_Size_Calculator(CCD_settings, duration, ExtraOffset, ExtraIntervalTime):
-    
-    SizeOfImages = 0
-    SizeOfImagePerPixel = 2 #Bytes
-    
-    disregarded, disregarded, disregarded, TEXPIMS = SyncArgCalculator(CCD_settings, ExtraOffset, ExtraIntervalTime)
-    
-    for CCDSEL in ['CCDSEL_1', 'CCDSEL_2', 'CCDSEL_4', 'CCDSEL_8', 'CCDSEL_16', 'CCDSEL_32', 'CCDSEL_64']:
-        if( CCD_settings[CCDSEL]['TEXPMS'] == 0 or CCD_settings[CCDSEL]['PWR'] == 0 ):
-            continue
-        elif( CCDSEL == 'CCDSEL_64'):
-            SizeOfImages += round(CCD_settings[CCDSEL]['NCOL'] * CCD_settings[CCDSEL]['NROW'] * SizeOfImagePerPixel * duration/CCD_settings[CCDSEL]['TEXPIMS'],0)
-        else:
-            SizeOfImages += round(CCD_settings[CCDSEL]['NCOL'] * CCD_settings[CCDSEL]['NROW'] * SizeOfImagePerPixel * duration/TEXPIMS, 0)
-            
-    return SizeOfImages

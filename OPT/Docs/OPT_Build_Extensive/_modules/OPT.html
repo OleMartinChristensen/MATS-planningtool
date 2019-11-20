@@ -48,15 +48,17 @@
 <span class="sd">**Abbreviations:**</span>
 <span class="sd">    CMD = Command \n</span>
 <span class="sd">    FOV = Field of View \n</span>
+<span class="sd">    LP = Look point of the instrument \n</span>
 <span class="sd">    OPT = Operational Planning Tool</span>
 <span class="sd">    </span>
 <span class="sd">**Description:**</span>
 <span class="sd">*Operational_Planning_Tool* uses a hiearchy structure with a procedural programming paradigm. Meaning that only the top level functions (the ones mentioned above) are supposed to be called by a user. \n</span>
 
-<span class="sd">*Operational_Planning_Tool* uses a special .py file as a *Configuration File*, meaning that the settings inside the *Configuration File* dictate the operation of the program (unless the same settings are explicitly stated in the input of a function, see *XML_gen* and *Timeline_Plotter*). An example of a *Configuration_File* with default values is located in the Operational_Planning_Tool and is called *_ConfigFile.py*.  \n</span>
+<span class="sd">*Operational_Planning_Tool* uses a special .py file as a *Configuration File*, meaning that the settings inside the *Configuration File* dictate the operation of the program (unless the same settings are explicitly stated in the input of a function, see *XML_gen* and *Timeline_Plotter*). </span>
+<span class="sd">An example of a *Configuration_File* with default values is located in the Operational_Planning_Tool and is called *_ConfigFile.py*.  \n</span>
 
 <span class="sd">Create your own *Configuration File* with an appropriate name by running *Copy_ConfigFile* with a chosen name as an input. </span>
-<span class="sd">*Copy_ConfigFile* makes a copy of *_ConfigFile.py*. The settings in your copy is modified manually in a text editor. \n</span>
+<span class="sd">*Copy_ConfigFile* makes a copy of *_ConfigFile.py*. The settings in your copy are modified manually in a text editor. \n</span>
 
 <span class="sd">Your *Configuration File* and its date must be chosen by running *Set_ConfigFile*. \n</span>
 
@@ -64,12 +66,12 @@
 <span class="sd">A *Science Mode Timeline*, as it is called, is created by running *Timeline_gen*. Remember to edit and choose your *Configuration File* by running *Set_ConfigFile*. \n</span>
 
 <span class="sd">The created *Science Mode Timeline* can be converted into a XML-file containing Payload and Platform Commands (formatted as specified in the &quot;Innosat Payload Timeline XML Definition&quot; document) </span>
-<span class="sd">by running *XML_gen* with the *Science Mode Timeline* as the input. </span>
+<span class="sd">by running *XML_gen* with the *Science Mode Timeline* as the input. The *_XMLGenerator* package also contains the definition of Science Modes and Macros on an operational level.</span>
 
 <span class="sd">The *Science Mode Timeline* can also be simulated and and plotted by running *Timeline_Plotter* with the *Science Mode Timeline* as the input. </span>
 <span class="sd">*Timeline_Plotter* can also optionally plot a special kind of .h5 data-files, created by OHB SWEDEN. \n</span>
 
-<span class="sd">Note: A *Science Mode Timeline* usually contains settings that are taken from the chosen *Configuration File* when the *Science Mode Timeline* was created. </span>
+<span class="sd">**Note:** A *Science Mode Timeline* usually contains settings that are taken from the chosen *Configuration File* when the *Science Mode Timeline* was created. </span>
 <span class="sd">Any time a function uses a *Science Mode Timeline* as an input, these settings will be given priority over any similar settings stated in the currently chosen *Configuration File*. \n</span>
 
 <span class="sd">*Check_ConfigFile* is used to check if the values stated in the chosen *Configuration File* are plausible. \n</span>
@@ -95,7 +97,7 @@
 <span class="sd">    *#Creates a Science Mode Timeline specified by settings given in the chosen Configuration File.#* \n</span>
 <span class="sd">    OPT.Timeline_gen()</span>
 <span class="sd">    </span>
-<span class="sd">    *#Converts the created Science Mode Timeline into an XML-file.#* \n</span>
+<span class="sd">    *#Converts the created Science Mode Timeline into an XML-file. Settings stated in the Science Mode Timeline overrides settings in the Configuration File#* \n</span>
 <span class="sd">    OPT.XML_gen(&#39;Output/Science_Mode_Timeline__OPT_Config_File.json&#39;)</span>
 <span class="sd">    </span>
 <span class="sd">    *#Plots the Science Mode Timeline.#* \n</span>
@@ -105,7 +107,7 @@
 
 <span class="sd">Science Modes are separated into 2 different areas, *Operational Science Modes* (Mode 1,2,5) and *Calibration Modes*. \n</span>
 <span class="sd">*Calibration Modes* are scheduled at specific points of time and are usually only scheduled once per *Science Mode Timeline*. </span>
-<span class="sd">*Operational Science Modes* (Mode 1,2,5) are scheduled wherever time is available (after the scheduling of *Calibration Modes*) and only 1 *Operational Science Mode* is scheduled per Timeline.</span>
+<span class="sd">*Operational Science Modes* (Mode 1,2,5) are scheduled whenever time is available (after the scheduling of *Calibration Modes*) and only 1 *Operational Science Mode* is scheduled per Timeline.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 
@@ -215,8 +217,9 @@
     <span class="sd">&quot;&quot;&quot;Invokes the Timeline generator part of Operational Planning Tool.</span>
 <span class="sd">    </span>
 <span class="sd">    Creates a *Science Mode Timeline* as a .json file. \n</span>
-<span class="sd">    Predicts and schedueles Science Modes and separate payload CMDs into a list containing run dates and settings used for each Mode/CMD, and saves it to a .json file in /Output. \n</span>
-<span class="sd">    The Modes and CMDs to be scheduled are listed in *Modes_priority* in the chosen *Configuration File*.</span>
+<span class="sd">    Predicts and schedueles Science Modes that depend on certain events such as position of stars and the moon (Mode120-Mode124). </span>
+<span class="sd">    Other Science Modes and StartUpCMDs are just scheduled at the start of the Timeline or at a given date. </span>
+<span class="sd">    The Science Modes and StartUpCMDs to be scheduled are listed in *Modes_priority* in the chosen *Configuration File*.</span>
 <span class="sd">    </span>
 <span class="sd">    *Operational Science Modes* (example: Mode 1,2,5) are scheduled separately wherever time is available at the end of the program.</span>
 <span class="sd">    </span>
@@ -301,7 +304,8 @@
     <span class="sd">&#39;&#39;&#39;Invokes the *Timeline_Plotter* program part of *Operational_Planning_Tool*.</span>
 <span class="sd">    </span>
 <span class="sd">    Simulates the position and attitude of MATS from a given Science Mode Timeline and also optionally compares it to</span>
-<span class="sd">    positional and attitude data given in a .h5 data set, located at *OHB_H5_Path*. Plots both the simulated data and given data. \n</span>
+<span class="sd">    positional and attitude data given in a .h5 data set, located at *OHB_H5_Path*. Plots both the simulated data and given data. </span>
+<span class="sd">    The timesteps of both the .h5 data and the Science Mode is synchronized to allow direct comparison if possible. \n</span>
 <span class="sd">    A .csv file, generated in STK, may also be included to plot the predicted positional error of the satellite compared to STK data.</span>
 <span class="sd">    Saves generated plots as binary files. \n</span>
 <span class="sd">    Settings for the operation of the program are stated in the chosen *Configuration File*. </span>

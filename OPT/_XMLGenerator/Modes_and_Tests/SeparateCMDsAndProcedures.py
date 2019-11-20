@@ -4,7 +4,7 @@
 For PM, CCDBadColumn, CCDFlushBadColumns: Compares parameters given in the Science Mode Timeline to default parameters 
 given in the set *Configuration File* and fills in any parameters missing in the Science Mode Timeline. \n
 
-For the rest CMDS, each parameter must be given in the Science Mode Timeline. \n
+For the rest CMDS, each parameter must be given in the *Science Mode Timeline* as a dictionary with each key representing a parameter. \n
 
 TurnONCCDs will always call TC_pafCCDMain with fixed arguments to turn ON all CCDs. \n
 

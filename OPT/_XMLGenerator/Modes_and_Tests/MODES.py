@@ -91,9 +91,9 @@ def Mode1(root, date, duration, relativeTime, Timeline_settings, params = {}):
     params = params_checker(params, settings, Logger)
     
     timestep = params['timestep']
-    TEXPMS_16 = CCD_settings['CCDSEL_16']['TEXPMS']
-    TEXPMS_32 = CCD_settings['CCDSEL_32']['TEXPMS']
-    TEXPMS_nadir = CCD_settings['CCDSEL_64']['TEXPMS']
+    TEXPMS_16 = CCD_settings[16]['TEXPMS']
+    TEXPMS_32 = CCD_settings[32]['TEXPMS']
+    TEXPMS_nadir = CCD_settings[64]['TEXPMS']
     
     
     log_timestep = params['log_timestep']
@@ -183,9 +183,9 @@ def Mode1(root, date, duration, relativeTime, Timeline_settings, params = {}):
                     current_state = "Mode1_night_UV_off"
                     comment = current_state+': '+str(current_time)+', parameters: '+str(params)
                     #new_relativeTime = Macros.Mode1_macro(root,relativeTime, pointing_altitude=pointing_altitude, UV_on = False, nadir_on = True, Timeline_settings = Timeline_settings, comment = comment)
-                    CCD_settings['CCDSEL_16']['TEXPMS'] = 0
-                    CCD_settings['CCDSEL_32']['TEXPMS'] = 0
-                    CCD_settings['CCDSEL_64']['TEXPMS'] = TEXPMS_nadir
+                    CCD_settings[16]['TEXPMS'] = 0
+                    CCD_settings[32]['TEXPMS'] = 0
+                    CCD_settings[64]['TEXPMS'] = TEXPMS_nadir
                     new_relativeTime = Macros.Operational_Limb_Pointing_macro(root, relativeTime, CCD_settings, PM_settings = PM_settings,  
                                                                pointing_altitude=pointing_altitude, Timeline_settings = Timeline_settings, comment = comment)
                     
@@ -193,9 +193,9 @@ def Mode1(root, date, duration, relativeTime, Timeline_settings, params = {}):
                     current_state = "Mode1_night_UV_on"
                     comment = current_state+': '+str(current_time)+', parameters: '+str(params)
                     #new_relativeTime = Macros.Mode1_macro(root,relativeTime, pointing_altitude=pointing_altitude, UV_on = True, nadir_on = True, Timeline_settings = Timeline_settings, comment = comment)
-                    CCD_settings['CCDSEL_16']['TEXPMS'] = TEXPMS_16
-                    CCD_settings['CCDSEL_32']['TEXPMS'] = TEXPMS_32
-                    CCD_settings['CCDSEL_64']['TEXPMS'] = TEXPMS_nadir
+                    CCD_settings[16]['TEXPMS'] = TEXPMS_16
+                    CCD_settings[32]['TEXPMS'] = TEXPMS_32
+                    CCD_settings[64]['TEXPMS'] = TEXPMS_nadir
                     new_relativeTime = Macros.Operational_Limb_Pointing_macro(root, relativeTime, CCD_settings, PM_settings = PM_settings,  
                                                                pointing_altitude=pointing_altitude, Timeline_settings = Timeline_settings, comment = comment)
                     
@@ -206,9 +206,9 @@ def Mode1(root, date, duration, relativeTime, Timeline_settings, params = {}):
                     current_state = "Mode1_day_UV_off"
                     comment = current_state+': '+str(current_time)+', parameters: '+str(params)
                     #new_relativeTime = Macros.Mode1_macro(root,relativeTime,pointing_altitude, UV_on = False, nadir_on = False, Timeline_settings = Timeline_settings, comment = comment)
-                    CCD_settings['CCDSEL_16']['TEXPMS'] = 0
-                    CCD_settings['CCDSEL_32']['TEXPMS'] = 0
-                    CCD_settings['CCDSEL_64']['TEXPMS'] = 0
+                    CCD_settings[16]['TEXPMS'] = 0
+                    CCD_settings[32]['TEXPMS'] = 0
+                    CCD_settings[64]['TEXPMS'] = 0
                     new_relativeTime = Macros.Operational_Limb_Pointing_macro(root, relativeTime, CCD_settings, PM_settings = PM_settings,  
                                                                pointing_altitude=pointing_altitude, Timeline_settings = Timeline_settings, comment = comment)
                     
@@ -216,9 +216,9 @@ def Mode1(root, date, duration, relativeTime, Timeline_settings, params = {}):
                     current_state = "Mode1_day_UV_on"
                     comment = current_state+': '+str(current_time)+', parameters: '+str(params)
                     #new_relativeTime = Macros.Mode1_macro(root,relativeTime,pointing_altitude, UV_on = True, nadir_on = False, Timeline_settings = Timeline_settings, comment = comment)
-                    CCD_settings['CCDSEL_16']['TEXPMS'] = TEXPMS_16
-                    CCD_settings['CCDSEL_32']['TEXPMS'] = TEXPMS_32
-                    CCD_settings['CCDSEL_64']['TEXPMS'] = 0
+                    CCD_settings[16]['TEXPMS'] = TEXPMS_16
+                    CCD_settings[32]['TEXPMS'] = TEXPMS_32
+                    CCD_settings[64]['TEXPMS'] = 0
                     new_relativeTime = Macros.Operational_Limb_Pointing_macro(root, relativeTime, CCD_settings, PM_settings = PM_settings,  
                                                                pointing_altitude=pointing_altitude, Timeline_settings = Timeline_settings, comment = comment)
                     
@@ -247,9 +247,9 @@ def Mode1(root, date, duration, relativeTime, Timeline_settings, params = {}):
                         current_state = "Mode1_night_UV_off"
                         comment = current_state+': '+str(current_time)+', parameters: '+str(params)
                         #new_relativeTime = Macros.Mode1_macro(root, relativeTime, pointing_altitude, UV_on = False, nadir_on = True, Timeline_settings = Timeline_settings, comment = comment)
-                        CCD_settings['CCDSEL_16']['TEXPMS'] = 0
-                        CCD_settings['CCDSEL_32']['TEXPMS'] = 0
-                        CCD_settings['CCDSEL_64']['TEXPMS'] = TEXPMS_nadir
+                        CCD_settings[16]['TEXPMS'] = 0
+                        CCD_settings[32]['TEXPMS'] = 0
+                        CCD_settings[64]['TEXPMS'] = TEXPMS_nadir
                         new_relativeTime = Macros.Operational_Limb_Pointing_macro(root, relativeTime, CCD_settings, PM_settings = PM_settings,  
                                                                pointing_altitude=pointing_altitude, Timeline_settings = Timeline_settings, comment = comment)
                         
@@ -273,9 +273,9 @@ def Mode1(root, date, duration, relativeTime, Timeline_settings, params = {}):
                         current_state = "Mode1_night_UV_on"
                         comment = current_state+': '+str(current_time)+', parameters: '+str(params)
                         #new_relativeTime = Macros.Mode1_macro(root, relativeTime, pointing_altitude=pointing_altitude, UV_on = True, nadir_on = True, Timeline_settings = Timeline_settings, comment = comment)
-                        CCD_settings['CCDSEL_16']['TEXPMS'] = TEXPMS_16
-                        CCD_settings['CCDSEL_32']['TEXPMS'] = TEXPMS_32
-                        CCD_settings['CCDSEL_64']['TEXPMS'] = TEXPMS_nadir
+                        CCD_settings[16]['TEXPMS'] = TEXPMS_16
+                        CCD_settings[32]['TEXPMS'] = TEXPMS_32
+                        CCD_settings[64]['TEXPMS'] = TEXPMS_nadir
                         new_relativeTime = Macros.Operational_Limb_Pointing_macro(root, relativeTime, CCD_settings, PM_settings = PM_settings,  
                                                                pointing_altitude=pointing_altitude, Timeline_settings = Timeline_settings, comment = comment)
                         
@@ -304,9 +304,9 @@ def Mode1(root, date, duration, relativeTime, Timeline_settings, params = {}):
                         current_state = "Mode1_day_UV_off"
                         comment = current_state+': '+str(current_time)+', parameters: '+str(params)
                         #new_relativeTime = Macros.Mode1_macro(root, relativeTime, pointing_altitude=pointing_altitude, UV_on = False, nadir_on = False, Timeline_settings = Timeline_settings, comment = comment)
-                        CCD_settings['CCDSEL_16']['TEXPMS'] = 0
-                        CCD_settings['CCDSEL_32']['TEXPMS'] = 0
-                        CCD_settings['CCDSEL_64']['TEXPMS'] = 0
+                        CCD_settings[16]['TEXPMS'] = 0
+                        CCD_settings[32]['TEXPMS'] = 0
+                        CCD_settings[64]['TEXPMS'] = 0
                         new_relativeTime = Macros.Operational_Limb_Pointing_macro(root, relativeTime, CCD_settings, PM_settings = PM_settings,  
                                                                pointing_altitude=pointing_altitude, Timeline_settings = Timeline_settings, comment = comment)
                         
@@ -332,9 +332,9 @@ def Mode1(root, date, duration, relativeTime, Timeline_settings, params = {}):
                         current_state = "Mode1_day_UV_on"
                         comment = current_state+': '+str(current_time)+', parameters: '+str(params)
                         #new_relativeTime = Macros.Mode1_macro(root, relativeTime, pointing_altitude=pointing_altitude, UV_on = True, nadir_on = False, Timeline_settings = Timeline_settings, comment = comment)
-                        CCD_settings['CCDSEL_16']['TEXPMS'] = TEXPMS_16
-                        CCD_settings['CCDSEL_32']['TEXPMS'] = TEXPMS_32
-                        CCD_settings['CCDSEL_64']['TEXPMS'] = 0
+                        CCD_settings[16]['TEXPMS'] = TEXPMS_16
+                        CCD_settings[32]['TEXPMS'] = TEXPMS_32
+                        CCD_settings[64]['TEXPMS'] = 0
                         new_relativeTime = Macros.Operational_Limb_Pointing_macro(root, relativeTime, CCD_settings, PM_settings = PM_settings,  
                                                                pointing_altitude=pointing_altitude, Timeline_settings = Timeline_settings, comment = comment)
                         
@@ -379,7 +379,7 @@ def Mode2(root, date, duration, relativeTime, Timeline_settings, params = {}):
     params = params_checker(params, settings, Logger)
     
     timestep = params['timestep']
-    TEXPMS_nadir = CCD_settings['CCDSEL_64']['TEXPMS']
+    TEXPMS_nadir = CCD_settings[64]['TEXPMS']
     
     log_timestep = params['log_timestep']
     Logger.debug('log_timestep [s]: '+str(log_timestep))
@@ -454,7 +454,7 @@ def Mode2(root, date, duration, relativeTime, Timeline_settings, params = {}):
                 current_state = "Mode2_night"
                 comment = current_state+': '+str(params)
                 #new_relativeTime = Macros.Mode1_macro(root,relativeTime, pointing_altitude=pointing_altitude, nadir_on = True, Timeline_settings = Timeline_settings, comment = comment)
-                CCD_settings['CCDSEL_64']['TEXPMS'] = TEXPMS_nadir
+                CCD_settings[64]['TEXPMS'] = TEXPMS_nadir
                 new_relativeTime = Macros.Operational_Limb_Pointing_macro(root, relativeTime, CCD_settings, PM_settings = PM_settings,  
                                                        pointing_altitude=pointing_altitude, Timeline_settings = Timeline_settings, comment = comment)
                 
@@ -462,7 +462,7 @@ def Mode2(root, date, duration, relativeTime, Timeline_settings, params = {}):
                 current_state = "Mode2_day"
                 comment = current_state+': '+str(params)
                 #new_relativeTime = Macros.Mode1_macro(root,relativeTime, pointing_altitude=pointing_altitude, nadir_on = False, Timeline_settings = Timeline_settings, comment = comment)
-                CCD_settings['CCDSEL_64']['TEXPMS'] = 0
+                CCD_settings[64]['TEXPMS'] = 0
                 new_relativeTime = Macros.Operational_Limb_Pointing_macro(root, relativeTime, CCD_settings, PM_settings = PM_settings,  
                                                        pointing_altitude=pointing_altitude, Timeline_settings = Timeline_settings, comment = comment)
         
@@ -484,7 +484,7 @@ def Mode2(root, date, duration, relativeTime, Timeline_settings, params = {}):
                     current_state = "Mode2_night"
                     comment = current_state+': '+str(params)
                     #new_relativeTime = Macros.Mode1_macro(root, relativeTime, pointing_altitude=pointing_altitude, nadir_on = True, Timeline_settings = Timeline_settings, comment = comment)
-                    CCD_settings['CCDSEL_64']['TEXPMS'] = TEXPMS_nadir
+                    CCD_settings[64]['TEXPMS'] = TEXPMS_nadir
                     new_relativeTime = Macros.Operational_Limb_Pointing_macro(root, relativeTime, CCD_settings, PM_settings = PM_settings,  
                                                            pointing_altitude=pointing_altitude, Timeline_settings = Timeline_settings, comment = comment)
                     
@@ -503,7 +503,7 @@ def Mode2(root, date, duration, relativeTime, Timeline_settings, params = {}):
                     current_state = "Mode2_day"
                     comment = current_state+': '+str(params)
                     #new_relativeTime = Macros.Mode1_macro(root, relativeTime, pointing_altitude=pointing_altitude, nadir_on = False, Timeline_settings = Timeline_settings, comment = comment)
-                    CCD_settings['CCDSEL_64']['TEXPMS'] = 0
+                    CCD_settings[64]['TEXPMS'] = 0
                     new_relativeTime = Macros.Operational_Limb_Pointing_macro(root, relativeTime, CCD_settings, PM_settings = PM_settings,  
                                                            pointing_altitude=pointing_altitude, Timeline_settings = Timeline_settings, comment = comment)
                     
@@ -564,12 +564,12 @@ def Mode100(root, date, duration, relativeTime, Timeline_settings, params = {}):
     "Schedule macros for steadily increasing pointing altitudes and exposure times"
     for pointing_altitude in pointing_altitudes:
         mode_relativeTime = relativeTime - initial_relativeTime
-        CCD_settings['CCDSEL_16']['TEXPMS'] = ExpTimeUV + x * ExpTime_step
-        CCD_settings['CCDSEL_32']['TEXPMS'] = ExpTimeUV + x * ExpTime_step
-        CCD_settings['CCDSEL_1']['TEXPMS'] = ExpTimeIR + x * ExpTime_step
-        CCD_settings['CCDSEL_8']['TEXPMS'] = ExpTimeIR + x * ExpTime_step
-        CCD_settings['CCDSEL_2']['TEXPMS'] = ExpTimeIR + x * ExpTime_step
-        CCD_settings['CCDSEL_4']['TEXPMS'] = ExpTimeIR + x * ExpTime_step
+        CCD_settings[16]['TEXPMS'] = ExpTimeUV + x * ExpTime_step
+        CCD_settings[32]['TEXPMS'] = ExpTimeUV + x * ExpTime_step
+        CCD_settings[1]['TEXPMS'] = ExpTimeIR + x * ExpTime_step
+        CCD_settings[8]['TEXPMS'] = ExpTimeIR + x * ExpTime_step
+        CCD_settings[2]['TEXPMS'] = ExpTimeIR + x * ExpTime_step
+        CCD_settings[4]['TEXPMS'] = ExpTimeIR + x * ExpTime_step
         
         if(mode_relativeTime > duration and duration_flag == 0):
             Logger.warning('Warning!! The scheduled time for '+Mode_name+' has ran out.')
@@ -613,12 +613,12 @@ def Mode110(root, date, duration, relativeTime, Timeline_settings, params = {}):
     
     ExpTimeUV= params['Exp_Time_UV']
     ExpTimeIR = params['Exp_Time_IR']
-    CCD_settings['CCDSEL_16']['TEXPMS'] = ExpTimeUV
-    CCD_settings['CCDSEL_32']['TEXPMS'] = ExpTimeUV
-    CCD_settings['CCDSEL_1']['TEXPMS'] = ExpTimeIR
-    CCD_settings['CCDSEL_8']['TEXPMS'] = ExpTimeIR
-    CCD_settings['CCDSEL_2']['TEXPMS'] = ExpTimeIR
-    CCD_settings['CCDSEL_4']['TEXPMS'] = ExpTimeIR
+    CCD_settings[16]['TEXPMS'] = ExpTimeUV
+    CCD_settings[32]['TEXPMS'] = ExpTimeUV
+    CCD_settings[1]['TEXPMS'] = ExpTimeIR
+    CCD_settings[8]['TEXPMS'] = ExpTimeIR
+    CCD_settings[2]['TEXPMS'] = ExpTimeIR
+    CCD_settings[4]['TEXPMS'] = ExpTimeIR
     
     Mode_name = sys._getframe(0).f_code.co_name
     comment = Mode_name+' starting date: '+str(date)+', '+str(params)
@@ -671,7 +671,7 @@ def Mode12X(root, date, duration, relativeTime,
     Logger.debug('FreezeTime [GPS]: '+ str(FreezeTime))
     Logger.debug('FreezeDuration: '+str(FreezeDuration))
     
-    Snapshot_Images_Size_Calculator(CCD_settings)
+    
     Macros.Snapshot_Inertial_macro(root, round(relativeTime,2), CCD_settings, FreezeTime=FreezeTime, 
                      FreezeDuration = FreezeDuration, pointing_altitude = pointing_altitude, StandardPointingAltitude = Timeline_settings['StandardPointingAltitude'], 
                      SnapshotSpacing = SnapshotSpacing, Snapshot_relativeTime = Snapshot_relativeTime, Timeline_settings = Timeline_settings, comment = comment)
@@ -751,12 +751,12 @@ def Mode122(root, date, duration, relativeTime,
     CCD_settings = OPT_Config_File.CCD_macro_settings('BinnedCalibration')
     ExpTimeUV= params['Exp_Time_UV']
     ExpTimeIR = params['Exp_Time_IR']
-    CCD_settings['CCDSEL_16']['TEXPMS'] = ExpTimeUV
-    CCD_settings['CCDSEL_32']['TEXPMS'] = ExpTimeUV
-    CCD_settings['CCDSEL_1']['TEXPMS'] = ExpTimeIR
-    CCD_settings['CCDSEL_8']['TEXPMS'] = ExpTimeIR
-    CCD_settings['CCDSEL_2']['TEXPMS'] = ExpTimeIR
-    CCD_settings['CCDSEL_4']['TEXPMS'] = ExpTimeIR
+    CCD_settings[16]['TEXPMS'] = ExpTimeUV
+    CCD_settings[32]['TEXPMS'] = ExpTimeUV
+    CCD_settings[1]['TEXPMS'] = ExpTimeIR
+    CCD_settings[8]['TEXPMS'] = ExpTimeIR
+    CCD_settings[2]['TEXPMS'] = ExpTimeIR
+    CCD_settings[4]['TEXPMS'] = ExpTimeIR
     
     Mode12X(root, date, duration, relativeTime, 
                         Timeline_settings = Timeline_settings, params = params, CCD_settings = CCD_settings)
@@ -788,12 +788,12 @@ def Mode123(root, date, duration, relativeTime,
     CCD_settings = OPT_Config_File.CCD_macro_settings('LowPixel')
     ExpTimeUV= params['Exp_Time_UV']
     ExpTimeIR = params['Exp_Time_IR']
-    CCD_settings['CCDSEL_16']['TEXPMS'] = ExpTimeUV
-    CCD_settings['CCDSEL_32']['TEXPMS'] = ExpTimeUV
-    CCD_settings['CCDSEL_1']['TEXPMS'] = ExpTimeIR
-    CCD_settings['CCDSEL_8']['TEXPMS'] = ExpTimeIR
-    CCD_settings['CCDSEL_2']['TEXPMS'] = ExpTimeIR
-    CCD_settings['CCDSEL_4']['TEXPMS'] = ExpTimeIR
+    CCD_settings[16]['TEXPMS'] = ExpTimeUV
+    CCD_settings[32]['TEXPMS'] = ExpTimeUV
+    CCD_settings[1]['TEXPMS'] = ExpTimeIR
+    CCD_settings[8]['TEXPMS'] = ExpTimeIR
+    CCD_settings[2]['TEXPMS'] = ExpTimeIR
+    CCD_settings[4]['TEXPMS'] = ExpTimeIR
     
     Mode12X(root, date, duration, relativeTime, 
                         Timeline_settings = Timeline_settings, params = params, CCD_settings = CCD_settings)
@@ -911,12 +911,12 @@ def Mode132_133(root, date, duration, relativeTime,
     
     for ExpTimeUV,ExpTimeIR in zip( params['Exp_Times_UV'], params['Exp_Times_IR'] ):
         
-        CCD_settings['CCDSEL_16']['TEXPMS'] = ExpTimeUV
-        CCD_settings['CCDSEL_32']['TEXPMS'] = ExpTimeUV
-        CCD_settings['CCDSEL_1']['TEXPMS'] = ExpTimeIR
-        CCD_settings['CCDSEL_8']['TEXPMS'] = ExpTimeIR
-        CCD_settings['CCDSEL_2']['TEXPMS'] = ExpTimeIR
-        CCD_settings['CCDSEL_4']['TEXPMS'] = ExpTimeIR
+        CCD_settings[16]['TEXPMS'] = ExpTimeUV
+        CCD_settings[32]['TEXPMS'] = ExpTimeUV
+        CCD_settings[1]['TEXPMS'] = ExpTimeIR
+        CCD_settings[8]['TEXPMS'] = ExpTimeIR
+        CCD_settings[2]['TEXPMS'] = ExpTimeIR
+        CCD_settings[4]['TEXPMS'] = ExpTimeIR
         relativeTime = Macros.Operational_Limb_Pointing_macro(root, round(relativeTime,2), CCD_settings, PM_settings = PM_settings, 
                                   pointing_altitude = pointing_altitude, Timeline_settings = Timeline_settings, comment = comment)
         

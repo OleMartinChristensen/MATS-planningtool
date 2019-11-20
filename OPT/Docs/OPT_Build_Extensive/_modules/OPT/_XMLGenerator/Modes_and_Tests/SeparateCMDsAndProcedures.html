@@ -37,7 +37,7 @@
 <span class="sd">For PM, CCDBadColumn, CCDFlushBadColumns: Compares parameters given in the Science Mode Timeline to default parameters </span>
 <span class="sd">given in the set *Configuration File* and fills in any parameters missing in the Science Mode Timeline. \n</span>
 
-<span class="sd">For the rest CMDS, each parameter must be given in the Science Mode Timeline. \n</span>
+<span class="sd">For the rest CMDS, each parameter must be given in the *Science Mode Timeline* as a dictionary with each key representing a parameter. \n</span>
 
 <span class="sd">TurnONCCDs will always call TC_pafCCDMain with fixed arguments to turn ON all CCDs. \n</span>
 
@@ -69,15 +69,18 @@
 
 
 
-<span class="c1">################# PAYLOAD COMMANDS ############################</span>
+<span class="c1">################# Procedures ############################</span>
 
 <div class="viewcode-block" id="Payload_Power_Toggle"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.Payload_Power_Toggle">[docs]</a><span class="k">def</span> <span class="nf">Payload_Power_Toggle</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
                        <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
     
-    <span class="n">Commands</span><span class="o">.</span><span class="n">Payload_Power_Toggle</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">relativeTime</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">))</span></div>
+    
+    <span class="n">Commands</span><span class="o">.</span><span class="n">Payload_Power_Toggle</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">relativeTime</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="s1">&#39;Payload_Power_Toggle, &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">))</span></div>
     
     
-    
+
+<span class="c1">################# PAYLOAD COMMANDS ############################</span>
+
 <div class="viewcode-block" id="TurnONCCDs"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.TurnONCCDs">[docs]</a><span class="k">def</span> <span class="nf">TurnONCCDs</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
                        <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
     

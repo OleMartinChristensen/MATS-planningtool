@@ -32,11 +32,13 @@
             
   <h1>Source code for OPT._XMLGenerator.XML_gen</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
-<span class="sd">&quot;&quot;&quot;Creates the base of the XML-tree and calculates initial values such as the </span>
-<span class="sd">start and end time and also duration of the timeline. Then goes through the </span>
-<span class="sd">supplied Science Mode Timeline List chronologically and calls for the corresponding function in one of the modules located in the *Modes_and_Tests* package. \n</span>
+<span class="sd">&quot;&quot;&quot;This module contains the core function of the *XML_gen* program and the first subfunction of *XML_gen*.</span>
 
-<span class="sd">Any settings given in the *Science Mode Timeline* file will overide the use of the same settings stated in set *Configuration File*.</span>
+<span class="sd">In this module is the base of the XML-tree defined and initial values such as the </span>
+<span class="sd">start and end time and also duration of the timeline are calculated. Goes through the </span>
+<span class="sd">supplied *Science Mode Timeline* List chronologically and calls for the corresponding function in one of the modules located in the *Modes_and_Tests* subpackage. \n</span>
+
+<span class="sd">Any settings given in the *Science Mode Timeline* file will overide the use of the same settings stated in the set *Configuration File*.</span>
 
 <span class="sd">All CMDs are stated in the &quot;InnoSat Payload Timeline XML Defintion&quot; document. </span>
 
@@ -46,7 +48,7 @@
 
 <span class="sd">Then they either call directly for a Command function, located in the *Commands* module, inside the *Macros_Commands* package, or call for a Macro function located in the *Macros* module, inside the *Macros_Commands* package.</span>
 
-<span class="sd">A Macro is a combination of commonly used CMDs. For more information seee the *Macros* module inside the *Macros_Commands* package.</span>
+<span class="sd">A Macro is a combination of commonly used CMDs. For more information see the *Macros* module inside the *Macros_Commands* package.</span>
 
 <span class="sd">**Adding your own Mode:** \n</span>
 
@@ -273,17 +275,17 @@
 <span class="c1">####################### Mode selecter ###################################</span>
 
 <div class="viewcode-block" id="XML_generator_select"><a class="viewcode-back" href="../../../OPT._XMLGenerator.html#OPT._XMLGenerator.XML_gen.XML_generator_select">[docs]</a><span class="k">def</span> <span class="nf">XML_generator_select</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">Timeline_settings</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39;Subfunction, Selects corresponding mode, test or CMD function in the package *Modes_and_Tests* from the variable *mode*.</span>
+    <span class="sd">&#39;&#39;&#39;Subfunction, Selects corresponding mode, test or CMD function in the package *Modes_and_Tests* from the variable *name*.</span>
 <span class="sd">    </span>
 <span class="sd">    Calls for any function named *X* in the modules *MODES*, *SeparateCmds*, and *Tests*, where X is the string in the input *name*.</span>
 <span class="sd">    </span>
 <span class="sd">    Arguments: </span>
 <span class="sd">        name (str): The name of the of the mode or test as a string. The name in the XML_generator_name function in OPT_XML_generator_MODES</span>
 <span class="sd">        root (lxml.etree.Element): XML tree structure. Main container object for the ElementTree API.</span>
-<span class="sd">        date (ephem.Date) = Starting date of the Mode. On the form of the ephem.Date class.</span>
-<span class="sd">        duration (int) = The duration of the mode [s] as an integer class.</span>
-<span class="sd">        relativeTime (int) = The starting time of the mode with regard to the start of the timeline [s] as an integer class</span>
-<span class="sd">        params (dict) = Dictionary containing the parameters of the Mode, CMD, or Test given in the Science_Mode_Timeline. </span>
+<span class="sd">        date (ephem.Date): Starting date of the Mode. On the form of the ephem.Date class.</span>
+<span class="sd">        duration (int): The duration of the mode [s] as an integer class.</span>
+<span class="sd">        relativeTime (int): The starting time of the mode with regard to the start of the timeline [s] as an integer class</span>
+<span class="sd">        params (dict): Dictionary containing the parameters of the Mode, CMD, or Test given in the Science_Mode_Timeline. </span>
 <span class="sd">    </span>
 <span class="sd">    Returns:</span>
 <span class="sd">        None</span>

@@ -15,7 +15,7 @@ Each Command function has these inputs/outputs in common.
 
     **Returns:** 
         **incremented_time** (*int*) = The scheduled relativeTime of the command increased by a number equal to *Timeline.settings()['CMD_separation']*. 
-        This to prevent the command buffer on the satellite from overloading. Note: When *TC_acfLimbPointingAltitudeOffset* is scheduled with Rate = '0', relativeTime is increased by *Timeline_settings['pointing_stabilization'].
+        This to prevent the command buffer on the satellite from overloading. Note: Exception to this is when *TC_acfLimbPointingAltitudeOffset* is scheduled.
 """
 
 import logging, importlib

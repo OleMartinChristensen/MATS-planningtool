@@ -34,7 +34,10 @@
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 <span class="sd">&quot;&quot;&quot;Contain Macro functions, that calls for Command functions located in the *Commands* module.</span>
 
-<span class="sd">Macros consists of frequently used combinations of Commands.</span>
+<span class="sd">Macros consists of frequently used combinations of Commands. Each macro (except the CCD_macro) contain a </span>
+<span class="sd">*TC_acfLimbPointingAltitudeOffset* CMD, which will stagger the next CMD by a number of seconds equal to</span>
+<span class="sd"> *Timeline_settings[&#39;pointing_stabilization&#39;] when a new pointing altitude is set, or the previously set maximum TEXPMS when the pointing altitude is unchanged. </span>
+<span class="sd">This is important as the images need time to finish their current exposure before changing the CCD settings.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 
@@ -55,7 +58,7 @@
     <span class="sd">&#39;&#39;&#39; Macro that corresponds to pointing towards a Limb altitude in Operational Mode.</span>
 <span class="sd">    </span>
 <span class="sd">    1. Set Payload to idle mode</span>
-<span class="sd">    2. Point the satellite to a limb altitide.</span>
+<span class="sd">    2. Point the satellite to *pointing_altitude*.</span>
 <span class="sd">    3. Run PM Command with given settings.</span>
 <span class="sd">    4. Run CCD Synchronize Command with calculated settings.</span>
 <span class="sd">    5. Run CCD Commands with given settings.</span>
@@ -104,7 +107,7 @@
 <span class="sd">    Has an dedicated set Exposure Interval to prevent CRB-crashes when transferring very large images.</span>
 <span class="sd">    </span>
 <span class="sd">    1. Set Payload to idle mode</span>
-<span class="sd">    2. Point the satellite to a limb altitide.</span>
+<span class="sd">    2. Point the satellite to *pointing_altitude*.</span>
 <span class="sd">    3. Start Photometers.</span>
 <span class="sd">    4. Run CCD Synchronize Command with calculated settings.</span>
 <span class="sd">    5. Run CCD Commands with given settings.</span>
@@ -147,7 +150,7 @@
     <span class="sd">&#39;&#39;&#39;Macro that corresponds to performing a sweep while in Operational Mode.</span>
 <span class="sd">    </span>
 <span class="sd">    1. Set Payload to idle mode</span>
-<span class="sd">    2. Point the satellite to a limb altitide.</span>
+<span class="sd">    2. Point the satellite to *pointing_altitude*.</span>
 <span class="sd">    3. Run PM Command with given settings.</span>
 <span class="sd">    4. Run CCD Synchronize Command with calculated settings.</span>
 <span class="sd">    5. Run CCD Commands with given settings.</span>
@@ -196,7 +199,7 @@
 
 
 <div class="viewcode-block" id="Snapshot_Inertial_macro"><a class="viewcode-back" href="../../../../../OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.html#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.Snapshot_Inertial_macro">[docs]</a><span class="k">def</span> <span class="nf">Snapshot_Inertial_macro</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCD_settings</span><span class="p">,</span> <span class="n">FreezeTime</span><span class="p">,</span> <span class="n">FreezeDuration</span><span class="p">,</span> <span class="n">pointing_altitude</span><span class="p">,</span> 
-                  <span class="n">LP_pointing_altitude</span><span class="p">,</span> <span class="n">SnapshotSpacing</span><span class="p">,</span> <span class="n">Snapshot_relativeTime</span><span class="p">,</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">comment</span><span class="p">):</span>
+                  <span class="n">StandardPointingAltitude</span><span class="p">,</span> <span class="n">SnapshotSpacing</span><span class="p">,</span> <span class="n">Snapshot_relativeTime</span><span class="p">,</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">comment</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39; Macro that corresponds to pointing towards an Inertial direction and take a Snapshot with all the CCDs (except Nadir).</span>
 <span class="sd">    </span>
 <span class="sd">    The order of the snapshots taken is determined by the CCDs TEXPMS in increasing order. This to prevent simultaneous readout.</span>
@@ -207,7 +210,7 @@
 <span class="sd">    4. Run ArgFreezeStart Command with *FreezeTime*.</span>
 <span class="sd">    5. Run ArgFreezeDuration Command with *FreezeDuration*.</span>
 <span class="sd">    7. Take a Snapshot with each CCD (except Nadir) starting at *Snapshot_relativeTime* with a spacing of *SnapshotSpacing*.</span>
-<span class="sd">    8. Point the satellite to *LP_pointing_altitude*.</span>
+<span class="sd">    8. Point the satellite to *StandardPointingAltitude*.</span>
 <span class="sd">    </span>
 <span class="sd">    Arguments:</span>
 <span class="sd">        root (lxml.etree._Element):  XML tree structure. Main container object for the ElementTree API.</span>
@@ -216,7 +219,7 @@
 <span class="sd">        FreezeTime (float): Start time of attitude freeze command in on-board time [s].</span>
 <span class="sd">        FreezeDuration (int): Duration of freeze [s].</span>
 <span class="sd">        pointing_altitude (int): The altitude of the tangential point [m].</span>
-<span class="sd">        LP_pointing_altitude (int): The altitude of the LP [m].</span>
+<span class="sd">        StandardPointingAltitude (int): The altitude of the LP [m].</span>
 <span class="sd">        SnapshotSpacing (int): The time in seconds inbetween snapshots of individual CCDs.</span>
 <span class="sd">        Snapshot_relativeTime (float): The relativeTime (time from start of timeline) at which the first Snapshot is taken.</span>
 <span class="sd">        Timeline_settings (dict): Dictionary containing the settings of the Timeline given in either the *Science_Mode_Timeline* or the *Configuration File*.</span>
@@ -245,7 +248,7 @@
         <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafCCDSnapshot</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">Snapshot_relativeTime</span><span class="p">,</span> <span class="n">CCDSEL</span> <span class="o">=</span> <span class="n">CCDSEL</span><span class="p">,</span> <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">)</span>
         <span class="n">Snapshot_relativeTime</span> <span class="o">+=</span> <span class="n">SnapshotSpacing</span>
     
-    <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">Commands</span><span class="o">.</span><span class="n">TC_acfLimbPointingAltitudeOffset</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">Initial</span> <span class="o">=</span> <span class="n">LP_pointing_altitude</span><span class="p">,</span> <span class="n">Final</span> <span class="o">=</span> <span class="n">LP_pointing_altitude</span><span class="p">,</span> <span class="n">Rate</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">)</span>
+    <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">Commands</span><span class="o">.</span><span class="n">TC_acfLimbPointingAltitudeOffset</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">Initial</span> <span class="o">=</span> <span class="n">StandardPointingAltitude</span><span class="p">,</span> <span class="n">Final</span> <span class="o">=</span> <span class="n">StandardPointingAltitude</span><span class="p">,</span> <span class="n">Rate</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">)</span>
     <span class="c1">#relativeTime = Commands.TC_pafMode(root, relativeTime, MODE = 1, Timeline_settings = Timeline_settings, comment = comment)</span>
     
     <span class="k">return</span> <span class="n">relativeTime</span></div>
@@ -324,7 +327,7 @@
     <span class="c1">#relativeTime_SnapShot = relativeTime+Timeline_settings[&#39;pointing_stabilization&#39;]</span>
     <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">Commands</span><span class="o">.</span><span class="n">TC_acfLimbPointingAltitudeOffset</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">Initial</span> <span class="o">=</span> <span class="n">pointing_altitude</span><span class="p">,</span> <span class="n">Final</span> <span class="o">=</span> <span class="n">pointing_altitude</span><span class="p">,</span> <span class="n">Rate</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">)</span>
     
-    <span class="n">CCDSEL_64</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_64&#39;</span><span class="p">]</span>
+    <span class="n">CCDSEL_64</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">64</span><span class="p">]</span>
     
     <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafCCDMain</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCDSEL</span> <span class="o">=</span> <span class="mi">64</span><span class="p">,</span> <span class="n">PWR</span> <span class="o">=</span> <span class="n">CCDSEL_64</span><span class="p">[</span><span class="s1">&#39;PWR&#39;</span><span class="p">],</span> <span class="n">WDW</span> <span class="o">=</span> <span class="n">CCDSEL_64</span><span class="p">[</span><span class="s1">&#39;WDW&#39;</span><span class="p">],</span> <span class="n">JPEGQ</span> <span class="o">=</span> <span class="n">CCDSEL_64</span><span class="p">[</span><span class="s1">&#39;JPEGQ&#39;</span><span class="p">],</span> <span class="n">SYNC</span> <span class="o">=</span> <span class="n">CCDSEL_64</span><span class="p">[</span><span class="s1">&#39;SYNC&#39;</span><span class="p">],</span> 
                                           <span class="n">TEXPIMS</span> <span class="o">=</span> <span class="n">CCDSEL_64</span><span class="p">[</span><span class="s1">&#39;TEXPIMS&#39;</span><span class="p">],</span> <span class="n">TEXPMS</span> <span class="o">=</span> <span class="n">CCDSEL_64</span><span class="p">[</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">],</span> <span class="n">GAIN</span> <span class="o">=</span> <span class="n">CCDSEL_64</span><span class="p">[</span><span class="s1">&#39;GAIN&#39;</span><span class="p">],</span> 
@@ -389,13 +392,13 @@
     
     <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;TEXPIMS: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">TEXPIMS</span><span class="p">))</span>
     
-    <span class="n">CCDSEL_16</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_16&#39;</span><span class="p">]</span>
-    <span class="n">CCDSEL_32</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_32&#39;</span><span class="p">]</span>
-    <span class="n">CCDSEL_1</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_1&#39;</span><span class="p">]</span>
-    <span class="n">CCDSEL_8</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_8&#39;</span><span class="p">]</span>
-    <span class="n">CCDSEL_2</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_2&#39;</span><span class="p">]</span>
-    <span class="n">CCDSEL_4</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_4&#39;</span><span class="p">]</span>
-    <span class="n">CCDSEL_64</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_64&#39;</span><span class="p">]</span>
+    <span class="n">CCDSEL_16</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">16</span><span class="p">]</span>
+    <span class="n">CCDSEL_32</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">32</span><span class="p">]</span>
+    <span class="n">CCDSEL_1</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">CCDSEL_8</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span>
+    <span class="n">CCDSEL_2</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">CCDSEL_4</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+    <span class="n">CCDSEL_64</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">64</span><span class="p">]</span>
     
     <span class="n">ListOfTEXPMS</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">CCD_settings</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>

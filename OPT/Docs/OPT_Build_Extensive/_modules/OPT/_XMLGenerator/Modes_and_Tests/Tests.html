@@ -52,7 +52,7 @@
 <span class="sd">        None</span>
 
 <span class="sd">When creating new Test functions it is crucial that the function name is</span>
-<span class="sd">Test_name, where Test_name is the same as the string used in the Science Mode Timeline</span>
+<span class="sd">*Test_name*, where *Test_name* is the same as the string used in the Science Mode Timeline.</span>
 
 <span class="sd">@author: David</span>
 <span class="sd">&quot;&quot;&quot;</span>
@@ -71,7 +71,7 @@
 
 
 <div class="viewcode-block" id="All_Tests"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.Tests.All_Tests">[docs]</a><span class="k">def</span> <span class="nf">All_Tests</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Limb_functional_test&#39;</span><span class="p">,</span> <span class="s1">&#39;Photometer_test_1&#39;</span><span class="p">,</span> <span class="s1">&#39;CCD_stability_test&#39;</span><span class="p">,</span> <span class="s1">&#39;Nadir_functional_test&#39;</span><span class="p">]):</span>
-    <span class="sd">&quot;&quot;&quot; Runs all the Test functions which has their function name as a string in params.</span>
+    <span class="sd">&quot;&quot;&quot; Runs all the Test functions which have their function name as a string in the input *params*.</span>
 <span class="sd">    </span>
 <span class="sd">    Allows the tests to be dynamically scheduled.</span>
 <span class="sd">    </span>
@@ -292,7 +292,7 @@
     <span class="n">Photometer_test_1_duration</span> <span class="o">=</span> <span class="n">duration</span>
     
     
-    <span class="n">pointing_altitude</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;LP_pointing_altitude&#39;</span><span class="p">]</span>
+    <span class="n">pointing_altitude</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;StandardPointingAltitude&#39;</span><span class="p">]</span>
     
     <span class="s2">&quot;Start looping the TEXPMS for the Photometer and call for macros&quot;</span>
     <span class="k">while</span><span class="p">(</span> <span class="kc">True</span> <span class="p">):</span>
@@ -350,7 +350,7 @@
     
     
     <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">CCD_macro_settings</span><span class="p">(</span><span class="s1">&#39;FullReadout&#39;</span><span class="p">)</span>
-    <span class="n">altitude</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;LP_pointing_altitude&#39;</span><span class="p">]</span>
+    <span class="n">altitude</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;StandardPointingAltitude&#39;</span><span class="p">]</span>
     
     <span class="n">ExpTimes</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;ExpTimes&#39;</span><span class="p">]</span>
     
@@ -395,12 +395,12 @@
         
         <span class="k">for</span> <span class="n">JPEGQ</span><span class="p">,</span> <span class="n">WDW</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">JPEGQs</span><span class="p">,</span> <span class="n">WDWs</span><span class="p">):</span>
             
-            <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_64&#39;</span><span class="p">][</span><span class="s1">&#39;JPEGQ&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">JPEGQ</span>
-            <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_64&#39;</span><span class="p">][</span><span class="s1">&#39;WDW&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">WDW</span>
+            <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">64</span><span class="p">][</span><span class="s1">&#39;JPEGQ&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">JPEGQ</span>
+            <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">64</span><span class="p">][</span><span class="s1">&#39;WDW&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">WDW</span>
             
             <span class="k">for</span> <span class="n">ExpTime</span> <span class="ow">in</span> <span class="n">ExpTimes</span><span class="p">:</span>
                 
-                <span class="n">CCD_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL_64&#39;</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ExpTime</span>
+                <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">64</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ExpTime</span>
                 
                 <span class="c1">############################################################################</span>
                 <span class="c1">########################## Orbit simulator #################################</span>

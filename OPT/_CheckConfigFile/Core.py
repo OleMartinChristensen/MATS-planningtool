@@ -108,18 +108,19 @@ def CheckConfigFile():
             if not( Operational_Science_Mode_settings[key] in ['CustomBinning', 'HighResUV', 'HighResIR', 'LowPixel', 'FullReadout', 'BinnedCalibration']):
                 Logger.error('Operational_Science_Mode_settings["Choose_Mode5CCDMacro"]')
                 raise ValueError
+        
         else:
-            if not( Operational_Science_Mode_settings[key] > 0 and type(Operational_Science_Mode_settings[key]) == int ):
-                Logger.error('Operational_Science_Mode_settings')
-                raise ValueError
             if( key == 'timestep'):
                 if not( Operational_Science_Mode_settings[key] < 50):
                     Logger.error('Operational_Science_Mode_settings["timestep"]')
                     raise ValueError
-            if( key == 'lat'):
+            elif( key == 'lat'):
                 if not( 0 <= Operational_Science_Mode_settings[key] <= 90):
                     Logger.error('Operational_Science_Mode_settings["lat"]')
                     raise ValueError
+            elif not( Operational_Science_Mode_settings[key] > 0 and type(Operational_Science_Mode_settings[key]) == int ):
+                Logger.error('Operational_Science_Mode_settings')
+                raise ValueError
         
                 
     #if not( 10000 <= Mode5_settings['pointing_altitude'] <= 300000 and type(Mode5_settings['pointing_altitude']) == int ):

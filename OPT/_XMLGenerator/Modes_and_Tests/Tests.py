@@ -19,7 +19,7 @@ Functions on the form "X", where the last X is any Test:
         None
 
 When creating new Test functions it is crucial that the function name is
-Test_name, where Test_name is the same as the string used in the Science Mode Timeline
+*Test_name*, where *Test_name* is the same as the string used in the Science Mode Timeline.
 
 @author: David
 """
@@ -38,7 +38,7 @@ Logger = logging.getLogger(OPT_Config_File.Logger_name())
 
 
 def All_Tests(root, date, duration, relativeTime, Timeline_settings, params = ['Limb_functional_test', 'Photometer_test_1', 'CCD_stability_test', 'Nadir_functional_test']):
-    """ Runs all the Test functions which has their function name as a string in params.
+    """ Runs all the Test functions which have their function name as a string in the input *params*.
     
     Allows the tests to be dynamically scheduled.
     
@@ -362,12 +362,12 @@ def Nadir_functional_test(root, date, duration, relativeTime, Timeline_settings,
         
         for JPEGQ, WDW in zip(JPEGQs, WDWs):
             
-            CCD_settings['CCDSEL_64']['JPEGQ'] = JPEGQ
-            CCD_settings['CCDSEL_64']['WDW'] = WDW
+            CCD_settings[64]['JPEGQ'] = JPEGQ
+            CCD_settings[64]['WDW'] = WDW
             
             for ExpTime in ExpTimes:
                 
-                CCD_settings['CCDSEL_64']['TEXPMS'] = ExpTime
+                CCD_settings[64]['TEXPMS'] = ExpTime
                 
                 ############################################################################
                 ########################## Orbit simulator #################################

@@ -33,6 +33,8 @@
             
   <div class="section" id="module-OPT._XMLGenerator.Modes_and_Tests.Macros_Commands">
 <span id="opt-xmlgenerator-modes-and-tests-macros-commands-package"></span><h1>OPT._XMLGenerator.Modes_and_Tests.Macros_Commands package<a class="headerlink" href="#module-OPT._XMLGenerator.Modes_and_Tests.Macros_Commands" title="Permalink to this headline">¶</a></h1>
+<p>In this package are all the CMDs defined as in the &quot;InnoSat Payload Timeline XML Defintion&quot; document.</p>
+<p>The <em>Macros</em> module contain function which define frequently used combination of CMDs.</p>
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </div>
@@ -51,7 +53,7 @@ Also checks if parameters given are valid for the CMDs.</p>
 <p><strong>comment</strong> (<em>str</em>): A comment regarding the CMD.</p>
 </dd>
 <dt><strong>Returns:</strong></dt><dd><p><strong>incremented_time</strong> (<em>int</em>) = The scheduled relativeTime of the command increased by a number equal to <em>Timeline.settings()['CMD_separation']</em>.
-This to prevent the command buffer on the satellite from overloading. Note: When <em>TC_acfLimbPointingAltitudeOffset</em> is scheduled with Rate = '0', relativeTime is increased by <a href="#id1"><span class="problematic" id="id2">*</span></a>Timeline_settings['pointing_stabilization'].</p>
+This to prevent the command buffer on the satellite from overloading. Note: Exception to this is when <em>TC_acfLimbPointingAltitudeOffset</em> is scheduled.</p>
 </dd>
 </dl>
 </div></blockquote>
@@ -152,7 +154,12 @@ Otherwise if Rate == 0 a delay equal to <em>Timeline_settings['pointing_stabiliz
 <div class="section" id="module-OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros">
 <span id="opt-xmlgenerator-modes-and-tests-macros-commands-macros-module"></span><h2>OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros module<a class="headerlink" href="#module-OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros" title="Permalink to this headline">¶</a></h2>
 <p>Contain Macro functions, that calls for Command functions located in the <em>Commands</em> module.</p>
-<p>Macros consists of frequently used combinations of Commands.</p>
+<p>Macros consists of frequently used combinations of Commands. Each macro (except the CCD_macro) contain a
+<em>TC_acfLimbPointingAltitudeOffset</em> CMD, which will stagger the next CMD by a number of seconds equal to</p>
+<blockquote>
+<div><p><a href="#id1"><span class="problematic" id="id2">*</span></a>Timeline_settings['pointing_stabilization'] when a new pointing altitude is set, or the previously set maximum TEXPMS when the pointing altitude is unchanged.</p>
+</div></blockquote>
+<p>This is important as the images need time to finish their current exposure before changing the CCD settings.</p>
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.CCD_macro">
 <code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.</code><code class="descname">CCD_macro</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>CCD_settings</em>, <em>TEXPIMS</em>, <em>Timeline_settings</em>, <em>comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Macros.html#CCD_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.CCD_macro" title="Permalink to this definition">¶</a></dt>
@@ -216,7 +223,7 @@ TEXPIMS for all the CCDs except nadir is set to the same value to allow Synchron
 <dd><p>Macro that corresponds to pointing towards a Limb altitude in Operational Mode.</p>
 <ol class="arabic simple">
 <li><p>Set Payload to idle mode</p></li>
-<li><p>Point the satellite to a limb altitide.</p></li>
+<li><p>Point the satellite to <em>pointing_altitude</em>.</p></li>
 <li><p>Run PM Command with given settings.</p></li>
 <li><p>Run CCD Synchronize Command with calculated settings.</p></li>
 <li><p>Run CCD Commands with given settings.</p></li>
@@ -248,7 +255,7 @@ TEXPIMS for all the CCDs except nadir is set to the same value to allow Synchron
 <dd><p>Macro that corresponds to performing a sweep while in Operational Mode.</p>
 <ol class="arabic simple">
 <li><p>Set Payload to idle mode</p></li>
-<li><p>Point the satellite to a limb altitide.</p></li>
+<li><p>Point the satellite to <em>pointing_altitude</em>.</p></li>
 <li><p>Run PM Command with given settings.</p></li>
 <li><p>Run CCD Synchronize Command with calculated settings.</p></li>
 <li><p>Run CCD Commands with given settings.</p></li>
@@ -279,7 +286,7 @@ TEXPIMS for all the CCDs except nadir is set to the same value to allow Synchron
 
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.Snapshot_Inertial_macro">
-<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.</code><code class="descname">Snapshot_Inertial_macro</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>CCD_settings</em>, <em>FreezeTime</em>, <em>FreezeDuration</em>, <em>pointing_altitude</em>, <em>LP_pointing_altitude</em>, <em>SnapshotSpacing</em>, <em>Snapshot_relativeTime</em>, <em>Timeline_settings</em>, <em>comment</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Macros.html#Snapshot_Inertial_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.Snapshot_Inertial_macro" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.</code><code class="descname">Snapshot_Inertial_macro</code><span class="sig-paren">(</span><em>root</em>, <em>relativeTime</em>, <em>CCD_settings</em>, <em>FreezeTime</em>, <em>FreezeDuration</em>, <em>pointing_altitude</em>, <em>StandardPointingAltitude</em>, <em>SnapshotSpacing</em>, <em>Snapshot_relativeTime</em>, <em>Timeline_settings</em>, <em>comment</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Macros.html#Snapshot_Inertial_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.Snapshot_Inertial_macro" title="Permalink to this definition">¶</a></dt>
 <dd><p>Macro that corresponds to pointing towards an Inertial direction and take a Snapshot with all the CCDs (except Nadir).</p>
 <p>The order of the snapshots taken is determined by the CCDs TEXPMS in increasing order. This to prevent simultaneous readout.</p>
 <ol class="arabic simple">
@@ -290,7 +297,7 @@ TEXPIMS for all the CCDs except nadir is set to the same value to allow Synchron
 </ol>
 <p>5. Run ArgFreezeDuration Command with <em>FreezeDuration</em>.
 7. Take a Snapshot with each CCD (except Nadir) starting at <em>Snapshot_relativeTime</em> with a spacing of <em>SnapshotSpacing</em>.
-8. Point the satellite to <em>LP_pointing_altitude</em>.</p>
+8. Point the satellite to <em>StandardPointingAltitude</em>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -300,7 +307,7 @@ TEXPIMS for all the CCDs except nadir is set to the same value to allow Synchron
 <li><p><strong>FreezeTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) -- Start time of attitude freeze command in on-board time [s].</p></li>
 <li><p><strong>FreezeDuration</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- Duration of freeze [s].</p></li>
 <li><p><strong>pointing_altitude</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- The altitude of the tangential point [m].</p></li>
-<li><p><strong>LP_pointing_altitude</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- The altitude of the LP [m].</p></li>
+<li><p><strong>StandardPointingAltitude</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- The altitude of the LP [m].</p></li>
 <li><p><strong>SnapshotSpacing</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- The time in seconds inbetween snapshots of individual CCDs.</p></li>
 <li><p><strong>Snapshot_relativeTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) -- The relativeTime (time from start of timeline) at which the first Snapshot is taken.</p></li>
 <li><p><strong>Timeline_settings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) -- Dictionary containing the settings of the Timeline given in either the <em>Science_Mode_Timeline</em> or the <em>Configuration File</em>.</p></li>
@@ -373,7 +380,6 @@ TEXPIMS for all the CCDs except nadir is set to the same value to allow Synchron
 <li class="toctree-l2 current"><a class="reference internal" href="OPT.html#subpackages">Subpackages</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="OPT._CheckConfigFile.html">OPT._CheckConfigFile package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="OPT._DataPlotter.html">OPT._DataPlotter package</a></li>
-<li class="toctree-l3"><a class="reference internal" href="OPT._MinimalScienceXMLGenerator.html">OPT._MinimalScienceXMLGenerator package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="OPT._Plot_Timeline_Plotter_Plots.html">OPT._Plot_Timeline_Plotter_Plots package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="OPT._TimelineAnalyzer.html">OPT._TimelineAnalyzer package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="OPT._TimelineGenerator.html">OPT._TimelineGenerator package</a></li>

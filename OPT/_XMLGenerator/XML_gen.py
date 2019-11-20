@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
-"""Creates the base of the XML-tree and calculates initial values such as the 
-start and end time and also duration of the timeline. Then goes through the 
-supplied Science Mode Timeline List chronologically and calls for the corresponding function in one of the modules located in the *Modes_and_Tests* package. \n
+"""This module contains the core function of the *XML_gen* program and the first subfunction of *XML_gen*.
 
-Any settings given in the *Science Mode Timeline* file will overide the use of the same settings stated in set *Configuration File*.
+In this module is the base of the XML-tree defined and initial values such as the 
+start and end time and also duration of the timeline are calculated. Goes through the 
+supplied *Science Mode Timeline* List chronologically and calls for the corresponding function in one of the modules located in the *Modes_and_Tests* subpackage. \n
+
+Any settings given in the *Science Mode Timeline* file will overide the use of the same settings stated in the set *Configuration File*.
 
 All CMDs are stated in the "InnoSat Payload Timeline XML Defintion" document. 
 
@@ -13,7 +15,7 @@ These functions then uses the settings given in the *Science Mode Timeline* or i
 
 Then they either call directly for a Command function, located in the *Commands* module, inside the *Macros_Commands* package, or call for a Macro function located in the *Macros* module, inside the *Macros_Commands* package.
 
-A Macro is a combination of commonly used CMDs. For more information seee the *Macros* module inside the *Macros_Commands* package.
+A Macro is a combination of commonly used CMDs. For more information see the *Macros* module inside the *Macros_Commands* package.
 
 **Adding your own Mode:** \n
 
@@ -240,17 +242,17 @@ def XML_Initial_Basis_Creator(timeline_start,timeline_duration, SCIMOD_Path):
 ####################### Mode selecter ###################################
 
 def XML_generator_select(name, root, date, duration, relativeTime, params, Timeline_settings):
-    '''Subfunction, Selects corresponding mode, test or CMD function in the package *Modes_and_Tests* from the variable *mode*.
+    '''Subfunction, Selects corresponding mode, test or CMD function in the package *Modes_and_Tests* from the variable *name*.
     
     Calls for any function named *X* in the modules *MODES*, *SeparateCmds*, and *Tests*, where X is the string in the input *name*.
     
     Arguments: 
         name (str): The name of the of the mode or test as a string. The name in the XML_generator_name function in OPT_XML_generator_MODES
         root (lxml.etree.Element): XML tree structure. Main container object for the ElementTree API.
-        date (ephem.Date) = Starting date of the Mode. On the form of the ephem.Date class.
-        duration (int) = The duration of the mode [s] as an integer class.
-        relativeTime (int) = The starting time of the mode with regard to the start of the timeline [s] as an integer class
-        params (dict) = Dictionary containing the parameters of the Mode, CMD, or Test given in the Science_Mode_Timeline. 
+        date (ephem.Date): Starting date of the Mode. On the form of the ephem.Date class.
+        duration (int): The duration of the mode [s] as an integer class.
+        relativeTime (int): The starting time of the mode with regard to the start of the timeline [s] as an integer class
+        params (dict): Dictionary containing the parameters of the Mode, CMD, or Test given in the Science_Mode_Timeline. 
     
     Returns:
         None

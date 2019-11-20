@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 """Contain Macro functions, that calls for Command functions located in the *Commands* module.
 
-Macros consists of frequently used combinations of Commands.
+Macros consists of frequently used combinations of Commands. Each macro (except the CCD_macro) contain a 
+*TC_acfLimbPointingAltitudeOffset* CMD, which will stagger the next CMD by a number of seconds equal to
+ *Timeline_settings['pointing_stabilization'] when a new pointing altitude is set, or the previously set maximum TEXPMS when the pointing altitude is unchanged. 
+This is important as the images need time to finish their current exposure before changing the CCD settings.
 
 """
 
@@ -22,7 +25,7 @@ def Operational_Limb_Pointing_macro(root, relativeTime, CCD_settings, PM_setting
     ''' Macro that corresponds to pointing towards a Limb altitude in Operational Mode.
     
     1. Set Payload to idle mode
-    2. Point the satellite to a limb altitide.
+    2. Point the satellite to *pointing_altitude*.
     3. Run PM Command with given settings.
     4. Run CCD Synchronize Command with calculated settings.
     5. Run CCD Commands with given settings.
@@ -71,7 +74,7 @@ def FullReadout_Operational_Limb_Pointing_macro(root, relativeTime, CCD_settings
     Has an dedicated set Exposure Interval to prevent CRB-crashes when transferring very large images.
     
     1. Set Payload to idle mode
-    2. Point the satellite to a limb altitide.
+    2. Point the satellite to *pointing_altitude*.
     3. Start Photometers.
     4. Run CCD Synchronize Command with calculated settings.
     5. Run CCD Commands with given settings.
@@ -114,7 +117,7 @@ def Operational_Sweep_macro(root, relativeTime, CCD_settings, PM_settings, point
     '''Macro that corresponds to performing a sweep while in Operational Mode.
     
     1. Set Payload to idle mode
-    2. Point the satellite to a limb altitide.
+    2. Point the satellite to *pointing_altitude*.
     3. Run PM Command with given settings.
     4. Run CCD Synchronize Command with calculated settings.
     5. Run CCD Commands with given settings.
@@ -291,7 +294,7 @@ def NadirSnapshot_Limb_Pointing_macro(root, relativeTime, CCD_settings, pointing
     #relativeTime_SnapShot = relativeTime+Timeline_settings['pointing_stabilization']
     relativeTime = Commands.TC_acfLimbPointingAltitudeOffset(root, relativeTime, Initial = pointing_altitude, Final = pointing_altitude, Rate = 0, Timeline_settings = Timeline_settings, comment = comment)
     
-    CCDSEL_64 = CCD_settings['CCDSEL_64']
+    CCDSEL_64 = CCD_settings[64]
     
     relativeTime = Commands.TC_pafCCDMain(root, relativeTime, CCDSEL = 64, PWR = CCDSEL_64['PWR'], WDW = CCDSEL_64['WDW'], JPEGQ = CCDSEL_64['JPEGQ'], SYNC = CCDSEL_64['SYNC'], 
                                           TEXPIMS = CCDSEL_64['TEXPIMS'], TEXPMS = CCDSEL_64['TEXPMS'], GAIN = CCDSEL_64['GAIN'], 
@@ -356,13 +359,13 @@ def CCD_macro(root, relativeTime, CCD_settings, TEXPIMS, Timeline_settings, comm
     
     Logger.debug('TEXPIMS: '+str(TEXPIMS))
     
-    CCDSEL_16 = CCD_settings['CCDSEL_16']
-    CCDSEL_32 = CCD_settings['CCDSEL_32']
-    CCDSEL_1 = CCD_settings['CCDSEL_1']
-    CCDSEL_8 = CCD_settings['CCDSEL_8']
-    CCDSEL_2 = CCD_settings['CCDSEL_2']
-    CCDSEL_4 = CCD_settings['CCDSEL_4']
-    CCDSEL_64 = CCD_settings['CCDSEL_64']
+    CCDSEL_16 = CCD_settings[16]
+    CCDSEL_32 = CCD_settings[32]
+    CCDSEL_1 = CCD_settings[1]
+    CCDSEL_8 = CCD_settings[8]
+    CCDSEL_2 = CCD_settings[2]
+    CCDSEL_4 = CCD_settings[4]
+    CCDSEL_64 = CCD_settings[64]
     
     ListOfTEXPMS = []
     for key in CCD_settings.keys():

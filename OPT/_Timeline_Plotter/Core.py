@@ -91,7 +91,7 @@ def Timeline_Plotter(Science_Mode_Path, OHB_H5_Path, STK_CSV_FILE, Timestep):
         
         
         
-        "Parameters need to allow synchronization of the simulation to the timestamps of the OHB data"
+        "Parameters needed to allow synchronization of the simulation to the timestamps of the OHB data"
         Timestamp_fraction_of_second = Time_State_OHB[0]- int(Time_State_OHB[0])
         timestep_OHB_data = Time_State_OHB[1+OHB_StartIndex] - Time_State_OHB[OHB_StartIndex]
         
@@ -261,19 +261,15 @@ def Simulator( ScienceMode, Timestamp_fraction_of_second, Timestep, Timeline_set
         
         if( ModeName == 'Mode120'):
             Color = (0,1,0)
-            CCD_settings = OPT_Config_File.CCD_macro_settings('FullReadout')
         elif( ModeName == 'Mode121'):
             Color = (0,1,0.5)
-            CCD_settings = OPT_Config_File.CCD_macro_settings('FullReadout')
         elif( ModeName == 'Mode122'):
             Color = (0,1,1)
-            CCD_settings = OPT_Config_File.CCD_macro_settings('BinnedCalibration')
         elif( ModeName == 'Mode123'):
             Color = (0.5,0,0)
-            CCD_settings = OPT_Config_File.CCD_macro_settings('LowPixel')
         elif( ModeName == 'Mode124'):
             Color = (0.5,0,0.5)
-            CCD_settings = OPT_Config_File.CCD_macro_settings('FullReadout')
+            
         
         
     elif( ModeName == 'Mode1' or ModeName == 'Mode2' or ModeName ==  'Mode5' ):
@@ -383,6 +379,7 @@ def Simulator( ScienceMode, Timestamp_fraction_of_second, Timestep, Timeline_set
     
     MATS_skyfield = EarthSatellite(TLE[0], TLE[1])
     
+    "Start of Simulation"
     for t in range(timesteps):
         
         t = t
@@ -403,10 +400,10 @@ def Simulator( ScienceMode, Timestamp_fraction_of_second, Timestep, Timeline_set
                     pointing_altitude += sweep_rate * Timestep
                 elif( pointing_altitude_to >= pointing_altitude):
                     pointing_altitude = pointing_altitude_to
-        #Looking at StandardPointingAltitude after attitude freeze for Mode12X
+        #Looking at StandardPointingAltitude after attitude freeze for Mode12X"
         elif( Simulator_Select == 'Mode12X' and t*Timestep >= freeze_duration+freeze_start):
             pointing_altitude = Timeline_settings['StandardPointingAltitude']
-        #Looking at pointing_altitude
+        #Looking at pointing_altitude"
         else:
             pass
             
@@ -560,54 +557,7 @@ def Simulator( ScienceMode, Timestamp_fraction_of_second, Timestep, Timeline_set
         Data_LP['r_LP'].append(r_LP[t])
         Data_LP['r_LP_ECEF'].append(r_LP_ECEF[t])
         
-        """
         
-        Data_MATS['lat_MATS'].append(lat_MATS[t])
-        Data_MATS['long_MATS'].append(long_MATS[t])
-        Data_MATS['alt_MATS'].append(alt_MATS[t]*1000)
-        
-        Data_MATS['x_MATS'].append(r_MATS[t][0]*1000)
-        Data_MATS['x_MATS_ECEF'].append(r_MATS_ECEF[t][0]*1000)
-        Data_MATS['y_MATS'].append(r_MATS[t][1]*1000)
-        Data_MATS['y_MATS_ECEF'].append(r_MATS_ECEF[t][1]*1000)
-        Data_MATS['z_MATS'].append(r_MATS[t][2]*1000)
-        Data_MATS['z_MATS_ECEF'].append(r_MATS_ECEF[t][2]*1000)
-        
-        Data_MATS['x_normal_orbit'].append(normal_orbit[t][0])
-        Data_MATS['x_normal_orbit_ECEF'].append(normal_orbit_ECEF[t][0])
-        Data_MATS['y_normal_orbit'].append(normal_orbit[t][1])
-        Data_MATS['y_normal_orbit_ECEF'].append(normal_orbit_ECEF[t][1])
-        Data_MATS['z_normal_orbit'].append(normal_orbit[t][2])
-        Data_MATS['z_normal_orbit_ECEF'].append(normal_orbit_ECEF[t][2])
-        
-        Data_MATS['vx_MATS'].append(v_MATS[t][0])
-        Data_MATS['vx_MATS_ECEF'].append(v_MATS_ECEF[t][0])
-        Data_MATS['vy_MATS'].append(v_MATS[t][1])
-        Data_MATS['vy_MATS_ECEF'].append(v_MATS_ECEF[t][1])
-        Data_MATS['vz_MATS'].append(v_MATS[t][2])
-        Data_MATS['vz_MATS_ECEF'].append(v_MATS_ECEF[t][2])
-        
-        Data_MATS['x_optical_axis'].append(optical_axis[t][0])
-        Data_MATS['x_optical_axis_ECEF'].append(optical_axis_ECEF[t][0])
-        Data_MATS['y_optical_axis'].append(optical_axis[t][1])
-        Data_MATS['y_optical_axis_ECEF'].append(optical_axis_ECEF[t][1])
-        Data_MATS['z_optical_axis'].append(optical_axis[t][2])
-        Data_MATS['z_optical_axis_ECEF'].append(optical_axis_ECEF[t][2])
-        
-        Data_MATS['yaw_MATS'].append(yaw_offset_angle[t])
-        Data_MATS['pitch_MATS'].append(pitch_MATS[t])
-        
-        Data_MATS['optical_axis_RA'].append(RA_optical_axis[t])
-        Data_MATS['optical_axis_Dec'].append(Dec_optical_axis[t])
-        
-        Data_LP['lat_LP'].append(lat_LP[t])
-        Data_LP['long_LP'].append(long_LP[t])
-        Data_LP['alt_LP'].append(alt_LP[t])
-        
-        Data_LP['x_LP_ECEF'].append(r_LP_ECEF[t][0])
-        Data_LP['y_LP_ECEF'].append(r_LP_ECEF[t][1])
-        Data_LP['z_LP_ECEF'].append(r_LP_ECEF[t][2])
-        """
         Time.append(current_time_datetime)
     
     
@@ -768,20 +718,7 @@ def Plotter(Data_MATS, Data_LP, Time, DataIndexStep, OHB_StartIndex, OHB_H5_Path
             
             #current_time_attitude.append(datetime.datetime(1980,1,6)+datetime.timedelta(seconds = Time_Attitude_OHB_float[t,0]-18) )
             
-            """
-            r_MATS_OHB[t,0] = x_MATS_OHB[t_OHB] 
-            r_MATS_OHB[t,1] = y_MATS_OHB[t_OHB] 
-            r_MATS_OHB[t,2] = z_MATS_OHB[t_OHB] 
             
-            Vel_MATS_OHB[t,0] = vel_x_MATS_OHB[t_OHB] 
-            Vel_MATS_OHB[t,1] = vel_y_MATS_OHB[t_OHB] 
-            Vel_MATS_OHB[t,2] = vel_z_MATS_OHB[t_OHB] 
-            
-            q1_MATS_OHB[t,0] = quat1_MATS_OHB[t_OHB]
-            q2_MATS_OHB[t,0] = quat2_MATS_OHB[t_OHB]
-            q3_MATS_OHB[t,0] = quat3_MATS_OHB[t_OHB]
-            q4_MATS_OHB[t,0] = quat4_MATS_OHB[t_OHB]
-            """
             
             r_MATS_OHB[t,0] = x_MATS_OHB[t_OHB_state] 
             r_MATS_OHB[t,1] = y_MATS_OHB[t_OHB_state] 

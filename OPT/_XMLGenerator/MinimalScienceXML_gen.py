@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-"""Creates a minimal Science XML file with set Commands with arguments taken from the *Configuration File
-
-A minimal Science XML consists of CCDBIAS, CCDFlushBadColumns, CCDBadColumns, and a Operational_Limb_Pointing macro with HighResIR as the CCD_macro.
+"""Contains the core function of the *MinimalScienceXMLGenerator*, 
+which creates a minimal Science XML file with set Commands with arguments taken from the chosen *Configuration File*.
 
 """
 from lxml import etree
@@ -17,6 +16,12 @@ Logger = logging.getLogger(OPT_Config_File.Logger_name())
 
 def MinimalScienceXMLGenerator():
     """The Core function of *MinimalScienceXML_gen* part of *OPT*.
+    
+    The generated XML will: \n
+        1. Run TC_pafCCDBIAS
+        2. Run TC_pafCCDFlushBadColumns
+        3. Run TC_pafCCDBadColumn
+        4. Run Operational_Limb_Pointing_macro with CCD_macro equal to 'HighResIR'.
     
     """
     
