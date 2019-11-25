@@ -393,13 +393,13 @@ def TC_pafCCDMain(root, relativeTime, CCDSEL, PWR, TEXPMS, TEXPIMS, NRSKIP, NRBI
     if not( (0 <= WDW <= 7 or WDW == 128) and type(WDW) == int ):
         Logger.error('Invalid argument: WDW')
         raise ValueError
-    if( WDW == 7 and JPEGQ <= 100):
-        Logger.error('Invalid argument: WDW == 7, but JPEGQ <= 100')
-        raise ValueError
-    if( 0 <= WDW <= 4 and JPEGQ >= 101):
-        Logger.error('Invalid argument: 0 <= WDW <= 4, but JPEGQ >= 101')
-        raise ValueError
-    if not( 0 <= JPEGQ <= 255 and type(JPEGQ) == int ):
+    #if( WDW == 7 and JPEGQ <= 100):
+    #    Logger.error('Invalid argument: WDW == 7, but JPEGQ <= 100')
+    #    raise ValueError
+    #if( 0 <= WDW <= 4 and JPEGQ >= 101):
+    #    Logger.error('Invalid argument: 0 <= WDW <= 4, but JPEGQ >= 101')
+    #    raise ValueError
+    if not( 0 <= JPEGQ <= 100 and type(JPEGQ) == int ):
         Logger.error('Invalid argument: JPEGQ')
         raise ValueError
     if not( 0 <= GAIN <= 7 and type(GAIN) == int ):

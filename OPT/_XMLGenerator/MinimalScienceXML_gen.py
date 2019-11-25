@@ -25,16 +25,16 @@ def MinimalScienceXMLGenerator():
     
     """
     
-    ######## Try to Create a directory for storage of output files #######
+    "######## Try to Create a directory for storage of output files #######"
     try:
         os.mkdir('Output')
     except:
         pass
     
-    ############# Set up Logger #################################
+    "############# Set up Logger #################################"
     _Library.SetupLogger(OPT_Config_File.Logger_name())
     
-    ############# Get Settings from the Configuration File #########
+    "############# Get Settings from the Configuration File #########"
     CCDBIAS_settings = OPT_Config_File.CCDBIAS_settings()
     CCDFlushBadColumns_settings = OPT_Config_File.CCDFlushBadColumns_settings()
     CCDBadColumn_settings = OPT_Config_File.CCDBadColumn_settings()
@@ -42,12 +42,10 @@ def MinimalScienceXMLGenerator():
     CCD_settings = OPT_Config_File.CCD_macro_settings('HighResIR')
     PM_settings = OPT_Config_File.PM_settings()
     
-    ######## SET CMD separation to 2 sek #################
+    "######## SET CMD separation to 2 sek #################"
     Timeline_settings['CMD_separation'] = 2
     
-    ################### XML-tree basis creator ####################################
-    
-    
+    "################### XML-tree basis creator ####################################"
     
     root = etree.Element('InnoSatTimeline', originator='OHB', sdbVersion='9.5.99.2')
     
@@ -74,11 +72,10 @@ def MinimalScienceXMLGenerator():
     
     root.append(etree.Element('listOfCommands'))
     
+    "####################### End of XML-tree basis creator #############################"
     
-    ####################### End of XML-tree basis creator #############################
     
-    
-    ####################### Minimum Science CMDs ######################################
+    "####################### Minimum Science CMDs ######################################"
     
     relativeTime = Commands.TC_pafCCDBIAS(root, relativeTime = 1, CCDSEL = CCDBIAS_settings['CCDSEL'], VGATE = CCDBIAS_settings['VGATE'], 
                            VSUBST = CCDBIAS_settings['VSUBST'], VRD = CCDBIAS_settings['VRD'], VOD = CCDBIAS_settings['VOD'], 
@@ -94,13 +91,14 @@ def MinimalScienceXMLGenerator():
     relativeTime = Macros.Operational_Limb_Pointing_macro(root, relativeTime, CCD_settings, PM_settings,
                                            pointing_altitude = Timeline_settings['StandardPointingAltitude'], Timeline_settings = Timeline_settings)
     
+    
     "Update duration in the Timeline"
     root[0][2][1].text = str(relativeTime + Timeline_settings['mode_separation'])
     
-    ####################### End of Minimum Science CMDs ################################
+    "####################### End of Minimum Science CMDs ################################"
     
     
-    ### Write finished XML-tree with all commands to a file #######
+    "### Write finished XML-tree with all commands to a file #######"
     XML_TIMELINE = os.path.join('Output','XML_TIMELINE__MinimalScience_.xml')
     Logger.info('Write XML-tree to: '+XML_TIMELINE)
     f = open(XML_TIMELINE, 'w')

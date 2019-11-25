@@ -319,7 +319,7 @@
         
         <span class="s2">&quot;To be able to make time skips when the moon is far outside the orbital plane of MATS&quot;</span>
         <span class="k">if</span><span class="p">(</span> <span class="p">(</span><span class="n">angle_between_orbital_plane_and_moon</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">H_offset</span> <span class="ow">and</span> <span class="n">yaw_correction</span> <span class="o">==</span> <span class="kc">False</span><span class="p">)</span> <span class="ow">or</span> 
-           <span class="n">angle_between_orbital_plane_and_moon</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">H_offset</span><span class="o">+</span><span class="mf">3.8</span> <span class="ow">and</span> <span class="n">yaw_correction</span> <span class="o">==</span> <span class="kc">True</span><span class="p">):</span>
+           <span class="n">angle_between_orbital_plane_and_moon</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">H_offset</span><span class="o">+</span><span class="nb">abs</span><span class="p">(</span><span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;yaw_amplitude&#39;</span><span class="p">])</span> <span class="ow">and</span> <span class="n">yaw_correction</span> <span class="o">==</span> <span class="kc">True</span><span class="p">):</span>
             
             
             <span class="n">current_time</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">current_time</span><span class="o">+</span><span class="n">ephem</span><span class="o">.</span><span class="n">second</span> <span class="o">*</span> <span class="n">H_offset</span><span class="o">/</span><span class="mi">4</span> <span class="o">/</span> <span class="mi">360</span> <span class="o">*</span> <span class="n">Moon_orbital_period</span><span class="p">)</span>
@@ -479,10 +479,10 @@
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -504,7 +504,7 @@
       &copy;2019, David Skånberg.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

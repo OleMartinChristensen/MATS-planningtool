@@ -38,7 +38,6 @@
 <div><ul class="simple">
 <li><p>Copy_ConfigFile</p></li>
 <li><p>Set_ConfigFile</p></li>
-<li><p>SetTLE</p></li>
 <li><p>CheckConfigFile</p></li>
 <li><p>Timeline_gen</p></li>
 <li><p>XML_gen</p></li>
@@ -94,17 +93,19 @@ Generated logs are saved in folders created in the working directory.</p>
 <em>Operational Science Modes</em> (Mode 1,2,5) are scheduled whenever time is available (after the scheduling of <em>Calibration Modes</em>) and only 1 <em>Operational Science Mode</em> is scheduled per Timeline.</p>
 <dl class="function">
 <dt id="OPT.CheckConfigFile">
-<code class="descclassname">OPT.</code><code class="descname">CheckConfigFile</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#CheckConfigFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.CheckConfigFile" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">OPT.</code><code class="sig-name descname">CheckConfigFile</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#CheckConfigFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.CheckConfigFile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Checks the values of the settings in the <em>Configuration File</em> chosen with <em>Set_ConfigFile</em>.</p>
 <p>Also prints out the currently selected <em>Configuration File</em> and which starting date and TLE it currently uses.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="OPT.Copy_ConfigFile">
-<code class="descclassname">OPT.</code><code class="descname">Copy_ConfigFile</code><span class="sig-paren">(</span><em>Config_File_Name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#Copy_ConfigFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.Copy_ConfigFile" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">OPT.</code><code class="sig-name descname">Copy_ConfigFile</code><span class="sig-paren">(</span><em class="sig-param">Config_File_Name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#Copy_ConfigFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.Copy_ConfigFile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Makes a copy of the <em>_ConfigFile</em> located in <em>Operational_Planning_Tool</em>.</p>
 <p>The copy is created in the working directory of the user call and can be freely modified.
-Do not forget to also use <em>Set_ConfigFile</em> to choose your specific copy.</p>
+Do not forget to also use <em>Set_ConfigFile</em> to choose your specific copy.
+<em>_ConfigFile</em> is imagined to contain the default settings of the program, while each copy contains week specific settings.
+If the default <em>_ConfigFile</em> is ever changed it is recommended to change the Version Name of it to keep track of changes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>Config_File_Name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- The name of the newly created copy of the <em>_ConfigFile</em> (excluding <em>.py</em>).</p>
@@ -117,7 +118,7 @@ Do not forget to also use <em>Set_ConfigFile</em> to choose your specific copy.<
 
 <dl class="function">
 <dt id="OPT.Data_Plotter">
-<code class="descclassname">OPT.</code><code class="descname">Data_Plotter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#Data_Plotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.Data_Plotter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">OPT.</code><code class="sig-name descname">Data_Plotter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#Data_Plotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.Data_Plotter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Invokes the <em>Data_Plotter</em> program part of <em>Operational_Planning_Tool</em>.</p>
 <p>Simulates the position and attitude of MATS during normal operation and compares it to
 the actual positional and attitude data given in a data set. Plots both the simulated data and given data.</p>
@@ -132,7 +133,7 @@ the actual positional and attitude data given in a data set. Plots both the simu
 
 <dl class="function">
 <dt id="OPT.MinimalScienceXML_gen">
-<code class="descclassname">OPT.</code><code class="descname">MinimalScienceXML_gen</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#MinimalScienceXML_gen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.MinimalScienceXML_gen" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">OPT.</code><code class="sig-name descname">MinimalScienceXML_gen</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#MinimalScienceXML_gen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.MinimalScienceXML_gen" title="Permalink to this definition">¶</a></dt>
 <dd><p>Invokes the <em>MinimalScienceXML_gen</em> part of the <em>OPT</em>.</p>
 <p>Creates an .xml file with fixed CMDs which  purpose is to be uploaded to the satellite
 following unscheduled power termination of the payload.
@@ -143,7 +144,7 @@ Uses settings for the CMDs from the currently set <em>Configuration File</em>.</
 
 <dl class="function">
 <dt id="OPT.Plot_Timeline_Plotter_Plots">
-<code class="descclassname">OPT.</code><code class="descname">Plot_Timeline_Plotter_Plots</code><span class="sig-paren">(</span><em>FigureDirectory, FilesToPlot=['ActiveScienceMode', 'Yaw', 'Pitch', 'Roll', 'Lat', 'Long', 'Alt', 'PosError', 'PosErrorRCI', 'MagPosError', 'Lat_LP', 'Long_LP', 'Alt_LP', 'AltError_LP', 'PosError_LP', 'PosErrorRCI_LP', 'MagPosError_LP', 'RA_OpticalAxis', 'RA_OpticalAxisError', 'Dec_OpticalAxis', 'Dec_OpticalAxisError', 'PosErrorMATS_STK']</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#Plot_Timeline_Plotter_Plots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.Plot_Timeline_Plotter_Plots" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">OPT.</code><code class="sig-name descname">Plot_Timeline_Plotter_Plots</code><span class="sig-paren">(</span><em class="sig-param">FigureDirectory, FilesToPlot=['ActiveScienceMode', 'Yaw', 'Pitch', 'Roll', 'Lat', 'Long', 'Alt', 'PosError', 'PosErrorRCI', 'MagPosError', 'Lat_LP', 'Long_LP', 'Alt_LP', 'AltError_LP', 'PosError_LP', 'PosErrorRCI_LP', 'MagPosError_LP', 'RA_OpticalAxis', 'RA_OpticalAxisError', 'Dec_OpticalAxis', 'Dec_OpticalAxisError', 'PosErrorMATS_STK']</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#Plot_Timeline_Plotter_Plots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.Plot_Timeline_Plotter_Plots" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plots binary files created with <em>Timeline_Plotter</em>.</p>
 <p>Tries to plot all files which are generated by default by <em>Timeline_Plotter</em> unless a second input is given.</p>
 <dl class="field-list simple">
@@ -157,36 +158,17 @@ Uses settings for the CMDs from the currently set <em>Configuration File</em>.</
 </dd></dl>
 
 <dl class="function">
-<dt id="OPT.SetTLE">
-<code class="descclassname">OPT.</code><code class="descname">SetTLE</code><span class="sig-paren">(</span><em>TLE1=''</em>, <em>TLE2=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#SetTLE"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.SetTLE" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets the TLE, which is called in the configuration file.</p>
-<p>If no TLE is given, the <em>Configuration File</em> will use the default TLE stated in the <em>Configuration File</em>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>TLE1</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- The first row of the TLE.</p></li>
-<li><p><strong>TLE2</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- The second row of the TLE.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>None</p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
 <dt id="OPT.Set_ConfigFile">
-<code class="descclassname">OPT.</code><code class="descname">Set_ConfigFile</code><span class="sig-paren">(</span><em>Config_File_Name</em>, <em>Date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#Set_ConfigFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.Set_ConfigFile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets the StartTime for OPT, and the name of the <em>.py</em> file that shall be used as a <em>Configuration file</em> for OPT.</p>
+<code class="sig-prename descclassname">OPT.</code><code class="sig-name descname">Set_ConfigFile</code><span class="sig-paren">(</span><em class="sig-param">Config_File_Name</em>, <em class="sig-param">Date</em>, <em class="sig-param">TLE1='1 54321U 19100G   20172.75043981 0.00000000  00000-0  75180-4 0  0014'</em>, <em class="sig-param">TLE2='2 54321  97.7044   6.9210 0014595 313.2372  91.8750 14.93194142000010'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#Set_ConfigFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.Set_ConfigFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the StartTime and TLE for OPT, and the name of the <em>.py</em> file that shall be used as a <em>Configuration file</em> for OPT.</p>
 <p>The <em>Configuration file</em> chosen must be visible in sys.path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>Config_File_Name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- The name of the Config File to be used (excluding .py).</p></li>
 <li><p><strong>Date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- The start time and date for the Operational Planning Tool (yyyy/mm/dd hh:mm:ss).</p></li>
+<li><p><strong>TLE1</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- The first row of the TLE.</p></li>
+<li><p><strong>TLE2</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- The second row of the TLE.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -197,7 +179,7 @@ Uses settings for the CMDs from the currently set <em>Configuration File</em>.</
 
 <dl class="function">
 <dt id="OPT.Timeline_Plotter">
-<code class="descclassname">OPT.</code><code class="descname">Timeline_Plotter</code><span class="sig-paren">(</span><em>Science_Mode_Path</em>, <em>OHB_H5_Path=''</em>, <em>STK_CSV_PATH=''</em>, <em>Timestep=16</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#Timeline_Plotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.Timeline_Plotter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">OPT.</code><code class="sig-name descname">Timeline_Plotter</code><span class="sig-paren">(</span><em class="sig-param">Science_Mode_Path</em>, <em class="sig-param">OHB_H5_Path=''</em>, <em class="sig-param">STK_CSV_PATH=''</em>, <em class="sig-param">Timestep=16</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#Timeline_Plotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.Timeline_Plotter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Invokes the <em>Timeline_Plotter</em> program part of <em>Operational_Planning_Tool</em>.</p>
 <p>Simulates the position and attitude of MATS from a given Science Mode Timeline and also optionally compares it to
 positional and attitude data given in a .h5 data set, located at <em>OHB_H5_Path</em>. Plots both the simulated data and given data.
@@ -235,7 +217,7 @@ Settings stated in the <em>Science Mode Timeline</em> override settings given in
 
 <dl class="function">
 <dt id="OPT.Timeline_analyzer">
-<code class="descclassname">OPT.</code><code class="descname">Timeline_analyzer</code><span class="sig-paren">(</span><em>science_mode_timeline_path</em>, <em>date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#Timeline_analyzer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.Timeline_analyzer" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">OPT.</code><code class="sig-name descname">Timeline_analyzer</code><span class="sig-paren">(</span><em class="sig-param">science_mode_timeline_path</em>, <em class="sig-param">date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#Timeline_analyzer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.Timeline_analyzer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Invokes the Timeline_analyser program part of Operational Planning Tool.</p>
 <p>Searches a Science Mode Timeline json file for a given date and returns the scheduled mode and its parameters</p>
 <dl class="field-list simple">
@@ -261,7 +243,7 @@ Settings stated in the <em>Science Mode Timeline</em> override settings given in
 
 <dl class="function">
 <dt id="OPT.Timeline_gen">
-<code class="descclassname">OPT.</code><code class="descname">Timeline_gen</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#Timeline_gen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.Timeline_gen" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">OPT.</code><code class="sig-name descname">Timeline_gen</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#Timeline_gen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.Timeline_gen" title="Permalink to this definition">¶</a></dt>
 <dd><p>Invokes the Timeline generator part of Operational Planning Tool.</p>
 <p>Creates a <em>Science Mode Timeline</em> as a .json file.</p>
 <p>Predicts and schedueles Science Modes that depend on certain events such as position of stars and the moon (Mode120-Mode124).
@@ -278,7 +260,7 @@ The Science Modes and StartUpCMDs to be scheduled are listed in <em>Modes_priori
 
 <dl class="function">
 <dt id="OPT.XML_gen">
-<code class="descclassname">OPT.</code><code class="descname">XML_gen</code><span class="sig-paren">(</span><em>science_mode_timeline_path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#XML_gen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.XML_gen" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">OPT.</code><code class="sig-name descname">XML_gen</code><span class="sig-paren">(</span><em class="sig-param">science_mode_timeline_path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#XML_gen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.XML_gen" title="Permalink to this definition">¶</a></dt>
 <dd><p>Invokes the XML generator program part of Operational Planning Tool for MATS.</p>
 <p>Converts a <em>Science Mode Timeline</em>  (.json file) containing a list of scheduled Science Modes/CMDs/Tests into Payload and Plattoform commands and saves them as a .xml command file.</p>
 <p>Settings for the operation of the program are stated in the chosen <em>Configuration File</em>, set by <em>Set_ConfigFile</em>.
@@ -325,10 +307,10 @@ Settings given in the <em>Science Mode Timeline</em> override the settings given
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -350,7 +332,7 @@ Settings given in the <em>Science Mode Timeline</em> override the settings given
       &copy;2019, David Skånberg.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

@@ -58,16 +58,16 @@
 <span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
-    <span class="c1">######## Try to Create a directory for storage of output files #######</span>
+    <span class="s2">&quot;######## Try to Create a directory for storage of output files #######&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="s1">&#39;Output&#39;</span><span class="p">)</span>
     <span class="k">except</span><span class="p">:</span>
         <span class="k">pass</span>
     
-    <span class="c1">############# Set up Logger #################################</span>
+    <span class="s2">&quot;############# Set up Logger #################################&quot;</span>
     <span class="n">_Library</span><span class="o">.</span><span class="n">SetupLogger</span><span class="p">(</span><span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Logger_name</span><span class="p">())</span>
     
-    <span class="c1">############# Get Settings from the Configuration File #########</span>
+    <span class="s2">&quot;############# Get Settings from the Configuration File #########&quot;</span>
     <span class="n">CCDBIAS_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">CCDBIAS_settings</span><span class="p">()</span>
     <span class="n">CCDFlushBadColumns_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">CCDFlushBadColumns_settings</span><span class="p">()</span>
     <span class="n">CCDBadColumn_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">CCDBadColumn_settings</span><span class="p">()</span>
@@ -75,12 +75,10 @@
     <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">CCD_macro_settings</span><span class="p">(</span><span class="s1">&#39;HighResIR&#39;</span><span class="p">)</span>
     <span class="n">PM_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">PM_settings</span><span class="p">()</span>
     
-    <span class="c1">######## SET CMD separation to 2 sek #################</span>
+    <span class="s2">&quot;######## SET CMD separation to 2 sek #################&quot;</span>
     <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;CMD_separation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">2</span>
     
-    <span class="c1">################### XML-tree basis creator ####################################</span>
-    
-    
+    <span class="s2">&quot;################### XML-tree basis creator ####################################&quot;</span>
     
     <span class="n">root</span> <span class="o">=</span> <span class="n">etree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s1">&#39;InnoSatTimeline&#39;</span><span class="p">,</span> <span class="n">originator</span><span class="o">=</span><span class="s1">&#39;OHB&#39;</span><span class="p">,</span> <span class="n">sdbVersion</span><span class="o">=</span><span class="s1">&#39;9.5.99.2&#39;</span><span class="p">)</span>
     
@@ -107,11 +105,10 @@
     
     <span class="n">root</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">etree</span><span class="o">.</span><span class="n">Element</span><span class="p">(</span><span class="s1">&#39;listOfCommands&#39;</span><span class="p">))</span>
     
+    <span class="s2">&quot;####################### End of XML-tree basis creator #############################&quot;</span>
     
-    <span class="c1">####################### End of XML-tree basis creator #############################</span>
     
-    
-    <span class="c1">####################### Minimum Science CMDs ######################################</span>
+    <span class="s2">&quot;####################### Minimum Science CMDs ######################################&quot;</span>
     
     <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafCCDBIAS</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">CCDSEL</span> <span class="o">=</span> <span class="n">CCDBIAS_settings</span><span class="p">[</span><span class="s1">&#39;CCDSEL&#39;</span><span class="p">],</span> <span class="n">VGATE</span> <span class="o">=</span> <span class="n">CCDBIAS_settings</span><span class="p">[</span><span class="s1">&#39;VGATE&#39;</span><span class="p">],</span> 
                            <span class="n">VSUBST</span> <span class="o">=</span> <span class="n">CCDBIAS_settings</span><span class="p">[</span><span class="s1">&#39;VSUBST&#39;</span><span class="p">],</span> <span class="n">VRD</span> <span class="o">=</span> <span class="n">CCDBIAS_settings</span><span class="p">[</span><span class="s1">&#39;VRD&#39;</span><span class="p">],</span> <span class="n">VOD</span> <span class="o">=</span> <span class="n">CCDBIAS_settings</span><span class="p">[</span><span class="s1">&#39;VOD&#39;</span><span class="p">],</span> 
@@ -127,13 +124,14 @@
     <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">Macros</span><span class="o">.</span><span class="n">Operational_Limb_Pointing_macro</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCD_settings</span><span class="p">,</span> <span class="n">PM_settings</span><span class="p">,</span>
                                            <span class="n">pointing_altitude</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;StandardPointingAltitude&#39;</span><span class="p">],</span> <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">)</span>
     
+    
     <span class="s2">&quot;Update duration in the Timeline&quot;</span>
     <span class="n">root</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">2</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">text</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">relativeTime</span> <span class="o">+</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;mode_separation&#39;</span><span class="p">])</span>
     
-    <span class="c1">####################### End of Minimum Science CMDs ################################</span>
+    <span class="s2">&quot;####################### End of Minimum Science CMDs ################################&quot;</span>
     
     
-    <span class="c1">### Write finished XML-tree with all commands to a file #######</span>
+    <span class="s2">&quot;### Write finished XML-tree with all commands to a file #######&quot;</span>
     <span class="n">XML_TIMELINE</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;Output&#39;</span><span class="p">,</span><span class="s1">&#39;XML_TIMELINE__MinimalScience_.xml&#39;</span><span class="p">)</span>
     <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Write XML-tree to: &#39;</span><span class="o">+</span><span class="n">XML_TIMELINE</span><span class="p">)</span>
     <span class="n">f</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">XML_TIMELINE</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span>
@@ -176,10 +174,10 @@
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -201,7 +199,7 @@
       &copy;2019, David Skånberg.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

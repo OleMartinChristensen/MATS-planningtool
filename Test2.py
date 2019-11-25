@@ -18,6 +18,6 @@ OPT.Set_ConfigFile('OPT_Config_File', '2020/6/20 18:32:42')
 OPT.CheckConfigFile()
 OPT.Timeline_gen()
 
-Data_MATS, Data_LP, Time, Time_OHB  = OPT.Timeline_Plotter('Output\Science_Mode_Timeline__OPT_Config_File.json')
+Data_MATS, Data_LP, Time, Time_OHB  = OPT.Timeline_Plotter('Output\Science_Mode_Timeline__OPT_Config_File.json', Timestep=25)
 
 OPT.XML_gen('Output\Science_Mode_Timeline__OPT_Config_File.json')

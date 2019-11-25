@@ -34,6 +34,9 @@ Logger = logging.getLogger(OPT_Config_File.Logger_name())
 #Timeline_settings = OPT_Config_File.Timeline_settings()
 
 
+"######### Operational Science Modes #########################"
+"##############################################################"
+
 def Mode5(root, date, duration, relativeTime, Timeline_settings, params = {}):
     '''Mode5
     
@@ -518,9 +521,11 @@ def Mode2(root, date, duration, relativeTime, Timeline_settings, params = {}):
     
     
 
+
 ################################################################################################
 
-
+"######### Calibration Modes ##################################"
+"##############################################################"
 
 def Mode100(root, date, duration, relativeTime, Timeline_settings, params = {}):
     """ Mode100
@@ -557,7 +562,7 @@ def Mode100(root, date, duration, relativeTime, Timeline_settings, params = {}):
     pointing_altitudes = [pointing_altitude_from + x*pointing_altitude_interval for x in range(number_of_altitudes)]
     
     #Mode_macro = getattr(Macros,Mode_name+'_macro')
-    
+    relativeTimeEndOfMode = relativeTime+duration-Timeline_settings['mode_separation']
     initial_relativeTime = relativeTime
     duration_flag = 0
     x = 0
@@ -584,6 +589,8 @@ def Mode100(root, date, duration, relativeTime, Timeline_settings, params = {}):
         relativeTime = relativeTime + params['pointing_duration']
         
         x += 1
+        
+    Commands.TC_pafMode(root, relativeTimeEndOfMode, MODE = 2, Timeline_settings = Timeline_settings, comment = comment)
 
 
 
@@ -627,13 +634,18 @@ def Mode110(root, date, duration, relativeTime, Timeline_settings, params = {}):
     pointing_altitude_to = params['pointing_altitude_to']
     sweep_rate = params['sweep_rate']
     
+    relativeTimeEndOfMode = relativeTime+duration-Timeline_settings['mode_separation']
     #Mode_macro = getattr(Macros,Mode_name+'_macro')
     
     Macros.Operational_Sweep_macro(root, round(relativeTime,2), CCD_settings, PM_settings = PM_settings, 
                pointing_altitude_from = pointing_altitude_from, 
                pointing_altitude_to = pointing_altitude_to, sweep_rate = sweep_rate, 
                Timeline_settings = Timeline_settings, comment = comment)
+    
+    Commands.TC_pafMode(root, relativeTimeEndOfMode, MODE = 2, Timeline_settings = Timeline_settings, comment = comment)
 
+
+####################################################################################################
 
 #######################################################################################################
 
@@ -858,6 +870,7 @@ def Mode130(root, date, duration, relativeTime,
                SnapshotSpacing = SnapshotSpacing, Timeline_settings = Timeline_settings, comment = comment)
 
 
+#####################################################################################################
 
 ##############################################################################################
 
@@ -881,11 +894,14 @@ def Mode131(root, date, duration, relativeTime,
     comment = Mode_name+' starting date: '+str(date)+', '+str(params)
     
     pointing_altitude = params['pointing_altitude']
+    relativeTimeEndOfMode = relativeTime+duration-Timeline_settings['mode_separation']
     
-    
+    "CMDs and Macros"
     Macros.Operational_Limb_Pointing_macro(root, round(relativeTime,2), CCD_settings, PM_settings = PM_settings, 
                                                        pointing_altitude = pointing_altitude, Timeline_settings = Timeline_settings, comment = comment)
-
+    
+    Commands.TC_pafMode(root, relativeTimeEndOfMode, MODE = 2, Timeline_settings = Timeline_settings, comment = comment)
+    
 
 ################################################################################################
 
@@ -908,6 +924,7 @@ def Mode132_133(root, date, duration, relativeTime,
     
     PM_settings = OPT_Config_File.PM_settings()
     pointing_altitude = params['pointing_altitude']
+    relativeTimeEndOfMode = relativeTime+duration-Timeline_settings['mode_separation']
     
     for ExpTimeUV,ExpTimeIR in zip( params['Exp_Times_UV'], params['Exp_Times_IR'] ):
         
@@ -922,10 +939,12 @@ def Mode132_133(root, date, duration, relativeTime,
         
         relativeTime = relativeTime + params['session_duration']
         
+    Commands.TC_pafMode(root, relativeTimeEndOfMode, MODE = 2, Timeline_settings = Timeline_settings, comment = comment)
+    
 
 ################################################################################################
 
-
+################################################################################################
 
 
 def Mode132(root, date, duration, relativeTime, 
@@ -999,10 +1018,14 @@ def Mode134(root, date, duration, relativeTime,
     comment = Mode_name+' starting date: '+str(date)+', '+str(params)
     
     pointing_altitude = params['pointing_altitude']
+    relativeTimeEndOfMode = relativeTime+duration-Timeline_settings['mode_separation']
     
+    "CMDs and Macros"
     Macros.Operational_Limb_Pointing_macro(root, round(relativeTime,2), CCD_settings, PM_settings = PM_settings, 
                                 pointing_altitude = pointing_altitude, Timeline_settings = Timeline_settings, comment = comment)
-
+    
+    Commands.TC_pafMode(root, relativeTimeEndOfMode, MODE = 2, Timeline_settings = Timeline_settings, comment = comment)
+    
 
 ################################################################################################
 
@@ -1031,6 +1054,7 @@ def X(root, date, duration, relativeTime, Timeline_settings, params = {}):
     
     Mode_name = sys._getframe(0).f_code.co_name
     comment = Mode_name+' starting date: '+str(date)+', '+str(params)
+    relativeTimeEndOfMode = relativeTime+duration-Timeline_settings['mode_separation']
     
     Commands.TC_acfLimbPointingAltitudeOffset(root, round(relativeTime,2), Initial = 120000, 
                                               Final = 120000, Rate = 0, Timeline_settings = Timeline_settings, comment = comment)
@@ -1039,7 +1063,7 @@ def X(root, date, duration, relativeTime, Timeline_settings, params = {}):
     Macros.Operational_Limb_Pointing_macro(root = root, relativeTime = round(relativeTime,2), CCD_settings = CCD_settings,
                                 pointing_altitude = 120000, Timeline_settings = Timeline_settings, comment = comment)
     
-    
+    Commands.TC_pafMode(root, relativeTimeEndOfMode, MODE = 2, Timeline_settings = Timeline_settings, comment = comment)
 
 
 

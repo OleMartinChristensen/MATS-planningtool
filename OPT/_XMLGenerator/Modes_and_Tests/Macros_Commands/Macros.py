@@ -2,8 +2,8 @@
 """Contain Macro functions, that calls for Command functions located in the *Commands* module.
 
 Macros consists of frequently used combinations of Commands. Each macro (except the CCD_macro) contain a 
-*TC_acfLimbPointingAltitudeOffset* CMD, which will stagger the next CMD by a number of seconds equal to
- *Timeline_settings['pointing_stabilization'] when a new pointing altitude is set, or the previously set maximum TEXPMS when the pointing altitude is unchanged. 
+*TC_acfLimbPointingAltitudeOffset* CMD, which will stagger the next CMD by a number of seconds equal to 
+*Timeline_settings['pointing_stabilization']* when a new pointing altitude is set, or the previously set maximum TEXPMS when the pointing altitude is unchanged. 
 This is important as the images need time to finish their current exposure before changing the CCD settings.
 
 """
@@ -176,8 +176,8 @@ def Snapshot_Inertial_macro(root, relativeTime, CCD_settings, FreezeTime, Freeze
     3. Run CCD Commands with given settings.
     4. Run ArgFreezeStart Command with *FreezeTime*.
     5. Run ArgFreezeDuration Command with *FreezeDuration*.
-    7. Take a Snapshot with each CCD (except Nadir) starting at *Snapshot_relativeTime* with a spacing of *SnapshotSpacing*.
-    8. Point the satellite to *StandardPointingAltitude*.
+    6. Take a Snapshot with each CCD (except Nadir) starting at *Snapshot_relativeTime* with a spacing of *SnapshotSpacing*.
+    7. Point the satellite to *StandardPointingAltitude*.
     
     Arguments:
         root (lxml.etree._Element):  XML tree structure. Main container object for the ElementTree API.
@@ -229,7 +229,7 @@ def Snapshot_Limb_Pointing_macro(root, relativeTime, CCD_settings, pointing_alti
     1. Set Payload to idle mode
     2. Point the satellite to *pointing_altitude*.
     3. Run CCD Commands with given settings.
-    5. Take a Snapshot with each CCD (except Nadir) with a spacing of *SnapshotSpacing*.
+    4. Take a Snapshot with each CCD (except Nadir) with a spacing of *SnapshotSpacing*.
     
     Arguments:
         root (lxml.etree._Element):  XML tree structure. Main container object for the ElementTree API.

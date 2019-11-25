@@ -3,7 +3,6 @@
     
     - Copy_ConfigFile
     - Set_ConfigFile
-    - SetTLE
     - CheckConfigFile
     - Timeline_gen
     - XML_gen
@@ -85,6 +84,8 @@ def Copy_ConfigFile(Config_File_Name):
     
     The copy is created in the working directory of the user call and can be freely modified.
     Do not forget to also use *Set_ConfigFile* to choose your specific copy.
+    *_ConfigFile* is imagined to contain the default settings of the program, while each copy contains week specific settings.
+    If the default *_ConfigFile* is ever changed it is recommended to change the Version Name of it to keep track of changes.
     
     Arguments:
         Config_File_Name (str): The name of the newly created copy of the *_ConfigFile* (excluding *.py*).
@@ -128,14 +129,17 @@ def Copy_ConfigFile(Config_File_Name):
     
 
 
-def Set_ConfigFile(Config_File_Name, Date):
-    """Sets the StartTime for OPT, and the name of the *.py* file that shall be used as a *Configuration file* for OPT.
+def Set_ConfigFile(Config_File_Name, Date, TLE1='1 54321U 19100G   20172.75043981 0.00000000  00000-0  75180-4 0  0014', 
+                   TLE2='2 54321  97.7044   6.9210 0014595 313.2372  91.8750 14.93194142000010'):
+    """Sets the StartTime and TLE for OPT, and the name of the *.py* file that shall be used as a *Configuration file* for OPT.
     
     The *Configuration file* chosen must be visible in sys.path.
     
     Arguments:
         Config_File_Name (str): The name of the Config File to be used (excluding .py).
         Date (str): The start time and date for the Operational Planning Tool (yyyy/mm/dd hh:mm:ss).
+        TLE1 (str): The first row of the TLE.
+        TLE2 (str): The second row of the TLE.
         
     Returns:
         None
@@ -145,28 +149,8 @@ def Set_ConfigFile(Config_File_Name, Date):
     
     Globals.Config_File = Config_File_Name
     Globals.StartTime = Date
-    
-
-def SetTLE(TLE1 = '', TLE2 = ''):
-    """Sets the TLE, which is called in the configuration file. 
-    
-    If no TLE is given, the *Configuration File* will use the default TLE stated in the *Configuration File*.
-    
-    Arguments:
-        TLE1 (str): The first row of the TLE.
-        TLE2 (str): The second row of the TLE.
-        
-    Returns:
-        None
-        
-    Returns:
-        None
-    
-    """
-    
-    from . import _Globals as Globals
-    
     Globals.TLE = (TLE1,TLE2)
+    
 
 
 def CheckConfigFile():

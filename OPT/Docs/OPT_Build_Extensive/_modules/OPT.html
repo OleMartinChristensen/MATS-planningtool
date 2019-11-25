@@ -36,7 +36,6 @@
 <span class="sd">    </span>
 <span class="sd">    - Copy_ConfigFile</span>
 <span class="sd">    - Set_ConfigFile</span>
-<span class="sd">    - SetTLE</span>
 <span class="sd">    - CheckConfigFile</span>
 <span class="sd">    - Timeline_gen</span>
 <span class="sd">    - XML_gen</span>
@@ -118,6 +117,8 @@
 <span class="sd">    </span>
 <span class="sd">    The copy is created in the working directory of the user call and can be freely modified.</span>
 <span class="sd">    Do not forget to also use *Set_ConfigFile* to choose your specific copy.</span>
+<span class="sd">    *_ConfigFile* is imagined to contain the default settings of the program, while each copy contains week specific settings.</span>
+<span class="sd">    If the default *_ConfigFile* is ever changed it is recommended to change the Version Name of it to keep track of changes.</span>
 <span class="sd">    </span>
 <span class="sd">    Arguments:</span>
 <span class="sd">        Config_File_Name (str): The name of the newly created copy of the *_ConfigFile* (excluding *.py*).</span>
@@ -161,14 +162,17 @@
     
 
 
-<div class="viewcode-block" id="Set_ConfigFile"><a class="viewcode-back" href="../OPT.html#OPT.Set_ConfigFile">[docs]</a><span class="k">def</span> <span class="nf">Set_ConfigFile</span><span class="p">(</span><span class="n">Config_File_Name</span><span class="p">,</span> <span class="n">Date</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Sets the StartTime for OPT, and the name of the *.py* file that shall be used as a *Configuration file* for OPT.</span>
+<div class="viewcode-block" id="Set_ConfigFile"><a class="viewcode-back" href="../OPT.html#OPT.Set_ConfigFile">[docs]</a><span class="k">def</span> <span class="nf">Set_ConfigFile</span><span class="p">(</span><span class="n">Config_File_Name</span><span class="p">,</span> <span class="n">Date</span><span class="p">,</span> <span class="n">TLE1</span><span class="o">=</span><span class="s1">&#39;1 54321U 19100G   20172.75043981 0.00000000  00000-0  75180-4 0  0014&#39;</span><span class="p">,</span> 
+                   <span class="n">TLE2</span><span class="o">=</span><span class="s1">&#39;2 54321  97.7044   6.9210 0014595 313.2372  91.8750 14.93194142000010&#39;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Sets the StartTime and TLE for OPT, and the name of the *.py* file that shall be used as a *Configuration file* for OPT.</span>
 <span class="sd">    </span>
 <span class="sd">    The *Configuration file* chosen must be visible in sys.path.</span>
 <span class="sd">    </span>
 <span class="sd">    Arguments:</span>
 <span class="sd">        Config_File_Name (str): The name of the Config File to be used (excluding .py).</span>
 <span class="sd">        Date (str): The start time and date for the Operational Planning Tool (yyyy/mm/dd hh:mm:ss).</span>
+<span class="sd">        TLE1 (str): The first row of the TLE.</span>
+<span class="sd">        TLE2 (str): The second row of the TLE.</span>
 <span class="sd">        </span>
 <span class="sd">    Returns:</span>
 <span class="sd">        None</span>
@@ -177,29 +181,9 @@
     <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">_Globals</span> <span class="k">as</span> <span class="n">Globals</span>
     
     <span class="n">Globals</span><span class="o">.</span><span class="n">Config_File</span> <span class="o">=</span> <span class="n">Config_File_Name</span>
-    <span class="n">Globals</span><span class="o">.</span><span class="n">StartTime</span> <span class="o">=</span> <span class="n">Date</span></div>
-    
-
-<div class="viewcode-block" id="SetTLE"><a class="viewcode-back" href="../OPT.html#OPT.SetTLE">[docs]</a><span class="k">def</span> <span class="nf">SetTLE</span><span class="p">(</span><span class="n">TLE1</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">TLE2</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Sets the TLE, which is called in the configuration file. </span>
-<span class="sd">    </span>
-<span class="sd">    If no TLE is given, the *Configuration File* will use the default TLE stated in the *Configuration File*.</span>
-<span class="sd">    </span>
-<span class="sd">    Arguments:</span>
-<span class="sd">        TLE1 (str): The first row of the TLE.</span>
-<span class="sd">        TLE2 (str): The second row of the TLE.</span>
-<span class="sd">        </span>
-<span class="sd">    Returns:</span>
-<span class="sd">        None</span>
-<span class="sd">        </span>
-<span class="sd">    Returns:</span>
-<span class="sd">        None</span>
-<span class="sd">    </span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    
-    <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">_Globals</span> <span class="k">as</span> <span class="n">Globals</span>
-    
+    <span class="n">Globals</span><span class="o">.</span><span class="n">StartTime</span> <span class="o">=</span> <span class="n">Date</span>
     <span class="n">Globals</span><span class="o">.</span><span class="n">TLE</span> <span class="o">=</span> <span class="p">(</span><span class="n">TLE1</span><span class="p">,</span><span class="n">TLE2</span><span class="p">)</span></div>
+    
 
 
 <div class="viewcode-block" id="CheckConfigFile"><a class="viewcode-back" href="../OPT.html#OPT.CheckConfigFile">[docs]</a><span class="k">def</span> <span class="nf">CheckConfigFile</span><span class="p">():</span>
@@ -404,10 +388,10 @@
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -429,7 +413,7 @@
       &copy;2019, David Skånberg.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

@@ -100,30 +100,15 @@ def Scheduling_priority():
 def getTLE():
     '''Returns the TLE as two strings in a list.
     
-    Returns a given TLE in the _Globals module if *SetTLE* has been ran. Otherwise a default value given in this Configuration File.
+    Returns a given TLE in the _Globals module if *SetTLE* has been ran.
     
     Returns:
         (:obj:`list` of :obj:`str`): First Element is the first TLE row, and the second Element is the second row.
     
     '''
     
-    #TLE1 = '1 26702U 01007A   18231.91993126  .00000590  00000-0  00000-0 0  9994'
-    #TLE2= '2 26702 97.61000 65.95030 0000001 0.000001 359.9590 14.97700580100  4'
-    #TLE1 = '1 26702U 01007A   09264.68474097 +.00000336 +00000-0 +35288-4 0  9993'
-    #TLE2 = '2 26702 097.7067 283.5904 0004656 126.2204 233.9434 14.95755636467886'
-    
-    if( _Globals.TLE == ('','') ):
-        "OHB TLE"
-        TLE1 = '1 54321U 19100G   20172.75043981 0.00000000  00000-0  75180-4 0  0014'
-        TLE2 = '2 54321  97.7044   6.9210 0014595 313.2372  91.8750 14.93194142000010'
-    else:
-        TLE1 = _Globals.TLE[0]
-        TLE2 = _Globals.TLE[1]
-        
-    "OHB TLE timeshifted by 2 sec"
-    #TLE1 = '1 54321U 19100G   20172.75041666 0.00000000  00000-0  75180-4 0  0012'
-    #TLE2 = '2 54321  97.7044   6.9210 0014595 313.2372  91.8750 14.93194142000010'
-    
+    TLE1 = _Globals.TLE[0]
+    TLE2 = _Globals.TLE[1]
     
     return [TLE1, TLE2]
 
@@ -391,7 +376,7 @@ def Mode124_settings():
         (:obj:`dict`): settings
     
     '''
-    settings = {'pointing_altitude': 230000, 'V_offset': 0, 'H_offset': 3+2.5, 'timestep': 2, 'log_timestep': 1200, 
+    settings = {'pointing_altitude': 230000, 'V_offset': 0, 'H_offset': 2.5, 'timestep': 2, 'log_timestep': 1200, 
                       'automatic': True, 'start_date': '0', 'freeze_start': 150, 'freeze_duration': 0, 
                       'SnapshotTime': 2, 'SnapshotSpacing': 3}
     
@@ -734,48 +719,48 @@ def CCD_macro_settings(CCDMacroSelect):
         
         
     elif( CCDMacroSelect == 'FullReadout'):
-        CCD_settings[16] = {'PWR': 1, 'WDW': 7, 'JPEGQ': 110, 'SYNC': 0, 'TEXPMS': 3000, 'GAIN': 0, 'NFLUSH': 1023, 
+        CCD_settings[16] = {'PWR': 1, 'WDW': 7, 'JPEGQ': 100, 'SYNC': 0, 'TEXPMS': 3000, 'GAIN': 0, 'NFLUSH': 1023, 
                                 'NRSKIP': 0, 'NRBIN': 1, 'NROW': 511, 'NCSKIP': 0, 'NCBIN': 1, 'NCOL': 2047, 'NCBINFPGA': 0, 'SIGMODE': 1}
         
-        CCD_settings[32] = {'PWR': 1, 'WDW': 7, 'JPEGQ': 110, 'SYNC': 0, 'TEXPMS': 3000, 'GAIN': 0, 'NFLUSH': 1023, 
+        CCD_settings[32] = {'PWR': 1, 'WDW': 7, 'JPEGQ': 100, 'SYNC': 0, 'TEXPMS': 3000, 'GAIN': 0, 'NFLUSH': 1023, 
                                 'NRSKIP': 0, 'NRBIN': 1, 'NROW': 511, 'NCSKIP': 0, 'NCBIN': 1, 'NCOL': 2047, 'NCBINFPGA': 0, 'SIGMODE': 1}
         
-        CCD_settings[1] = {'PWR': 1, 'WDW': 7, 'JPEGQ': 110, 'SYNC': 0, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
+        CCD_settings[1] = {'PWR': 1, 'WDW': 7, 'JPEGQ': 100, 'SYNC': 0, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
                                 'NRSKIP': 0, 'NRBIN': 1, 'NROW': 511, 'NCSKIP': 0, 'NCBIN': 1, 'NCOL': 2047, 'NCBINFPGA': 0, 'SIGMODE': 1}
         
-        CCD_settings[8] = {'PWR': 1, 'WDW': 7, 'JPEGQ': 110, 'SYNC': 0, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
+        CCD_settings[8] = {'PWR': 1, 'WDW': 7, 'JPEGQ': 100, 'SYNC': 0, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
                                 'NRSKIP': 0, 'NRBIN': 1, 'NROW': 511, 'NCSKIP': 0, 'NCBIN': 1, 'NCOL': 2047, 'NCBINFPGA': 0, 'SIGMODE': 1}
         
-        CCD_settings[2] = {'PWR': 1, 'WDW': 7, 'JPEGQ': 110, 'SYNC': 0, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
+        CCD_settings[2] = {'PWR': 1, 'WDW': 7, 'JPEGQ': 100, 'SYNC': 0, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
                                 'NRSKIP': 0, 'NRBIN': 1, 'NROW': 511, 'NCSKIP': 0, 'NCBIN': 1, 'NCOL': 2047, 'NCBINFPGA': 0, 'SIGMODE': 1}
         
-        CCD_settings[4] = {'PWR': 1, 'WDW': 7, 'JPEGQ': 110, 'SYNC': 0, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
+        CCD_settings[4] = {'PWR': 1, 'WDW': 7, 'JPEGQ': 100, 'SYNC': 0, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
                                 'NRSKIP': 0, 'NRBIN': 1, 'NROW': 511, 'NCSKIP': 0, 'NCBIN': 1, 'NCOL': 2047, 'NCBINFPGA': 0, 'SIGMODE': 1}
         
-        CCD_settings[64] = {'PWR': 1, 'WDW': 7, 'JPEGQ': 110, 'SYNC': 0, 'TEXPMS': 0, 'TEXPIMS': 62800, 'GAIN': 0, 'NFLUSH': 1023, 
+        CCD_settings[64] = {'PWR': 1, 'WDW': 7, 'JPEGQ': 100, 'SYNC': 0, 'TEXPMS': 0, 'TEXPIMS': 62800, 'GAIN': 0, 'NFLUSH': 1023, 
                                  'NRSKIP': 0, 'NRBIN': 1, 'NROW': 511, 'NCSKIP': 0, 'NCBIN': 1, 'NCOL': 2047, 'NCBINFPGA': 0, 'SIGMODE': 1}
         
         
     elif( CCDMacroSelect == 'LowPixel'):
-        CCD_settings[16] = {'PWR': 1, 'WDW': 7, 'JPEGQ': 110, 'SYNC': 0, 'TEXPMS': 3000, 'GAIN': 0, 'NFLUSH': 1023, 
+        CCD_settings[16] = {'PWR': 1, 'WDW': 7, 'JPEGQ': 100, 'SYNC': 0, 'TEXPMS': 3000, 'GAIN': 0, 'NFLUSH': 1023, 
                                  'NRSKIP': 0, 'NRBIN': 63, 'NROW': 7, 'NCSKIP': 0, 'NCBIN': 255, 'NCOL': 7, 'NCBINFPGA': 0, 'SIGMODE': 1}
         
-        CCD_settings[32] = {'PWR': 1, 'WDW': 7, 'JPEGQ': 110, 'SYNC': 0, 'TEXPMS': 3000, 'GAIN': 0, 'NFLUSH': 1023, 
+        CCD_settings[32] = {'PWR': 1, 'WDW': 7, 'JPEGQ': 100, 'SYNC': 0, 'TEXPMS': 3000, 'GAIN': 0, 'NFLUSH': 1023, 
                                  'NRSKIP': 0, 'NRBIN': 63, 'NROW': 7, 'NCSKIP': 0, 'NCBIN': 255, 'NCOL': 7, 'NCBINFPGA': 0, 'SIGMODE': 1}
         
-        CCD_settings[1] = {'PWR': 1, 'WDW': 7, 'JPEGQ': 110, 'SYNC': 0, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
+        CCD_settings[1] = {'PWR': 1, 'WDW': 7, 'JPEGQ': 100, 'SYNC': 0, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
                                 'NRSKIP': 0, 'NRBIN': 63, 'NROW': 7, 'NCSKIP': 0, 'NCBIN': 255, 'NCOL': 7, 'NCBINFPGA': 0, 'SIGMODE': 1}
         
-        CCD_settings[8] = {'PWR': 1, 'WDW': 7, 'JPEGQ': 110, 'SYNC': 0, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
+        CCD_settings[8] = {'PWR': 1, 'WDW': 7, 'JPEGQ': 100, 'SYNC': 0, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
                                 'NRSKIP': 0, 'NRBIN': 63, 'NROW': 7, 'NCSKIP': 0, 'NCBIN': 255, 'NCOL': 7, 'NCBINFPGA': 0, 'SIGMODE': 1}
         
-        CCD_settings[2] = {'PWR': 1, 'WDW': 7, 'JPEGQ': 110, 'SYNC': 0, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
+        CCD_settings[2] = {'PWR': 1, 'WDW': 7, 'JPEGQ': 100, 'SYNC': 0, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
                                 'NRSKIP': 0, 'NRBIN': 63, 'NROW': 7, 'NCSKIP': 0, 'NCBIN': 255, 'NCOL': 7, 'NCBINFPGA': 0, 'SIGMODE': 1}
         
-        CCD_settings[4] = {'PWR': 1, 'WDW': 7, 'JPEGQ': 110, 'SYNC': 0, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
+        CCD_settings[4] = {'PWR': 1, 'WDW': 7, 'JPEGQ': 100, 'SYNC': 0, 'TEXPMS': 5000, 'GAIN': 0, 'NFLUSH': 1023, 
                                 'NRSKIP': 0, 'NRBIN': 63, 'NROW': 7, 'NCSKIP': 0, 'NCBIN': 255, 'NCOL': 7, 'NCBINFPGA': 0, 'SIGMODE': 1}
         
-        CCD_settings[64] = {'PWR': 1, 'WDW': 7, 'JPEGQ': 110, 'SYNC': 0, 'TEXPMS': 0, 'TEXPIMS': 2000, 'GAIN': 0, 'NFLUSH': 1023, 
+        CCD_settings[64] = {'PWR': 1, 'WDW': 7, 'JPEGQ': 100, 'SYNC': 0, 'TEXPMS': 0, 'TEXPIMS': 2000, 'GAIN': 0, 'NFLUSH': 1023, 
                                  'NRSKIP': 0, 'NRBIN': 63, 'NROW': 7, 'NCSKIP': 0, 'NCBIN': 255, 'NCOL': 7, 'NCBINFPGA': 0, 'SIGMODE': 1}
         
         

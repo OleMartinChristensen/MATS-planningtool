@@ -41,6 +41,7 @@
 
 <span class="kn">from</span> <span class="nn">OPT</span> <span class="k">import</span> <span class="n">_Globals</span><span class="p">,</span> <span class="n">_MATS_coordinates</span>
 
+
 <span class="n">timescale_skyfield</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">load</span><span class="o">.</span><span class="n">timescale</span><span class="p">(</span><span class="n">builtin</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">database_skyfield</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;de421.bsp&#39;</span><span class="p">)</span>
 
@@ -1051,10 +1052,10 @@
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -1076,7 +1077,7 @@
       &copy;2019, David Skånberg.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

@@ -48,14 +48,15 @@ def Timeline_Plotter(Science_Mode_Path, OHB_H5_Path, STK_CSV_FILE, Timestep):
     _Library.SetupLogger(OPT_Config_File.Logger_name())
     Logger = logging.getLogger(OPT_Config_File.Logger_name())
     
+    
     Version = OPT_Config_File.Version()
     Logger.info('Configuration File used: '+_Globals.Config_File+', Version: '+Version)
     
-    
+    "Get Timeline settings and TLE"
     Timeline_settings = OPT_Config_File.Timeline_settings()
     TLE = OPT_Config_File.getTLE()
     
-    "Whether data from OHB is given"
+    "Checks whether data from OHB as a .h5 file was given"
     if ( OHB_H5_Path == ''):
         Timestamp_fraction_of_second = 0
         timestep_OHB_data = 1
@@ -63,27 +64,29 @@ def Timeline_Plotter(Science_Mode_Path, OHB_H5_Path, STK_CSV_FILE, Timestep):
         OHB_StartIndex = 0
         
         """
-        State_OHB = h5py.File('TM_acOnGnss_sep4.h5','r')['root']['TM_acOnGnss']
-        Time_State_OHB = State_OHB['acoOnGnssStateTime']['raw']
-        
-        OHB_StartIndex = 0
-        while( Time_State_OHB[OHB_StartIndex] == 0):
-            OHB_StartIndex += 1
-            
-        OHB_StartTime = ephem.Date(datetime.datetime(1980,1,6)+datetime.timedelta(seconds = float(Time_State_OHB[OHB_StartIndex])-18))
+        #State_OHB = h5py.File('TM_acOnGnss_sep4.h5','r')['root']['TM_acOnGnss']
+        #Time_State_OHB = State_OHB['acoOnGnssStateTime']['raw']
+        #
+        #OHB_StartIndex = 0
+        #while( Time_State_OHB[OHB_StartIndex] == 0):
+        #    OHB_StartIndex += 1
+        #    
+        #OHB_StartTime = ephem.Date(datetime.datetime(1980,1,6)+datetime.timedelta(seconds = float(Time_State_OHB[OHB_StartIndex])-18))
         """
         
     else:
+        "Read data and check the timestamps"
         OHB_data = h5py.File(OHB_H5_Path,'r')
         root = OHB_data['root']
         Time_State_OHB = root['TM_acOnGnss']['acoOnGnssStateTime']['raw']
         Time_Attitude_OHB = root['afoTmMhObt']['raw']
         
+        "Go through the data until the time is nonzero. That is where the data begins"
         OHB_StartIndex = 0
         while( Time_State_OHB[OHB_StartIndex] == 0):
             OHB_StartIndex += 1
             
-        #OHB_StartIndex += 5000
+        #OHB_StartIndex += 5000 
         
         if( abs(Time_Attitude_OHB[OHB_StartIndex] - Time_State_OHB[OHB_StartIndex]) > 1.1):
             Logger.error( 'Mismatch between timestamps of attitude and state')
@@ -91,25 +94,15 @@ def Timeline_Plotter(Science_Mode_Path, OHB_H5_Path, STK_CSV_FILE, Timestep):
         
         
         
-        "Parameters needed to allow synchronization of the simulation to the timestamps of the OHB data"
+        "Parameters needed to allow synchronization of the science mode timeine simulation to the timestamps of the OHB data"
         Timestamp_fraction_of_second = Time_State_OHB[0]- int(Time_State_OHB[0])
         timestep_OHB_data = Time_State_OHB[1+OHB_StartIndex] - Time_State_OHB[OHB_StartIndex]
-        
+        "Synchronization will allow error values between the simulation and the OHB data to be calculated"
         Time_State_OHB_float = float(Time_State_OHB[OHB_StartIndex])
         OHB_StartTime = ephem.Date(datetime.datetime(1980,1,6)+datetime.timedelta(seconds = Time_State_OHB_float-18))
     
     
-    """
-    Data_MATS = { 'x_MATS': [], 'y_MATS': [], 'z_MATS': [], 'x_MATS_ECEF': [], 'y_MATS_ECEF': [], 'z_MATS_ECEF': [], 
-                 'vx_MATS': [], 'vy_MATS': [], 'vz_MATS': [], 'vx_MATS_ECEF': [], 'vy_MATS_ECEF': [], 'vz_MATS_ECEF': [], 
-                 'x_normal_orbit': [], 'y_normal_orbit': [], 'z_normal_orbit': [], 'x_normal_orbit_ECEF': [], 'y_normal_orbit_ECEF': [], 'z_normal_orbit_ECEF': [], 
-                 'lat_MATS': [], 'long_MATS': [], 'alt_MATS': [], 'yaw_MATS': [], 'pitch_MATS': [], 
-                 'x_optical_axis':[], 'y_optical_axis': [], 'z_optical_axis': [], 'x_optical_axis_ECEF': [], 'y_optical_axis_ECEF': [], 'z_optical_axis_ECEF': [], 
-                 'optical_axis_RA': [], 'optical_axis_Dec': []}
-    
-    Data_LP = { 'x_LP_ECEF': [], 'y_LP_ECEF': [], 'z_LP_ECEF': [], 'lat_LP': [], 'long_LP': [], 'alt_LP': [] } 
-    """
-    
+    "Create dictionaries to contain simulated data"
     Data_MATS = { 'ScienceMode': [], 'ColorRGB': [], 
                  'r_MATS': [], 'r_MATS_ECEF': [], 'v_MATS': [], 'v_MATS_ECEF': [], 
                  'r_normal_orbit': [], 'r_normal_orbit_ECEF': [], 
@@ -121,11 +114,13 @@ def Timeline_Plotter(Science_Mode_Path, OHB_H5_Path, STK_CSV_FILE, Timestep):
     
     Time = []
     
-    ################# Read Science Mode Timeline json file ############
+    "################# Read Science Mode Timeline json file ############"
     with open(Science_Mode_Path, "r") as read_file:
         ScienceMode= json.load(read_file)
-    ################# End of Read Science Mode Timeline json file ############
+    "################# End of Read Science Mode Timeline json file ############"
     
+    
+    "######## START GOING THROUGH THE SCIENCE MODE TIMELINE #############"
     "Loop through Science Mode Timeline"
     for x in range(len(ScienceMode)):
         Logger.info('')
@@ -146,22 +141,8 @@ def Timeline_Plotter(Science_Mode_Path, OHB_H5_Path, STK_CSV_FILE, Timestep):
     
     
     
-    
-    
-    #with open(DataPath, "w") as write_file:
-    #    json.dump(Data_MATS, write_file, indent = 2)
-        
-    #DataPath = os.path.join(figureDirectory, 'Data_LP.json')
-    #with open(DataPath, "w") as write_file:
-    #    json.dump(Data_LP, write_file, indent = 2)
-        
-    #DataPath = os.path.join(figureDirectory, 'Time.json')
-    #with open(DataPath, "w") as write_file:
-    #    json.dump(Time, write_file, indent = 2)
-    
-    #Data_MATS['ScienceMode'] = Data_MATS['ScienceMode']
-    #Data_MATS['ColorRGB'] = array( Data_MATS['ColorRGB'] )
-    
+    "Convert the data from python lists into Numpy arrays"
+    "Allows easier data manipulation"
     Data_MATS['lat_MATS'] = array( Data_MATS['lat_MATS'] )
     Data_MATS['long_MATS'] = array( Data_MATS['long_MATS'] )
     Data_MATS['alt_MATS'] = array( Data_MATS['alt_MATS'] )
@@ -234,7 +215,7 @@ def Simulator( ScienceMode, Timestamp_fraction_of_second, Timestep, Timeline_set
     Settings = ScienceMode[3]
     
     
-    
+    ###################################################
     "Synchronize simulation Timesteps with OHB Data"
     Mode_start_date = ephem.Date( ephem.Date(ScienceMode[1]) + ephem.second * Timestamp_fraction_of_second )
     TimeDifferenceRest = round( (abs(Mode_start_date - OHB_StartTime) / ephem.second) % Timestep, 0 )
@@ -248,8 +229,9 @@ def Simulator( ScienceMode, Timestamp_fraction_of_second, Timestep, Timeline_set
     
     Mode_end_date = ephem.Date(ScienceMode[2])
     duration = (Mode_end_date - Mode_start_date) *24*3600
+    #######################################################
     
-    
+    #############################################################
     "Determine the science mode, which in turn determines the behaviour of the simulation"
     if( ModeName == 'Mode120' or ModeName == 'Mode121' or ModeName == 'Mode122' or 
        ModeName == 'Mode123' or ModeName == 'Mode124'):
@@ -328,7 +310,7 @@ def Simulator( ScienceMode, Timestamp_fraction_of_second, Timestep, Timeline_set
         
     else:
         return Data_MATS, Data_LP, Time
-    
+    ############################################################################
     
     
         
@@ -379,17 +361,20 @@ def Simulator( ScienceMode, Timestamp_fraction_of_second, Timestep, Timeline_set
     
     MATS_skyfield = EarthSatellite(TLE[0], TLE[1])
     
+    ###################################################################################
     "Start of Simulation"
     for t in range(timesteps):
         
         t = t
         
         if( Simulator_Select == 'Mode100' ):
+            "Increment the pointing altitude as defined by Mode100"
             if( t*Timestep >= timestamp_change_of_pointing_altitude and pointing_altitude_to > pointing_altitude ):
                 pointing_altitude += pointing_altitude_interval
                 timestamp_change_of_pointing_altitude += pointing_duration 
         elif( Simulator_Select == 'Mode110' ):
-            "If the sweep is positive or negative"
+            "Perform sweep as defined by Mode110"
+            "Check if the sweep is positive or negative"
             if( sweep_rate > 0 ):
                 if( t*Timestep > pointing_stabilization + 11 * CMD_separation and pointing_altitude_to > pointing_altitude):
                     pointing_altitude += sweep_rate * Timestep
@@ -400,15 +385,17 @@ def Simulator( ScienceMode, Timestamp_fraction_of_second, Timestep, Timeline_set
                     pointing_altitude += sweep_rate * Timestep
                 elif( pointing_altitude_to >= pointing_altitude):
                     pointing_altitude = pointing_altitude_to
-        #Looking at StandardPointingAltitude after attitude freeze for Mode12X"
+        
         elif( Simulator_Select == 'Mode12X' and t*Timestep >= freeze_duration+freeze_start):
+            "Looking at StandardPointingAltitude after attitude freeze for Mode12X"
             pointing_altitude = Timeline_settings['StandardPointingAltitude']
-        #Looking at pointing_altitude"
+        ############Looking at pointing_altitude##############"
         else:
+            "Looking at pointing_altitude"
             pass
             
         
-        
+        "Increment Time"
         current_time = ephem.Date(Mode_start_date+ephem.second*(Timestep*t))
         current_time_datetime = ephem.Date(current_time).datetime()
         
@@ -418,9 +405,11 @@ def Simulator( ScienceMode, Timestamp_fraction_of_second, Timestep, Timeline_set
         else:
             LogFlag = False
         
+        "Run the satellite simulation for the current time"
         Satellite_dict = _Library.Satellite_Simulator( 
                     MATS_skyfield, current_time, Timeline_settings, pointing_altitude/1000, LogFlag, Logger )
         
+        "Save results"
         r_MATS[t] = Satellite_dict['Position [km]']
         v_MATS[t] = Satellite_dict['Velocity [km/s]']
         normal_orbit[t] = Satellite_dict['OrbitNormal']
@@ -439,6 +428,7 @@ def Simulator( ScienceMode, Timestamp_fraction_of_second, Timestep, Timeline_set
         v_MATS_unit_vector[t,0:3] = v_MATS[t,0:3] / norm(v_MATS[t,0:3])
         r_MATS_unit_vector[t,0:3] = r_MATS[t,0:3] / norm(r_MATS[t,0:3])
         
+        "Coordinate transformations and calculations"
         r_MATS_ECEF[t,0], r_MATS_ECEF[t,1], r_MATS_ECEF[t,2] = _MATS_coordinates.eci2ecef(
                 r_MATS[t,0]*1000, r_MATS[t,1]*1000, r_MATS[t,2]*1000, current_time_datetime)
         
@@ -601,9 +591,8 @@ def Plotter(Data_MATS, Data_LP, Time, DataIndexStep, OHB_StartIndex, OHB_H5_Path
     except:
         pass
     
-    ############################## OHB DATA CALCULATIONS #########################
-    ##############################################################################
-    
+    "############ OHB DATA Extraction #########################"
+    "##############################################################################"
     if( OHB_H5_Path == ''):
         timesteps = 0
         OHB_StartIndex = 0
@@ -659,7 +648,7 @@ def Plotter(Data_MATS, Data_LP, Time, DataIndexStep, OHB_StartIndex, OHB_H5_Path
         if( len(Time_State_OHB) <= DataIndexStep*timesteps):
             timesteps = int(len(Time_State_OHB) / DataIndexStep)
         
-    
+    "#########################################################################"
     
     "Allocate Space"
     Time_MPL_OHB = zeros((timesteps,1))
@@ -699,6 +688,8 @@ def Plotter(Data_MATS, Data_LP, Time, DataIndexStep, OHB_StartIndex, OHB_H5_Path
     
     #ephemDate2MatplotDate = datestr2num('1899/12/31 12:00:00')
     
+    "############################################################ "
+    "############## OHB Data Calculations ###########"
     if( OHB_H5_Path != ''):
         
         Logger.info('Calculations of OHB Data')
@@ -797,12 +788,12 @@ def Plotter(Data_MATS, Data_LP, Time, DataIndexStep, OHB_StartIndex, OHB_H5_Path
             
             Time_MPL_OHB[t] = date2num(Time_OHB[t])
         
-    ############################## END OF OHB DATA CALCULATIONS #########################
-    #####################################################################################
+    "######### END OF OHB DATA CALCULATIONS #########################"
+    "#####################################################################################"
     
     
-    ########################## STK DATA ################################################
-    ####################################################################################
+    "########################## STK DATA ################################################"
+    "####################################################################################"
     
     
     Time_STK = []
@@ -890,18 +881,17 @@ def Plotter(Data_MATS, Data_LP, Time, DataIndexStep, OHB_StartIndex, OHB_H5_Path
         pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
     
         
-    ########################## End of STK DATA ################################################
-    ####################################################################################
+    "########################## End of STK DATA ################################################"
+    "####################################################################################"
     
     
     
-    ########################## Plotter ###########################################
-    ##############################################################################
+    
+    
+    "########################## Plotter ###########################################"
+    "##############################################################################"
     
     from mpl_toolkits.mplot3d import axes3d
-    
-    
-    
     
     #current_time_MPL_STK = ephemDate2MatplotDate + current_time_STK[:]
     #Time_MPL = [ephemDate2MatplotDate+x for x in Time]
@@ -911,13 +901,9 @@ def Plotter(Data_MATS, Data_LP, Time, DataIndexStep, OHB_StartIndex, OHB_H5_Path
     ax.set_xlim3d(-7000000, 7000000)
     ax.set_ylim3d(-7000000, 7000000)
     ax.set_zlim3d(-7000000, 7000000)
-    #ax.scatter(Data_MATS['r_MATS_ECEF'][1:100])
-    #ax.scatter(Data_MATS['r_LP_ECEF'][1:100])
     ax.scatter(Data_MATS['r_MATS_ECEF'][1:100,0], Data_MATS['r_MATS_ECEF'][1:100,1], Data_MATS['r_MATS_ECEF'][1:100,2])
-    #ax.scatter(r_MATS_STK_ECEF[1:100,0], r_MATS_STK_ECEF[1:100,1], r_MATS_STK_ECEF[1:100,2])
     ax.scatter(Data_LP['r_LP_ECEF'][1:100,0], Data_LP['r_LP_ECEF'][1:100,1], Data_LP['r_LP_ECEF'][1:100,2])
-    #ax.scatter(r_MATS_ECEF[1:100,0]*1000, r_MATS_ECEF[1:100,1]*1000, r_MATS_ECEF[1:100,2]*1000)
-    #ax.scatter(r_LP_ECEF[1:100,0], r_LP_ECEF[1:100,1], r_LP_ECEF[1:100,2])
+    
     
     fig = figure()
     plot_date(Time_MPL[:], Data_MATS['ScienceMode'][:], markersize = 1, label = 'Predicted')
@@ -1300,7 +1286,8 @@ def Plotter(Data_MATS, Data_LP, Time, DataIndexStep, OHB_StartIndex, OHB_H5_Path
     pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
     
     
-    "Save data to pickle files"
+    "######## Save data to pickle files ##########"
+    "################################################"
     DataPath = os.path.join(figureDirectory, 'Data_MATS.data.pickle')
     f = open(DataPath,"wb")
     pickle.dump(Data_MATS,f)
@@ -1315,6 +1302,8 @@ def Plotter(Data_MATS, Data_LP, Time, DataIndexStep, OHB_StartIndex, OHB_H5_Path
     f = open(DataPath,"wb")
     pickle.dump(Time,f)
     f.close()
+    
+    "#################################################"
     
     logging.shutdown()
     return Time_OHB

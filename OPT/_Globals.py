@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Globals for Operational_Planning_Tool.
+"""Global variables for Operational_Planning_Tool.
 
 **Globals:** \n
 Config_File: Contains the name of the used *Configuration File* as set by *Set_ConfigFile*. \n

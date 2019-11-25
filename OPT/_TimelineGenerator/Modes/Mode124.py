@@ -286,7 +286,7 @@ def date_calculator():
         
         "To be able to make time skips when the moon is far outside the orbital plane of MATS"
         if( (angle_between_orbital_plane_and_moon[t] > H_offset and yaw_correction == False) or 
-           angle_between_orbital_plane_and_moon[t] > H_offset+3.8 and yaw_correction == True):
+           angle_between_orbital_plane_and_moon[t] > H_offset+abs(Timeline_settings['yaw_amplitude']) and yaw_correction == True):
             
             
             current_time = ephem.Date(current_time+ephem.second * H_offset/4 / 360 * Moon_orbital_period)

@@ -35,8 +35,8 @@
 <span class="sd">&quot;&quot;&quot;Contain Macro functions, that calls for Command functions located in the *Commands* module.</span>
 
 <span class="sd">Macros consists of frequently used combinations of Commands. Each macro (except the CCD_macro) contain a </span>
-<span class="sd">*TC_acfLimbPointingAltitudeOffset* CMD, which will stagger the next CMD by a number of seconds equal to</span>
-<span class="sd"> *Timeline_settings[&#39;pointing_stabilization&#39;] when a new pointing altitude is set, or the previously set maximum TEXPMS when the pointing altitude is unchanged. </span>
+<span class="sd">*TC_acfLimbPointingAltitudeOffset* CMD, which will stagger the next CMD by a number of seconds equal to </span>
+<span class="sd">*Timeline_settings[&#39;pointing_stabilization&#39;]* when a new pointing altitude is set, or the previously set maximum TEXPMS when the pointing altitude is unchanged. </span>
 <span class="sd">This is important as the images need time to finish their current exposure before changing the CCD settings.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
@@ -209,8 +209,8 @@
 <span class="sd">    3. Run CCD Commands with given settings.</span>
 <span class="sd">    4. Run ArgFreezeStart Command with *FreezeTime*.</span>
 <span class="sd">    5. Run ArgFreezeDuration Command with *FreezeDuration*.</span>
-<span class="sd">    7. Take a Snapshot with each CCD (except Nadir) starting at *Snapshot_relativeTime* with a spacing of *SnapshotSpacing*.</span>
-<span class="sd">    8. Point the satellite to *StandardPointingAltitude*.</span>
+<span class="sd">    6. Take a Snapshot with each CCD (except Nadir) starting at *Snapshot_relativeTime* with a spacing of *SnapshotSpacing*.</span>
+<span class="sd">    7. Point the satellite to *StandardPointingAltitude*.</span>
 <span class="sd">    </span>
 <span class="sd">    Arguments:</span>
 <span class="sd">        root (lxml.etree._Element):  XML tree structure. Main container object for the ElementTree API.</span>
@@ -262,7 +262,7 @@
 <span class="sd">    1. Set Payload to idle mode</span>
 <span class="sd">    2. Point the satellite to *pointing_altitude*.</span>
 <span class="sd">    3. Run CCD Commands with given settings.</span>
-<span class="sd">    5. Take a Snapshot with each CCD (except Nadir) with a spacing of *SnapshotSpacing*.</span>
+<span class="sd">    4. Take a Snapshot with each CCD (except Nadir) with a spacing of *SnapshotSpacing*.</span>
 <span class="sd">    </span>
 <span class="sd">    Arguments:</span>
 <span class="sd">        root (lxml.etree._Element):  XML tree structure. Main container object for the ElementTree API.</span>
@@ -505,10 +505,10 @@
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -530,7 +530,7 @@
       &copy;2019, David Skånberg.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

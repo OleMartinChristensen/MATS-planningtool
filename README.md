@@ -1,15 +1,16 @@
 # MATS-planningtool
 Mission planning tool for the MATS satellite
 
-OPT (Operational_Planning_Tool) requires at least Python 3.7.3 and these packages:
+OPT (Operational_Planning_Tool) requires at least Python 3.7.3 and these packages (newer versions might work):
     
-    	ephem = Version: >= 3.7.6.0
-    	matplotlib = Version: >= 3.1.0
-    	scipy = Version: >= 1.3.0
+    	ephem = Version: = 3.7.6.0
+    	matplotlib = Version: = 3.1.1
+    	scipy = Version: = 1.2.1
     	lxml = Version: >= 4.3.3
     	astroquery, Version: >= 0.3.9, astropy
     	skyfield, Version: = 1.13
-	astropy, Version >= 3.2.1, astropy
+		astropy, Version >= 3.2.3, astropy
+		h5py, Version = 2.9.0
     
 It is recommended to install these packages in a conda environment using conda and to use "Spyder" as an scientific environment.
 
@@ -26,23 +27,23 @@ Tool may already be installed (scipy for example). Miniconda comes with no prein
 
 3. Run these commands in the "Anaconda Prompt" to install the desired packages. Alternatively run the CMD_file.bat in the "Anaconda Prompt".
 
-$ conda install -c anaconda ephem
+$ conda install -c anaconda ephem=3.7.6.0
 
 $ conda install -c conda-forge matplotlib=3.1.1 
 
-$ conda install -c anaconda scipy 
+$ conda install -c anaconda scipy=1.2.1
 
-$ conda install -c anaconda lxml
+$ conda install -c anaconda lxml=4.3.3
 
-$ conda install astropy=3.2.1
+$ conda install astropy=3.2.3
 
 $ conda install -c astropy astroquery=0.3.9
 
 $ conda install pip
 
-$ conda install -c anaconda h5py 
+$ conda install -c anaconda h5py=2.9.0
 
-$ conda install -c conda-forge skyfield=1.10
+$ conda install -c conda-forge skyfield=1.13
 
 
 4. Run the following command to list all currently installed packages and their version number.
@@ -79,4 +80,4 @@ of the Spyder project, as that directory is automatically part of the PYTHONPATH
 See further documentation found under "Docs" in OPT (Operational_Planning_Tool) to learn how to use the OPT package. The docs are automatically generated from the source code 
 by using the python package Sphinx. The documentation is saved in *OPT_Build_Extensive* and *OPT_Build_Simplified*, where the extensive one contains documentation about every part of OPT, 
 including private modules and packages, while the simplified one only contains information about the public functions which are meant to be used by the user. To rebuild the documentation, simply 
-run the Sphinx_CMD_File.bat in the anaconda prompt.
+run the Sphinx_CMD_File.bat in the anaconda prompt (requires installation of sphinx package).

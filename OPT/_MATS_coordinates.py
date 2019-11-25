@@ -39,8 +39,17 @@ import astropy.coordinates as coord
 
 
 from astropy.utils import iers
-iers.conf.auto_download = False  
-iers.conf.auto_max_age=60
+
+try:
+    iers.IERS_A.open(iers.IERS_A_URL)
+    iers.conf.auto_download = True
+except:
+    iers.conf.auto_download = False
+
+
+
+#iers.conf.auto_max_age=60
+
 
 
 def ecef2tanpoint(x,y,z,dx,dy,dz):

@@ -426,13 +426,13 @@
     <span class="k">if</span> <span class="ow">not</span><span class="p">(</span> <span class="p">(</span><span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">WDW</span> <span class="o">&lt;=</span> <span class="mi">7</span> <span class="ow">or</span> <span class="n">WDW</span> <span class="o">==</span> <span class="mi">128</span><span class="p">)</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">WDW</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span> <span class="p">):</span>
         <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Invalid argument: WDW&#39;</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span>
-    <span class="k">if</span><span class="p">(</span> <span class="n">WDW</span> <span class="o">==</span> <span class="mi">7</span> <span class="ow">and</span> <span class="n">JPEGQ</span> <span class="o">&lt;=</span> <span class="mi">100</span><span class="p">):</span>
-        <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Invalid argument: WDW == 7, but JPEGQ &lt;= 100&#39;</span><span class="p">)</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span>
-    <span class="k">if</span><span class="p">(</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">WDW</span> <span class="o">&lt;=</span> <span class="mi">4</span> <span class="ow">and</span> <span class="n">JPEGQ</span> <span class="o">&gt;=</span> <span class="mi">101</span><span class="p">):</span>
-        <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Invalid argument: 0 &lt;= WDW &lt;= 4, but JPEGQ &gt;= 101&#39;</span><span class="p">)</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span>
-    <span class="k">if</span> <span class="ow">not</span><span class="p">(</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">JPEGQ</span> <span class="o">&lt;=</span> <span class="mi">255</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">JPEGQ</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span> <span class="p">):</span>
+    <span class="c1">#if( WDW == 7 and JPEGQ &lt;= 100):</span>
+    <span class="c1">#    Logger.error(&#39;Invalid argument: WDW == 7, but JPEGQ &lt;= 100&#39;)</span>
+    <span class="c1">#    raise ValueError</span>
+    <span class="c1">#if( 0 &lt;= WDW &lt;= 4 and JPEGQ &gt;= 101):</span>
+    <span class="c1">#    Logger.error(&#39;Invalid argument: 0 &lt;= WDW &lt;= 4, but JPEGQ &gt;= 101&#39;)</span>
+    <span class="c1">#    raise ValueError</span>
+    <span class="k">if</span> <span class="ow">not</span><span class="p">(</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">JPEGQ</span> <span class="o">&lt;=</span> <span class="mi">100</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">JPEGQ</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span> <span class="p">):</span>
         <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Invalid argument: JPEGQ&#39;</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span>
     <span class="k">if</span> <span class="ow">not</span><span class="p">(</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">GAIN</span> <span class="o">&lt;=</span> <span class="mi">7</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">GAIN</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span> <span class="p">):</span>
@@ -882,10 +882,10 @@
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -907,7 +907,7 @@
       &copy;2019, David Skånberg.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

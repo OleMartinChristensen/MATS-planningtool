@@ -219,8 +219,11 @@ def Timeline_generator():
             elif( x[2] == 'HTR' ):
                 Config_File = { 'HTRSEL': '?', 'SET': '?', 
                           'PVALUE': '?' , 'IVALUE': '?', 'DVALUE': '?'}
+                
+            elif( x[2] == 'Payload_Power_Toggle' or x[2] == 'TurnONCCDs'):
+                Config_File = {}
             else:
-                Logger.error('No Config function for '+x[2])
+                Logger.warning('No Config function for '+x[2])
                 Config_File = {}
                     
             

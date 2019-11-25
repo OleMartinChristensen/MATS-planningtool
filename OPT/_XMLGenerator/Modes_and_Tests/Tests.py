@@ -2,7 +2,9 @@
 """
 Created on Fri Mar 22 12:34:33 2019
 
-Generates and calculates parameters for each Test, and converts them to strings,
+Tests are used during the commisioning phase of the satellite.
+
+Generates and calculates parameters for each Test used during the commisioning phase, and converts them to strings,
 then calls for macros, which will generate commands in the XML-file.
 
 Functions on the form "X", where the last X is any Test:
