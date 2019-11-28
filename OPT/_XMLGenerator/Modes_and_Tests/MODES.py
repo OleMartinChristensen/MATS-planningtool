@@ -27,7 +27,7 @@ import ephem, logging, sys, pylab, importlib, skyfield.api
 from OPT import _Globals
 
 OPT_Config_File = importlib.import_module(_Globals.Config_File)
-from OPT._Library import Satellite_Simulator, params_checker, utc_to_onboardTime, SunAngle
+from OPT._Library import Satellite_Simulator, params_checker, utc_to_onboardTime, SunAngle, CCDSELExtracter
 from .Macros_Commands import Macros, Commands
 
 Logger = logging.getLogger(OPT_Config_File.Logger_name())
@@ -710,6 +710,11 @@ def Mode120(root, date, duration, relativeTime,
     params = params_checker(params, settings, Logger)
     
     CCD_settings = OPT_Config_File.CCD_macro_settings('FullReadout')
+    for CCDSEL in [1,2,4,8,16,32,64]:
+        if( CCDSEL in params['CCDSELs'] ):
+            continue
+        else:
+            CCD_settings[CCDSEL]['TEXPMS'] = 0
     
     Mode12X(root, date, duration, relativeTime, 
                                   Timeline_settings = Timeline_settings, params = params, CCD_settings = CCD_settings)
@@ -832,6 +837,11 @@ def Mode124(root, date, duration, relativeTime,
     params = params_checker(params, settings, Logger)
     
     CCD_settings = OPT_Config_File.CCD_macro_settings('FullReadout')
+    for CCDSEL in [1,2,4,8,16,32]:
+        if( CCDSEL in params['CCDSELs'] ):
+            continue
+        else:
+            CCD_settings[CCDSEL]['TEXPMS'] = 0
     
     Mode12X(root, date, duration, relativeTime, 
                         Timeline_settings = Timeline_settings, params = params, CCD_settings = CCD_settings)

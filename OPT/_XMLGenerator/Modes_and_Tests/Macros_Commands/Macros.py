@@ -176,7 +176,7 @@ def Snapshot_Inertial_macro(root, relativeTime, CCD_settings, FreezeTime, Freeze
     3. Run CCD Commands with given settings.
     4. Run ArgFreezeStart Command with *FreezeTime*.
     5. Run ArgFreezeDuration Command with *FreezeDuration*.
-    6. Take a Snapshot with each CCD (except Nadir) starting at *Snapshot_relativeTime* with a spacing of *SnapshotSpacing*.
+    6. Take a Snapshot with each CCD (except Nadir and CCDs with TEXPMS=0) starting at *Snapshot_relativeTime* with a spacing of *SnapshotSpacing*.
     7. Point the satellite to *StandardPointingAltitude*.
     
     Arguments:
@@ -229,7 +229,7 @@ def Snapshot_Limb_Pointing_macro(root, relativeTime, CCD_settings, pointing_alti
     1. Set Payload to idle mode
     2. Point the satellite to *pointing_altitude*.
     3. Run CCD Commands with given settings.
-    4. Take a Snapshot with each CCD (except Nadir) with a spacing of *SnapshotSpacing*.
+    4. Take a Snapshot with each CCD (except Nadir and CCDs with TEXPMS=0) with a spacing of *SnapshotSpacing*.
     
     Arguments:
         root (lxml.etree._Element):  XML tree structure. Main container object for the ElementTree API.

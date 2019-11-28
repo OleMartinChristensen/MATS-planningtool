@@ -105,7 +105,7 @@ def date_calculator(Settings):
         timestep = Settings['timestep'] #In seconds
         Logger.info('timestep set to: '+str(timestep)+' s')
         
-        duration = Timeline_settings['duration']
+        duration = Settings['TimeToConsider']
         Logger.info('Duration set to: '+str(duration)+' s')
         
         timesteps = int(ceil(duration / timestep)) + 2

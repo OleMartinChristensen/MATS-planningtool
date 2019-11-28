@@ -19,7 +19,9 @@ if( __name__ == '__main__'):
     hour = sys.argv[5]
     minute = sys.argv[6]
     second = sys.argv[7]
-    #tlefile = sys.argv[3]
+    tle1 = sys.argv[8]
+    tle2 = sys.argv[9]
+    
     
     date = year+'/'+month+'/'+day+' '+hour+':'+minute+':'+second
     
@@ -28,11 +30,10 @@ if( __name__ == '__main__'):
     #print(ConfigFileName,date,tlefile)
     
     OPT.Copy_ConfigFile(ConfigFileName)
-    OPT.Set_ConfigFile(ConfigFileName, date)
+    OPT.Set_ConfigFile(ConfigFileName, date, tle1, tle2)
     OPT.CheckConfigFile()
     
-    #OPT.Create_ConfigFile(date,tlefile,configname)
-    #OPT.Set_ConfigFile(configname)
+    
     
     OPT.Timeline_gen()
 

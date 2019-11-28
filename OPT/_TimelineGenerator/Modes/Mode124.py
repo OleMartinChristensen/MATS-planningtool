@@ -80,13 +80,36 @@ def date_calculator():
     log_timestep = Mode124_settings['log_timestep']
     Logger.debug('log_timestep: '+str(log_timestep))
     
+    ##################################################
+    "Constants"
+    
+    Mode124Iteration = _Globals.Mode124Iteration
+    "Make the V_offset_Index go from 0 to len(Mode120_settings['V_offset']"
+    V_offset_Index = (Mode124Iteration-1) % (len(Mode124_settings['V_offset'])+1)
+    
+    V_offset = Mode124_settings['V_offset'][V_offset_Index]
+    H_offset = Mode124_settings['H_offset']  
+    pointing_altitude = Mode124_settings['pointing_altitude']/1000 
+    
+    Moon_orbital_period = 3600*24*27.32
+    yaw_correction = Timeline_settings['yaw_correction']
+    
+    Logger.debug('H_offset set to [degrees]: '+str(H_offset))
+    Logger.debug('V_offset set to [degrees]: '+str(V_offset))
+    Logger.debug('Moon_orbital_period [s]: '+str(Moon_orbital_period))
+    Logger.debug('yaw_correction set to: '+str(yaw_correction))
+    
+    TLE = OPT_Config_File.getTLE()
+    Logger.debug('TLE used: '+TLE[0]+TLE[1])
+    
+    ##########################################################
     
     "Simulation length and timestep"
     
     timestep = Mode124_settings['timestep'] #In seconds
     Logger.info('Timestep set to [s]: '+str(timestep))
     
-    duration = Timeline_settings['duration']
+    duration = Mode124_settings['TimeToConsider']
     Logger.info('Duration set to [s]: '+str(duration))
     
     timesteps = int(ceil(duration / timestep)) + 2
@@ -122,20 +145,7 @@ def date_calculator():
     Dec_optical_axis = zeros((timesteps,1))
     RA_optical_axis = zeros((timesteps,1))
     
-    "Constants"
-    pointing_altitude = Mode124_settings['pointing_altitude']/1000 
-    H_offset = Mode124_settings['H_offset']  #5.67 is actual H_offset
-    V_offset = Mode124_settings['V_offset'] 
-    Moon_orbital_period = 3600*24*27.32
-    yaw_correction = Timeline_settings['yaw_correction']
     
-    Logger.debug('H_offset set to [degrees]: '+str(H_offset))
-    Logger.debug('V_offset set to [degrees]: '+str(V_offset))
-    Logger.debug('Moon_orbital_period [s]: '+str(Moon_orbital_period))
-    Logger.debug('yaw_correction set to: '+str(yaw_correction))
-    
-    TLE = OPT_Config_File.getTLE()
-    Logger.debug('TLE used: '+TLE[0]+TLE[1])
     
     
     ts = api.load.timescale(builtin=True)

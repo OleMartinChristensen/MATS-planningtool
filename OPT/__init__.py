@@ -213,7 +213,7 @@ def XML_gen(science_mode_timeline_path):
 def Timeline_analyzer(science_mode_timeline_path, date):
     '''Invokes the Timeline_analyser program part of Operational Planning Tool.
     
-    Searches a Science Mode Timeline json file for a given date and returns the scheduled mode and its parameters
+    Searches a Science Mode Timeline json file for a given date and returns the scheduled mode and its parameters.
     
     Arguments:
         science_mode_timeline_path (str): path to the .json file containing the Science Mode Timeline
@@ -264,7 +264,7 @@ def Timeline_Plotter(Science_Mode_Path, OHB_H5_Path = '', STK_CSV_PATH = '', Tim
     
     Arguments:
         Science_Mode_Path (str): Path to the Science Mode Timeline to be plotted.
-        OHB_H5_Path (str): *Optional*. Path to the .h5 file containing position, time, and attitude data.
+        OHB_H5_Path (str): *Optional*. Path to the .h5 file containing position, time, and attitude data. The .h5 file is defined in the "Ground Segment ICD" document.
         STK_CSV_PATH (str): *Optional*. Path to the .csv file containing position (column 1-3), velocity (column 4-6), and time (column 7), generated in STK. Position and velocity data is assumed to be in km and in ICRF.
         Timestep (int): *Optional*. The chosen timestep of the simulation [s].
         
@@ -312,7 +312,7 @@ def Plot_Timeline_Plotter_Plots(FigureDirectory, FilesToPlot = ['ActiveScienceMo
 def MinimalScienceXML_gen():
     """Invokes the *MinimalScienceXML_gen* part of the *OPT*.
     
-    Creates an .xml file with fixed CMDs which  purpose is to be uploaded to the satellite 
+    Creates an .xml file with fixed CMDs which purpose is to define a flight procedure which is ran on the satellite 
     following unscheduled power termination of the payload.
     Runs startup CMDs and sets the payload in operational mode with the CCD macro *HighResIR*.
     The CMD staggering is fixed. No date is given in the generated XML and will need to be added manually.

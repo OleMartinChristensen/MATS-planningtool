@@ -718,6 +718,42 @@
     <span class="k">return</span> <span class="n">CCDSEL</span></div>
 
 
+<div class="viewcode-block" id="CCDSELExtracter"><a class="viewcode-back" href="../../OPT.html#OPT._Library.CCDSELExtracter">[docs]</a><span class="k">def</span> <span class="nf">CCDSELExtracter</span><span class="p">(</span><span class="n">CCDSEL</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Extract the individual CCDSEL (64, 32, 16, 8, 4, 2, 1) arguments from a number CCDSEL argument assuming the CCDSEL argument is valid.</span>
+<span class="sd">    </span>
+<span class="sd">    Argument:</span>
+<span class="sd">        CCDSEL (int): Value between 0 and 127 which represent the selection of a number of CCDs.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        (list of int): List containing individual CCDSEL arguments.</span>
+<span class="sd">    </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">CCDSELs</span> <span class="o">=</span> <span class="p">[</span><span class="mi">64</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="n">IndividualCCDSEL</span> <span class="o">=</span> <span class="p">[]</span>
+    
+    <span class="k">for</span> <span class="n">CCD</span> <span class="ow">in</span> <span class="n">CCDSELs</span><span class="p">:</span>
+        <span class="k">if</span><span class="p">(</span> <span class="n">CCDSEL</span> <span class="o">!=</span> <span class="mi">0</span> <span class="p">):</span>
+            <span class="n">rest</span> <span class="o">=</span> <span class="n">CCDSEL</span> <span class="o">%</span> <span class="n">CCD</span>
+            
+            <span class="k">if</span><span class="p">(</span><span class="n">rest</span> <span class="ow">in</span> <span class="n">CCDSELs</span><span class="p">):</span>
+                <span class="n">IndividualCCDSEL</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">rest</span><span class="p">)</span>
+                <span class="n">CCDSEL</span> <span class="o">-=</span> <span class="n">rest</span>
+                <span class="k">if</span><span class="p">(</span> <span class="n">CCD</span> <span class="o">&lt;=</span> <span class="n">CCDSEL</span><span class="p">):</span>
+                    <span class="n">IndividualCCDSEL</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CCD</span><span class="p">)</span>
+                    <span class="n">CCDSEL</span> <span class="o">-=</span> <span class="n">CCD</span>
+            <span class="k">else</span><span class="p">:</span>
+            <span class="c1">#elif( rest == 0 ):</span>
+                <span class="c1">#IndividualCCDSEL.append(CCD)</span>
+                <span class="c1">#CCDSEL -= CCD</span>
+                <span class="k">if</span><span class="p">(</span> <span class="n">CCD</span> <span class="o">&lt;=</span> <span class="n">CCDSEL</span><span class="p">):</span>
+                    <span class="n">IndividualCCDSEL</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">CCD</span><span class="p">)</span>
+                    <span class="n">CCDSEL</span> <span class="o">-=</span> <span class="n">CCD</span>
+                
+                
+    <span class="k">return</span> <span class="n">IndividualCCDSEL</span></div>
+
+
 <div class="viewcode-block" id="Satellite_Simulator"><a class="viewcode-back" href="../../OPT.html#OPT._Library.Satellite_Simulator">[docs]</a><span class="k">def</span> <span class="nf">Satellite_Simulator</span><span class="p">(</span> <span class="n">Satellite_skyfield</span><span class="p">,</span> <span class="n">SimulationTime</span><span class="p">,</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">pointing_altitude</span><span class="p">,</span> <span class="n">LogFlag</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">Logger</span> <span class="o">=</span> <span class="kc">None</span> <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Simulates a single point in time for a Satellite using Skyfield and also the pointing of the satellite.</span>
 <span class="sd">    </span>

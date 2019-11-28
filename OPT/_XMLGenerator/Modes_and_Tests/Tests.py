@@ -91,7 +91,7 @@ def Limb_functional_test(root, date, duration, relativeTime, Timeline_settings, 
     
     duration_flag = 0
     
-    JPEGQs = [101,95]
+    JPEGQs = [100,95]
     WDWs = [7, 128]
     altitudes = [50000,70000,90000,110000,130000,160000,200000]
     ExpTimes = params['ExpTimes']
@@ -328,7 +328,7 @@ def Nadir_functional_test(root, date, duration, relativeTime, Timeline_settings,
     
     duration_flag = 0
     
-    JPEGQs = [101,95]
+    JPEGQs = [100,95]
     WDWs = [7, 128]
     
     
@@ -481,7 +481,7 @@ def CCD_stability_test(root, date, duration, relativeTime, Timeline_settings, pa
     CCD_settings = OPT_Config_File.CCD_macro_settings('FullReadout')
     
     
-    JPEGQs = [101]
+    JPEGQs = [100]
     WDWs = [7]
     altitudes = [200000]
     ExpTimes = params['ExpTimes']

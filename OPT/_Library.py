@@ -685,6 +685,42 @@ def OrderingOfCCDSnapshots(CCD_settings):
     return CCDSEL
 
 
+def CCDSELExtracter(CCDSEL):
+    """Extract the individual CCDSEL (64, 32, 16, 8, 4, 2, 1) arguments from a number CCDSEL argument assuming the CCDSEL argument is valid.
+    
+    Argument:
+        CCDSEL (int): Value between 0 and 127 which represent the selection of a number of CCDs.
+    
+    Returns:
+        (list of int): List containing individual CCDSEL arguments.
+    
+    """
+    
+    CCDSELs = [64, 32, 16, 8, 4, 2, 1]
+    IndividualCCDSEL = []
+    
+    for CCD in CCDSELs:
+        if( CCDSEL != 0 ):
+            rest = CCDSEL % CCD
+            
+            if(rest in CCDSELs):
+                IndividualCCDSEL.append(rest)
+                CCDSEL -= rest
+                if( CCD <= CCDSEL):
+                    IndividualCCDSEL.append(CCD)
+                    CCDSEL -= CCD
+            else:
+            #elif( rest == 0 ):
+                #IndividualCCDSEL.append(CCD)
+                #CCDSEL -= CCD
+                if( CCD <= CCDSEL):
+                    IndividualCCDSEL.append(CCD)
+                    CCDSEL -= CCD
+                
+                
+    return IndividualCCDSEL
+
+
 def Satellite_Simulator( Satellite_skyfield, SimulationTime, Timeline_settings, pointing_altitude, LogFlag = False, Logger = None ):
     """Simulates a single point in time for a Satellite using Skyfield and also the pointing of the satellite.
     

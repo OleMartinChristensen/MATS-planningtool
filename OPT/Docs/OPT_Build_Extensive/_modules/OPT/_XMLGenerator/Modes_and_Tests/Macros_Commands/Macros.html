@@ -209,7 +209,7 @@
 <span class="sd">    3. Run CCD Commands with given settings.</span>
 <span class="sd">    4. Run ArgFreezeStart Command with *FreezeTime*.</span>
 <span class="sd">    5. Run ArgFreezeDuration Command with *FreezeDuration*.</span>
-<span class="sd">    6. Take a Snapshot with each CCD (except Nadir) starting at *Snapshot_relativeTime* with a spacing of *SnapshotSpacing*.</span>
+<span class="sd">    6. Take a Snapshot with each CCD (except Nadir and CCDs with TEXPMS=0) starting at *Snapshot_relativeTime* with a spacing of *SnapshotSpacing*.</span>
 <span class="sd">    7. Point the satellite to *StandardPointingAltitude*.</span>
 <span class="sd">    </span>
 <span class="sd">    Arguments:</span>
@@ -262,7 +262,7 @@
 <span class="sd">    1. Set Payload to idle mode</span>
 <span class="sd">    2. Point the satellite to *pointing_altitude*.</span>
 <span class="sd">    3. Run CCD Commands with given settings.</span>
-<span class="sd">    4. Take a Snapshot with each CCD (except Nadir) with a spacing of *SnapshotSpacing*.</span>
+<span class="sd">    4. Take a Snapshot with each CCD (except Nadir and CCDs with TEXPMS=0) with a spacing of *SnapshotSpacing*.</span>
 <span class="sd">    </span>
 <span class="sd">    Arguments:</span>
 <span class="sd">        root (lxml.etree._Element):  XML tree structure. Main container object for the ElementTree API.</span>

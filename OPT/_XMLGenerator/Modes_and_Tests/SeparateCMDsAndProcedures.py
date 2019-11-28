@@ -15,8 +15,8 @@ Functions on the form "X", where X is any CMD:
         **date** (*ephem.Date*): Starting date of the CMD. On the form of the ephem.Date class. \n
         **duration** (*int*): The duration of the CMD [s] as an integer class. \n
         **relativeTime** (*int*): The starting time [s] of the CMD with regard to the start of the timeline as an integer class \n
-        **Timeline_settings** (*dict*): Dictionary containing the settings of the Timeline given in either the *Science_Mode_Timeline* or the *Configuration File*. \n 
-        **params** (*dict*): Dictionary containing the parameters of the CMD given in the Science_Mode_Timeline.
+        **Timeline_settings** (*dict*): Dictionary containing the settings of the Timeline given in either the *Science Mode Timeline* or the *Configuration File*. \n 
+        **params** (*dict*): Dictionary containing the parameters of the CMD given in the Science Mode Timeline.
     
     Returns:
         None

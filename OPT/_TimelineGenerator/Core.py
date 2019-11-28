@@ -63,7 +63,7 @@ def Timeline_generator():
     
     "Create Occupied_Timeline dictionary with keys equal to keys of Scheduling_priority"
     Occupied_Timeline = {key:[] for key in Scheduling_priority}
-    "Create scheduled_instances dictionary with keys equal to keys of Scheduling_priority"
+    "Create scheduled_instances dictionary with keys equal to keys of Scheduling_priority. This will keep track of how many times something is scheduled"
     scheduled_instances = {key:0 for key in Scheduling_priority}
     
     Logger.debug('')
@@ -88,6 +88,11 @@ def Timeline_generator():
         
         Logger.info('Start of '+scimod)
         Logger.info('')
+        
+        if( scimod == 'Mode120'):
+            _Globals.Mode120Iteration += 1
+        elif( scimod == 'Mode124'):
+            _Globals.Mode124Iteration += 1
         
         "Get the function of the same name as the string in Scheduling_priority"
         try:
@@ -115,7 +120,7 @@ def Timeline_generator():
             if( Occupied_Timeline[scimod][scheduled_instances[scimod]-1][0] < Timeline_start_date or 
                    Occupied_Timeline[scimod][scheduled_instances[scimod]-1][0] > (Timeline_start_date+ephem.second*Timeline_settings['duration']) or
                    Occupied_Timeline[scimod][scheduled_instances[scimod]-1][1] - Occupied_Timeline[scimod][scheduled_instances[scimod]-1][0] > Timeline_settings['duration']):
-                Logger.warning(scimod+' scheduled outside of timeline as defined in OPT_Config_File')
+                Logger.error(scimod+' scheduled outside of timeline as defined in OPT_Config_File')
                 
                 #input('Enter anything to acknowledge and continue\n')
             

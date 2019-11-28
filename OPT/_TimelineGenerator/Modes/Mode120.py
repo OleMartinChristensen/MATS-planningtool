@@ -37,6 +37,8 @@ def Mode120(Occupied_Timeline):
     
     Settings = OPT_Config_File.Mode120_settings()
     
+    #for V_offset_Index in range(len(Settings['V_offset'])):
+    
     if( Settings['automatic'] == False ):
         Occupied_Timeline, comment = UserProvidedDateScheduler(Occupied_Timeline, Settings)
     elif( Settings['automatic'] == True ):
@@ -74,6 +76,29 @@ def Mode120_date_calculator():
     Timeline_settings = OPT_Config_File.Timeline_settings()
     Mode120_settings = OPT_Config_File.Mode120_settings()
     
+    ######################################################
+    "Constants"
+    Mode120Iteration = _Globals.Mode120Iteration
+    "Make the V_offset_Index go from 0 to len(Mode120_settings['V_offset']"
+    V_offset_Index = (Mode120Iteration-1) % (len(Mode120_settings['V_offset'])+1)
+    
+    V_offset = Mode120_settings['V_offset'][V_offset_Index]
+    H_offset = Mode120_settings['H_offset']
+    
+    pointing_altitude = Mode120_settings['pointing_altitude']/1000 
+    yaw_correction = Timeline_settings['yaw_correction']
+    
+    Logger.debug('H_offset set to [degrees]: '+str(H_offset))
+    Logger.debug('V_offset set to [degrees]: '+str(V_offset))
+    Logger.debug('yaw_correction set to: '+str(yaw_correction))
+    
+    TLE = OPT_Config_File.getTLE()
+    Logger.debug('TLE used: '+TLE[0]+TLE[1])
+    
+    TimeSkips = 0
+    Timeskip = Mode120_settings['TimeSkip']
+    
+    ####################################################
     
     "Simulation length and timestep"
     log_timestep = Mode120_settings['log_timestep']
@@ -82,6 +107,7 @@ def Mode120_date_calculator():
     timestep = Mode120_settings['timestep'] #In seconds
     Logger.info('timestep set to: '+str(timestep)+' s')
     
+    duration = Mode120_settings['TimeToConsider']
     duration = Timeline_settings['duration']
     Logger.info('Duration set to: '+str(duration)+' s')
     
@@ -90,7 +116,7 @@ def Mode120_date_calculator():
     
     timeline_start = ephem.Date(Timeline_settings['start_date'])
     initial_time = ephem.Date( timeline_start + ephem.second*Mode120_settings['freeze_start'] )
-    
+    current_time = initial_time
     Logger.info('Initial simulation date set to: '+str(initial_time))
     
     
@@ -166,28 +192,7 @@ def Mode120_date_calculator():
     
     angle_between_orbital_plane_and_star = zeros((timesteps,ROWS))
     
-    "Constants"
-    pointing_altitude = Mode120_settings['pointing_altitude']/1000 
     
-    V_offset = Mode120_settings['V_offset']
-    H_offset = Mode120_settings['H_offset']
-    
-    
-    yaw_correction = Timeline_settings['yaw_correction']
-    
-    Logger.debug('H_offset set to [degrees]: '+str(H_offset))
-    Logger.debug('V_offset set to [degrees]: '+str(V_offset))
-    Logger.debug('yaw_correction set to: '+str(yaw_correction))
-    
-    TLE = OPT_Config_File.getTLE()
-    Logger.debug('TLE used: '+TLE[0]+TLE[1])
-    #MATS = ephem.readtle('MATS',TLE[0],TLE[1])
-    
-    #date = initial_time
-    current_time = initial_time
-    
-    TimeSkips = 0
-    Timeskip = Mode120_settings['TimeSkip']
     
     MATS_skyfield = api.EarthSatellite(TLE[0], TLE[1])
     

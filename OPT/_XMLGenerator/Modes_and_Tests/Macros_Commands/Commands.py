@@ -8,7 +8,7 @@ Each Command function has these inputs/outputs in common.
 
     **Arguments:**
         **root** (*lxml.etree.Element*):  XML tree structure. Main container object for the ElementTree API. \n
-        **relativeTime** (*int*): The *relativeTime* of the CMD with regard to the start of the timeline [s]. \n
+        **relativeTime** (*float*): The *relativeTime* of the CMD with regard to the start of the timeline [s]. \n
         **CMD specific parameters**: A number of CMD specific parameters as defined in "InnoSat Payload Timeline XML Definition" document for each corresponding command. \n
         **Timeline_settings** (*dict*): Dictionary containing the settings of the Timeline given in either the *Science_Mode_Timeline* or the *Configuration File*. \n
         **comment** (*str*): A comment regarding the CMD.
@@ -46,7 +46,7 @@ def TC_pafMode(root, relativeTime, MODE, Timeline_settings, comment = ''):
     etree.SubElement(root[1], 'command', mnemonic = "TC_pafMODE")
     
     etree.SubElement(root[1][len(root[1])-1], 'relativeTime')
-    root[1][len(root[1])-1][0].text = str(relativeTime)
+    root[1][len(root[1])-1][0].text = str(int(relativeTime))
     
     etree.SubElement(root[1][len(root[1])-1], 'comment')
     root[1][len(root[1])-1][1].text = comment
@@ -96,7 +96,7 @@ def TC_acfLimbPointingAltitudeOffset(root, relativeTime, Initial, Final, Rate, T
     etree.SubElement(root[1], 'command', mnemonic = "TC_acfLimbPointingAltitudeOffset")
     
     etree.SubElement(root[1][len(root[1])-1], 'relativeTime')
-    root[1][len(root[1])-1][0].text = str(relativeTime)
+    root[1][len(root[1])-1][0].text = str(int(relativeTime))
     
     etree.SubElement(root[1][len(root[1])-1], 'comment')
     root[1][len(root[1])-1][1].text = comment
@@ -148,7 +148,7 @@ def TC_affArgFreezeStart(root, relativeTime, StartTime, Timeline_settings, comme
     etree.SubElement(root[1], 'command', mnemonic = "TC_affArgFreezeStart")
     
     etree.SubElement(root[1][len(root[1])-1], 'relativeTime')
-    root[1][len(root[1])-1][0].text = str(relativeTime)
+    root[1][len(root[1])-1][0].text = str(int(relativeTime))
     
     etree.SubElement(root[1][len(root[1])-1], 'comment')
     root[1][len(root[1])-1][1].text = comment
@@ -175,7 +175,7 @@ def TC_affArgFreezeDuration(root, relativeTime, FreezeDuration, Timeline_setting
     etree.SubElement(root[1], 'command', mnemonic = "TC_affArgFreezeDuration")
     
     etree.SubElement(root[1][len(root[1])-1], 'relativeTime')
-    root[1][len(root[1])-1][0].text = str(relativeTime)
+    root[1][len(root[1])-1][0].text = str(int(relativeTime))
     
     etree.SubElement(root[1][len(root[1])-1], 'comment')
     root[1][len(root[1])-1][1].text = comment
@@ -202,7 +202,7 @@ def TC_acfArgEnableYawComp(root, relativeTime, EnableYawComp, Timeline_settings,
     etree.SubElement(root[1], 'command', mnemonic = "TC_acfArgEnableYawComp")
     
     etree.SubElement(root[1][len(root[1])-1], 'relativeTime')
-    root[1][len(root[1])-1][0].text = str(relativeTime)
+    root[1][len(root[1])-1][0].text = str(int(relativeTime))
     
     etree.SubElement(root[1][len(root[1])-1], 'comment')
     root[1][len(root[1])-1][1].text = comment
@@ -229,7 +229,7 @@ def TC_pafPWRToggle(root, relativeTime, CONST, Timeline_settings, comment = ''):
     etree.SubElement(root[1], 'command', mnemonic = "TC_pafPWRTOGGLE")
     
     etree.SubElement(root[1][len(root[1])-1], 'relativeTime')
-    root[1][len(root[1])-1][0].text = str(relativeTime)
+    root[1][len(root[1])-1][0].text = str(int(relativeTime))
     
     etree.SubElement(root[1][len(root[1])-1], 'comment')
     root[1][len(root[1])-1][1].text = comment
@@ -268,7 +268,7 @@ def TC_pafUpload(root, relativeTime, PINDEX, PTOTAL, WFLASH, NIMG, IMG, Timeline
     etree.SubElement(root[1], 'command', mnemonic = "TC_pafUPLOAD")
     
     etree.SubElement(root[1][len(root[1])-1], 'relativeTime')
-    root[1][len(root[1])-1][0].text = str(relativeTime)
+    root[1][len(root[1])-1][0].text = str(int(relativeTime))
     
     etree.SubElement(root[1][len(root[1])-1], 'comment')
     root[1][len(root[1])-1][1].text = comment
@@ -325,7 +325,7 @@ def TC_pafHTR(root, relativeTime, HTRSEL, SET, PVALUE, IVALUE, DVALUE, Timeline_
     etree.SubElement(root[1], 'command', mnemonic = "TC_pafHTR")
     
     etree.SubElement(root[1][len(root[1])-1], 'relativeTime')
-    root[1][len(root[1])-1][0].text = str(relativeTime)
+    root[1][len(root[1])-1][0].text = str(int(relativeTime))
     
     etree.SubElement(root[1][len(root[1])-1], 'comment')
     root[1][len(root[1])-1][1].text = comment
@@ -431,7 +431,7 @@ def TC_pafCCDMain(root, relativeTime, CCDSEL, PWR, TEXPMS, TEXPIMS, NRSKIP, NRBI
     etree.SubElement(root[1], 'command', mnemonic = "TC_pafCCD")
     
     etree.SubElement(root[1][len(root[1])-1], 'relativeTime')
-    root[1][len(root[1])-1][0].text = str(relativeTime)
+    root[1][len(root[1])-1][0].text = str(int(relativeTime))
     
     etree.SubElement(root[1][len(root[1])-1], 'comment')
     root[1][len(root[1])-1][1].text = comment
@@ -520,7 +520,7 @@ def TC_pafCCDSYNCHRONIZE( root, relativeTime, CCDSEL, NCCD, TEXPIOFS, Timeline_s
     etree.SubElement(root[1], 'command', mnemonic = "TC_pafCCDSYNCHRONIZE")
     
     etree.SubElement(root[1][len(root[1])-1], 'relativeTime')
-    root[1][len(root[1])-1][0].text = str(relativeTime)
+    root[1][len(root[1])-1][0].text = str(int(relativeTime))
     
     etree.SubElement(root[1][len(root[1])-1], 'comment')
     root[1][len(root[1])-1][1].text = comment
@@ -575,7 +575,7 @@ def TC_pafCCDBadColumn(root, relativeTime, CCDSEL, NBC, BC, Timeline_settings, c
     etree.SubElement(root[1], 'command', mnemonic = "TC_pafCCDBadColumn")
     
     etree.SubElement(root[1][len(root[1])-1], 'relativeTime')
-    root[1][len(root[1])-1][0].text = str(relativeTime)
+    root[1][len(root[1])-1][0].text = str(int(relativeTime))
     
     etree.SubElement(root[1][len(root[1])-1], 'comment')
     root[1][len(root[1])-1][1].text = comment
@@ -614,7 +614,7 @@ def TC_pafCCDFlushBadColumns(root, relativeTime, CCDSEL, Timeline_settings, comm
     etree.SubElement(root[1], 'command', mnemonic = "TC_pafCCDFlushBadColumns")
     
     etree.SubElement(root[1][len(root[1])-1], 'relativeTime')
-    root[1][len(root[1])-1][0].text = str(relativeTime)
+    root[1][len(root[1])-1][0].text = str(int(relativeTime))
     
     etree.SubElement(root[1][len(root[1])-1], 'comment')
     root[1][len(root[1])-1][1].text = comment
@@ -644,7 +644,7 @@ def TC_pafCCDBIAS(root, relativeTime, CCDSEL, VGATE, VSUBST, VRD, VOD, Timeline_
     etree.SubElement(root[1], 'command', mnemonic = "TC_pafCCDBIAS")
     
     etree.SubElement(root[1][len(root[1])-1], 'relativeTime')
-    root[1][len(root[1])-1][0].text = str(relativeTime)
+    root[1][len(root[1])-1][0].text = str(int(relativeTime))
     
     etree.SubElement(root[1][len(root[1])-1], 'comment')
     root[1][len(root[1])-1][1].text = comment
@@ -684,7 +684,7 @@ def TC_pafCCDSnapshot(root, relativeTime, CCDSEL, Timeline_settings, comment = '
     etree.SubElement(root[1], 'command', mnemonic = "TC_pafCCDSNAPSHOT")
     
     etree.SubElement(root[1][len(root[1])-1], 'relativeTime')
-    root[1][len(root[1])-1][0].text = str(relativeTime)
+    root[1][len(root[1])-1][0].text = str(int(relativeTime))
     
     etree.SubElement(root[1][len(root[1])-1], 'comment')
     root[1][len(root[1])-1][1].text = comment
@@ -714,7 +714,7 @@ def TC_pafCCDTRANSPARENTCMD(root, relativeTime, CCDSEL, CHAR, Timeline_settings,
     etree.SubElement(root[1], 'command', mnemonic = "TC_pafCCDTRANSPARENTCMD")
     
     etree.SubElement(root[1][len(root[1])-1], 'relativeTime')
-    root[1][len(root[1])-1][0].text = str(relativeTime)
+    root[1][len(root[1])-1][0].text = str(int(relativeTime))
     
     etree.SubElement(root[1][len(root[1])-1], 'comment')
     root[1][len(root[1])-1][1].text = comment
@@ -744,7 +744,7 @@ def TC_pafDbg(root, relativeTime, CCDSEL, Timeline_settings, comment = ''):
     etree.SubElement(root[1], 'command', mnemonic = "TC_pafDbg")
     
     etree.SubElement(root[1][len(root[1])-1], 'relativeTime')
-    root[1][len(root[1])-1][0].text = str(relativeTime)
+    root[1][len(root[1])-1][0].text = str(int(relativeTime))
     
     etree.SubElement(root[1][len(root[1])-1], 'comment')
     root[1][len(root[1])-1][1].text = comment
@@ -775,7 +775,7 @@ def TC_pafPM(root, relativeTime, TEXPMS, TEXPIMS, Timeline_settings, comment = '
     etree.SubElement(root[1], 'command', mnemonic = "TC_pafPM")
     
     etree.SubElement(root[1][len(root[1])-1], 'relativeTime')
-    root[1][len(root[1])-1][0].text = str(relativeTime)
+    root[1][len(root[1])-1][0].text = str(int(relativeTime))
     
     etree.SubElement(root[1][len(root[1])-1], 'comment')
     root[1][len(root[1])-1][1].text = comment
@@ -804,7 +804,7 @@ def Payload_Power_Toggle(root, relativeTime, Timeline_settings, comment = ''):
     etree.SubElement(root[1], 'procedure', mnemonic = "FCP-MTS-0035_Payload_Power_Toggle")
     
     etree.SubElement(root[1][len(root[1])-1], 'relativeTime')
-    root[1][len(root[1])-1][0].text = str(relativeTime)
+    root[1][len(root[1])-1][0].text = str(int(relativeTime))
     
     etree.SubElement(root[1][len(root[1])-1], 'comment')
     root[1][len(root[1])-1][1].text = comment

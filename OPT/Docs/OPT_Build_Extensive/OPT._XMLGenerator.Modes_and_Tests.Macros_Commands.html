@@ -47,7 +47,7 @@ Also checks if parameters given are valid for the CMDs.</p>
 <blockquote>
 <div><dl>
 <dt><strong>Arguments:</strong></dt><dd><p><strong>root</strong> (<em>lxml.etree.Element</em>):  XML tree structure. Main container object for the ElementTree API.</p>
-<p><strong>relativeTime</strong> (<em>int</em>): The <em>relativeTime</em> of the CMD with regard to the start of the timeline [s].</p>
+<p><strong>relativeTime</strong> (<em>float</em>): The <em>relativeTime</em> of the CMD with regard to the start of the timeline [s].</p>
 <p><strong>CMD specific parameters</strong>: A number of CMD specific parameters as defined in &quot;InnoSat Payload Timeline XML Definition&quot; document for each corresponding command.</p>
 <p><strong>Timeline_settings</strong> (<em>dict</em>): Dictionary containing the settings of the Timeline given in either the <em>Science_Mode_Timeline</em> or the <em>Configuration File</em>.</p>
 <p><strong>comment</strong> (<em>str</em>): A comment regarding the CMD.</p>
@@ -293,7 +293,7 @@ TEXPIMS for all the CCDs except nadir is set to the same value to allow Synchron
 <li><p>Run CCD Commands with given settings.</p></li>
 <li><p>Run ArgFreezeStart Command with <em>FreezeTime</em>.</p></li>
 <li><p>Run ArgFreezeDuration Command with <em>FreezeDuration</em>.</p></li>
-<li><p>Take a Snapshot with each CCD (except Nadir) starting at <em>Snapshot_relativeTime</em> with a spacing of <em>SnapshotSpacing</em>.</p></li>
+<li><p>Take a Snapshot with each CCD (except Nadir and CCDs with TEXPMS=0) starting at <em>Snapshot_relativeTime</em> with a spacing of <em>SnapshotSpacing</em>.</p></li>
 <li><p>Point the satellite to <em>StandardPointingAltitude</em>.</p></li>
 </ol>
 <dl class="field-list simple">
@@ -330,7 +330,7 @@ TEXPIMS for all the CCDs except nadir is set to the same value to allow Synchron
 <li><p>Set Payload to idle mode</p></li>
 <li><p>Point the satellite to <em>pointing_altitude</em>.</p></li>
 <li><p>Run CCD Commands with given settings.</p></li>
-<li><p>Take a Snapshot with each CCD (except Nadir) with a spacing of <em>SnapshotSpacing</em>.</p></li>
+<li><p>Take a Snapshot with each CCD (except Nadir and CCDs with TEXPMS=0) with a spacing of <em>SnapshotSpacing</em>.</p></li>
 </ol>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>

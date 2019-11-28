@@ -155,7 +155,7 @@ def Operational_Science_Mode_settings():
     
     **Keys:**
         'lat': Applies only to Mode1! Sets in degrees the latitude (+ and -) that the LP crosses that causes the UV exposure to swith on/off. (int) \n
-        'log_timestep': Sets the frequency of data being logged [s] for Mode1-2. Only determines how much of simulated data is logged for debugging purposes. (int) \n
+        'log_timestep': Used only in *XML_gen*. Sets the frequency of data being logged [s] for Mode1-2. Only determines how much of simulated data is logged for debugging purposes. (int) \n
         'timestep': Sets the timestep [s] of the XML generator simulation of Mode1-2. Will impact accuracy of command generation but also drastically changes the runtime of XML-gen. (int) \n
         'Choose_Mode5CCDMacro': Applies only to Mode5! Sets the CCD macro to be used by Mode5. Used as input to *CCD_macro_settings* (str).
         
@@ -188,10 +188,10 @@ def Mode100_settings():
     '''Returns settings related to Mode100.
     
     **Keys in returned dict:**
-        'pointing_altitude_from': Sets in meters the starting altitude. (int) \n
-        'pointing_altitude_to': Sets in meters the ending altitude. (int) \n
-        'pointing_altitude_interval': Sets in meters the interval size of each succesive pointing. (int) \n
-        'pointing_duration': Sets the time [s] from attitude stabilization until next pointing command. (int) \n
+        'pointing_altitude_from': Sets in meters the starting altitude. Part in determining the estimated duration of the mode. (int) \n
+        'pointing_altitude_to': Sets in meters the ending altitude. Part in determining the estimated duration of the mode. (int) \n
+        'pointing_altitude_interval': Sets in meters the interval size of each succesive pointing. Part in determining the estimated duration of the mode. (int) \n
+        'pointing_duration': Sets the time [s] from attitude stabilization until next pointing command. Part in determining the estimated duration of the mode. (int) \n
         'Exp_Time_IR': Sets starting exposure time [ms] as a integer. \n
         'Exp_Time_UV': Sets starting exposure time [ms] as a integer. \n
         'ExpTime_step': Sets in ms the interval size of both ExpTimeUV and ExpTimeIR for each succesive pointing. (int) \n
@@ -211,9 +211,9 @@ def Mode110_settings():
     '''Returns settings related to Mode110.
     
     **Keys in returned dict:**
-        'pointing_altitude_from': Sets in meters the starting altitude of the sweep. (int) \n
-        'pointing_altitude_to': Sets in meters the ending altitude of the sweep. (int) \n
-        'sweep_rate': Sets the rate of the sweep in m/s. (int) \n
+        'pointing_altitude_from': Sets in meters the starting altitude of the sweep. Part in determining the estimated duration of the mode. (int) \n
+        'pointing_altitude_to': Sets in meters the ending altitude of the sweep. Part in determining the estimated duration of the mode. (int) \n
+        'sweep_rate': Sets the rate of the sweep in m/s. Part in determining the estimated duration of the mode. (int) \n
         'start_date': Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). If the date is set to '0', Timeline_settings['start_date'] will be used.
         'Exp_Time_IR': Sets exposure time [ms] of the IR CCDs. (int) \n
         'Exp_Time_UV': Sets exposure time [ms] of the UV CCDs. (int) \n
@@ -232,28 +232,30 @@ def Mode120_settings():
     
     **Keys in returned dict:**
         'pointing_altitude': Sets in meters the altitude of the pointing command. (int) \n
-        'V_offset': Used only in *Timeline_gen*. Sets the Vertical-offset angle (position in FOV) in degrees for the star, when the attitude freeze command is scheduled. (int) \n
+        'V_offset': Used only in *Timeline_gen*. Sets the Vertical-offset angle (position in FOV) in degrees for the star, when the attitude freeze command is scheduled. 
+        Multiple values can be set but additional values will only be used when Mode120 is scheduled several times. (list of int) \n
         'H_offset': Used only in *Timeline_gen*. Sets the maximum Horizontal-offset angle in degrees that determines if stars are visible. (int) \n
         'Vmag': Used only in *Timeline_gen*. Sets the Johnson V magnitude of stars to be considered (as a string expression, example '<2'). Drastically changes the runtime. \n
+        'TimeToConsider': Used only in *Timeline_gen*. Sets the time in seconds for which scheduling is valid. Used to plan star calibration at the start of each timeline (useful as TLE accuracy deteriorates). Drastically affects simulation time. (int) \n
         'timestep': Used only in *Timeline_gen*. Sets timestep used in scheduling simulation [s]. Will impact scheduling accuracy. (int) \n
         'TimeSkip': Used only in *Timeline_gen*. Set the amount of seconds to skip ahead after one complete orbit is simulated. Will drastically change the runtime of the simulation. (int) \n
-        'log_timestep': Sets the timestep of data being logged [s]. Only determines how much of simulated data is logged for debugging purposes.. (int) \n
+        'log_timestep': Used only in *Timeline_gen*. Sets the timestep of data being logged [s]. Only determines how much of simulated data is logged for debugging purposes.. (int) \n
         'automatic': Used only in *Timeline_gen*. Sets if 'start_date' will be calculated or user provided. True for calculated and False for user provided. (bool) \n
         'start_date':  Note! only applies if *automatic* is set to False. Used only in *Timeline_gen*. Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). If set to '0', Timeline_settings['start_date'] will be used. \n
-        'freeze_start': Sets in seconds the time from start of the Mode to when the attitude freezes. (int) \n
-        'freeze_duration': Sets in seconds the duration of the attitude freeze. If set to 0, it will be estimated to a 
+        'freeze_start': Sets in seconds the time from start of the Mode to when the attitude freezes. Part in determining the estimated duration of the mode. (int) \n
+        'freeze_duration': Sets in seconds the duration of the attitude freeze. Part in determining the estimated duration of the mode. If set to 0, it will be estimated to a 
         value corresponding to the attitude being frozen until realigned with *Timeline_settings['StandardPointingAltitude']* (Normally around 50 s). (int) \n
         'SnapshotTime': Sets in seconds the time, from the start of the attitude freeze, to when the first Snapshot is taken. (int) \n
-        'SnapshotSpacing': Sets in seconds the time inbetween Snapshots with individual CCDs. (int)
-        
+        'SnapshotSpacing': Sets in seconds the time inbetween Snapshots with individual CCDs. (int) \n
+        'CCDSELs': List of CCDSEL arguments (except nadir) for which to take snapshots with. (list of int)
     
     Returns:
         (:obj:`dict`): settings
     
     '''
-    settings = {'pointing_altitude': 230000, 'V_offset': 0, 'H_offset': 2.5, 'Vmag': '<2', 'timestep': 2, 'TimeSkip': 3600*4, 'log_timestep': 3600, 
+    settings = {'pointing_altitude': 230000, 'V_offset': [-0.6, 0.6], 'H_offset': 1.5, 'TimeToConsider': 4*3600,  'Vmag': '<2', 'timestep': 2, 'TimeSkip': 3600*2, 'log_timestep': 3600, 
                       'automatic': True, 'start_date': '0', 'freeze_start': 150, 
-                      'freeze_duration': 0, 'SnapshotTime': 3, 'SnapshotSpacing': 3}
+                      'freeze_duration': 0, 'SnapshotTime': 3, 'SnapshotSpacing': 6, 'CCDSELs': [16,32,1,8]}
     
     if( settings['freeze_duration'] == 0):
         settings['freeze_duration'] = _Library.FreezeDuration_calculator( Timeline_settings()['StandardPointingAltitude'], settings['pointing_altitude'], getTLE()[1])
@@ -268,22 +270,23 @@ def Mode121_122_123_settings():
         'pointing_altitude': Sets in meters the altitude of the pointing command. (int) \n
         'H_FOV': Used only in *Timeline_gen*. Sets full Horizontal FOV of the Limb instrument in degrees. Used to determine if stars are visible. (float) \n
         'V_FOV': Used only in *Timeline_gen*. Sets full Vertical FOV of the Limb instrument in degrees. Used to determine if stars are visible. (float) \n
+        'TimeToConsider': Used only in *Timeline_gen*. Sets the time in seconds for which scheduling is valid. Used to plan calibration at the start of each timeline (useful as TLE accuracy deteriorates). Drastically affects simulation time at the cost of fewer time slots being considered. (int) \n
         'Vmag': Used only in *Timeline_gen*. Sets the Johnson V magnitude of stars to be considered (as a string expression, example '<2'). Drastically changes the runtime. \n
         'timestep': Used only in *Timeline_gen*. Set timestep used in scheduling simulation [s]. Will impact scheduling accuracy. (int) \n
         'TimeSkip': Used only in *Timeline_gen*. Set the amount of seconds to skip ahead after one complete orbit is simulated. Will drastically change the runtime of the simulation. (float) \n
-        'log_timestep': Sets the timestep of data being logged [s]. Only determines how much of simulated data is logged for debugging purposes. (int) \n
-        'freeze_start': Sets in seconds, the time from start of the Mode to when the attitude freezes. (int) \n
-        'freeze_duration': Sets in seconds the duration of the attitude freeze. If set to 0, it will be estimated to a 
+        'log_timestep': Used only in *Timeline_gen*. Sets the timestep of data being logged [s]. Only determines how much of simulated data is logged for debugging purposes. (int) \n
+        'freeze_start': Sets in seconds, the time from start of the Mode to when the attitude freezes. Part in determining the estimated duration of the mode. (int) \n
+        'freeze_duration': Sets in seconds the duration of the attitude freeze. Part in determining the estimated duration of the mode. If set to 0, it will be estimated to a 
         value corresponding to the attitude being frozen until realigned with *Timeline_settings['StandardPointingAltitude']* (Normally around 50 s). (int) \n
         'SnapshotTime': Sets in seconds the time, from the start of the attitude freeze, to when the first Snapshot is taken. (int) \n
-        'SnapshotSpacing': Sets in seconds the time inbetween Snapshots with individual CCDs. (int)
+        'SnapshotSpacing': Sets in seconds the time inbetween Snapshots with individual CCDs. Needs to be larger than any CCD ReadoutTimes to avoid streaks. (int)
     
     Returns:
         (:obj:`dict`): settings
     
     '''
-    settings = {'pointing_altitude': 230000, 'H_FOV': 5.67, 'V_FOV': 0.91, 'Vmag': '<5', 'timestep': 5, 'TimeSkip': 3600*4, 'log_timestep': 3600, 
-                      'freeze_start': 150, 
+    settings = {'pointing_altitude': 230000, 'H_FOV': 6, 'V_FOV': 1.5, 'TimeToConsider': 4*3600, 'Vmag': '<4', 
+                'timestep': 6, 'TimeSkip': 3600*4, 'log_timestep': 3600, 'freeze_start': 150, 
                       'freeze_duration': 0, 'SnapshotTime': 2, 'SnapshotSpacing': 3}
     
     if( settings['freeze_duration'] == 0):
@@ -360,25 +363,28 @@ def Mode124_settings():
     
     **Keys in returned dict:**
         'pointing_altitude': Sets in meters the altitude of the pointing command. (int) \n
-        'V_offset': Used only in *Timeline_gen*. Sets the Vertical-offset angle (position in FOV) in degrees for the star , when the attitude freeze command is scheduled. (float) \n
+        'V_offset': Used only in *Timeline_gen*. Sets the Vertical-offset angle (position in FOV) in degrees for the star , when the attitude freeze command is scheduled. 
+        Multiple values can be set but additional values will only be used when Mode124 is scheduled several times. (list of int) \n
         'H_offset': Used only in *Timeline_gen*. Sets the maximum H-offset angle from the optical axis in degrees that determines if the Moon is available. (float) \n
+        'TimeToConsider': Used only in *Timeline_gen*. Sets the time in seconds for which scheduling is valid. Used to plan calibration at the start of each timeline (useful as TLE accuracy deteriorates). Drastically affects simulation time at the cost of fewer time slots being considered. (int) \n
         'timestep':  Used only in *Timeline_gen*. Sets in seconds the timestep during scheduling simulation [s]. Will impact scheduling accuracy. (int) \n
-        'log_timestep': Sets the timestep of data being logged [s]. Only determines how much of simulated data is logged for debugging purposes. (int) \n
+        'log_timestep': Used only in *Timeline_gen*. Sets the timestep of data being logged [s]. Only determines how much of simulated data is logged for debugging purposes. (int) \n
         'automatic':  Used only in *Timeline_gen*. Sets if the mode date is to be calculated or user provided. True for calculated or False for user provided. (bool) \n
         'start_date':  Note! only applies if *automatic* is set to False. Used only in *Timeline_gen*. Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). If set to '0', Timeline_settings['start_date'] will be used. \n
-        'freeze_start': Sets in seconds the time from start of the Mode to when the attitude freeze command is scheduled. (int) \n
-        'freeze_duration': Sets in seconds the duration of the attitude freeze. If set to 0, it will be estimated to a 
+        'freeze_start': Sets in seconds the time from start of the Mode to when the attitude freeze command is scheduled. Part in determining the estimated duration of the mode. (int) \n
+        'freeze_duration': Sets in seconds the duration of the attitude freeze. Part in determining the estimated duration of the mode. If set to 0, it will be estimated to a 
         value corresponding to the attitude being frozen until realigned with *Timeline_settings['StandardPointingAltitude']*. (int) \n
         'SnapshotTime': Sets in seconds the time, from the start of the attitude freeze, to when the first Snapshot is taken. (int) \n
-        'SnapshotSpacing': Sets in seconds the time inbetween Snapshots with individual CCDs. (int)
+        'SnapshotSpacing': Sets in seconds the time inbetween Snapshots with individual CCDs. Needs to be larger than any CCD ReadoutTimes to avoid streaks. (int) \n
+        'CCDSELs': List of CCDSEL arguments (except nadir) for which to take snapshots with. (list of int)
     
     Returns:
         (:obj:`dict`): settings
     
     '''
-    settings = {'pointing_altitude': 230000, 'V_offset': 0, 'H_offset': 2.5, 'timestep': 2, 'log_timestep': 1200, 
+    settings = {'pointing_altitude': 230000, 'V_offset': [-0.6,0.6], 'H_offset': 2.5, 'TimeToConsider': 4*3600, 'timestep': 2, 'log_timestep': 1200, 
                       'automatic': True, 'start_date': '0', 'freeze_start': 150, 'freeze_duration': 0, 
-                      'SnapshotTime': 2, 'SnapshotSpacing': 3}
+                      'SnapshotTime': 2, 'SnapshotSpacing': 6, 'CCDSELs': [16,32,1,8]}
     
     if( settings['freeze_duration'] == 0):
         settings['freeze_duration'] = _Library.FreezeDuration_calculator( Timeline_settings()['StandardPointingAltitude'], settings['pointing_altitude'], getTLE()[1])
@@ -391,7 +397,7 @@ def Mode130_settings():
     
     **Keys in returned dict:**
         'pointing_altitude': Sets in meters the altitude of the pointing command. (int) \n
-        'SnapshotSpacing': Sets in seconds the time inbetween Snapshots with individual CCDs. (int) \n
+        'SnapshotSpacing': Sets in seconds the time inbetween Snapshots with individual CCDs. Part in determining the estimated duration of the mode. (int) \n
         'start_date': Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). If the date is set to '0', Timeline start_date will be used.
     
     Returns:
@@ -424,9 +430,9 @@ def Mode132_settings():
     **Keys in returned dict:**
         'pointing_altitude': Sets in meters the altitude of the pointing command. (int) \n
         'start_date': Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). If the date is set to '0', Timeline start_date will be used. \n
-        'Exp_Times_IR': Sets exposure times [ms] as a list of integers. Shall have equal length to 'Exp_Times_UV'.  \n
-        'Exp_Times_UV': Sets exposure times [ms] as a list of integers. Shall have equal length to 'Exp_Times_IR'. \n
-        'session_duration': Sets the duration [s] of each session using the different exposure times in *Exp_Times*. (int)
+        'Exp_Times_IR': Sets exposure times [ms] as a list of integers. Part in determining the estimated duration of the mode. Shall have equal length to 'Exp_Times_UV'.  \n
+        'Exp_Times_UV': Sets exposure times [ms] as a list of integers. Part in determining the estimated duration of the mode. Shall have equal length to 'Exp_Times_IR'. \n
+        'session_duration': Sets the duration [s] of each session spent in operational mode using the different exposure times in *Exp_Times*. Part in determining the estimated duration of the mode. (int)
     
     Returns:
         (:obj:`dict`): settings
@@ -443,9 +449,9 @@ def Mode133_settings():
     **Keys in returned dict:**
         'pointing_altitude': Sets in meters the altitude of the pointing command. (int) \n
         'start_date': Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). If the date is set to '0', Timeline start_date will be used. \n
-        'Exp_Times_IR': Sets exposure times [ms] as a list of integers. Shall have equal length to 'Exp_Times_UV'.  \n
-        'Exp_Times_UV': Sets exposure times [ms] as a list of integers. Shall have equal length to 'Exp_Times_IR'. \n
-        'session_duration': Sets the duration [s] of each session using the different exposure times in *Exp_Times_UV* and *Exp_Times_IR*. (int)
+        'Exp_Times_IR': Sets exposure times [ms] as a list of integers. Part in determining the estimated duration of the mode. Shall have equal length to 'Exp_Times_UV'.  \n
+        'Exp_Times_UV': Sets exposure times [ms] as a list of integers. Part in determining the estimated duration of the mode. Shall have equal length to 'Exp_Times_IR'. \n
+        'session_duration': Sets the duration [s] of each session spent in operational mode using the different exposure times in *Exp_Times_UV* and *Exp_Times_IR*. Part in determining the estimated duration of the mode. (int)
     
     Returns:
         (:obj:`dict`): settings
@@ -461,7 +467,7 @@ def Mode134_settings():
     
     **Keys in returned dict:**
         'pointing_altitude': Sets in meters the altitude of the pointing command. (int) \n
-        'mode_duration': Sets the scheduled duration of the Mode in seconds. (int) \n
+        'mode_duration': Sets the scheduled duration of the Mode in seconds. Must be long enough to allow any pointing stabilization and execution of CMDs to occur. (int) \n
         'start_date': Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). If the date is set to '0', Timeline start_date will be used.
     
     Returns:

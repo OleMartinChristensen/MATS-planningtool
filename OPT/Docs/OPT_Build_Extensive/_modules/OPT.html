@@ -246,7 +246,7 @@
 <div class="viewcode-block" id="Timeline_analyzer"><a class="viewcode-back" href="../OPT.html#OPT.Timeline_analyzer">[docs]</a><span class="k">def</span> <span class="nf">Timeline_analyzer</span><span class="p">(</span><span class="n">science_mode_timeline_path</span><span class="p">,</span> <span class="n">date</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Invokes the Timeline_analyser program part of Operational Planning Tool.</span>
 <span class="sd">    </span>
-<span class="sd">    Searches a Science Mode Timeline json file for a given date and returns the scheduled mode and its parameters</span>
+<span class="sd">    Searches a Science Mode Timeline json file for a given date and returns the scheduled mode and its parameters.</span>
 <span class="sd">    </span>
 <span class="sd">    Arguments:</span>
 <span class="sd">        science_mode_timeline_path (str): path to the .json file containing the Science Mode Timeline</span>
@@ -297,7 +297,7 @@
 <span class="sd">    </span>
 <span class="sd">    Arguments:</span>
 <span class="sd">        Science_Mode_Path (str): Path to the Science Mode Timeline to be plotted.</span>
-<span class="sd">        OHB_H5_Path (str): *Optional*. Path to the .h5 file containing position, time, and attitude data.</span>
+<span class="sd">        OHB_H5_Path (str): *Optional*. Path to the .h5 file containing position, time, and attitude data. The .h5 file is defined in the &quot;Ground Segment ICD&quot; document.</span>
 <span class="sd">        STK_CSV_PATH (str): *Optional*. Path to the .csv file containing position (column 1-3), velocity (column 4-6), and time (column 7), generated in STK. Position and velocity data is assumed to be in km and in ICRF.</span>
 <span class="sd">        Timestep (int): *Optional*. The chosen timestep of the simulation [s].</span>
 <span class="sd">        </span>
@@ -345,7 +345,7 @@
 <div class="viewcode-block" id="MinimalScienceXML_gen"><a class="viewcode-back" href="../OPT.html#OPT.MinimalScienceXML_gen">[docs]</a><span class="k">def</span> <span class="nf">MinimalScienceXML_gen</span><span class="p">():</span>
     <span class="sd">&quot;&quot;&quot;Invokes the *MinimalScienceXML_gen* part of the *OPT*.</span>
 <span class="sd">    </span>
-<span class="sd">    Creates an .xml file with fixed CMDs which  purpose is to be uploaded to the satellite </span>
+<span class="sd">    Creates an .xml file with fixed CMDs which purpose is to define a flight procedure which is ran on the satellite </span>
 <span class="sd">    following unscheduled power termination of the payload.</span>
 <span class="sd">    Runs startup CMDs and sets the payload in operational mode with the CCD macro *HighResIR*.</span>
 <span class="sd">    The CMD staggering is fixed. No date is given in the generated XML and will need to be added manually.</span>

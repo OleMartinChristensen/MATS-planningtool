@@ -18,7 +18,7 @@ def CheckConfigFile():
     """ Core function of *CheckConfigFile*.
     
     Checks the values given in the *Configuration File* set by *Set_ConfigFile* and raises an error if any settings are found to be incompatible.
-    Also prints out the currently selected *Configuration File* and which starting date and TLE it currently uses.
+    Also prints out the currently selected *Configuration File* and the starting date and TLE it currently uses.
     
     """
     
@@ -39,7 +39,7 @@ def CheckConfigFile():
     try:
         Logger.info('Currently used TLE: '+str(OPT_Config_File.getTLE()))
     except:
-        Logger.error('Currently stated TLE is invalid. Try running SetTLE.')
+        Logger.error('Currently stated TLE is invalid. Try running Set_ConfigFile.')
         raise ValueError
         
     Timeline_settings = OPT_Config_File.Timeline_settings()
@@ -192,9 +192,12 @@ def CheckConfigFile():
     if not( Mode120_settings['freeze_start'] >= Timeline_settings['pointing_stabilization'] + 12 * Timeline_settings['CMD_separation']  and type(Mode120_settings['freeze_start']) == int  ):
         Logger.error("Mode120_settings")
         raise TypeError
-    if not( abs(Mode120_settings['V_offset']) <= 10 and 0 < abs(Mode120_settings['H_offset']) <= 10 ):
-        Logger.error("Mode120_settings['V_offset'] or Mode120_settings['H_offset']")
-        raise ValueError
+    if not( Mode120_settings['V_offset'] == list):
+        Logger.error("Mode120_settings['V_offset'] != list")
+    for x in range(len(Mode120_settings['V_offset'])):
+        if not( abs(Mode120_settings['V_offset'][x]) <= 10 and 0 < abs(Mode120_settings['H_offset']) <= 10 ):
+            Logger.error("Mode120_settings['V_offset'] or Mode120_settings['H_offset']")
+            raise ValueError
     if not( type(Mode120_settings['start_date']) == str):
         Logger.error("Mode120_settings['date']")
         raise TypeError
@@ -212,9 +215,23 @@ def CheckConfigFile():
     if not( Mode120_settings['SnapshotSpacing'] * 5 + Mode120_settings['SnapshotTime'] < Mode120_settings['freeze_duration'] ):
         Logger.error("Mode120_settings['SnapshotSpacing'] * 5 + Mode120_settings['SnapshotTime'] > Mode120_settings['freeze_duration']")
         raise ValueError
+    if not( 0 < Mode120_settings['TimeSkip'] <= 2*3600*24 and (type(Mode120_settings['TimeSkip']) == int or type(Mode120_settings['TimeSkip']) == float) ):
+        Logger.error("Mode120_settings['TimeSkip']")
+        raise ValueError
     if not( Timeline_settings['StandardPointingAltitude'] < Mode120_settings['pointing_altitude'] and type(Mode120_settings['pointing_altitude']) == int):
         Logger.error("Mode120_settings['pointing_altitude']")
         raise ValueError
+    if not( Mode120_settings['TimeToConsider'] <= Timeline_settings['duration'] ):
+        Logger.error("Mode120_settings['TimeToConsider'] <= Timeline_settings['duration']")
+        raise ValueError
+    if not( Mode120_settings['CCDSELs'] == list):
+        Logger.error("Mode120_settings['CCDSELs'] != list")
+    if not( Mode120_settings['SnapshotSpacing'] * (len(Mode120_settings['CCDSELs'])-1) + Mode120_settings['SnapshotTime'] < Mode120_settings['freeze_duration'] ):
+        Logger.error("Mode120_settings['SnapshotSpacing'] * (len(Mode120_settings['CCDSELs'])-1) + Mode120_settings['SnapshotTime'] > Mode120_settings['freeze_duration']")
+    for CCDSEL in Mode120_settings['CCDSELs']:
+        if not( CCDSEL in [1,2,4,8,16,32] ):
+            Logger.error( "Mode120_settings['CCDSELs'] element != [1,2,4,8,16,32]" )
+        
         
     
     
@@ -240,7 +257,7 @@ def CheckConfigFile():
     if not( Timeline_settings['StandardPointingAltitude'] < Mode121_122_123_settings['pointing_altitude'] and type(Mode121_122_123_settings['pointing_altitude']) == int):
         Logger.error("Mode121_122_123_settings['pointing_altitude']")
         raise ValueError
-    if not( 0 <= Mode121_122_123_settings['TimeSkip'] <= 2*3600*24 and type(Mode121_122_123_settings['TimeSkip']) == int or type(Mode121_122_123_settings['TimeSkip']) == float ):
+    if not( 0 < Mode121_122_123_settings['TimeSkip'] <= 2*3600*24 and (type(Mode121_122_123_settings['TimeSkip']) == int or type(Mode121_122_123_settings['TimeSkip']) == float) ):
         Logger.error("Mode121_122_123_settings['TimeSkip']")
         raise ValueError
     if not( 0 <= Mode121_122_123_settings['SnapshotSpacing'] and type(Mode121_122_123_settings['SnapshotSpacing']) == int):
@@ -248,6 +265,9 @@ def CheckConfigFile():
         raise ValueError
     if not( Mode121_122_123_settings['SnapshotSpacing'] * 5 + Mode121_122_123_settings['SnapshotTime'] < Mode121_122_123_settings['freeze_duration'] ):
         Logger.error("Mode121_122_123_settings['SnapshotSpacing'] * 5 + Mode121_122_123_settings['SnapshotTime'] > Mode121_122_123_settings['freeze_duration']")
+        raise ValueError
+    if not( Mode121_122_123_settings['TimeToConsider'] <= Timeline_settings['duration'] ):
+        Logger.error("Mode121_122_123_settings['TimeToConsider'] <= Timeline_settings['duration']")
         raise ValueError
         
     
@@ -295,9 +315,12 @@ def CheckConfigFile():
     if not( Mode124_settings['freeze_start'] >= Timeline_settings['pointing_stabilization'] + 12 * Timeline_settings['CMD_separation'] and type(Mode124_settings['freeze_start']) == int  ):
         Logger.error("Mode124_settings")
         raise TypeError
-    if not( abs(Mode124_settings['V_offset']) <= 10 and 0 < abs(Mode124_settings['H_offset']) <= 10 ):
-        Logger.error("Mode124_settings['V_offset'] or Mode124_settings['H_offset']")
-        raise ValueError
+    if not( Mode124_settings['V_offset'] == list):
+        Logger.error("Mode124_settings['V_offset'] != list")
+    for x in range(len(Mode120_settings['V_offset'])):
+        if not( abs(Mode124_settings['V_offset'][x]) <= 1 and 0 <= abs(Mode124_settings['H_offset']) <= 10 ):
+            Logger.error("Mode124_settings['V_offset'] or Mode124_settings['H_offset']")
+            raise ValueError
     if not( type(Mode124_settings['start_date']) == str):
         Logger.error("Mode124_settings['start_date']")
         raise TypeError
@@ -313,21 +336,25 @@ def CheckConfigFile():
     if not( 0 <= Mode124_settings['SnapshotSpacing'] and type(Mode124_settings['SnapshotSpacing']) == int):
         Logger.error("Mode124_settings['SnapshotSpacing']")
         raise ValueError
-    if not( Mode124_settings['SnapshotSpacing'] * 5 + Mode124_settings['SnapshotTime'] < Mode124_settings['freeze_duration'] ):
-        Logger.error("Mode124_settings['SnapshotSpacing'] * 5 + Mode124_settings['SnapshotTime'] > Mode124_settings['freeze_duration']")
-    
+    if not( Mode124_settings['CCDSELs'] == list):
+        Logger.error("Mode124_settings['CCDSELs'] != list")
+    if not( Mode124_settings['SnapshotSpacing'] * (len(Mode124_settings['CCDSELs'])-1) + Mode124_settings['SnapshotTime'] < Mode124_settings['freeze_duration'] ):
+        Logger.error("Mode124_settings['SnapshotSpacing'] * (len(Mode124_settings['CCDSELs'])-1) + Mode124_settings['SnapshotTime'] > Mode124_settings['freeze_duration']")
+    for CCDSEL in Mode124_settings['CCDSELs']:
+        if not( CCDSEL in [1,2,4,8,16,32] ):
+            Logger.error( "Mode124_settings['CCDSELs'] element != [1,2,4,8,16,32]" )
         
     
     
-    
+    MaximumNumberOfCMDsInMacro = 12
     
     if not( Timeline_settings['CMD_separation'] <= Mode130_settings['SnapshotSpacing'] and type(Mode130_settings['SnapshotSpacing']) == int):
         Logger.error("Mode130_settings['SnapshotSpacing']")
         raise TypeError
-    if not( Timeline_settings['pointing_stabilization'] + Timeline_settings['CMD_separation'] * 12 + Timeline_settings['mode_separation']  < Mode131_settings['mode_duration'] and type(Mode131_settings['mode_duration']) == int):
+    if not( Timeline_settings['pointing_stabilization'] + Timeline_settings['CMD_separation'] * MaximumNumberOfCMDsInMacro + Timeline_settings['mode_separation']  < Mode131_settings['mode_duration'] and type(Mode131_settings['mode_duration']) == int):
         Logger.error("Mode131_settings['mode_duration'] is too short")
         raise TypeError
-    if not( Timeline_settings['pointing_stabilization'] + Timeline_settings['CMD_separation'] * 12 + Timeline_settings['mode_separation']  < Mode134_settings['mode_duration'] and type(Mode134_settings['mode_duration']) == int):
+    if not( Timeline_settings['pointing_stabilization'] + Timeline_settings['CMD_separation'] * MaximumNumberOfCMDsInMacro + Timeline_settings['mode_separation']  < Mode134_settings['mode_duration'] and type(Mode134_settings['mode_duration']) == int):
         Logger.error("Mode134_settings['mode_duration'] is too short")
         raise TypeError
     

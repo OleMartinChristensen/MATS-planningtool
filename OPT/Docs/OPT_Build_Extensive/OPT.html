@@ -136,7 +136,7 @@ the actual positional and attitude data given in a data set. Plots both the simu
 <dt id="OPT.MinimalScienceXML_gen">
 <code class="sig-prename descclassname">OPT.</code><code class="sig-name descname">MinimalScienceXML_gen</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#MinimalScienceXML_gen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.MinimalScienceXML_gen" title="Permalink to this definition">¶</a></dt>
 <dd><p>Invokes the <em>MinimalScienceXML_gen</em> part of the <em>OPT</em>.</p>
-<p>Creates an .xml file with fixed CMDs which  purpose is to be uploaded to the satellite
+<p>Creates an .xml file with fixed CMDs which purpose is to define a flight procedure which is ran on the satellite
 following unscheduled power termination of the payload.
 Runs startup CMDs and sets the payload in operational mode with the CCD macro <em>HighResIR</em>.
 The CMD staggering is fixed. No date is given in the generated XML and will need to be added manually.
@@ -193,7 +193,7 @@ Settings stated in the <em>Science Mode Timeline</em> override settings given in
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>Science_Mode_Path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Science Mode Timeline to be plotted.</p></li>
-<li><p><strong>OHB_H5_Path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- <em>Optional</em>. Path to the .h5 file containing position, time, and attitude data.</p></li>
+<li><p><strong>OHB_H5_Path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- <em>Optional</em>. Path to the .h5 file containing position, time, and attitude data. The .h5 file is defined in the &quot;Ground Segment ICD&quot; document.</p></li>
 <li><p><strong>STK_CSV_PATH</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- <em>Optional</em>. Path to the .csv file containing position (column 1-3), velocity (column 4-6), and time (column 7), generated in STK. Position and velocity data is assumed to be in km and in ICRF.</p></li>
 <li><p><strong>Timestep</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- <em>Optional</em>. The chosen timestep of the simulation [s].</p></li>
 </ul>
@@ -220,7 +220,7 @@ Settings stated in the <em>Science Mode Timeline</em> override settings given in
 <dt id="OPT.Timeline_analyzer">
 <code class="sig-prename descclassname">OPT.</code><code class="sig-name descname">Timeline_analyzer</code><span class="sig-paren">(</span><em class="sig-param">science_mode_timeline_path</em>, <em class="sig-param">date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#Timeline_analyzer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.Timeline_analyzer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Invokes the Timeline_analyser program part of Operational Planning Tool.</p>
-<p>Searches a Science Mode Timeline json file for a given date and returns the scheduled mode and its parameters</p>
+<p>Searches a Science Mode Timeline json file for a given date and returns the scheduled mode and its parameters.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -479,10 +479,10 @@ TEXPIMS for the CCDs (except nadir) is not changeable as they need to be synchro
 <code class="sig-prename descclassname">OPT._ConfigFile.</code><code class="sig-name descname">Mode100_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#Mode100_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.Mode100_settings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns settings related to Mode100.</p>
 <dl>
-<dt><strong>Keys in returned dict:</strong></dt><dd><p>'pointing_altitude_from': Sets in meters the starting altitude. (int)</p>
-<p>'pointing_altitude_to': Sets in meters the ending altitude. (int)</p>
-<p>'pointing_altitude_interval': Sets in meters the interval size of each succesive pointing. (int)</p>
-<p>'pointing_duration': Sets the time [s] from attitude stabilization until next pointing command. (int)</p>
+<dt><strong>Keys in returned dict:</strong></dt><dd><p>'pointing_altitude_from': Sets in meters the starting altitude. Part in determining the estimated duration of the mode. (int)</p>
+<p>'pointing_altitude_to': Sets in meters the ending altitude. Part in determining the estimated duration of the mode. (int)</p>
+<p>'pointing_altitude_interval': Sets in meters the interval size of each succesive pointing. Part in determining the estimated duration of the mode. (int)</p>
+<p>'pointing_duration': Sets the time [s] from attitude stabilization until next pointing command. Part in determining the estimated duration of the mode. (int)</p>
 <p>'Exp_Time_IR': Sets starting exposure time [ms] as a integer.</p>
 <p>'Exp_Time_UV': Sets starting exposure time [ms] as a integer.</p>
 <p>'ExpTime_step': Sets in ms the interval size of both ExpTimeUV and ExpTimeIR for each succesive pointing. (int)</p>
@@ -504,9 +504,9 @@ TEXPIMS for the CCDs (except nadir) is not changeable as they need to be synchro
 <code class="sig-prename descclassname">OPT._ConfigFile.</code><code class="sig-name descname">Mode110_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#Mode110_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.Mode110_settings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns settings related to Mode110.</p>
 <dl>
-<dt><strong>Keys in returned dict:</strong></dt><dd><p>'pointing_altitude_from': Sets in meters the starting altitude of the sweep. (int)</p>
-<p>'pointing_altitude_to': Sets in meters the ending altitude of the sweep. (int)</p>
-<p>'sweep_rate': Sets the rate of the sweep in m/s. (int)</p>
+<dt><strong>Keys in returned dict:</strong></dt><dd><p>'pointing_altitude_from': Sets in meters the starting altitude of the sweep. Part in determining the estimated duration of the mode. (int)</p>
+<p>'pointing_altitude_to': Sets in meters the ending altitude of the sweep. Part in determining the estimated duration of the mode. (int)</p>
+<p>'sweep_rate': Sets the rate of the sweep in m/s. Part in determining the estimated duration of the mode. (int)</p>
 <p>'start_date': Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). If the date is set to '0', Timeline_settings['start_date'] will be used.
 'Exp_Time_IR': Sets exposure time [ms] of the IR CCDs. (int)</p>
 <p>'Exp_Time_UV': Sets exposure time [ms] of the UV CCDs. (int)</p>
@@ -528,19 +528,22 @@ TEXPIMS for the CCDs (except nadir) is not changeable as they need to be synchro
 <dd><p>Returns settings related to Mode120.</p>
 <dl>
 <dt><strong>Keys in returned dict:</strong></dt><dd><p>'pointing_altitude': Sets in meters the altitude of the pointing command. (int)</p>
-<p>'V_offset': Used only in <em>Timeline_gen</em>. Sets the Vertical-offset angle (position in FOV) in degrees for the star, when the attitude freeze command is scheduled. (int)</p>
+<p>'V_offset': Used only in <em>Timeline_gen</em>. Sets the Vertical-offset angle (position in FOV) in degrees for the star, when the attitude freeze command is scheduled.
+Multiple values can be set but additional values will only be used when Mode120 is scheduled several times. (list of int)</p>
 <p>'H_offset': Used only in <em>Timeline_gen</em>. Sets the maximum Horizontal-offset angle in degrees that determines if stars are visible. (int)</p>
 <p>'Vmag': Used only in <em>Timeline_gen</em>. Sets the Johnson V magnitude of stars to be considered (as a string expression, example '&lt;2'). Drastically changes the runtime.</p>
+<p>'TimeToConsider': Used only in <em>Timeline_gen</em>. Sets the time in seconds for which scheduling is valid. Used to plan star calibration at the start of each timeline (useful as TLE accuracy deteriorates). Drastically affects simulation time. (int)</p>
 <p>'timestep': Used only in <em>Timeline_gen</em>. Sets timestep used in scheduling simulation [s]. Will impact scheduling accuracy. (int)</p>
 <p>'TimeSkip': Used only in <em>Timeline_gen</em>. Set the amount of seconds to skip ahead after one complete orbit is simulated. Will drastically change the runtime of the simulation. (int)</p>
-<p>'log_timestep': Sets the timestep of data being logged [s]. Only determines how much of simulated data is logged for debugging purposes.. (int)</p>
+<p>'log_timestep': Used only in <em>Timeline_gen</em>. Sets the timestep of data being logged [s]. Only determines how much of simulated data is logged for debugging purposes.. (int)</p>
 <p>'automatic': Used only in <em>Timeline_gen</em>. Sets if 'start_date' will be calculated or user provided. True for calculated and False for user provided. (bool)</p>
 <p>'start_date':  Note! only applies if <em>automatic</em> is set to False. Used only in <em>Timeline_gen</em>. Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). If set to '0', Timeline_settings['start_date'] will be used.</p>
-<p>'freeze_start': Sets in seconds the time from start of the Mode to when the attitude freezes. (int)</p>
-<p>'freeze_duration': Sets in seconds the duration of the attitude freeze. If set to 0, it will be estimated to a
+<p>'freeze_start': Sets in seconds the time from start of the Mode to when the attitude freezes. Part in determining the estimated duration of the mode. (int)</p>
+<p>'freeze_duration': Sets in seconds the duration of the attitude freeze. Part in determining the estimated duration of the mode. If set to 0, it will be estimated to a
 value corresponding to the attitude being frozen until realigned with <em>Timeline_settings['StandardPointingAltitude']</em> (Normally around 50 s). (int)</p>
 <p>'SnapshotTime': Sets in seconds the time, from the start of the attitude freeze, to when the first Snapshot is taken. (int)</p>
 <p>'SnapshotSpacing': Sets in seconds the time inbetween Snapshots with individual CCDs. (int)</p>
+<p>'CCDSELs': List of CCDSEL arguments (except nadir) for which to take snapshots with. (list of int)</p>
 </dd>
 </dl>
 <dl class="field-list simple">
@@ -561,15 +564,16 @@ value corresponding to the attitude being frozen until realigned with <em>Timeli
 <dt><strong>Keys in returned dict:</strong></dt><dd><p>'pointing_altitude': Sets in meters the altitude of the pointing command. (int)</p>
 <p>'H_FOV': Used only in <em>Timeline_gen</em>. Sets full Horizontal FOV of the Limb instrument in degrees. Used to determine if stars are visible. (float)</p>
 <p>'V_FOV': Used only in <em>Timeline_gen</em>. Sets full Vertical FOV of the Limb instrument in degrees. Used to determine if stars are visible. (float)</p>
+<p>'TimeToConsider': Used only in <em>Timeline_gen</em>. Sets the time in seconds for which scheduling is valid. Used to plan calibration at the start of each timeline (useful as TLE accuracy deteriorates). Drastically affects simulation time at the cost of fewer time slots being considered. (int)</p>
 <p>'Vmag': Used only in <em>Timeline_gen</em>. Sets the Johnson V magnitude of stars to be considered (as a string expression, example '&lt;2'). Drastically changes the runtime.</p>
 <p>'timestep': Used only in <em>Timeline_gen</em>. Set timestep used in scheduling simulation [s]. Will impact scheduling accuracy. (int)</p>
 <p>'TimeSkip': Used only in <em>Timeline_gen</em>. Set the amount of seconds to skip ahead after one complete orbit is simulated. Will drastically change the runtime of the simulation. (float)</p>
-<p>'log_timestep': Sets the timestep of data being logged [s]. Only determines how much of simulated data is logged for debugging purposes. (int)</p>
-<p>'freeze_start': Sets in seconds, the time from start of the Mode to when the attitude freezes. (int)</p>
-<p>'freeze_duration': Sets in seconds the duration of the attitude freeze. If set to 0, it will be estimated to a
+<p>'log_timestep': Used only in <em>Timeline_gen</em>. Sets the timestep of data being logged [s]. Only determines how much of simulated data is logged for debugging purposes. (int)</p>
+<p>'freeze_start': Sets in seconds, the time from start of the Mode to when the attitude freezes. Part in determining the estimated duration of the mode. (int)</p>
+<p>'freeze_duration': Sets in seconds the duration of the attitude freeze. Part in determining the estimated duration of the mode. If set to 0, it will be estimated to a
 value corresponding to the attitude being frozen until realigned with <em>Timeline_settings['StandardPointingAltitude']</em> (Normally around 50 s). (int)</p>
 <p>'SnapshotTime': Sets in seconds the time, from the start of the attitude freeze, to when the first Snapshot is taken. (int)</p>
-<p>'SnapshotSpacing': Sets in seconds the time inbetween Snapshots with individual CCDs. (int)</p>
+<p>'SnapshotSpacing': Sets in seconds the time inbetween Snapshots with individual CCDs. Needs to be larger than any CCD ReadoutTimes to avoid streaks. (int)</p>
 </dd>
 </dl>
 <dl class="field-list simple">
@@ -649,17 +653,20 @@ value corresponding to the attitude being frozen until realigned with <em>Timeli
 <dd><p>Returns settings related to Mode124.</p>
 <dl>
 <dt><strong>Keys in returned dict:</strong></dt><dd><p>'pointing_altitude': Sets in meters the altitude of the pointing command. (int)</p>
-<p>'V_offset': Used only in <em>Timeline_gen</em>. Sets the Vertical-offset angle (position in FOV) in degrees for the star , when the attitude freeze command is scheduled. (float)</p>
+<p>'V_offset': Used only in <em>Timeline_gen</em>. Sets the Vertical-offset angle (position in FOV) in degrees for the star , when the attitude freeze command is scheduled.
+Multiple values can be set but additional values will only be used when Mode124 is scheduled several times. (list of int)</p>
 <p>'H_offset': Used only in <em>Timeline_gen</em>. Sets the maximum H-offset angle from the optical axis in degrees that determines if the Moon is available. (float)</p>
+<p>'TimeToConsider': Used only in <em>Timeline_gen</em>. Sets the time in seconds for which scheduling is valid. Used to plan calibration at the start of each timeline (useful as TLE accuracy deteriorates). Drastically affects simulation time at the cost of fewer time slots being considered. (int)</p>
 <p>'timestep':  Used only in <em>Timeline_gen</em>. Sets in seconds the timestep during scheduling simulation [s]. Will impact scheduling accuracy. (int)</p>
-<p>'log_timestep': Sets the timestep of data being logged [s]. Only determines how much of simulated data is logged for debugging purposes. (int)</p>
+<p>'log_timestep': Used only in <em>Timeline_gen</em>. Sets the timestep of data being logged [s]. Only determines how much of simulated data is logged for debugging purposes. (int)</p>
 <p>'automatic':  Used only in <em>Timeline_gen</em>. Sets if the mode date is to be calculated or user provided. True for calculated or False for user provided. (bool)</p>
 <p>'start_date':  Note! only applies if <em>automatic</em> is set to False. Used only in <em>Timeline_gen</em>. Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). If set to '0', Timeline_settings['start_date'] will be used.</p>
-<p>'freeze_start': Sets in seconds the time from start of the Mode to when the attitude freeze command is scheduled. (int)</p>
-<p>'freeze_duration': Sets in seconds the duration of the attitude freeze. If set to 0, it will be estimated to a
+<p>'freeze_start': Sets in seconds the time from start of the Mode to when the attitude freeze command is scheduled. Part in determining the estimated duration of the mode. (int)</p>
+<p>'freeze_duration': Sets in seconds the duration of the attitude freeze. Part in determining the estimated duration of the mode. If set to 0, it will be estimated to a
 value corresponding to the attitude being frozen until realigned with <em>Timeline_settings['StandardPointingAltitude']</em>. (int)</p>
 <p>'SnapshotTime': Sets in seconds the time, from the start of the attitude freeze, to when the first Snapshot is taken. (int)</p>
-<p>'SnapshotSpacing': Sets in seconds the time inbetween Snapshots with individual CCDs. (int)</p>
+<p>'SnapshotSpacing': Sets in seconds the time inbetween Snapshots with individual CCDs. Needs to be larger than any CCD ReadoutTimes to avoid streaks. (int)</p>
+<p>'CCDSELs': List of CCDSEL arguments (except nadir) for which to take snapshots with. (list of int)</p>
 </dd>
 </dl>
 <dl class="field-list simple">
@@ -678,7 +685,7 @@ value corresponding to the attitude being frozen until realigned with <em>Timeli
 <dd><p>Returns settings related to Mode130.</p>
 <dl>
 <dt><strong>Keys in returned dict:</strong></dt><dd><p>'pointing_altitude': Sets in meters the altitude of the pointing command. (int)</p>
-<p>'SnapshotSpacing': Sets in seconds the time inbetween Snapshots with individual CCDs. (int)</p>
+<p>'SnapshotSpacing': Sets in seconds the time inbetween Snapshots with individual CCDs. Part in determining the estimated duration of the mode. (int)</p>
 <p>'start_date': Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). If the date is set to '0', Timeline start_date will be used.</p>
 </dd>
 </dl>
@@ -719,9 +726,9 @@ value corresponding to the attitude being frozen until realigned with <em>Timeli
 <dl>
 <dt><strong>Keys in returned dict:</strong></dt><dd><p>'pointing_altitude': Sets in meters the altitude of the pointing command. (int)</p>
 <p>'start_date': Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). If the date is set to '0', Timeline start_date will be used.</p>
-<p>'Exp_Times_IR': Sets exposure times [ms] as a list of integers. Shall have equal length to 'Exp_Times_UV'.</p>
-<p>'Exp_Times_UV': Sets exposure times [ms] as a list of integers. Shall have equal length to 'Exp_Times_IR'.</p>
-<p>'session_duration': Sets the duration [s] of each session using the different exposure times in <em>Exp_Times</em>. (int)</p>
+<p>'Exp_Times_IR': Sets exposure times [ms] as a list of integers. Part in determining the estimated duration of the mode. Shall have equal length to 'Exp_Times_UV'.</p>
+<p>'Exp_Times_UV': Sets exposure times [ms] as a list of integers. Part in determining the estimated duration of the mode. Shall have equal length to 'Exp_Times_IR'.</p>
+<p>'session_duration': Sets the duration [s] of each session spent in operational mode using the different exposure times in <em>Exp_Times</em>. Part in determining the estimated duration of the mode. (int)</p>
 </dd>
 </dl>
 <dl class="field-list simple">
@@ -741,9 +748,9 @@ value corresponding to the attitude being frozen until realigned with <em>Timeli
 <dl>
 <dt><strong>Keys in returned dict:</strong></dt><dd><p>'pointing_altitude': Sets in meters the altitude of the pointing command. (int)</p>
 <p>'start_date': Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). If the date is set to '0', Timeline start_date will be used.</p>
-<p>'Exp_Times_IR': Sets exposure times [ms] as a list of integers. Shall have equal length to 'Exp_Times_UV'.</p>
-<p>'Exp_Times_UV': Sets exposure times [ms] as a list of integers. Shall have equal length to 'Exp_Times_IR'.</p>
-<p>'session_duration': Sets the duration [s] of each session using the different exposure times in <em>Exp_Times_UV</em> and <em>Exp_Times_IR</em>. (int)</p>
+<p>'Exp_Times_IR': Sets exposure times [ms] as a list of integers. Part in determining the estimated duration of the mode. Shall have equal length to 'Exp_Times_UV'.</p>
+<p>'Exp_Times_UV': Sets exposure times [ms] as a list of integers. Part in determining the estimated duration of the mode. Shall have equal length to 'Exp_Times_IR'.</p>
+<p>'session_duration': Sets the duration [s] of each session spent in operational mode using the different exposure times in <em>Exp_Times_UV</em> and <em>Exp_Times_IR</em>. Part in determining the estimated duration of the mode. (int)</p>
 </dd>
 </dl>
 <dl class="field-list simple">
@@ -762,7 +769,7 @@ value corresponding to the attitude being frozen until realigned with <em>Timeli
 <dd><p>Returns settings related to Mode134.</p>
 <dl>
 <dt><strong>Keys in returned dict:</strong></dt><dd><p>'pointing_altitude': Sets in meters the altitude of the pointing command. (int)</p>
-<p>'mode_duration': Sets the scheduled duration of the Mode in seconds. (int)</p>
+<p>'mode_duration': Sets the scheduled duration of the Mode in seconds. Must be long enough to allow any pointing stabilization and execution of CMDs to occur. (int)</p>
 <p>'start_date': Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). If the date is set to '0', Timeline start_date will be used.</p>
 </dd>
 </dl>
@@ -782,7 +789,7 @@ value corresponding to the attitude being frozen until realigned with <em>Timeli
 <dd><p>Returns settings related to Operational Science Modes (Mode1, 2, and 5).</p>
 <dl>
 <dt><strong>Keys:</strong></dt><dd><p>'lat': Applies only to Mode1! Sets in degrees the latitude (+ and -) that the LP crosses that causes the UV exposure to swith on/off. (int)</p>
-<p>'log_timestep': Sets the frequency of data being logged [s] for Mode1-2. Only determines how much of simulated data is logged for debugging purposes. (int)</p>
+<p>'log_timestep': Used only in <em>XML_gen</em>. Sets the frequency of data being logged [s] for Mode1-2. Only determines how much of simulated data is logged for debugging purposes. (int)</p>
 <p>'timestep': Sets the timestep [s] of the XML generator simulation of Mode1-2. Will impact accuracy of command generation but also drastically changes the runtime of XML-gen. (int)</p>
 <p>'Choose_Mode5CCDMacro': Applies only to Mode5! Sets the CCD macro to be used by Mode5. Used as input to <em>CCD_macro_settings</em> (str).</p>
 </dd>
@@ -947,14 +954,34 @@ timeline, as they together reset and initialize the intrument. If &quot;HTR&quot
 <p><strong>Globals:</strong></p>
 <p>Config_File: Contains the name of the used <em>Configuration File</em> as set by <em>Set_ConfigFile</em>.</p>
 <p>StartTime = Contains the starting time and date of OPT as set by <em>Set_ConfigFile</em>.</p>
-<p>current_pointing = Only applicable to XML_generator. Contains the pointing altitude of the last scheduled <em>TC_acfLimbPointingAltitudeOffset</em> command.</p>
+<p>current_pointing = Only applicable to XML_generator. Contains the pointing altitude of the last scheduled <em>TC_acfLimbPointingAltitudeOffset</em> command. Is</p>
 <p>TLE = Contains a TLE as a duple of strings which is used by the <em>Configuration File</em>. If the strings are empty, the Configuration File will used a default TLE specified in the <em>Configuration File</em>.</p>
 <p>latestRelativeTime = Only applicable to XML_generator. The <em>relativeTime</em> of the latest scheduled CMD. Used to make sure that CMDs always are scheduled in a chronological order.</p>
 <p>LargestSetTEXPMS = The latest largest set TEXPMS on the CCDs whenever CCD_macro is ran. This is the least amount of time that need to pass from going into idle mode and and changing CCD settings.</p>
+<p>Mode120Iteration = Only applicable to Timeline_gen. Used to keep track of the current iteration of the scheduling process for Mode120. Used to cycle through the V_offsets chosen in the Configuration File.</p>
+<p>Mode124Iteration = Only applicable to Timeline_gen. Used to keep track of the current iteration of the scheduling process for Mode124. Used to cycle through the V_offsets chosen in the Configuration File.</p>
 </div>
 <div class="section" id="module-OPT._Library">
 <span id="opt-library-module"></span><h2>OPT._Library module<a class="headerlink" href="#module-OPT._Library" title="Permalink to this headline">¶</a></h2>
 <p>Functions that are commonly used by the Operational Planning Tool.</p>
+<dl class="function">
+<dt id="OPT._Library.CCDSELExtracter">
+<code class="sig-prename descclassname">OPT._Library.</code><code class="sig-name descname">CCDSELExtracter</code><span class="sig-paren">(</span><em class="sig-param">CCDSEL</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Library.html#CCDSELExtracter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Library.CCDSELExtracter" title="Permalink to this definition">¶</a></dt>
+<dd><p>Extract the individual CCDSEL (64, 32, 16, 8, 4, 2, 1) arguments from a number CCDSEL argument assuming the CCDSEL argument is valid.</p>
+<dl class="simple">
+<dt>Argument:</dt><dd><p>CCDSEL (int): Value between 0 and 127 which represent the selection of a number of CCDs.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>List containing individual CCDSEL arguments.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>(list of int)</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="function">
 <dt id="OPT._Library.FreezeDuration_calculator">
 <code class="sig-prename descclassname">OPT._Library.</code><code class="sig-name descname">FreezeDuration_calculator</code><span class="sig-paren">(</span><em class="sig-param">pointing_altitude1</em>, <em class="sig-param">pointing_altitude2</em>, <em class="sig-param">TLE2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Library.html#FreezeDuration_calculator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Library.FreezeDuration_calculator" title="Permalink to this definition">¶</a></dt>

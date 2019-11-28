@@ -188,7 +188,7 @@
 <span class="sd">    </span>
 <span class="sd">    **Keys:**</span>
 <span class="sd">        &#39;lat&#39;: Applies only to Mode1! Sets in degrees the latitude (+ and -) that the LP crosses that causes the UV exposure to swith on/off. (int) \n</span>
-<span class="sd">        &#39;log_timestep&#39;: Sets the frequency of data being logged [s] for Mode1-2. Only determines how much of simulated data is logged for debugging purposes. (int) \n</span>
+<span class="sd">        &#39;log_timestep&#39;: Used only in *XML_gen*. Sets the frequency of data being logged [s] for Mode1-2. Only determines how much of simulated data is logged for debugging purposes. (int) \n</span>
 <span class="sd">        &#39;timestep&#39;: Sets the timestep [s] of the XML generator simulation of Mode1-2. Will impact accuracy of command generation but also drastically changes the runtime of XML-gen. (int) \n</span>
 <span class="sd">        &#39;Choose_Mode5CCDMacro&#39;: Applies only to Mode5! Sets the CCD macro to be used by Mode5. Used as input to *CCD_macro_settings* (str).</span>
 <span class="sd">        </span>
@@ -221,10 +221,10 @@
     <span class="sd">&#39;&#39;&#39;Returns settings related to Mode100.</span>
 <span class="sd">    </span>
 <span class="sd">    **Keys in returned dict:**</span>
-<span class="sd">        &#39;pointing_altitude_from&#39;: Sets in meters the starting altitude. (int) \n</span>
-<span class="sd">        &#39;pointing_altitude_to&#39;: Sets in meters the ending altitude. (int) \n</span>
-<span class="sd">        &#39;pointing_altitude_interval&#39;: Sets in meters the interval size of each succesive pointing. (int) \n</span>
-<span class="sd">        &#39;pointing_duration&#39;: Sets the time [s] from attitude stabilization until next pointing command. (int) \n</span>
+<span class="sd">        &#39;pointing_altitude_from&#39;: Sets in meters the starting altitude. Part in determining the estimated duration of the mode. (int) \n</span>
+<span class="sd">        &#39;pointing_altitude_to&#39;: Sets in meters the ending altitude. Part in determining the estimated duration of the mode. (int) \n</span>
+<span class="sd">        &#39;pointing_altitude_interval&#39;: Sets in meters the interval size of each succesive pointing. Part in determining the estimated duration of the mode. (int) \n</span>
+<span class="sd">        &#39;pointing_duration&#39;: Sets the time [s] from attitude stabilization until next pointing command. Part in determining the estimated duration of the mode. (int) \n</span>
 <span class="sd">        &#39;Exp_Time_IR&#39;: Sets starting exposure time [ms] as a integer. \n</span>
 <span class="sd">        &#39;Exp_Time_UV&#39;: Sets starting exposure time [ms] as a integer. \n</span>
 <span class="sd">        &#39;ExpTime_step&#39;: Sets in ms the interval size of both ExpTimeUV and ExpTimeIR for each succesive pointing. (int) \n</span>
@@ -244,9 +244,9 @@
     <span class="sd">&#39;&#39;&#39;Returns settings related to Mode110.</span>
 <span class="sd">    </span>
 <span class="sd">    **Keys in returned dict:**</span>
-<span class="sd">        &#39;pointing_altitude_from&#39;: Sets in meters the starting altitude of the sweep. (int) \n</span>
-<span class="sd">        &#39;pointing_altitude_to&#39;: Sets in meters the ending altitude of the sweep. (int) \n</span>
-<span class="sd">        &#39;sweep_rate&#39;: Sets the rate of the sweep in m/s. (int) \n</span>
+<span class="sd">        &#39;pointing_altitude_from&#39;: Sets in meters the starting altitude of the sweep. Part in determining the estimated duration of the mode. (int) \n</span>
+<span class="sd">        &#39;pointing_altitude_to&#39;: Sets in meters the ending altitude of the sweep. Part in determining the estimated duration of the mode. (int) \n</span>
+<span class="sd">        &#39;sweep_rate&#39;: Sets the rate of the sweep in m/s. Part in determining the estimated duration of the mode. (int) \n</span>
 <span class="sd">        &#39;start_date&#39;: Sets the scheduled date for the mode as a str, (example: &#39;2018/9/3 08:00:40&#39;). If the date is set to &#39;0&#39;, Timeline_settings[&#39;start_date&#39;] will be used.</span>
 <span class="sd">        &#39;Exp_Time_IR&#39;: Sets exposure time [ms] of the IR CCDs. (int) \n</span>
 <span class="sd">        &#39;Exp_Time_UV&#39;: Sets exposure time [ms] of the UV CCDs. (int) \n</span>
@@ -265,28 +265,30 @@
 <span class="sd">    </span>
 <span class="sd">    **Keys in returned dict:**</span>
 <span class="sd">        &#39;pointing_altitude&#39;: Sets in meters the altitude of the pointing command. (int) \n</span>
-<span class="sd">        &#39;V_offset&#39;: Used only in *Timeline_gen*. Sets the Vertical-offset angle (position in FOV) in degrees for the star, when the attitude freeze command is scheduled. (int) \n</span>
+<span class="sd">        &#39;V_offset&#39;: Used only in *Timeline_gen*. Sets the Vertical-offset angle (position in FOV) in degrees for the star, when the attitude freeze command is scheduled. </span>
+<span class="sd">        Multiple values can be set but additional values will only be used when Mode120 is scheduled several times. (list of int) \n</span>
 <span class="sd">        &#39;H_offset&#39;: Used only in *Timeline_gen*. Sets the maximum Horizontal-offset angle in degrees that determines if stars are visible. (int) \n</span>
 <span class="sd">        &#39;Vmag&#39;: Used only in *Timeline_gen*. Sets the Johnson V magnitude of stars to be considered (as a string expression, example &#39;&lt;2&#39;). Drastically changes the runtime. \n</span>
+<span class="sd">        &#39;TimeToConsider&#39;: Used only in *Timeline_gen*. Sets the time in seconds for which scheduling is valid. Used to plan star calibration at the start of each timeline (useful as TLE accuracy deteriorates). Drastically affects simulation time. (int) \n</span>
 <span class="sd">        &#39;timestep&#39;: Used only in *Timeline_gen*. Sets timestep used in scheduling simulation [s]. Will impact scheduling accuracy. (int) \n</span>
 <span class="sd">        &#39;TimeSkip&#39;: Used only in *Timeline_gen*. Set the amount of seconds to skip ahead after one complete orbit is simulated. Will drastically change the runtime of the simulation. (int) \n</span>
-<span class="sd">        &#39;log_timestep&#39;: Sets the timestep of data being logged [s]. Only determines how much of simulated data is logged for debugging purposes.. (int) \n</span>
+<span class="sd">        &#39;log_timestep&#39;: Used only in *Timeline_gen*. Sets the timestep of data being logged [s]. Only determines how much of simulated data is logged for debugging purposes.. (int) \n</span>
 <span class="sd">        &#39;automatic&#39;: Used only in *Timeline_gen*. Sets if &#39;start_date&#39; will be calculated or user provided. True for calculated and False for user provided. (bool) \n</span>
 <span class="sd">        &#39;start_date&#39;:  Note! only applies if *automatic* is set to False. Used only in *Timeline_gen*. Sets the scheduled date for the mode as a str, (example: &#39;2018/9/3 08:00:40&#39;). If set to &#39;0&#39;, Timeline_settings[&#39;start_date&#39;] will be used. \n</span>
-<span class="sd">        &#39;freeze_start&#39;: Sets in seconds the time from start of the Mode to when the attitude freezes. (int) \n</span>
-<span class="sd">        &#39;freeze_duration&#39;: Sets in seconds the duration of the attitude freeze. If set to 0, it will be estimated to a </span>
+<span class="sd">        &#39;freeze_start&#39;: Sets in seconds the time from start of the Mode to when the attitude freezes. Part in determining the estimated duration of the mode. (int) \n</span>
+<span class="sd">        &#39;freeze_duration&#39;: Sets in seconds the duration of the attitude freeze. Part in determining the estimated duration of the mode. If set to 0, it will be estimated to a </span>
 <span class="sd">        value corresponding to the attitude being frozen until realigned with *Timeline_settings[&#39;StandardPointingAltitude&#39;]* (Normally around 50 s). (int) \n</span>
 <span class="sd">        &#39;SnapshotTime&#39;: Sets in seconds the time, from the start of the attitude freeze, to when the first Snapshot is taken. (int) \n</span>
-<span class="sd">        &#39;SnapshotSpacing&#39;: Sets in seconds the time inbetween Snapshots with individual CCDs. (int)</span>
-<span class="sd">        </span>
+<span class="sd">        &#39;SnapshotSpacing&#39;: Sets in seconds the time inbetween Snapshots with individual CCDs. (int) \n</span>
+<span class="sd">        &#39;CCDSELs&#39;: List of CCDSEL arguments (except nadir) for which to take snapshots with. (list of int)</span>
 <span class="sd">    </span>
 <span class="sd">    Returns:</span>
 <span class="sd">        (:obj:`dict`): settings</span>
 <span class="sd">    </span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;pointing_altitude&#39;</span><span class="p">:</span> <span class="mi">230000</span><span class="p">,</span> <span class="s1">&#39;V_offset&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;H_offset&#39;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span> <span class="s1">&#39;Vmag&#39;</span><span class="p">:</span> <span class="s1">&#39;&lt;2&#39;</span><span class="p">,</span> <span class="s1">&#39;timestep&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;TimeSkip&#39;</span><span class="p">:</span> <span class="mi">3600</span><span class="o">*</span><span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;log_timestep&#39;</span><span class="p">:</span> <span class="mi">3600</span><span class="p">,</span> 
+    <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;pointing_altitude&#39;</span><span class="p">:</span> <span class="mi">230000</span><span class="p">,</span> <span class="s1">&#39;V_offset&#39;</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">],</span> <span class="s1">&#39;H_offset&#39;</span><span class="p">:</span> <span class="mf">1.5</span><span class="p">,</span> <span class="s1">&#39;TimeToConsider&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="o">*</span><span class="mi">3600</span><span class="p">,</span>  <span class="s1">&#39;Vmag&#39;</span><span class="p">:</span> <span class="s1">&#39;&lt;2&#39;</span><span class="p">,</span> <span class="s1">&#39;timestep&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;TimeSkip&#39;</span><span class="p">:</span> <span class="mi">3600</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;log_timestep&#39;</span><span class="p">:</span> <span class="mi">3600</span><span class="p">,</span> 
                       <span class="s1">&#39;automatic&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;freeze_start&#39;</span><span class="p">:</span> <span class="mi">150</span><span class="p">,</span> 
-                      <span class="s1">&#39;freeze_duration&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SnapshotTime&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;SnapshotSpacing&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
+                      <span class="s1">&#39;freeze_duration&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SnapshotTime&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;SnapshotSpacing&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s1">&#39;CCDSELs&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">16</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">8</span><span class="p">]}</span>
     
     <span class="k">if</span><span class="p">(</span> <span class="n">settings</span><span class="p">[</span><span class="s1">&#39;freeze_duration&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
         <span class="n">settings</span><span class="p">[</span><span class="s1">&#39;freeze_duration&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_Library</span><span class="o">.</span><span class="n">FreezeDuration_calculator</span><span class="p">(</span> <span class="n">Timeline_settings</span><span class="p">()[</span><span class="s1">&#39;StandardPointingAltitude&#39;</span><span class="p">],</span> <span class="n">settings</span><span class="p">[</span><span class="s1">&#39;pointing_altitude&#39;</span><span class="p">],</span> <span class="n">getTLE</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
@@ -301,22 +303,23 @@
 <span class="sd">        &#39;pointing_altitude&#39;: Sets in meters the altitude of the pointing command. (int) \n</span>
 <span class="sd">        &#39;H_FOV&#39;: Used only in *Timeline_gen*. Sets full Horizontal FOV of the Limb instrument in degrees. Used to determine if stars are visible. (float) \n</span>
 <span class="sd">        &#39;V_FOV&#39;: Used only in *Timeline_gen*. Sets full Vertical FOV of the Limb instrument in degrees. Used to determine if stars are visible. (float) \n</span>
+<span class="sd">        &#39;TimeToConsider&#39;: Used only in *Timeline_gen*. Sets the time in seconds for which scheduling is valid. Used to plan calibration at the start of each timeline (useful as TLE accuracy deteriorates). Drastically affects simulation time at the cost of fewer time slots being considered. (int) \n</span>
 <span class="sd">        &#39;Vmag&#39;: Used only in *Timeline_gen*. Sets the Johnson V magnitude of stars to be considered (as a string expression, example &#39;&lt;2&#39;). Drastically changes the runtime. \n</span>
 <span class="sd">        &#39;timestep&#39;: Used only in *Timeline_gen*. Set timestep used in scheduling simulation [s]. Will impact scheduling accuracy. (int) \n</span>
 <span class="sd">        &#39;TimeSkip&#39;: Used only in *Timeline_gen*. Set the amount of seconds to skip ahead after one complete orbit is simulated. Will drastically change the runtime of the simulation. (float) \n</span>
-<span class="sd">        &#39;log_timestep&#39;: Sets the timestep of data being logged [s]. Only determines how much of simulated data is logged for debugging purposes. (int) \n</span>
-<span class="sd">        &#39;freeze_start&#39;: Sets in seconds, the time from start of the Mode to when the attitude freezes. (int) \n</span>
-<span class="sd">        &#39;freeze_duration&#39;: Sets in seconds the duration of the attitude freeze. If set to 0, it will be estimated to a </span>
+<span class="sd">        &#39;log_timestep&#39;: Used only in *Timeline_gen*. Sets the timestep of data being logged [s]. Only determines how much of simulated data is logged for debugging purposes. (int) \n</span>
+<span class="sd">        &#39;freeze_start&#39;: Sets in seconds, the time from start of the Mode to when the attitude freezes. Part in determining the estimated duration of the mode. (int) \n</span>
+<span class="sd">        &#39;freeze_duration&#39;: Sets in seconds the duration of the attitude freeze. Part in determining the estimated duration of the mode. If set to 0, it will be estimated to a </span>
 <span class="sd">        value corresponding to the attitude being frozen until realigned with *Timeline_settings[&#39;StandardPointingAltitude&#39;]* (Normally around 50 s). (int) \n</span>
 <span class="sd">        &#39;SnapshotTime&#39;: Sets in seconds the time, from the start of the attitude freeze, to when the first Snapshot is taken. (int) \n</span>
-<span class="sd">        &#39;SnapshotSpacing&#39;: Sets in seconds the time inbetween Snapshots with individual CCDs. (int)</span>
+<span class="sd">        &#39;SnapshotSpacing&#39;: Sets in seconds the time inbetween Snapshots with individual CCDs. Needs to be larger than any CCD ReadoutTimes to avoid streaks. (int)</span>
 <span class="sd">    </span>
 <span class="sd">    Returns:</span>
 <span class="sd">        (:obj:`dict`): settings</span>
 <span class="sd">    </span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;pointing_altitude&#39;</span><span class="p">:</span> <span class="mi">230000</span><span class="p">,</span> <span class="s1">&#39;H_FOV&#39;</span><span class="p">:</span> <span class="mf">5.67</span><span class="p">,</span> <span class="s1">&#39;V_FOV&#39;</span><span class="p">:</span> <span class="mf">0.91</span><span class="p">,</span> <span class="s1">&#39;Vmag&#39;</span><span class="p">:</span> <span class="s1">&#39;&lt;5&#39;</span><span class="p">,</span> <span class="s1">&#39;timestep&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">&#39;TimeSkip&#39;</span><span class="p">:</span> <span class="mi">3600</span><span class="o">*</span><span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;log_timestep&#39;</span><span class="p">:</span> <span class="mi">3600</span><span class="p">,</span> 
-                      <span class="s1">&#39;freeze_start&#39;</span><span class="p">:</span> <span class="mi">150</span><span class="p">,</span> 
+    <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;pointing_altitude&#39;</span><span class="p">:</span> <span class="mi">230000</span><span class="p">,</span> <span class="s1">&#39;H_FOV&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s1">&#39;V_FOV&#39;</span><span class="p">:</span> <span class="mf">1.5</span><span class="p">,</span> <span class="s1">&#39;TimeToConsider&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="o">*</span><span class="mi">3600</span><span class="p">,</span> <span class="s1">&#39;Vmag&#39;</span><span class="p">:</span> <span class="s1">&#39;&lt;4&#39;</span><span class="p">,</span> 
+                <span class="s1">&#39;timestep&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s1">&#39;TimeSkip&#39;</span><span class="p">:</span> <span class="mi">3600</span><span class="o">*</span><span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;log_timestep&#39;</span><span class="p">:</span> <span class="mi">3600</span><span class="p">,</span> <span class="s1">&#39;freeze_start&#39;</span><span class="p">:</span> <span class="mi">150</span><span class="p">,</span> 
                       <span class="s1">&#39;freeze_duration&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SnapshotTime&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;SnapshotSpacing&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
     
     <span class="k">if</span><span class="p">(</span> <span class="n">settings</span><span class="p">[</span><span class="s1">&#39;freeze_duration&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
@@ -393,25 +396,28 @@
 <span class="sd">    </span>
 <span class="sd">    **Keys in returned dict:**</span>
 <span class="sd">        &#39;pointing_altitude&#39;: Sets in meters the altitude of the pointing command. (int) \n</span>
-<span class="sd">        &#39;V_offset&#39;: Used only in *Timeline_gen*. Sets the Vertical-offset angle (position in FOV) in degrees for the star , when the attitude freeze command is scheduled. (float) \n</span>
+<span class="sd">        &#39;V_offset&#39;: Used only in *Timeline_gen*. Sets the Vertical-offset angle (position in FOV) in degrees for the star , when the attitude freeze command is scheduled. </span>
+<span class="sd">        Multiple values can be set but additional values will only be used when Mode124 is scheduled several times. (list of int) \n</span>
 <span class="sd">        &#39;H_offset&#39;: Used only in *Timeline_gen*. Sets the maximum H-offset angle from the optical axis in degrees that determines if the Moon is available. (float) \n</span>
+<span class="sd">        &#39;TimeToConsider&#39;: Used only in *Timeline_gen*. Sets the time in seconds for which scheduling is valid. Used to plan calibration at the start of each timeline (useful as TLE accuracy deteriorates). Drastically affects simulation time at the cost of fewer time slots being considered. (int) \n</span>
 <span class="sd">        &#39;timestep&#39;:  Used only in *Timeline_gen*. Sets in seconds the timestep during scheduling simulation [s]. Will impact scheduling accuracy. (int) \n</span>
-<span class="sd">        &#39;log_timestep&#39;: Sets the timestep of data being logged [s]. Only determines how much of simulated data is logged for debugging purposes. (int) \n</span>
+<span class="sd">        &#39;log_timestep&#39;: Used only in *Timeline_gen*. Sets the timestep of data being logged [s]. Only determines how much of simulated data is logged for debugging purposes. (int) \n</span>
 <span class="sd">        &#39;automatic&#39;:  Used only in *Timeline_gen*. Sets if the mode date is to be calculated or user provided. True for calculated or False for user provided. (bool) \n</span>
 <span class="sd">        &#39;start_date&#39;:  Note! only applies if *automatic* is set to False. Used only in *Timeline_gen*. Sets the scheduled date for the mode as a str, (example: &#39;2018/9/3 08:00:40&#39;). If set to &#39;0&#39;, Timeline_settings[&#39;start_date&#39;] will be used. \n</span>
-<span class="sd">        &#39;freeze_start&#39;: Sets in seconds the time from start of the Mode to when the attitude freeze command is scheduled. (int) \n</span>
-<span class="sd">        &#39;freeze_duration&#39;: Sets in seconds the duration of the attitude freeze. If set to 0, it will be estimated to a </span>
+<span class="sd">        &#39;freeze_start&#39;: Sets in seconds the time from start of the Mode to when the attitude freeze command is scheduled. Part in determining the estimated duration of the mode. (int) \n</span>
+<span class="sd">        &#39;freeze_duration&#39;: Sets in seconds the duration of the attitude freeze. Part in determining the estimated duration of the mode. If set to 0, it will be estimated to a </span>
 <span class="sd">        value corresponding to the attitude being frozen until realigned with *Timeline_settings[&#39;StandardPointingAltitude&#39;]*. (int) \n</span>
 <span class="sd">        &#39;SnapshotTime&#39;: Sets in seconds the time, from the start of the attitude freeze, to when the first Snapshot is taken. (int) \n</span>
-<span class="sd">        &#39;SnapshotSpacing&#39;: Sets in seconds the time inbetween Snapshots with individual CCDs. (int)</span>
+<span class="sd">        &#39;SnapshotSpacing&#39;: Sets in seconds the time inbetween Snapshots with individual CCDs. Needs to be larger than any CCD ReadoutTimes to avoid streaks. (int) \n</span>
+<span class="sd">        &#39;CCDSELs&#39;: List of CCDSEL arguments (except nadir) for which to take snapshots with. (list of int)</span>
 <span class="sd">    </span>
 <span class="sd">    Returns:</span>
 <span class="sd">        (:obj:`dict`): settings</span>
 <span class="sd">    </span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;pointing_altitude&#39;</span><span class="p">:</span> <span class="mi">230000</span><span class="p">,</span> <span class="s1">&#39;V_offset&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;H_offset&#39;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span> <span class="s1">&#39;timestep&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;log_timestep&#39;</span><span class="p">:</span> <span class="mi">1200</span><span class="p">,</span> 
+    <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;pointing_altitude&#39;</span><span class="p">:</span> <span class="mi">230000</span><span class="p">,</span> <span class="s1">&#39;V_offset&#39;</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.6</span><span class="p">,</span><span class="mf">0.6</span><span class="p">],</span> <span class="s1">&#39;H_offset&#39;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span> <span class="s1">&#39;TimeToConsider&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="o">*</span><span class="mi">3600</span><span class="p">,</span> <span class="s1">&#39;timestep&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;log_timestep&#39;</span><span class="p">:</span> <span class="mi">1200</span><span class="p">,</span> 
                       <span class="s1">&#39;automatic&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;freeze_start&#39;</span><span class="p">:</span> <span class="mi">150</span><span class="p">,</span> <span class="s1">&#39;freeze_duration&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> 
-                      <span class="s1">&#39;SnapshotTime&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;SnapshotSpacing&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
+                      <span class="s1">&#39;SnapshotTime&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;SnapshotSpacing&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s1">&#39;CCDSELs&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">16</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">8</span><span class="p">]}</span>
     
     <span class="k">if</span><span class="p">(</span> <span class="n">settings</span><span class="p">[</span><span class="s1">&#39;freeze_duration&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
         <span class="n">settings</span><span class="p">[</span><span class="s1">&#39;freeze_duration&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">_Library</span><span class="o">.</span><span class="n">FreezeDuration_calculator</span><span class="p">(</span> <span class="n">Timeline_settings</span><span class="p">()[</span><span class="s1">&#39;StandardPointingAltitude&#39;</span><span class="p">],</span> <span class="n">settings</span><span class="p">[</span><span class="s1">&#39;pointing_altitude&#39;</span><span class="p">],</span> <span class="n">getTLE</span><span class="p">()[</span><span class="mi">1</span><span class="p">])</span>
@@ -424,7 +430,7 @@
 <span class="sd">    </span>
 <span class="sd">    **Keys in returned dict:**</span>
 <span class="sd">        &#39;pointing_altitude&#39;: Sets in meters the altitude of the pointing command. (int) \n</span>
-<span class="sd">        &#39;SnapshotSpacing&#39;: Sets in seconds the time inbetween Snapshots with individual CCDs. (int) \n</span>
+<span class="sd">        &#39;SnapshotSpacing&#39;: Sets in seconds the time inbetween Snapshots with individual CCDs. Part in determining the estimated duration of the mode. (int) \n</span>
 <span class="sd">        &#39;start_date&#39;: Sets the scheduled date for the mode as a str, (example: &#39;2018/9/3 08:00:40&#39;). If the date is set to &#39;0&#39;, Timeline start_date will be used.</span>
 <span class="sd">    </span>
 <span class="sd">    Returns:</span>
@@ -457,9 +463,9 @@
 <span class="sd">    **Keys in returned dict:**</span>
 <span class="sd">        &#39;pointing_altitude&#39;: Sets in meters the altitude of the pointing command. (int) \n</span>
 <span class="sd">        &#39;start_date&#39;: Sets the scheduled date for the mode as a str, (example: &#39;2018/9/3 08:00:40&#39;). If the date is set to &#39;0&#39;, Timeline start_date will be used. \n</span>
-<span class="sd">        &#39;Exp_Times_IR&#39;: Sets exposure times [ms] as a list of integers. Shall have equal length to &#39;Exp_Times_UV&#39;.  \n</span>
-<span class="sd">        &#39;Exp_Times_UV&#39;: Sets exposure times [ms] as a list of integers. Shall have equal length to &#39;Exp_Times_IR&#39;. \n</span>
-<span class="sd">        &#39;session_duration&#39;: Sets the duration [s] of each session using the different exposure times in *Exp_Times*. (int)</span>
+<span class="sd">        &#39;Exp_Times_IR&#39;: Sets exposure times [ms] as a list of integers. Part in determining the estimated duration of the mode. Shall have equal length to &#39;Exp_Times_UV&#39;.  \n</span>
+<span class="sd">        &#39;Exp_Times_UV&#39;: Sets exposure times [ms] as a list of integers. Part in determining the estimated duration of the mode. Shall have equal length to &#39;Exp_Times_IR&#39;. \n</span>
+<span class="sd">        &#39;session_duration&#39;: Sets the duration [s] of each session spent in operational mode using the different exposure times in *Exp_Times*. Part in determining the estimated duration of the mode. (int)</span>
 <span class="sd">    </span>
 <span class="sd">    Returns:</span>
 <span class="sd">        (:obj:`dict`): settings</span>
@@ -476,9 +482,9 @@
 <span class="sd">    **Keys in returned dict:**</span>
 <span class="sd">        &#39;pointing_altitude&#39;: Sets in meters the altitude of the pointing command. (int) \n</span>
 <span class="sd">        &#39;start_date&#39;: Sets the scheduled date for the mode as a str, (example: &#39;2018/9/3 08:00:40&#39;). If the date is set to &#39;0&#39;, Timeline start_date will be used. \n</span>
-<span class="sd">        &#39;Exp_Times_IR&#39;: Sets exposure times [ms] as a list of integers. Shall have equal length to &#39;Exp_Times_UV&#39;.  \n</span>
-<span class="sd">        &#39;Exp_Times_UV&#39;: Sets exposure times [ms] as a list of integers. Shall have equal length to &#39;Exp_Times_IR&#39;. \n</span>
-<span class="sd">        &#39;session_duration&#39;: Sets the duration [s] of each session using the different exposure times in *Exp_Times_UV* and *Exp_Times_IR*. (int)</span>
+<span class="sd">        &#39;Exp_Times_IR&#39;: Sets exposure times [ms] as a list of integers. Part in determining the estimated duration of the mode. Shall have equal length to &#39;Exp_Times_UV&#39;.  \n</span>
+<span class="sd">        &#39;Exp_Times_UV&#39;: Sets exposure times [ms] as a list of integers. Part in determining the estimated duration of the mode. Shall have equal length to &#39;Exp_Times_IR&#39;. \n</span>
+<span class="sd">        &#39;session_duration&#39;: Sets the duration [s] of each session spent in operational mode using the different exposure times in *Exp_Times_UV* and *Exp_Times_IR*. Part in determining the estimated duration of the mode. (int)</span>
 <span class="sd">    </span>
 <span class="sd">    Returns:</span>
 <span class="sd">        (:obj:`dict`): settings</span>
@@ -494,7 +500,7 @@
 <span class="sd">    </span>
 <span class="sd">    **Keys in returned dict:**</span>
 <span class="sd">        &#39;pointing_altitude&#39;: Sets in meters the altitude of the pointing command. (int) \n</span>
-<span class="sd">        &#39;mode_duration&#39;: Sets the scheduled duration of the Mode in seconds. (int) \n</span>
+<span class="sd">        &#39;mode_duration&#39;: Sets the scheduled duration of the Mode in seconds. Must be long enough to allow any pointing stabilization and execution of CMDs to occur. (int) \n</span>
 <span class="sd">        &#39;start_date&#39;: Sets the scheduled date for the mode as a str, (example: &#39;2018/9/3 08:00:40&#39;). If the date is set to &#39;0&#39;, Timeline start_date will be used.</span>
 <span class="sd">    </span>
 <span class="sd">    Returns:</span>
