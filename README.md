@@ -12,7 +12,8 @@ OPT (Operational_Planning_Tool) requires at least Python 3.7.3 and these package
 		astropy, Version >= 3.2.3, astropy
 		h5py, Version = 2.9.0
     
-It is recommended to install these packages in a conda environment using conda and to use "Spyder" as an scientific environment.
+It is recommended to install these packages in a conda environment using conda and to use "Spyder" as an scientific environment. The dependencies of 
+OPT is easily installed by running the Install_dependencies.bat file in the "Anaconda Prompt"
 
 What follows is a basic tutorial for beginners to python3 on how to setup python3 inside a conda environment 
 and then install the required packages.
@@ -25,7 +26,7 @@ Tool may already be installed (scipy for example). Miniconda comes with no prein
 
 2. After installation open the program "Anaconda Prompt".
 
-3. Run these commands in the "Anaconda Prompt" to install the desired packages. Alternatively run the CMD_file.bat in the "Anaconda Prompt".
+3. Run these commands in the "Anaconda Prompt" to install the desired packages. Alternatively run the Install_dependencies.bat in the "Anaconda Prompt".
 
 $ conda install -c anaconda ephem=3.7.6.0
 
