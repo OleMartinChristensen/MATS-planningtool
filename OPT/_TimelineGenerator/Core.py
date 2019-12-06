@@ -35,18 +35,16 @@ def Timeline_generator():
     ############# Set up Logger #################################
     _Library.SetupLogger(OPT_Config_File.Logger_name())
     
+    #############################################################
     Logger.info('Start of program')
     
     Version = OPT_Config_File.Version()
     Logger.info('Configuration File used: '+_Globals.Config_File+', Version: '+Version)
     
-    "Get a List of Modes and CMDs in a prioritized order which are to be scheduled"
-    Scheduling_priority = OPT_Config_File.Scheduling_priority()
-    Logger.info('Scheduling priority list: '+str(Scheduling_priority))
     
     "Get settings for the timeline"
     Timeline_settings = OPT_Config_File.Timeline_settings()
-    _Globals.Timeline_settings = Timeline_settings
+    
     Timeline_start_date = ephem.Date(Timeline_settings['start_date'])
     Logger.debug('Timeline_settings: '+str(Timeline_settings))
     
@@ -59,12 +57,21 @@ def Timeline_generator():
         Logger.error('OPT_Config_File.Timeline_settings["yaw_correction"] is set wrong')
         raise TypeError
         
+    
+    "Get a List of Modes and CMDs in a prioritized order which are to be scheduled"
+    Scheduling_priority = OPT_Config_File.Scheduling_priority()
+    Logger.info('Scheduling priority list: '+str(Scheduling_priority))
+    
     SCIMOD_Timeline_unchronological = []
     
     "Create Occupied_Timeline dictionary with keys equal to keys of Scheduling_priority"
     Occupied_Timeline = {key:[] for key in Scheduling_priority}
     "Create scheduled_instances dictionary with keys equal to keys of Scheduling_priority. This will keep track of how many times something is scheduled"
     scheduled_instances = {key:0 for key in Scheduling_priority}
+    
+    "Reset"
+    _Globals.Mode120Iteration = 1
+    _Globals.Mode124Iteration = 1
     
     Logger.debug('')
     Logger.debug('Occupied_Timeline: \n'+"{" + "\n".join("        {}: {}".format(k, v) for k, v in Occupied_Timeline.items()) + "}")
@@ -73,8 +80,7 @@ def Timeline_generator():
     Logger.info('')
     Logger.info('Start looping through modes priority list')
     
-    
-    
+    ################################################################################################################
     ################################################################################################################
     
     "Loop through the Modes to be ran and schedule each one in the priority order of which they appear in the list"
@@ -83,16 +89,13 @@ def Timeline_generator():
         Logger.info('')
         Logger.info('Iteration '+str(x+1)+' in Mode scheduling loop')
         
+        "The name of the Science Mode to be scheduled"
         scimod = Scheduling_priority[x]
-        
         
         Logger.info('Start of '+scimod)
         Logger.info('')
         
-        if( scimod == 'Mode120'):
-            _Globals.Mode120Iteration += 1
-        elif( scimod == 'Mode124'):
-            _Globals.Mode124Iteration += 1
+        
         
         "Get the function of the same name as the string in Scheduling_priority"
         try:
@@ -110,11 +113,17 @@ def Timeline_generator():
         
         
         "Check if a new date was scheduled"
-        #if( Occupied_Timeline[scimod] != [] ):
         if( len(Occupied_Timeline[scimod]) != scheduled_instances[scimod] ):
             
             #scheduled_instances[scimod] = len(Occupied_Timeline[scimod])
+            "Save the number of times something has been scheduled to allow multiple instances of it to be saved"
             scheduled_instances[scimod] += 1
+            
+            "To allow multiple instances of Mode120/124 to be scheduled using the V_offset settings"
+            if( scimod == 'Mode120'):
+                _Globals.Mode120Iteration += 1
+            elif( scimod == 'Mode124'):
+                _Globals.Mode124Iteration += 1
             
             "Check if the scheduled date is within the time defined for the timeline"
             if( Occupied_Timeline[scimod][scheduled_instances[scimod]-1][0] < Timeline_start_date or 
@@ -130,7 +139,7 @@ def Timeline_generator():
             Logger.debug('')
         
     ################################################################################################################
-    
+    #############################################################################################################
     
     
     Logger.info('Looping sequence of modes priority list complete')

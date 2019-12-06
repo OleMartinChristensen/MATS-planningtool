@@ -221,11 +221,13 @@ def Simulator( ScienceMode, Timestamp_fraction_of_second, Timestep, Timeline_set
     TimeDifferenceRest = round( (abs(Mode_start_date - OHB_StartTime) / ephem.second) % Timestep, 0 )
     
     if( TimeDifferenceRest == 0):
-        pass
+        StartingTimeRelative2StartOfMode = 0
     elif( Mode_start_date < OHB_StartTime):
         Mode_start_date = ephem.Date(Mode_start_date + ephem.second * TimeDifferenceRest )
+        StartingTimeRelative2StartOfMode = TimeDifferenceRest
     else:
         Mode_start_date = ephem.Date(Mode_start_date + ephem.second * (Timestep-TimeDifferenceRest) )
+        StartingTimeRelative2StartOfMode = (Timestep-TimeDifferenceRest)
     
     Mode_end_date = ephem.Date(ScienceMode[2])
     duration = (Mode_end_date - Mode_start_date) *24*3600
@@ -369,24 +371,24 @@ def Simulator( ScienceMode, Timestamp_fraction_of_second, Timestep, Timeline_set
         
         if( Simulator_Select == 'Mode100' ):
             "Increment the pointing altitude as defined by Mode100"
-            if( t*Timestep >= timestamp_change_of_pointing_altitude and pointing_altitude_to > pointing_altitude ):
+            if( t*Timestep+StartingTimeRelative2StartOfMode >= timestamp_change_of_pointing_altitude and pointing_altitude_to > pointing_altitude ):
                 pointing_altitude += pointing_altitude_interval
                 timestamp_change_of_pointing_altitude += pointing_duration 
         elif( Simulator_Select == 'Mode110' ):
             "Perform sweep as defined by Mode110"
             "Check if the sweep is positive or negative"
             if( sweep_rate > 0 ):
-                if( t*Timestep > pointing_stabilization + 11 * CMD_separation and pointing_altitude_to > pointing_altitude):
+                if( t*Timestep+StartingTimeRelative2StartOfMode > pointing_stabilization + 11 * CMD_separation and pointing_altitude_to > pointing_altitude):
                     pointing_altitude += sweep_rate * Timestep
                 elif( pointing_altitude_to <= pointing_altitude):
                     pointing_altitude = pointing_altitude_to
             elif( sweep_rate < 0 ):
-                if( t*Timestep > pointing_stabilization + 11 * CMD_separation and pointing_altitude_to < pointing_altitude):
+                if( t*Timestep+StartingTimeRelative2StartOfMode > pointing_stabilization + 11 * CMD_separation and pointing_altitude_to < pointing_altitude):
                     pointing_altitude += sweep_rate * Timestep
                 elif( pointing_altitude_to >= pointing_altitude):
                     pointing_altitude = pointing_altitude_to
         
-        elif( Simulator_Select == 'Mode12X' and t*Timestep >= freeze_duration+freeze_start):
+        elif( Simulator_Select == 'Mode12X' and t*Timestep+StartingTimeRelative2StartOfMode >= freeze_duration+freeze_start):
             "Looking at StandardPointingAltitude after attitude freeze for Mode12X"
             pointing_altitude = Timeline_settings['StandardPointingAltitude']
         ############Looking at pointing_altitude##############"
@@ -456,26 +458,43 @@ def Simulator( ScienceMode, Timestamp_fraction_of_second, Timestep, Timeline_set
         
         
         "Freezing the attitude"
-        if( Simulator_Select == 'Mode12X' and t*Timestep+Timestep > freeze_start and t*Timestep <= freeze_duration+freeze_start):
-            
-            "Save the index of the last optical_axis when simulation of attitude freeze is initiated"
+        #if( Simulator_Select == 'Mode12X' and t*Timestep+Timestep > freeze_start and t*Timestep <= freeze_duration+freeze_start):
+        if( Simulator_Select == 'Mode12X' and t*Timestep+StartingTimeRelative2StartOfMode > freeze_start and t*Timestep+StartingTimeRelative2StartOfMode <= freeze_duration+freeze_start):
+            "Save the pointing for the exact time when attitude freeze is initiated"
             if( freeze_flag == 0):
-                t_freeze = t-1    
+                
+                "Exact timing of Attitude freeze"
+                current_time_freeze = ephem.Date(ephem.Date(ScienceMode[1])+ephem.second*(freeze_start))
+                
+                
+                "Run the satellite simulation for the freeze time"
+                Satellite_dict = _Library.Satellite_Simulator( 
+                            MATS_skyfield, current_time_freeze, Timeline_settings, pointing_altitude/1000, LogFlag, Logger )
+                
+                "Save results"
+                r_V_offset_normal_Freeze = Satellite_dict['Normal2V_offset']
+                r_H_offset_normal_Freeze = Satellite_dict['Normal2H_offset']
+                optical_axis_Freeze = Satellite_dict['OpticalAxis']
+                
             freeze_flag = 1
             
+           
             
             "Maintain the same optical axis as the simulation progresses"
-            optical_axis[t,:] = optical_axis[t_freeze,:]
+            optical_axis[t,:] = optical_axis_Freeze
             optical_axis_ECEF[t,0], optical_axis_ECEF[t,1], optical_axis_ECEF[t,2] = _MATS_coordinates.eci2ecef(
                     optical_axis[t,0], optical_axis[t,1], optical_axis[t,2], current_time_datetime)
             
-            r_V_offset_normal[t,:] = r_V_offset_normal[t_freeze,:]
-            r_H_offset_normal[t,:] = r_H_offset_normal[t_freeze,:]
+            r_V_offset_normal[t,:] = r_V_offset_normal_Freeze
+            r_H_offset_normal[t,:] = r_H_offset_normal_Freeze
             
             r_LP_ECEF[t,0], r_LP_ECEF[t,1], r_LP_ECEF[t,2] = _MATS_coordinates.ecef2tanpoint(r_MATS_ECEF[t][0], r_MATS_ECEF[t][1], r_MATS_ECEF[t][2], 
                                    optical_axis_ECEF[t,0], optical_axis_ECEF[t,1], optical_axis_ECEF[t,2])
             
             lat_LP[t], long_LP[t], alt_LP[t]  = _MATS_coordinates.ECEF2lla(r_LP_ECEF[t,0], r_LP_ECEF[t,1], r_LP_ECEF[t,2])
+            
+            r_LP[t,0], r_LP[t,1], r_LP[t,2] = _MATS_coordinates.ecef2eci( r_LP_ECEF[t,0], r_LP_ECEF[t,1], r_LP_ECEF[t,2], 
+                                               current_time_datetime)
             
             Dec_optical_axis[t] = arctan( optical_axis[t,2] / sqrt(optical_axis[t,0]**2 + optical_axis[t,1]**2) ) /pi * 180
             RA_optical_axis[t] = arccos( dot( [1,0,0], [optical_axis[t,0],optical_axis[t,1],0] ) / norm([optical_axis[t,0],optical_axis[t,1],0]) ) / pi * 180

@@ -80,7 +80,7 @@ def Mode120_date_calculator():
     "Constants"
     Mode120Iteration = _Globals.Mode120Iteration
     "Make the V_offset_Index go from 0 to len(Mode120_settings['V_offset']"
-    V_offset_Index = (Mode120Iteration-1) % (len(Mode120_settings['V_offset'])+1)
+    V_offset_Index = (Mode120Iteration-1) % (len(Mode120_settings['V_offset']))
     
     V_offset = Mode120_settings['V_offset'][V_offset_Index]
     H_offset = Mode120_settings['H_offset']

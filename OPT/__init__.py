@@ -256,7 +256,7 @@ def Timeline_Plotter(Science_Mode_Path, OHB_H5_Path = '', STK_CSV_PATH = '', Tim
     
     Simulates the position and attitude of MATS from a given Science Mode Timeline and also optionally compares it to
     positional and attitude data given in a .h5 data set, located at *OHB_H5_Path*. Plots both the simulated data and given data. 
-    The timesteps of both the .h5 data and the Science Mode is synchronized to allow direct comparison if possible. \n
+    The attitude data shows only the target orientation and does not mimic MATS's actual control system. The timesteps of both the .h5 data and the Science Mode is synchronized to allow direct comparison if possible. \n
     A .csv file, generated in STK, may also be included to plot the predicted positional error of the satellite compared to STK data.
     Saves generated plots as binary files. \n
     Settings for the operation of the program are stated in the chosen *Configuration File*. 

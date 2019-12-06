@@ -85,7 +85,7 @@ def date_calculator():
     
     Mode124Iteration = _Globals.Mode124Iteration
     "Make the V_offset_Index go from 0 to len(Mode120_settings['V_offset']"
-    V_offset_Index = (Mode124Iteration-1) % (len(Mode124_settings['V_offset'])+1)
+    V_offset_Index = (Mode124Iteration-1) % (len(Mode124_settings['V_offset']))
     
     V_offset = Mode124_settings['V_offset'][V_offset_Index]
     H_offset = Mode124_settings['H_offset']  
