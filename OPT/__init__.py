@@ -231,24 +231,6 @@ def Timeline_analyzer(science_mode_timeline_path, date):
     Mode, Parameters = Timeline_analyzer(science_mode_timeline_path, date)
     
     return Mode, Parameters
-
-def Data_Plotter():
-    '''Invokes the *Data_Plotter* program part of *Operational_Planning_Tool*.
-    
-    Simulates the position and attitude of MATS during normal operation and compares it to 
-    the actual positional and attitude data given in a data set. Plots both the simulated data and given data. \n
-    Settings for the operation of the program are stated in the chosen *Configuration File*, set by *Set_ConfigFile*.
-    
-    Arguments:
-        
-            
-    Returns:
-        None
-    '''
-    from ._DataPlotter.Core import Data_Plotter
-    
-    
-    Data_Plotter()
     
     
 def Timeline_Plotter(Science_Mode_Path, OHB_H5_Path = '', STK_CSV_PATH = '', Timestep = 16 ):
