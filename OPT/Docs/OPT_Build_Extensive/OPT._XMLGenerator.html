@@ -70,7 +70,7 @@
 which creates a minimal Science XML file with set Commands with arguments taken from the chosen <em>Configuration File</em>.</p>
 <dl class="function">
 <dt id="OPT._XMLGenerator.MinimalScienceXML_gen.MinimalScienceXMLGenerator">
-<code class="sig-prename descclassname">OPT._XMLGenerator.MinimalScienceXML_gen.</code><code class="sig-name descname">MinimalScienceXMLGenerator</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/MinimalScienceXML_gen.html#MinimalScienceXMLGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.MinimalScienceXML_gen.MinimalScienceXMLGenerator" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._XMLGenerator.MinimalScienceXML_gen.</code><code class="descname">MinimalScienceXMLGenerator</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/MinimalScienceXML_gen.html#MinimalScienceXMLGenerator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.MinimalScienceXML_gen.MinimalScienceXMLGenerator" title="Permalink to this definition">¶</a></dt>
 <dd><p>The Core function of <em>MinimalScienceXML_gen</em> part of <em>OPT</em>.</p>
 <p>The generated XML will:</p>
 <blockquote>
@@ -113,7 +113,7 @@ start and end time and also duration of the timeline. Then goes through the
 supplied Science Mode Timeline List chronologically and calls for the corresponding function in one of the modules located in the <em>Modes_and_Tests</em> package.</p>
 <dl class="function">
 <dt id="OPT._XMLGenerator.XML_gen.XML_Initial_Basis_Creator">
-<code class="sig-prename descclassname">OPT._XMLGenerator.XML_gen.</code><code class="sig-name descname">XML_Initial_Basis_Creator</code><span class="sig-paren">(</span><em class="sig-param">timeline_start</em>, <em class="sig-param">timeline_duration</em>, <em class="sig-param">SCIMOD_Path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/XML_gen.html#XML_Initial_Basis_Creator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.XML_gen.XML_Initial_Basis_Creator" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._XMLGenerator.XML_gen.</code><code class="descname">XML_Initial_Basis_Creator</code><span class="sig-paren">(</span><em>timeline_start</em>, <em>timeline_duration</em>, <em>SCIMOD_Path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/XML_gen.html#XML_Initial_Basis_Creator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.XML_gen.XML_Initial_Basis_Creator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Subfunction, Construct Basis of XML document and adds the description container.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -134,7 +134,7 @@ supplied Science Mode Timeline List chronologically and calls for the correspond
 
 <dl class="function">
 <dt id="OPT._XMLGenerator.XML_gen.XML_generator">
-<code class="sig-prename descclassname">OPT._XMLGenerator.XML_gen.</code><code class="sig-name descname">XML_generator</code><span class="sig-paren">(</span><em class="sig-param">SCIMOD_Path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/XML_gen.html#XML_generator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.XML_gen.XML_generator" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._XMLGenerator.XML_gen.</code><code class="descname">XML_generator</code><span class="sig-paren">(</span><em>SCIMOD_Path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/XML_gen.html#XML_generator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.XML_gen.XML_generator" title="Permalink to this definition">¶</a></dt>
 <dd><p>The core function of the XML_gen program.</p>
 <p>Reads a <em>Science Mode Timeline</em> .json file. Then chronologically goes though the <em>Science Mode Timeline</em>, calling for the <em>XML_generator_select</em> function.
 Any settings stated in the <em>Science Mode Timeline</em> will override any similar ones given in the set <em>Configuration File</em>.
@@ -151,7 +151,7 @@ Also calls for XML_Initial_Basis_Creator to setup a XML tree which will be used 
 
 <dl class="function">
 <dt id="OPT._XMLGenerator.XML_gen.XML_generator_select">
-<code class="sig-prename descclassname">OPT._XMLGenerator.XML_gen.</code><code class="sig-name descname">XML_generator_select</code><span class="sig-paren">(</span><em class="sig-param">name</em>, <em class="sig-param">root</em>, <em class="sig-param">date</em>, <em class="sig-param">duration</em>, <em class="sig-param">relativeTime</em>, <em class="sig-param">params</em>, <em class="sig-param">Timeline_settings</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/XML_gen.html#XML_generator_select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.XML_gen.XML_generator_select" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._XMLGenerator.XML_gen.</code><code class="descname">XML_generator_select</code><span class="sig-paren">(</span><em>name</em>, <em>root</em>, <em>date</em>, <em>duration</em>, <em>relativeTime</em>, <em>params</em>, <em>Timeline_settings</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/XML_gen.html#XML_generator_select"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.XML_gen.XML_generator_select" title="Permalink to this definition">¶</a></dt>
 <dd><p>Subfunction, Selects corresponding mode, test or CMD function in the package <em>Modes_and_Tests</em> from the variable <em>name</em>.</p>
 <p>Calls for any function named <em>X</em> in the modules <em>MODES</em>, <em>SeparateCmds</em>, and <em>Tests</em>, where X is the string in the input <em>name</em>.</p>
 <dl class="field-list simple">
@@ -195,7 +195,6 @@ Also calls for XML_Initial_Basis_Creator to setup a XML tree which will be used 
 <li class="toctree-l1 current"><a class="reference internal" href="OPT.html">OPT package</a><ul class="current">
 <li class="toctree-l2 current"><a class="reference internal" href="OPT.html#subpackages">Subpackages</a><ul class="current">
 <li class="toctree-l3"><a class="reference internal" href="OPT._CheckConfigFile.html">OPT._CheckConfigFile package</a></li>
-<li class="toctree-l3"><a class="reference internal" href="OPT._DataPlotter.html">OPT._DataPlotter package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="OPT._Plot_Timeline_Plotter_Plots.html">OPT._Plot_Timeline_Plotter_Plots package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="OPT._TimelineAnalyzer.html">OPT._TimelineAnalyzer package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="OPT._TimelineGenerator.html">OPT._TimelineGenerator package</a></li>
@@ -230,10 +229,10 @@ Also calls for XML_Initial_Basis_Creator to setup a XML tree which will be used 
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
+  <h3>Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" />
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -255,7 +254,7 @@ Also calls for XML_Initial_Basis_Creator to setup a XML tree which will be used 
       &copy;2019, David Skånberg.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

@@ -2,6 +2,7 @@ OPT package
 ===========
 
 .. automodule:: OPT
-   :members:
-   :undoc-members:
-   :show-inheritance:
+    :members:
+    :undoc-members:
+    :show-inheritance:
+

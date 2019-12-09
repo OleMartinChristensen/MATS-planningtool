@@ -38,11 +38,6 @@ def Timeline_Plotter(Science_Mode_Path, OHB_H5_Path, STK_CSV_FILE, Timestep):
     
     """
     
-    """
-    if(os.path.isfile('OPT_Config_File.py') == False):
-        print('No OPT_Config_File.py found. Try running Create_ConfigFile()')
-        sys.exit()
-    """
     
     ############# Set up Logger #################################
     _Library.SetupLogger(OPT_Config_File.Logger_name())
@@ -206,9 +201,6 @@ def Simulator( ScienceMode, Timestamp_fraction_of_second, Timestep, Timeline_set
         
     """
     
-    
-    #TLE = ['1 54321U 19100G   20172.75041666 0.00000000  00000-0  75180-4 0  0012',
-    #       '2 54321  97.7044   6.9210 0014595 313.2372  91.8750 14.93194142000010']
     
     
     ModeName = ScienceMode[0]
@@ -912,8 +904,6 @@ def Plotter(Data_MATS, Data_LP, Time, DataIndexStep, OHB_StartIndex, OHB_H5_Path
     
     from mpl_toolkits.mplot3d import axes3d
     
-    #current_time_MPL_STK = ephemDate2MatplotDate + current_time_STK[:]
-    #Time_MPL = [ephemDate2MatplotDate+x for x in Time]
     
     fig=figure()
     ax = fig.add_subplot(111,projection='3d')
@@ -1075,99 +1065,95 @@ def Plotter(Data_MATS, Data_LP, Time, DataIndexStep, OHB_StartIndex, OHB_H5_Path
     
     Time_error_MPL = []
     
-    
-    "Calculate error between OHB DATA and predicted data when timestamps are the same"
-    for t2 in range(timesteps):
+    if( OHB_H5_Path != ''):
+        "Calculate error between OHB DATA and predicted data when timestamps are the same"
+        for t2 in range(timesteps):
+            
+            for t in range(len(Time)):
+                
+                if( Time_MPL_OHB[t2] == Time_MPL[t] ):
+                    
+                    
+                    x_MATS_error_OHB.append( abs(Data_MATS['r_MATS_ECEF'][t,0]-r_MATS_OHB_ECEF[t2,0]) )
+                    y_MATS_error_OHB.append( abs(Data_MATS['r_MATS_ECEF'][t,1]-r_MATS_OHB_ECEF[t2,1]) )
+                    z_MATS_error_OHB.append( abs(Data_MATS['r_MATS_ECEF'][t,2]-r_MATS_OHB_ECEF[t2,2]) )
+                    total_r_MATS_error_OHB.append( norm( (x_MATS_error_OHB[len(x_MATS_error_OHB)-1], y_MATS_error_OHB[len(y_MATS_error_OHB)-1], z_MATS_error_OHB[len(z_MATS_error_OHB)-1]) ) )
+                    
+                    x_LP_error_OHB.append( abs(Data_LP['r_LP_ECEF'][t,0]-r_LP_OHB_ECEF[t2,0]) )
+                    y_LP_error_OHB.append( abs(Data_LP['r_LP_ECEF'][t,1]-r_LP_OHB_ECEF[t2,1]) )
+                    z_LP_error_OHB.append( abs(Data_LP['r_LP_ECEF'][t,2]-r_LP_OHB_ECEF[t2,2]) )
+                    total_r_LP_error_OHB.append( norm( (x_LP_error_OHB[len(x_LP_error_OHB)-1], y_LP_error_OHB[len(y_LP_error_OHB)-1], z_LP_error_OHB[len(z_LP_error_OHB)-1]) ) )
+                    
+                    alt_LP_error.append( Data_LP['alt_LP'][t] - alt_LP_OHB[t2] )
+                    
+                    optical_axis_Dec_ERROR.append( abs(Data_MATS['optical_axis_Dec'][t] - Dec_OHB[t2]) )
+                    optical_axis_RA_ERROR.append( abs(Data_MATS['optical_axis_RA'][t] - RA_OHB[t2]) )
+                    
+                    #in_track = cross( normal_orbit[t], r_MATS_unit_vector[t])
+                    #r_MATS_unit_vector_ECEF = array( (Data_MATS['x_MATS_ECEF'][t], Data_MATS['y_MATS_ECEF'][t], Data_MATS['z_MATS_ECEF'][t]) )
+                    #v_MATS_unit_vector_ECEF = array( (Data_MATS['vx_MATS_ECEF'][t], Data_MATS['vy_MATS_ECEF'][t], Data_MATS['vz_MATS_ECEF'][t]) ) / norm( array( (Data_MATS['vx_MATS_ECEF'][t], Data_MATS['vy_MATS_ECEF'][t], Data_MATS['vz_MATS_ECEF'][t]) ) )
+                    
+                    r_MATS_unit_vector_ECEF = Data_MATS['r_MATS_ECEF'][t] / norm(Data_MATS['r_MATS_ECEF'][t] )
+                    v_MATS_unit_vector_ECEF = Data_MATS['v_MATS_ECEF'][t] / norm(Data_MATS['v_MATS_ECEF'][t] )
+                    
+                    
+                    UnitVectorBasis_RCI = transpose( array( ( (r_MATS_unit_vector_ECEF[0], Data_MATS['r_normal_orbit_ECEF'][t,0], v_MATS_unit_vector_ECEF[0]),
+                                                             (r_MATS_unit_vector_ECEF[1], Data_MATS['r_normal_orbit_ECEF'][t,1], v_MATS_unit_vector_ECEF[1]), 
+                                                             (r_MATS_unit_vector_ECEF[2], Data_MATS['r_normal_orbit_ECEF'][t,2], v_MATS_unit_vector_ECEF[2]) ) ) )
+                    
+                    dcm_change_of_basis_RCI = transpose(UnitVectorBasis_RCI)
+                    r_change_of_basis_ECI_to_SLOF = R.from_dcm(dcm_change_of_basis_RCI)
+                    
+                    r_MATS_error_OHB_RCI = r_change_of_basis_ECI_to_SLOF.apply( ( (x_MATS_error_OHB[len(x_MATS_error_OHB)-1], y_MATS_error_OHB[len(y_MATS_error_OHB)-1], z_MATS_error_OHB[len(z_MATS_error_OHB)-1]) ) )
+                    
+                    r_MATS_error_OHB_Radial.append( r_MATS_error_OHB_RCI[0] )
+                    r_MATS_error_OHB_CrossTrack.append( r_MATS_error_OHB_RCI[1] )
+                    r_MATS_error_OHB_InTrack.append( r_MATS_error_OHB_RCI[2] )
+                    total_r_MATS_error_OHB_RCI.append( norm(r_MATS_error_OHB_RCI) )
+                    
+                    r_LP_error_OHB_RCI = r_change_of_basis_ECI_to_SLOF.apply( ( (x_LP_error_OHB[len(x_LP_error_OHB)-1], y_LP_error_OHB[len(y_LP_error_OHB)-1], z_LP_error_OHB[len(z_LP_error_OHB)-1]) ) )
+                    
+                    r_LP_error_OHB_Radial.append( r_LP_error_OHB_RCI[0] )
+                    r_LP_error_OHB_CrossTrack.append( r_LP_error_OHB_RCI[1] )
+                    r_LP_error_OHB_InTrack.append( r_LP_error_OHB_RCI[2] )
+                    total_r_LP_error_OHB_RCI.append( norm(r_LP_error_OHB_RCI) )
+                    
+                    Time_error_MPL.append( Time_MPL[t] )
+                    break
+                
+                
+        fig = figure()
+        plot_date(Time_error_MPL[:],x_MATS_error_OHB[:], markersize = 1, label = 'x')
+        plot_date(Time_error_MPL[:],y_MATS_error_OHB[:], markersize = 1, label = 'y')
+        plot_date(Time_error_MPL[:],z_MATS_error_OHB[:], markersize = 1, label = 'z')
+        xlabel('Date')
+        ylabel('Absolute error in ECEF position of MATS in m (prediction vs OHB')
+        legend()
+        figurePath = os.path.join(figureDirectory, 'PosError')
+        pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
         
-        for t in range(len(Time)):
-            
-            if( Time_MPL_OHB[t2] == Time_MPL[t] ):
-                
-                
-                x_MATS_error_OHB.append( abs(Data_MATS['r_MATS_ECEF'][t,0]-r_MATS_OHB_ECEF[t2,0]) )
-                y_MATS_error_OHB.append( abs(Data_MATS['r_MATS_ECEF'][t,1]-r_MATS_OHB_ECEF[t2,1]) )
-                z_MATS_error_OHB.append( abs(Data_MATS['r_MATS_ECEF'][t,2]-r_MATS_OHB_ECEF[t2,2]) )
-                total_r_MATS_error_OHB.append( norm( (x_MATS_error_OHB[len(x_MATS_error_OHB)-1], y_MATS_error_OHB[len(y_MATS_error_OHB)-1], z_MATS_error_OHB[len(z_MATS_error_OHB)-1]) ) )
-                
-                x_LP_error_OHB.append( abs(Data_LP['r_LP_ECEF'][t,0]-r_LP_OHB_ECEF[t2,0]) )
-                y_LP_error_OHB.append( abs(Data_LP['r_LP_ECEF'][t,1]-r_LP_OHB_ECEF[t2,1]) )
-                z_LP_error_OHB.append( abs(Data_LP['r_LP_ECEF'][t,2]-r_LP_OHB_ECEF[t2,2]) )
-                total_r_LP_error_OHB.append( norm( (x_LP_error_OHB[len(x_LP_error_OHB)-1], y_LP_error_OHB[len(y_LP_error_OHB)-1], z_LP_error_OHB[len(z_LP_error_OHB)-1]) ) )
-                
-                alt_LP_error.append( Data_LP['alt_LP'][t] - alt_LP_OHB[t2] )
-                
-                optical_axis_Dec_ERROR.append( abs(Data_MATS['optical_axis_Dec'][t] - Dec_OHB[t2]) )
-                optical_axis_RA_ERROR.append( abs(Data_MATS['optical_axis_RA'][t] - RA_OHB[t2]) )
-                
-                #in_track = cross( normal_orbit[t], r_MATS_unit_vector[t])
-                #r_MATS_unit_vector_ECEF = array( (Data_MATS['x_MATS_ECEF'][t], Data_MATS['y_MATS_ECEF'][t], Data_MATS['z_MATS_ECEF'][t]) )
-                #v_MATS_unit_vector_ECEF = array( (Data_MATS['vx_MATS_ECEF'][t], Data_MATS['vy_MATS_ECEF'][t], Data_MATS['vz_MATS_ECEF'][t]) ) / norm( array( (Data_MATS['vx_MATS_ECEF'][t], Data_MATS['vy_MATS_ECEF'][t], Data_MATS['vz_MATS_ECEF'][t]) ) )
-                
-                r_MATS_unit_vector_ECEF = Data_MATS['r_MATS_ECEF'][t] / norm(Data_MATS['r_MATS_ECEF'][t] )
-                v_MATS_unit_vector_ECEF = Data_MATS['v_MATS_ECEF'][t] / norm(Data_MATS['v_MATS_ECEF'][t] )
-                
-                
-                UnitVectorBasis_RCI = transpose( array( ( (r_MATS_unit_vector_ECEF[0], Data_MATS['r_normal_orbit_ECEF'][t,0], v_MATS_unit_vector_ECEF[0]),
-                                                         (r_MATS_unit_vector_ECEF[1], Data_MATS['r_normal_orbit_ECEF'][t,1], v_MATS_unit_vector_ECEF[1]), 
-                                                         (r_MATS_unit_vector_ECEF[2], Data_MATS['r_normal_orbit_ECEF'][t,2], v_MATS_unit_vector_ECEF[2]) ) ) )
-                
-                dcm_change_of_basis_RCI = transpose(UnitVectorBasis_RCI)
-                r_change_of_basis_ECI_to_SLOF = R.from_dcm(dcm_change_of_basis_RCI)
-                
-                r_MATS_error_OHB_RCI = r_change_of_basis_ECI_to_SLOF.apply( ( (x_MATS_error_OHB[len(x_MATS_error_OHB)-1], y_MATS_error_OHB[len(y_MATS_error_OHB)-1], z_MATS_error_OHB[len(z_MATS_error_OHB)-1]) ) )
-                
-                r_MATS_error_OHB_Radial.append( r_MATS_error_OHB_RCI[0] )
-                r_MATS_error_OHB_CrossTrack.append( r_MATS_error_OHB_RCI[1] )
-                r_MATS_error_OHB_InTrack.append( r_MATS_error_OHB_RCI[2] )
-                total_r_MATS_error_OHB_RCI.append( norm(r_MATS_error_OHB_RCI) )
-                
-                r_LP_error_OHB_RCI = r_change_of_basis_ECI_to_SLOF.apply( ( (x_LP_error_OHB[len(x_LP_error_OHB)-1], y_LP_error_OHB[len(y_LP_error_OHB)-1], z_LP_error_OHB[len(z_LP_error_OHB)-1]) ) )
-                
-                r_LP_error_OHB_Radial.append( r_LP_error_OHB_RCI[0] )
-                r_LP_error_OHB_CrossTrack.append( r_LP_error_OHB_RCI[1] )
-                r_LP_error_OHB_InTrack.append( r_LP_error_OHB_RCI[2] )
-                total_r_LP_error_OHB_RCI.append( norm(r_LP_error_OHB_RCI) )
-                
-                Time_error_MPL.append( Time_MPL[t] )
-                break
-            
-            
-    
-    
-    
-    
-    fig = figure()
-    plot_date(Time_error_MPL[:],x_MATS_error_OHB[:], markersize = 1, label = 'x')
-    plot_date(Time_error_MPL[:],y_MATS_error_OHB[:], markersize = 1, label = 'y')
-    plot_date(Time_error_MPL[:],z_MATS_error_OHB[:], markersize = 1, label = 'z')
-    xlabel('Date')
-    ylabel('Absolute error in ECEF position of MATS in m (prediction vs OHB')
-    legend()
-    figurePath = os.path.join(figureDirectory, 'PosError')
-    pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
-    
-    
-    fig = figure()
-    plot_date(Time_error_MPL[:],r_MATS_error_OHB_Radial[:], markersize = 1, label = 'Radial')
-    plot_date(Time_error_MPL[:],r_MATS_error_OHB_CrossTrack[:], markersize = 1, label = 'Cross-track')
-    plot_date(Time_error_MPL[:],r_MATS_error_OHB_InTrack[:], markersize = 1, label = 'Intrack')
-    xlabel('Date')
-    ylabel('Absolute error in ECEF position of MATS as RCI in m (prediction vs OHB')
-    legend()
-    figurePath = os.path.join(figureDirectory, 'PosErrorRCI')
-    pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
-    
-    
-    fig = figure()
-    plot_date(Time_error_MPL[:],total_r_MATS_error_OHB[:], markersize = 1, label = 'XYZ')
-    plot_date(Time_error_MPL[:],total_r_MATS_error_OHB_RCI[:], markersize = 1, label = 'RCI')
-    xlabel('Date')
-    ylabel('Magnitude of Absolute error in ECEF position of MATS in m (prediction vs OHB')
-    legend()
-    figurePath = os.path.join(figureDirectory, 'MagPosError')
-    pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
-    
-    
+        
+        fig = figure()
+        plot_date(Time_error_MPL[:],r_MATS_error_OHB_Radial[:], markersize = 1, label = 'Radial')
+        plot_date(Time_error_MPL[:],r_MATS_error_OHB_CrossTrack[:], markersize = 1, label = 'Cross-track')
+        plot_date(Time_error_MPL[:],r_MATS_error_OHB_InTrack[:], markersize = 1, label = 'Intrack')
+        xlabel('Date')
+        ylabel('Absolute error in ECEF position of MATS as RCI in m (prediction vs OHB')
+        legend()
+        figurePath = os.path.join(figureDirectory, 'PosErrorRCI')
+        pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
+        
+        
+        fig = figure()
+        plot_date(Time_error_MPL[:],total_r_MATS_error_OHB[:], markersize = 1, label = 'XYZ')
+        plot_date(Time_error_MPL[:],total_r_MATS_error_OHB_RCI[:], markersize = 1, label = 'RCI')
+        xlabel('Date')
+        ylabel('Magnitude of Absolute error in ECEF position of MATS in m (prediction vs OHB')
+        legend()
+        figurePath = os.path.join(figureDirectory, 'MagPosError')
+        pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
+        
+        
     
     
     
@@ -1220,48 +1206,48 @@ def Plotter(Data_MATS, Data_LP, Time, DataIndexStep, OHB_StartIndex, OHB_H5_Path
     figurePath = os.path.join(figureDirectory, 'Alt_LP')
     pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
     
-    
-    fig = figure()
-    plot_date(Time_error_MPL[:],alt_LP_error[:], markersize = 1, label = 'Predicted - OHB')
-    xlabel('Date')
-    ylabel('Error in Altitude of LP in m')
-    legend()
-    figurePath = os.path.join(figureDirectory, 'AltError_LP')
-    pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
-    
-    
-    fig = figure()
-    plot_date(Time_error_MPL[:],x_LP_error_OHB[:], markersize = 1, label = 'x')
-    plot_date(Time_error_MPL[:],y_LP_error_OHB[:], markersize = 1, label = 'y')
-    plot_date(Time_error_MPL[:],z_LP_error_OHB[:], markersize = 1, label = 'z')
-    xlabel('Date')
-    ylabel('Absolute error in ECEF position of LP in m')
-    legend()
-    figurePath = os.path.join(figureDirectory, 'PosError_LP')
-    pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
-    
-    
-    fig = figure()
-    plot_date(Time_error_MPL[:],r_LP_error_OHB_Radial[:], markersize = 1, label = 'Radial')
-    plot_date(Time_error_MPL[:],r_LP_error_OHB_CrossTrack[:], markersize = 1, label = 'Cross-track')
-    plot_date(Time_error_MPL[:],r_LP_error_OHB_InTrack[:], markersize = 1, label = 'Intrack')
-    xlabel('Date')
-    ylabel('Absolute error in ECEF position of LP as RCI in m (prediction vs OHB')
-    legend()
-    figurePath = os.path.join(figureDirectory, 'PosErrorRCI_LP')
-    pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
-    
-    
-    fig = figure()
-    plot_date(Time_error_MPL[:],total_r_LP_error_OHB[:], markersize = 1, label = 'XYZ')
-    plot_date(Time_error_MPL[:],total_r_LP_error_OHB_RCI[:], markersize = 1, label = 'RCI')
-    xlabel('Date')
-    ylabel('Magnitude of Absolute error of LP ECEF position in m')
-    legend()
-    figurePath = os.path.join(figureDirectory, 'MagPosError_LP')
-    pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
-    
-    
+    if( OHB_H5_Path != ''):
+        fig = figure()
+        plot_date(Time_error_MPL[:],alt_LP_error[:], markersize = 1, label = 'Predicted - OHB')
+        xlabel('Date')
+        ylabel('Error in Altitude of LP in m')
+        legend()
+        figurePath = os.path.join(figureDirectory, 'AltError_LP')
+        pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
+        
+        
+        fig = figure()
+        plot_date(Time_error_MPL[:],x_LP_error_OHB[:], markersize = 1, label = 'x')
+        plot_date(Time_error_MPL[:],y_LP_error_OHB[:], markersize = 1, label = 'y')
+        plot_date(Time_error_MPL[:],z_LP_error_OHB[:], markersize = 1, label = 'z')
+        xlabel('Date')
+        ylabel('Absolute error in ECEF position of LP in m')
+        legend()
+        figurePath = os.path.join(figureDirectory, 'PosError_LP')
+        pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
+        
+        
+        fig = figure()
+        plot_date(Time_error_MPL[:],r_LP_error_OHB_Radial[:], markersize = 1, label = 'Radial')
+        plot_date(Time_error_MPL[:],r_LP_error_OHB_CrossTrack[:], markersize = 1, label = 'Cross-track')
+        plot_date(Time_error_MPL[:],r_LP_error_OHB_InTrack[:], markersize = 1, label = 'Intrack')
+        xlabel('Date')
+        ylabel('Absolute error in ECEF position of LP as RCI in m (prediction vs OHB')
+        legend()
+        figurePath = os.path.join(figureDirectory, 'PosErrorRCI_LP')
+        pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
+        
+        
+        fig = figure()
+        plot_date(Time_error_MPL[:],total_r_LP_error_OHB[:], markersize = 1, label = 'XYZ')
+        plot_date(Time_error_MPL[:],total_r_LP_error_OHB_RCI[:], markersize = 1, label = 'RCI')
+        xlabel('Date')
+        ylabel('Magnitude of Absolute error of LP ECEF position in m')
+        legend()
+        figurePath = os.path.join(figureDirectory, 'MagPosError_LP')
+        pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
+        
+        
     
     
     fig = figure()
@@ -1274,16 +1260,16 @@ def Plotter(Data_MATS, Data_LP, Time, DataIndexStep, OHB_StartIndex, OHB_H5_Path
     pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
     
     
-    
-    fig = figure()
-    plot_date(Time_error_MPL[:],optical_axis_RA_ERROR[:], markersize = 1, label = 'Prediction vs OHB')
-    xlabel('Date')
-    ylabel('Absolute error in Right Ascension in degrees [J2000] (Parallax assumed negligable)')
-    legend()
-    figurePath = os.path.join(figureDirectory, 'RA_OpticalAxisError')
-    pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
-    
-    
+    if( OHB_H5_Path != ''):
+        fig = figure()
+        plot_date(Time_error_MPL[:],optical_axis_RA_ERROR[:], markersize = 1, label = 'Prediction vs OHB')
+        xlabel('Date')
+        ylabel('Absolute error in Right Ascension in degrees [J2000] (Parallax assumed negligable)')
+        legend()
+        figurePath = os.path.join(figureDirectory, 'RA_OpticalAxisError')
+        pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
+        
+        
     
     fig = figure()
     plot_date(Time_MPL[:],Data_MATS['optical_axis_Dec'][:], markersize = 1, label = 'Predicted')
@@ -1295,15 +1281,15 @@ def Plotter(Data_MATS, Data_LP, Time, DataIndexStep, OHB_StartIndex, OHB_H5_Path
     figurePath = os.path.join(figureDirectory, 'Dec_OpticalAxis')
     pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
     
-    
-    fig = figure()
-    plot_date(Time_error_MPL[:],optical_axis_Dec_ERROR[:], markersize = 1, label = 'Prediction vs OHB')
-    xlabel('Date')
-    ylabel('Absolute error in Declination in degrees [J2000] (Parallax assumed negligable)')
-    legend()
-    figurePath = os.path.join(figureDirectory, 'Dec_OpticalAxisError')
-    pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
-    
+    if( OHB_H5_Path != ''):
+        fig = figure()
+        plot_date(Time_error_MPL[:],optical_axis_Dec_ERROR[:], markersize = 1, label = 'Prediction vs OHB')
+        xlabel('Date')
+        ylabel('Absolute error in Declination in degrees [J2000] (Parallax assumed negligable)')
+        legend()
+        figurePath = os.path.join(figureDirectory, 'Dec_OpticalAxisError')
+        pickle.dump(fig,open(figurePath+'.fig.pickle', 'wb'))
+        
     
     "######## Save data to pickle files ##########"
     "################################################"

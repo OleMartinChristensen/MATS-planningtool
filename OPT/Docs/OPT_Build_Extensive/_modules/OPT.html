@@ -162,8 +162,8 @@
     
 
 
-<div class="viewcode-block" id="Set_ConfigFile"><a class="viewcode-back" href="../OPT.html#OPT.Set_ConfigFile">[docs]</a><span class="k">def</span> <span class="nf">Set_ConfigFile</span><span class="p">(</span><span class="n">Config_File_Name</span><span class="p">,</span> <span class="n">Date</span><span class="p">,</span> <span class="n">TLE1</span><span class="o">=</span><span class="s1">&#39;1 54321U 19100G   20172.75043981 0.00000000  00000-0  75180-4 0  0014&#39;</span><span class="p">,</span> 
-                   <span class="n">TLE2</span><span class="o">=</span><span class="s1">&#39;2 54321  97.7044   6.9210 0014595 313.2372  91.8750 14.93194142000010&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="Set_ConfigFile"><a class="viewcode-back" href="../OPT.html#OPT.Set_ConfigFile">[docs]</a><span class="k">def</span> <span class="nf">Set_ConfigFile</span><span class="p">(</span><span class="n">Config_File_Name</span><span class="p">,</span> <span class="n">Date</span><span class="p">,</span> <span class="n">TLE1</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> 
+                   <span class="n">TLE2</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Sets the StartTime and TLE for OPT, and the name of the *.py* file that shall be used as a *Configuration file* for OPT.</span>
 <span class="sd">    </span>
 <span class="sd">    The *Configuration file* chosen must be visible in sys.path.</span>
@@ -265,31 +265,13 @@
     
     <span class="k">return</span> <span class="n">Mode</span><span class="p">,</span> <span class="n">Parameters</span></div>
 
-<div class="viewcode-block" id="Data_Plotter"><a class="viewcode-back" href="../OPT.html#OPT.Data_Plotter">[docs]</a><span class="k">def</span> <span class="nf">Data_Plotter</span><span class="p">():</span>
-    <span class="sd">&#39;&#39;&#39;Invokes the *Data_Plotter* program part of *Operational_Planning_Tool*.</span>
-<span class="sd">    </span>
-<span class="sd">    Simulates the position and attitude of MATS during normal operation and compares it to </span>
-<span class="sd">    the actual positional and attitude data given in a data set. Plots both the simulated data and given data. \n</span>
-<span class="sd">    Settings for the operation of the program are stated in the chosen *Configuration File*, set by *Set_ConfigFile*.</span>
-<span class="sd">    </span>
-<span class="sd">    Arguments:</span>
-<span class="sd">        </span>
-<span class="sd">            </span>
-<span class="sd">    Returns:</span>
-<span class="sd">        None</span>
-<span class="sd">    &#39;&#39;&#39;</span>
-    <span class="kn">from</span> <span class="nn">._DataPlotter.Core</span> <span class="k">import</span> <span class="n">Data_Plotter</span>
-    
-    
-    <span class="n">Data_Plotter</span><span class="p">()</span></div>
-    
     
 <div class="viewcode-block" id="Timeline_Plotter"><a class="viewcode-back" href="../OPT.html#OPT.Timeline_Plotter">[docs]</a><span class="k">def</span> <span class="nf">Timeline_Plotter</span><span class="p">(</span><span class="n">Science_Mode_Path</span><span class="p">,</span> <span class="n">OHB_H5_Path</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">STK_CSV_PATH</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">Timestep</span> <span class="o">=</span> <span class="mi">16</span> <span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;Invokes the *Timeline_Plotter* program part of *Operational_Planning_Tool*.</span>
 <span class="sd">    </span>
 <span class="sd">    Simulates the position and attitude of MATS from a given Science Mode Timeline and also optionally compares it to</span>
 <span class="sd">    positional and attitude data given in a .h5 data set, located at *OHB_H5_Path*. Plots both the simulated data and given data. </span>
-<span class="sd">    The timesteps of both the .h5 data and the Science Mode is synchronized to allow direct comparison if possible. \n</span>
+<span class="sd">    The attitude data shows only the target pointing orientation and does not mimic MATS&#39;s actual attitude control system. The timesteps of both the .h5 data and the Science Mode is synchronized to allow direct comparison if possible. \n</span>
 <span class="sd">    A .csv file, generated in STK, may also be included to plot the predicted positional error of the satellite compared to STK data.</span>
 <span class="sd">    Saves generated plots as binary files. \n</span>
 <span class="sd">    Settings for the operation of the program are stated in the chosen *Configuration File*. </span>
@@ -298,7 +280,7 @@
 <span class="sd">    Arguments:</span>
 <span class="sd">        Science_Mode_Path (str): Path to the Science Mode Timeline to be plotted.</span>
 <span class="sd">        OHB_H5_Path (str): *Optional*. Path to the .h5 file containing position, time, and attitude data. The .h5 file is defined in the &quot;Ground Segment ICD&quot; document.</span>
-<span class="sd">        STK_CSV_PATH (str): *Optional*. Path to the .csv file containing position (column 1-3), velocity (column 4-6), and time (column 7), generated in STK. Position and velocity data is assumed to be in km and in ICRF.</span>
+<span class="sd">        STK_CSV_PATH (str): *Optional*. Path to the .csv file containing position (column 1-3), velocity (column 4-6), and time (column 7), generated in STK. Position and velocity data is assumed to be in km and in ICRF. </span>
 <span class="sd">        Timestep (int): *Optional*. The chosen timestep of the simulation [s].</span>
 <span class="sd">        </span>
 <span class="sd">    Returns:</span>
@@ -388,10 +370,10 @@
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
+  <h3>Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" />
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -413,7 +395,7 @@
       &copy;2019, David Skånberg.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

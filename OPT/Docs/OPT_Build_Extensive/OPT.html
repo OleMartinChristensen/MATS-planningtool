@@ -94,14 +94,14 @@ Generated logs are saved in folders created in the working directory.</p>
 <em>Operational Science Modes</em> (Mode 1,2,5) are scheduled whenever time is available (after the scheduling of <em>Calibration Modes</em>) and only 1 <em>Operational Science Mode</em> is scheduled per Timeline.</p>
 <dl class="function">
 <dt id="OPT.CheckConfigFile">
-<code class="sig-prename descclassname">OPT.</code><code class="sig-name descname">CheckConfigFile</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#CheckConfigFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.CheckConfigFile" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT.</code><code class="descname">CheckConfigFile</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#CheckConfigFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.CheckConfigFile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Checks the values of the settings in the <em>Configuration File</em> chosen with <em>Set_ConfigFile</em>.</p>
 <p>Also prints out the currently selected <em>Configuration File</em> and which starting date and TLE it currently uses.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="OPT.Copy_ConfigFile">
-<code class="sig-prename descclassname">OPT.</code><code class="sig-name descname">Copy_ConfigFile</code><span class="sig-paren">(</span><em class="sig-param">Config_File_Name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#Copy_ConfigFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.Copy_ConfigFile" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT.</code><code class="descname">Copy_ConfigFile</code><span class="sig-paren">(</span><em>Config_File_Name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#Copy_ConfigFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.Copy_ConfigFile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Makes a copy of the <em>_ConfigFile</em> located in <em>Operational_Planning_Tool</em>.</p>
 <p>The copy is created in the working directory of the user call and can be freely modified.
 Do not forget to also use <em>Set_ConfigFile</em> to choose your specific copy.
@@ -118,23 +118,8 @@ If the default <em>_ConfigFile</em> is ever changed it is recommended to change 
 </dd></dl>
 
 <dl class="function">
-<dt id="OPT.Data_Plotter">
-<code class="sig-prename descclassname">OPT.</code><code class="sig-name descname">Data_Plotter</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#Data_Plotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.Data_Plotter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Invokes the <em>Data_Plotter</em> program part of <em>Operational_Planning_Tool</em>.</p>
-<p>Simulates the position and attitude of MATS during normal operation and compares it to
-the actual positional and attitude data given in a data set. Plots both the simulated data and given data.</p>
-<p>Settings for the operation of the program are stated in the chosen <em>Configuration File</em>, set by <em>Set_ConfigFile</em>.</p>
-<p>Arguments:</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>None</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="function">
 <dt id="OPT.MinimalScienceXML_gen">
-<code class="sig-prename descclassname">OPT.</code><code class="sig-name descname">MinimalScienceXML_gen</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#MinimalScienceXML_gen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.MinimalScienceXML_gen" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT.</code><code class="descname">MinimalScienceXML_gen</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#MinimalScienceXML_gen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.MinimalScienceXML_gen" title="Permalink to this definition">¶</a></dt>
 <dd><p>Invokes the <em>MinimalScienceXML_gen</em> part of the <em>OPT</em>.</p>
 <p>Creates an .xml file with fixed CMDs which purpose is to define a flight procedure which is ran on the satellite
 following unscheduled power termination of the payload.
@@ -145,7 +130,7 @@ Uses settings for the CMDs from the currently set <em>Configuration File</em>.</
 
 <dl class="function">
 <dt id="OPT.Plot_Timeline_Plotter_Plots">
-<code class="sig-prename descclassname">OPT.</code><code class="sig-name descname">Plot_Timeline_Plotter_Plots</code><span class="sig-paren">(</span><em class="sig-param">FigureDirectory, FilesToPlot=['ActiveScienceMode', 'Yaw', 'Pitch', 'Roll', 'Lat', 'Long', 'Alt', 'PosError', 'PosErrorRCI', 'MagPosError', 'Lat_LP', 'Long_LP', 'Alt_LP', 'AltError_LP', 'PosError_LP', 'PosErrorRCI_LP', 'MagPosError_LP', 'RA_OpticalAxis', 'RA_OpticalAxisError', 'Dec_OpticalAxis', 'Dec_OpticalAxisError', 'PosErrorMATS_STK']</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#Plot_Timeline_Plotter_Plots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.Plot_Timeline_Plotter_Plots" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT.</code><code class="descname">Plot_Timeline_Plotter_Plots</code><span class="sig-paren">(</span><em>FigureDirectory, FilesToPlot=['ActiveScienceMode', 'Yaw', 'Pitch', 'Roll', 'Lat', 'Long', 'Alt', 'PosError', 'PosErrorRCI', 'MagPosError', 'Lat_LP', 'Long_LP', 'Alt_LP', 'AltError_LP', 'PosError_LP', 'PosErrorRCI_LP', 'MagPosError_LP', 'RA_OpticalAxis', 'RA_OpticalAxisError', 'Dec_OpticalAxis', 'Dec_OpticalAxisError', 'PosErrorMATS_STK']</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#Plot_Timeline_Plotter_Plots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.Plot_Timeline_Plotter_Plots" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plots binary files created with <em>Timeline_Plotter</em>.</p>
 <p>Tries to plot all files which are generated by default by <em>Timeline_Plotter</em> unless a second input is given.</p>
 <dl class="field-list simple">
@@ -160,7 +145,7 @@ Uses settings for the CMDs from the currently set <em>Configuration File</em>.</
 
 <dl class="function">
 <dt id="OPT.Set_ConfigFile">
-<code class="sig-prename descclassname">OPT.</code><code class="sig-name descname">Set_ConfigFile</code><span class="sig-paren">(</span><em class="sig-param">Config_File_Name</em>, <em class="sig-param">Date</em>, <em class="sig-param">TLE1='1 54321U 19100G   20172.75043981 0.00000000  00000-0  75180-4 0  0014'</em>, <em class="sig-param">TLE2='2 54321  97.7044   6.9210 0014595 313.2372  91.8750 14.93194142000010'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#Set_ConfigFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.Set_ConfigFile" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT.</code><code class="descname">Set_ConfigFile</code><span class="sig-paren">(</span><em>Config_File_Name</em>, <em>Date</em>, <em>TLE1=''</em>, <em>TLE2=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#Set_ConfigFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.Set_ConfigFile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets the StartTime and TLE for OPT, and the name of the <em>.py</em> file that shall be used as a <em>Configuration file</em> for OPT.</p>
 <p>The <em>Configuration file</em> chosen must be visible in sys.path.</p>
 <dl class="field-list simple">
@@ -180,11 +165,11 @@ Uses settings for the CMDs from the currently set <em>Configuration File</em>.</
 
 <dl class="function">
 <dt id="OPT.Timeline_Plotter">
-<code class="sig-prename descclassname">OPT.</code><code class="sig-name descname">Timeline_Plotter</code><span class="sig-paren">(</span><em class="sig-param">Science_Mode_Path</em>, <em class="sig-param">OHB_H5_Path=''</em>, <em class="sig-param">STK_CSV_PATH=''</em>, <em class="sig-param">Timestep=16</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#Timeline_Plotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.Timeline_Plotter" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT.</code><code class="descname">Timeline_Plotter</code><span class="sig-paren">(</span><em>Science_Mode_Path</em>, <em>OHB_H5_Path=''</em>, <em>STK_CSV_PATH=''</em>, <em>Timestep=16</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#Timeline_Plotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.Timeline_Plotter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Invokes the <em>Timeline_Plotter</em> program part of <em>Operational_Planning_Tool</em>.</p>
 <p>Simulates the position and attitude of MATS from a given Science Mode Timeline and also optionally compares it to
 positional and attitude data given in a .h5 data set, located at <em>OHB_H5_Path</em>. Plots both the simulated data and given data.
-The timesteps of both the .h5 data and the Science Mode is synchronized to allow direct comparison if possible.</p>
+The attitude data shows only the target pointing orientation and does not mimic MATS's actual attitude control system. The timesteps of both the .h5 data and the Science Mode is synchronized to allow direct comparison if possible.</p>
 <p>A .csv file, generated in STK, may also be included to plot the predicted positional error of the satellite compared to STK data.
 Saves generated plots as binary files.</p>
 <p>Settings for the operation of the program are stated in the chosen <em>Configuration File</em>.
@@ -218,7 +203,7 @@ Settings stated in the <em>Science Mode Timeline</em> override settings given in
 
 <dl class="function">
 <dt id="OPT.Timeline_analyzer">
-<code class="sig-prename descclassname">OPT.</code><code class="sig-name descname">Timeline_analyzer</code><span class="sig-paren">(</span><em class="sig-param">science_mode_timeline_path</em>, <em class="sig-param">date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#Timeline_analyzer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.Timeline_analyzer" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT.</code><code class="descname">Timeline_analyzer</code><span class="sig-paren">(</span><em>science_mode_timeline_path</em>, <em>date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#Timeline_analyzer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.Timeline_analyzer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Invokes the Timeline_analyser program part of Operational Planning Tool.</p>
 <p>Searches a Science Mode Timeline json file for a given date and returns the scheduled mode and its parameters.</p>
 <dl class="field-list simple">
@@ -244,7 +229,7 @@ Settings stated in the <em>Science Mode Timeline</em> override settings given in
 
 <dl class="function">
 <dt id="OPT.Timeline_gen">
-<code class="sig-prename descclassname">OPT.</code><code class="sig-name descname">Timeline_gen</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#Timeline_gen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.Timeline_gen" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT.</code><code class="descname">Timeline_gen</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#Timeline_gen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.Timeline_gen" title="Permalink to this definition">¶</a></dt>
 <dd><p>Invokes the Timeline generator part of Operational Planning Tool.</p>
 <p>Creates a <em>Science Mode Timeline</em> as a .json file.</p>
 <p>Predicts and schedueles Science Modes that depend on certain events such as position of stars and the moon (Mode120-Mode124).
@@ -261,7 +246,7 @@ The Science Modes and StartUpCMDs to be scheduled are listed in <em>Modes_priori
 
 <dl class="function">
 <dt id="OPT.XML_gen">
-<code class="sig-prename descclassname">OPT.</code><code class="sig-name descname">XML_gen</code><span class="sig-paren">(</span><em class="sig-param">science_mode_timeline_path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#XML_gen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.XML_gen" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT.</code><code class="descname">XML_gen</code><span class="sig-paren">(</span><em>science_mode_timeline_path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#XML_gen"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.XML_gen" title="Permalink to this definition">¶</a></dt>
 <dd><p>Invokes the XML generator program part of Operational Planning Tool for MATS.</p>
 <p>Converts a <em>Science Mode Timeline</em>  (.json file) containing a list of scheduled Science Modes/CMDs/Tests into Payload and Plattoform commands and saves them as a .xml command file.</p>
 <p>Settings for the operation of the program are stated in the chosen <em>Configuration File</em>, set by <em>Set_ConfigFile</em>.
@@ -283,11 +268,6 @@ Settings given in the <em>Science Mode Timeline</em> override the settings given
 <li class="toctree-l1"><a class="reference internal" href="OPT._CheckConfigFile.html">OPT._CheckConfigFile package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="OPT._CheckConfigFile.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="OPT._CheckConfigFile.html#module-OPT._CheckConfigFile.Core">OPT._CheckConfigFile.Core module</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="OPT._DataPlotter.html">OPT._DataPlotter package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="OPT._DataPlotter.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="OPT._DataPlotter.html#module-OPT._DataPlotter.Core">OPT._DataPlotter.Core module</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="OPT._Plot_Timeline_Plotter_Plots.html">OPT._Plot_Timeline_Plotter_Plots package</a><ul>
@@ -373,7 +353,7 @@ Settings given in the <em>Science Mode Timeline</em> override the settings given
 by calling <em>OPT.Set_ConfigFile()</em> and must be visible in <em>sys.path</em>.</p>
 <dl class="function">
 <dt id="OPT._ConfigFile.CCDBIAS_settings">
-<code class="sig-prename descclassname">OPT._ConfigFile.</code><code class="sig-name descname">CCDBIAS_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#CCDBIAS_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.CCDBIAS_settings" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._ConfigFile.</code><code class="descname">CCDBIAS_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#CCDBIAS_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.CCDBIAS_settings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns settings related to the CCDBIAS CMD.</p>
 <dl>
 <dt><strong>Keys in returned dict:</strong></dt><dd><p>'CCDSEL': CCD select, 1 bit for each CCD (1..127). (int)</p>
@@ -395,7 +375,7 @@ by calling <em>OPT.Set_ConfigFile()</em> and must be visible in <em>sys.path</em
 
 <dl class="function">
 <dt id="OPT._ConfigFile.CCDBadColumn_settings">
-<code class="sig-prename descclassname">OPT._ConfigFile.</code><code class="sig-name descname">CCDBadColumn_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#CCDBadColumn_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.CCDBadColumn_settings" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._ConfigFile.</code><code class="descname">CCDBadColumn_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#CCDBadColumn_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.CCDBadColumn_settings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns settings related to CCDBadColumn CMD.</p>
 <dl>
 <dt><strong>Keys in returned dict:</strong></dt><dd><p>'CCDSEL': CCD select, 1 bit for each CCD (1..127). (int)</p>
@@ -415,7 +395,7 @@ by calling <em>OPT.Set_ConfigFile()</em> and must be visible in <em>sys.path</em
 
 <dl class="function">
 <dt id="OPT._ConfigFile.CCDFlushBadColumns_settings">
-<code class="sig-prename descclassname">OPT._ConfigFile.</code><code class="sig-name descname">CCDFlushBadColumns_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#CCDFlushBadColumns_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.CCDFlushBadColumns_settings" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._ConfigFile.</code><code class="descname">CCDFlushBadColumns_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#CCDFlushBadColumns_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.CCDFlushBadColumns_settings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns settings related to the CCDFlushBadColumns CMD.</p>
 <dl class="simple">
 <dt><strong>Keys in returned dict:</strong></dt><dd><p>'CCDSEL': CCD select, 1 bit for each CCD (1..127). (int)</p>
@@ -433,7 +413,7 @@ by calling <em>OPT.Set_ConfigFile()</em> and must be visible in <em>sys.path</em
 
 <dl class="function">
 <dt id="OPT._ConfigFile.CCD_macro_settings">
-<code class="sig-prename descclassname">OPT._ConfigFile.</code><code class="sig-name descname">CCD_macro_settings</code><span class="sig-paren">(</span><em class="sig-param">CCDMacroSelect</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#CCD_macro_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.CCD_macro_settings" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._ConfigFile.</code><code class="descname">CCD_macro_settings</code><span class="sig-paren">(</span><em>CCDMacroSelect</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#CCD_macro_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.CCD_macro_settings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns CCD settings for a specific CCD macro.</p>
 <p>Each key in the output represents settings for a corresponding CCDSEL argument.
 TEXPIMS for the CCDs (except nadir) is not changeable as they need to be synchronized with a calculated TEXPIMS to prevent streaks. This is usually performed when macros are scheduled.</p>
@@ -462,7 +442,7 @@ TEXPIMS for the CCDs (except nadir) is not changeable as they need to be synchro
 
 <dl class="function">
 <dt id="OPT._ConfigFile.Logger_name">
-<code class="sig-prename descclassname">OPT._ConfigFile.</code><code class="sig-name descname">Logger_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#Logger_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.Logger_name" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._ConfigFile.</code><code class="descname">Logger_name</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#Logger_name"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.Logger_name" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the name of the shared logger.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -476,7 +456,7 @@ TEXPIMS for the CCDs (except nadir) is not changeable as they need to be synchro
 
 <dl class="function">
 <dt id="OPT._ConfigFile.Mode100_settings">
-<code class="sig-prename descclassname">OPT._ConfigFile.</code><code class="sig-name descname">Mode100_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#Mode100_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.Mode100_settings" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._ConfigFile.</code><code class="descname">Mode100_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#Mode100_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.Mode100_settings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns settings related to Mode100.</p>
 <dl>
 <dt><strong>Keys in returned dict:</strong></dt><dd><p>'pointing_altitude_from': Sets in meters the starting altitude. Part in determining the estimated duration of the mode. (int)</p>
@@ -501,7 +481,7 @@ TEXPIMS for the CCDs (except nadir) is not changeable as they need to be synchro
 
 <dl class="function">
 <dt id="OPT._ConfigFile.Mode110_settings">
-<code class="sig-prename descclassname">OPT._ConfigFile.</code><code class="sig-name descname">Mode110_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#Mode110_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.Mode110_settings" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._ConfigFile.</code><code class="descname">Mode110_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#Mode110_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.Mode110_settings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns settings related to Mode110.</p>
 <dl>
 <dt><strong>Keys in returned dict:</strong></dt><dd><p>'pointing_altitude_from': Sets in meters the starting altitude of the sweep. Part in determining the estimated duration of the mode. (int)</p>
@@ -524,7 +504,7 @@ TEXPIMS for the CCDs (except nadir) is not changeable as they need to be synchro
 
 <dl class="function">
 <dt id="OPT._ConfigFile.Mode120_settings">
-<code class="sig-prename descclassname">OPT._ConfigFile.</code><code class="sig-name descname">Mode120_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#Mode120_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.Mode120_settings" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._ConfigFile.</code><code class="descname">Mode120_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#Mode120_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.Mode120_settings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns settings related to Mode120.</p>
 <dl>
 <dt><strong>Keys in returned dict:</strong></dt><dd><p>'pointing_altitude': Sets in meters the altitude of the pointing command. (int)</p>
@@ -558,7 +538,7 @@ value corresponding to the attitude being frozen until realigned with <em>Timeli
 
 <dl class="function">
 <dt id="OPT._ConfigFile.Mode121_122_123_settings">
-<code class="sig-prename descclassname">OPT._ConfigFile.</code><code class="sig-name descname">Mode121_122_123_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#Mode121_122_123_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.Mode121_122_123_settings" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._ConfigFile.</code><code class="descname">Mode121_122_123_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#Mode121_122_123_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.Mode121_122_123_settings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns settings shared between Mode121-123.</p>
 <dl>
 <dt><strong>Keys in returned dict:</strong></dt><dd><p>'pointing_altitude': Sets in meters the altitude of the pointing command. (int)</p>
@@ -588,7 +568,7 @@ value corresponding to the attitude being frozen until realigned with <em>Timeli
 
 <dl class="function">
 <dt id="OPT._ConfigFile.Mode121_settings">
-<code class="sig-prename descclassname">OPT._ConfigFile.</code><code class="sig-name descname">Mode121_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#Mode121_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.Mode121_settings" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._ConfigFile.</code><code class="descname">Mode121_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#Mode121_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.Mode121_settings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns settings related to Mode121.</p>
 <dl>
 <dt><strong>Keys in returned dict:</strong></dt><dd><p>'start_date':  Note! only applies if <em>automatic</em> is set to False. Used only in <em>Timeline_gen</em>. Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). If set to '0', Timeline_settings['start_date'] will be used.</p>
@@ -607,7 +587,7 @@ value corresponding to the attitude being frozen until realigned with <em>Timeli
 
 <dl class="function">
 <dt id="OPT._ConfigFile.Mode122_settings">
-<code class="sig-prename descclassname">OPT._ConfigFile.</code><code class="sig-name descname">Mode122_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#Mode122_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.Mode122_settings" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._ConfigFile.</code><code class="descname">Mode122_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#Mode122_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.Mode122_settings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns settings related to Mode122.</p>
 <dl>
 <dt><strong>Keys in returned dict:</strong></dt><dd><p>'start_date':  Note! only applies if <em>automatic</em> is set to False. Used only in <em>Timeline_gen</em>. Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). If set to '0', Timeline_settings['start_date'] will be used.</p>
@@ -628,7 +608,7 @@ value corresponding to the attitude being frozen until realigned with <em>Timeli
 
 <dl class="function">
 <dt id="OPT._ConfigFile.Mode123_settings">
-<code class="sig-prename descclassname">OPT._ConfigFile.</code><code class="sig-name descname">Mode123_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#Mode123_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.Mode123_settings" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._ConfigFile.</code><code class="descname">Mode123_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#Mode123_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.Mode123_settings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns settings related to Mode123.</p>
 <dl>
 <dt><strong>Keys in returned dict:</strong></dt><dd><p>'start_date':  Note! only applies if <em>automatic</em> is set to False. Used only in <em>Timeline_gen</em>. Sets the scheduled date for the mode as a str, (example: '2018/9/3 08:00:40'). If set to '0', Timeline_settings['start_date'] will be used.</p>
@@ -649,7 +629,7 @@ value corresponding to the attitude being frozen until realigned with <em>Timeli
 
 <dl class="function">
 <dt id="OPT._ConfigFile.Mode124_settings">
-<code class="sig-prename descclassname">OPT._ConfigFile.</code><code class="sig-name descname">Mode124_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#Mode124_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.Mode124_settings" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._ConfigFile.</code><code class="descname">Mode124_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#Mode124_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.Mode124_settings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns settings related to Mode124.</p>
 <dl>
 <dt><strong>Keys in returned dict:</strong></dt><dd><p>'pointing_altitude': Sets in meters the altitude of the pointing command. (int)</p>
@@ -681,7 +661,7 @@ value corresponding to the attitude being frozen until realigned with <em>Timeli
 
 <dl class="function">
 <dt id="OPT._ConfigFile.Mode130_settings">
-<code class="sig-prename descclassname">OPT._ConfigFile.</code><code class="sig-name descname">Mode130_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#Mode130_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.Mode130_settings" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._ConfigFile.</code><code class="descname">Mode130_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#Mode130_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.Mode130_settings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns settings related to Mode130.</p>
 <dl>
 <dt><strong>Keys in returned dict:</strong></dt><dd><p>'pointing_altitude': Sets in meters the altitude of the pointing command. (int)</p>
@@ -701,7 +681,7 @@ value corresponding to the attitude being frozen until realigned with <em>Timeli
 
 <dl class="function">
 <dt id="OPT._ConfigFile.Mode131_settings">
-<code class="sig-prename descclassname">OPT._ConfigFile.</code><code class="sig-name descname">Mode131_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#Mode131_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.Mode131_settings" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._ConfigFile.</code><code class="descname">Mode131_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#Mode131_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.Mode131_settings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns settings related to Mode131.</p>
 <dl>
 <dt><strong>Keys in returned dict:</strong></dt><dd><p>'pointing_altitude': Sets in meters the altitude of the pointing command. (int)</p>
@@ -721,7 +701,7 @@ value corresponding to the attitude being frozen until realigned with <em>Timeli
 
 <dl class="function">
 <dt id="OPT._ConfigFile.Mode132_settings">
-<code class="sig-prename descclassname">OPT._ConfigFile.</code><code class="sig-name descname">Mode132_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#Mode132_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.Mode132_settings" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._ConfigFile.</code><code class="descname">Mode132_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#Mode132_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.Mode132_settings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns settings related to Mode132.</p>
 <dl>
 <dt><strong>Keys in returned dict:</strong></dt><dd><p>'pointing_altitude': Sets in meters the altitude of the pointing command. (int)</p>
@@ -743,7 +723,7 @@ value corresponding to the attitude being frozen until realigned with <em>Timeli
 
 <dl class="function">
 <dt id="OPT._ConfigFile.Mode133_settings">
-<code class="sig-prename descclassname">OPT._ConfigFile.</code><code class="sig-name descname">Mode133_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#Mode133_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.Mode133_settings" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._ConfigFile.</code><code class="descname">Mode133_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#Mode133_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.Mode133_settings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns settings related to Mode133.</p>
 <dl>
 <dt><strong>Keys in returned dict:</strong></dt><dd><p>'pointing_altitude': Sets in meters the altitude of the pointing command. (int)</p>
@@ -765,7 +745,7 @@ value corresponding to the attitude being frozen until realigned with <em>Timeli
 
 <dl class="function">
 <dt id="OPT._ConfigFile.Mode134_settings">
-<code class="sig-prename descclassname">OPT._ConfigFile.</code><code class="sig-name descname">Mode134_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#Mode134_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.Mode134_settings" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._ConfigFile.</code><code class="descname">Mode134_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#Mode134_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.Mode134_settings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns settings related to Mode134.</p>
 <dl>
 <dt><strong>Keys in returned dict:</strong></dt><dd><p>'pointing_altitude': Sets in meters the altitude of the pointing command. (int)</p>
@@ -785,7 +765,7 @@ value corresponding to the attitude being frozen until realigned with <em>Timeli
 
 <dl class="function">
 <dt id="OPT._ConfigFile.Operational_Science_Mode_settings">
-<code class="sig-prename descclassname">OPT._ConfigFile.</code><code class="sig-name descname">Operational_Science_Mode_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#Operational_Science_Mode_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.Operational_Science_Mode_settings" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._ConfigFile.</code><code class="descname">Operational_Science_Mode_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#Operational_Science_Mode_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.Operational_Science_Mode_settings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns settings related to Operational Science Modes (Mode1, 2, and 5).</p>
 <dl>
 <dt><strong>Keys:</strong></dt><dd><p>'lat': Applies only to Mode1! Sets in degrees the latitude (+ and -) that the LP crosses that causes the UV exposure to swith on/off. (int)</p>
@@ -806,7 +786,7 @@ value corresponding to the attitude being frozen until realigned with <em>Timeli
 
 <dl class="function">
 <dt id="OPT._ConfigFile.PM_settings">
-<code class="sig-prename descclassname">OPT._ConfigFile.</code><code class="sig-name descname">PM_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#PM_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.PM_settings" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._ConfigFile.</code><code class="descname">PM_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#PM_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.PM_settings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns settings related to the PM (photometer) CMD.</p>
 <dl>
 <dt><strong>Keys in returned dict:</strong></dt><dd><p>'TEXPMS': Exposure time [ms] for the photometer (int)</p>
@@ -825,7 +805,7 @@ value corresponding to the attitude being frozen until realigned with <em>Timeli
 
 <dl class="function">
 <dt id="OPT._ConfigFile.PWRTOGGLE_settings">
-<code class="sig-prename descclassname">OPT._ConfigFile.</code><code class="sig-name descname">PWRTOGGLE_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#PWRTOGGLE_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.PWRTOGGLE_settings" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._ConfigFile.</code><code class="descname">PWRTOGGLE_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#PWRTOGGLE_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.PWRTOGGLE_settings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns settings related to the PWRTOGGLE CMD.</p>
 <dl class="simple">
 <dt><strong>Keys in returned dict:</strong></dt><dd><p>'CONST': Magic Constant (int).</p>
@@ -843,7 +823,7 @@ value corresponding to the attitude being frozen until realigned with <em>Timeli
 
 <dl class="function">
 <dt id="OPT._ConfigFile.Scheduling_priority">
-<code class="sig-prename descclassname">OPT._ConfigFile.</code><code class="sig-name descname">Scheduling_priority</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#Scheduling_priority"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.Scheduling_priority" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._ConfigFile.</code><code class="descname">Scheduling_priority</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#Scheduling_priority"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.Scheduling_priority" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the Modes (except <em>Operational Science Modes</em> (Mode 1,2,5)) and StartUpCMDs planned to be schedueled in a <em>Science Mode Timeline</em> using <em>Timeline_gen</em>.</p>
 <p><strong>Available choices are:</strong></p>
 <blockquote>
@@ -888,7 +868,7 @@ timeline, as they together reset and initialize the intrument. If &quot;HTR&quot
 
 <dl class="function">
 <dt id="OPT._ConfigFile.Timeline_settings">
-<code class="sig-prename descclassname">OPT._ConfigFile.</code><code class="sig-name descname">Timeline_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#Timeline_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.Timeline_settings" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._ConfigFile.</code><code class="descname">Timeline_settings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#Timeline_settings"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.Timeline_settings" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns settings related to a <em>Science Mode Timeline</em> as a whole.</p>
 <dl>
 <dt><strong>Keys:</strong></dt><dd><p>'start_date': Is usually set to <em>_Globals.StartTime</em>, where <em>_Globals.StartTime</em> is set by running <em>Set_ConfigFile</em>. Sets the starting date of the timeline (str), (example: '2018/9/3 08:00:40').</p>
@@ -919,7 +899,7 @@ timeline, as they together reset and initialize the intrument. If &quot;HTR&quot
 
 <dl class="function">
 <dt id="OPT._ConfigFile.Version">
-<code class="sig-prename descclassname">OPT._ConfigFile.</code><code class="sig-name descname">Version</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#Version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.Version" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._ConfigFile.</code><code class="descname">Version</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#Version"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.Version" title="Permalink to this definition">¶</a></dt>
 <dd><p>'Returns the version ID of this Configuration File.</p>
 <p>The version ID should only be changed when the default <em>Configuration File</em>, _ConfigFile in OPT, is changed.</p>
 <dl class="field-list simple">
@@ -934,9 +914,10 @@ timeline, as they together reset and initialize the intrument. If &quot;HTR&quot
 
 <dl class="function">
 <dt id="OPT._ConfigFile.getTLE">
-<code class="sig-prename descclassname">OPT._ConfigFile.</code><code class="sig-name descname">getTLE</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#getTLE"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.getTLE" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._ConfigFile.</code><code class="descname">getTLE</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_ConfigFile.html#getTLE"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._ConfigFile.getTLE" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns the TLE as two strings in a list.</p>
-<p>Returns a given TLE in the _Globals module if <em>SetTLE</em> has been ran.</p>
+<p>Returns a TLE from the <em>_Globals</em> module if <em>Set_ConfigFile</em> has been ran.
+The returned TLE values can ofcourse be changed directly by manually editing them right here.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>First Element is the first TLE row, and the second Element is the second row.</p>
@@ -966,7 +947,7 @@ timeline, as they together reset and initialize the intrument. If &quot;HTR&quot
 <p>Functions that are commonly used by the Operational Planning Tool.</p>
 <dl class="function">
 <dt id="OPT._Library.CCDSELExtracter">
-<code class="sig-prename descclassname">OPT._Library.</code><code class="sig-name descname">CCDSELExtracter</code><span class="sig-paren">(</span><em class="sig-param">CCDSEL</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Library.html#CCDSELExtracter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Library.CCDSELExtracter" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._Library.</code><code class="descname">CCDSELExtracter</code><span class="sig-paren">(</span><em>CCDSEL</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Library.html#CCDSELExtracter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Library.CCDSELExtracter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extract the individual CCDSEL (64, 32, 16, 8, 4, 2, 1) arguments from a number CCDSEL argument assuming the CCDSEL argument is valid.</p>
 <dl class="simple">
 <dt>Argument:</dt><dd><p>CCDSEL (int): Value between 0 and 127 which represent the selection of a number of CCDs.</p>
@@ -984,7 +965,7 @@ timeline, as they together reset and initialize the intrument. If &quot;HTR&quot
 
 <dl class="function">
 <dt id="OPT._Library.FreezeDuration_calculator">
-<code class="sig-prename descclassname">OPT._Library.</code><code class="sig-name descname">FreezeDuration_calculator</code><span class="sig-paren">(</span><em class="sig-param">pointing_altitude1</em>, <em class="sig-param">pointing_altitude2</em>, <em class="sig-param">TLE2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Library.html#FreezeDuration_calculator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Library.FreezeDuration_calculator" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._Library.</code><code class="descname">FreezeDuration_calculator</code><span class="sig-paren">(</span><em>pointing_altitude1</em>, <em>pointing_altitude2</em>, <em>TLE2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Library.html#FreezeDuration_calculator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Library.FreezeDuration_calculator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function that calculates the angle between two tangential altitudes and then calculates
 the time it takes for orbital position angle of a satellite in a circular orbit to change by the same amount.</p>
 <dl class="field-list simple">
@@ -1007,7 +988,7 @@ by the same amount as the angle between the two tangential pointing altitudes as
 
 <dl class="function">
 <dt id="OPT._Library.OrderingOfCCDSnapshots">
-<code class="sig-prename descclassname">OPT._Library.</code><code class="sig-name descname">OrderingOfCCDSnapshots</code><span class="sig-paren">(</span><em class="sig-param">CCD_settings</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Library.html#OrderingOfCCDSnapshots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Library.OrderingOfCCDSnapshots" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._Library.</code><code class="descname">OrderingOfCCDSnapshots</code><span class="sig-paren">(</span><em>CCD_settings</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Library.html#OrderingOfCCDSnapshots"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Library.OrderingOfCCDSnapshots" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates a list of CCDSEL (1,2,4,8,16,32) arguments corresponding to their TEXPMS in increasing order.</p>
 <p>Used to take snapshots in increasing order of TEXPMS, which will prevent streak from simultaneous readouts to occur when snapshots are staggered.</p>
 <dl class="field-list simple">
@@ -1025,7 +1006,7 @@ by the same amount as the angle between the two tangential pointing altitudes as
 
 <dl class="function">
 <dt id="OPT._Library.Satellite_Simulator">
-<code class="sig-prename descclassname">OPT._Library.</code><code class="sig-name descname">Satellite_Simulator</code><span class="sig-paren">(</span><em class="sig-param">Satellite_skyfield</em>, <em class="sig-param">SimulationTime</em>, <em class="sig-param">Timeline_settings</em>, <em class="sig-param">pointing_altitude</em>, <em class="sig-param">LogFlag=False</em>, <em class="sig-param">Logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Library.html#Satellite_Simulator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Library.Satellite_Simulator" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._Library.</code><code class="descname">Satellite_Simulator</code><span class="sig-paren">(</span><em>Satellite_skyfield</em>, <em>SimulationTime</em>, <em>Timeline_settings</em>, <em>pointing_altitude</em>, <em>LogFlag=False</em>, <em>Logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Library.html#Satellite_Simulator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Library.Satellite_Simulator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Simulates a single point in time for a Satellite using Skyfield and also the pointing of the satellite.</p>
 <p>Only estimates the actual pointing definition used by OHB.</p>
 <dl class="field-list simple">
@@ -1050,7 +1031,7 @@ by the same amount as the angle between the two tangential pointing altitudes as
 
 <dl class="function">
 <dt id="OPT._Library.SetupLogger">
-<code class="sig-prename descclassname">OPT._Library.</code><code class="sig-name descname">SetupLogger</code><span class="sig-paren">(</span><em class="sig-param">LoggerName</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Library.html#SetupLogger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Library.SetupLogger" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._Library.</code><code class="descname">SetupLogger</code><span class="sig-paren">(</span><em>LoggerName</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Library.html#SetupLogger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Library.SetupLogger" title="Permalink to this definition">¶</a></dt>
 <dd><p>Removes previous handlers and sets up a logger with both a file handler and a stream handler.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1064,7 +1045,7 @@ by the same amount as the angle between the two tangential pointing altitudes as
 
 <dl class="function">
 <dt id="OPT._Library.SunAngle">
-<code class="sig-prename descclassname">OPT._Library.</code><code class="sig-name descname">SunAngle</code><span class="sig-paren">(</span><em class="sig-param">PositionVector</em>, <em class="sig-param">SimulationTime</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Library.html#SunAngle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Library.SunAngle" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._Library.</code><code class="descname">SunAngle</code><span class="sig-paren">(</span><em>PositionVector</em>, <em>SimulationTime</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Library.html#SunAngle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Library.SunAngle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates angle between a position vector and the position vector of the Sun.</p>
 <p>Simulates a single point in time for the Sun observed from Earth using Skyfield and then calculates the angle between the position vector of the Sun and the given input position vector.
 Used to determine the eclipse angle of the Sun angle of the position.</p>
@@ -1086,7 +1067,7 @@ Used to determine the eclipse angle of the Sun angle of the position.</p>
 
 <dl class="function">
 <dt id="OPT._Library.SyncArgCalculator">
-<code class="sig-prename descclassname">OPT._Library.</code><code class="sig-name descname">SyncArgCalculator</code><span class="sig-paren">(</span><em class="sig-param">CCD_settings</em>, <em class="sig-param">ExtraOffset</em>, <em class="sig-param">ExtraIntervalTime</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Library.html#SyncArgCalculator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Library.SyncArgCalculator" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._Library.</code><code class="descname">SyncArgCalculator</code><span class="sig-paren">(</span><em>CCD_settings</em>, <em>ExtraOffset</em>, <em>ExtraIntervalTime</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Library.html#SyncArgCalculator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Library.SyncArgCalculator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates appropriate arguments for the CCD Synchonize CMD.</p>
 <p>The CCDs are offset in order of ExposureTime with the CCD with the shortest ExposureTime being the leading CCD.</p>
 <p>CCDs with ExposureTime equal to zero are skipped.</p>
@@ -1122,7 +1103,7 @@ Readout of the leading CCD and the final CCD. If the combined TransferTime is es
 
 <dl class="function">
 <dt id="OPT._Library.calculate_time_per_row">
-<code class="sig-prename descclassname">OPT._Library.</code><code class="sig-name descname">calculate_time_per_row</code><span class="sig-paren">(</span><em class="sig-param">NCOL</em>, <em class="sig-param">NCBIN</em>, <em class="sig-param">NCBINFPGA</em>, <em class="sig-param">NRSKIP</em>, <em class="sig-param">NROW</em>, <em class="sig-param">NRBIN</em>, <em class="sig-param">NFLUSH</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Library.html#calculate_time_per_row"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Library.calculate_time_per_row" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._Library.</code><code class="descname">calculate_time_per_row</code><span class="sig-paren">(</span><em>NCOL</em>, <em>NCBIN</em>, <em>NCBINFPGA</em>, <em>NRSKIP</em>, <em>NROW</em>, <em>NRBIN</em>, <em>NFLUSH</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Library.html#calculate_time_per_row"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Library.calculate_time_per_row" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function provides an estimated amount of time for a CCD readout</p>
 <p>Note that minor &quot;transition&quot; states may have been omitted resulting in
 somewhat shorter readout times (&lt;0.1%).</p>
@@ -1153,7 +1134,7 @@ so the number of clock cycles exceeds the setting by 1</p>
 
 <dl class="function">
 <dt id="OPT._Library.deg2HMS">
-<code class="sig-prename descclassname">OPT._Library.</code><code class="sig-name descname">deg2HMS</code><span class="sig-paren">(</span><em class="sig-param">ra=''</em>, <em class="sig-param">dec=''</em>, <em class="sig-param">roundOf=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Library.html#deg2HMS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Library.deg2HMS" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._Library.</code><code class="descname">deg2HMS</code><span class="sig-paren">(</span><em>ra=''</em>, <em>dec=''</em>, <em>roundOf=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Library.html#deg2HMS"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Library.deg2HMS" title="Permalink to this definition">¶</a></dt>
 <dd><p>Takes a declination or a RAAN angle in degrees and converts it to DMS or HMS format respectively</p>
 <p>Only one (and only one!) of the inputs (ra or dec) shall be provided.</p>
 <dl class="field-list simple">
@@ -1175,7 +1156,7 @@ so the number of clock cycles exceeds the setting by 1</p>
 
 <dl class="function">
 <dt id="OPT._Library.lat_2_R">
-<code class="sig-prename descclassname">OPT._Library.</code><code class="sig-name descname">lat_2_R</code><span class="sig-paren">(</span><em class="sig-param">lat</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Library.html#lat_2_R"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Library.lat_2_R" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._Library.</code><code class="descname">lat_2_R</code><span class="sig-paren">(</span><em>lat</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Library.html#lat_2_R"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Library.lat_2_R" title="Permalink to this definition">¶</a></dt>
 <dd><p>Takes a geodetic latitude and puts out the distance from the center of an ellipsoid Earth to the surface</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1192,7 +1173,7 @@ so the number of clock cycles exceeds the setting by 1</p>
 
 <dl class="function">
 <dt id="OPT._Library.lat_calculator">
-<code class="sig-prename descclassname">OPT._Library.</code><code class="sig-name descname">lat_calculator</code><span class="sig-paren">(</span><em class="sig-param">Satellite_skyfield</em>, <em class="sig-param">date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Library.html#lat_calculator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Library.lat_calculator" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._Library.</code><code class="descname">lat_calculator</code><span class="sig-paren">(</span><em>Satellite_skyfield</em>, <em>date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Library.html#lat_calculator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Library.lat_calculator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function that calculates the latitude of a skyfield.sgp4lib.EarthSatellite object at a certain date</p>
 <p>Mainly used to approximate the latitude of the LP as the LP is close to being in the same orbital plane.</p>
 <dl class="field-list simple">
@@ -1213,7 +1194,7 @@ so the number of clock cycles exceeds the setting by 1</p>
 
 <dl class="function">
 <dt id="OPT._Library.params_checker">
-<code class="sig-prename descclassname">OPT._Library.</code><code class="sig-name descname">params_checker</code><span class="sig-paren">(</span><em class="sig-param">dict1</em>, <em class="sig-param">dict2</em>, <em class="sig-param">Logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Library.html#params_checker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Library.params_checker" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._Library.</code><code class="descname">params_checker</code><span class="sig-paren">(</span><em>dict1</em>, <em>dict2</em>, <em>Logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Library.html#params_checker"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Library.params_checker" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function which compares the keys of two dictionaries and outputs a new dictionary.</p>
 <p>A dict_new will be created containing all the keys and values of dict2. Then for any keys that
 exist in both dict1 and dict_new, dict_new's keys will have their values replaced by the ones in dict1.</p>
@@ -1237,7 +1218,7 @@ exist in both dict1 and dict_new, dict_new's keys will have their values replace
 
 <dl class="function">
 <dt id="OPT._Library.rot_arbit">
-<code class="sig-prename descclassname">OPT._Library.</code><code class="sig-name descname">rot_arbit</code><span class="sig-paren">(</span><em class="sig-param">angle</em>, <em class="sig-param">u_v</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Library.html#rot_arbit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Library.rot_arbit" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._Library.</code><code class="descname">rot_arbit</code><span class="sig-paren">(</span><em>angle</em>, <em>u_v</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Library.html#rot_arbit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Library.rot_arbit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Takes an angle in radians and a unit vector and outputs a rotation matrix around that vector</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1257,7 +1238,7 @@ exist in both dict1 and dict_new, dict_new's keys will have their values replace
 
 <dl class="function">
 <dt id="OPT._Library.scheduler">
-<code class="sig-prename descclassname">OPT._Library.</code><code class="sig-name descname">scheduler</code><span class="sig-paren">(</span><em class="sig-param">Occupied_Timeline</em>, <em class="sig-param">date</em>, <em class="sig-param">endDate</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Library.html#scheduler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Library.scheduler" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._Library.</code><code class="descname">scheduler</code><span class="sig-paren">(</span><em>Occupied_Timeline</em>, <em>date</em>, <em>endDate</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Library.html#scheduler"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Library.scheduler" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function that checks if the scheduled time is available.</p>
 <p>Changes the date until available or until no time is determined to be available.</p>
 <dl class="field-list simple">
@@ -1287,7 +1268,7 @@ exist in both dict1 and dict_new, dict_new's keys will have their values replace
 
 <dl class="function">
 <dt id="OPT._Library.utc_to_onboardTime">
-<code class="sig-prename descclassname">OPT._Library.</code><code class="sig-name descname">utc_to_onboardTime</code><span class="sig-paren">(</span><em class="sig-param">utc_date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Library.html#utc_to_onboardTime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Library.utc_to_onboardTime" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._Library.</code><code class="descname">utc_to_onboardTime</code><span class="sig-paren">(</span><em>utc_date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Library.html#utc_to_onboardTime"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Library.utc_to_onboardTime" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function which converts a date in utc into onboard time in seconds and rounds to nearest 10th of a second.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1307,22 +1288,22 @@ exist in both dict1 and dict_new, dict_new's keys will have their values replace
 <span id="opt-mats-coordinates-module"></span><h2>OPT._MATS_coordinates module<a class="headerlink" href="#module-OPT._MATS_coordinates" title="Permalink to this headline">¶</a></h2>
 <dl class="function">
 <dt id="OPT._MATS_coordinates.ECEF2lla">
-<code class="sig-prename descclassname">OPT._MATS_coordinates.</code><code class="sig-name descname">ECEF2lla</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">y</em>, <em class="sig-param">z</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_MATS_coordinates.html#ECEF2lla"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._MATS_coordinates.ECEF2lla" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._MATS_coordinates.</code><code class="descname">ECEF2lla</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_MATS_coordinates.html#ECEF2lla"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._MATS_coordinates.ECEF2lla" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="OPT._MATS_coordinates.SZAfromlla">
-<code class="sig-prename descclassname">OPT._MATS_coordinates.</code><code class="sig-name descname">SZAfromlla</code><span class="sig-paren">(</span><em class="sig-param">lat</em>, <em class="sig-param">lon</em>, <em class="sig-param">alt</em>, <em class="sig-param">dt</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_MATS_coordinates.html#SZAfromlla"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._MATS_coordinates.SZAfromlla" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._MATS_coordinates.</code><code class="descname">SZAfromlla</code><span class="sig-paren">(</span><em>lat</em>, <em>lon</em>, <em>alt</em>, <em>dt</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_MATS_coordinates.html#SZAfromlla"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._MATS_coordinates.SZAfromlla" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="OPT._MATS_coordinates.ecef2eci">
-<code class="sig-prename descclassname">OPT._MATS_coordinates.</code><code class="sig-name descname">ecef2eci</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">y</em>, <em class="sig-param">z</em>, <em class="sig-param">dt</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_MATS_coordinates.html#ecef2eci"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._MATS_coordinates.ecef2eci" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._MATS_coordinates.</code><code class="descname">ecef2eci</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em>, <em>dt</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_MATS_coordinates.html#ecef2eci"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._MATS_coordinates.ecef2eci" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="OPT._MATS_coordinates.ecef2tanpoint">
-<code class="sig-prename descclassname">OPT._MATS_coordinates.</code><code class="sig-name descname">ecef2tanpoint</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">y</em>, <em class="sig-param">z</em>, <em class="sig-param">dx</em>, <em class="sig-param">dy</em>, <em class="sig-param">dz</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_MATS_coordinates.html#ecef2tanpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._MATS_coordinates.ecef2tanpoint" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._MATS_coordinates.</code><code class="descname">ecef2tanpoint</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em>, <em>dx</em>, <em>dy</em>, <em>dz</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_MATS_coordinates.html#ecef2tanpoint"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._MATS_coordinates.ecef2tanpoint" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function takes a position and look vector in ECEF system and returns the tangent point
 (point closest to the ellipsiod) for the WGS-84 ellipsiod in ECEF coordinates.</p>
 <p>The algorithm used is derived by Nick Lloyd at University of Saskatchewan,
@@ -1348,27 +1329,27 @@ the operational code for both OSIRIS and SMR on-board- the Odin satellite.</p>
 
 <dl class="function">
 <dt id="OPT._MATS_coordinates.eci2ecef">
-<code class="sig-prename descclassname">OPT._MATS_coordinates.</code><code class="sig-name descname">eci2ecef</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">y</em>, <em class="sig-param">z</em>, <em class="sig-param">dt</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_MATS_coordinates.html#eci2ecef"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._MATS_coordinates.eci2ecef" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._MATS_coordinates.</code><code class="descname">eci2ecef</code><span class="sig-paren">(</span><em>x</em>, <em>y</em>, <em>z</em>, <em>dt</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_MATS_coordinates.html#eci2ecef"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._MATS_coordinates.eci2ecef" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="OPT._MATS_coordinates.find_orbit_plane">
-<code class="sig-prename descclassname">OPT._MATS_coordinates.</code><code class="sig-name descname">find_orbit_plane</code><span class="sig-paren">(</span><em class="sig-param">satpos1_eci_1</em>, <em class="sig-param">satpos2_eci</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_MATS_coordinates.html#find_orbit_plane"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._MATS_coordinates.find_orbit_plane" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._MATS_coordinates.</code><code class="descname">find_orbit_plane</code><span class="sig-paren">(</span><em>satpos1_eci_1</em>, <em>satpos2_eci</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_MATS_coordinates.html#find_orbit_plane"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._MATS_coordinates.find_orbit_plane" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="OPT._MATS_coordinates.lla2ECEF">
-<code class="sig-prename descclassname">OPT._MATS_coordinates.</code><code class="sig-name descname">lla2ECEF</code><span class="sig-paren">(</span><em class="sig-param">lat</em>, <em class="sig-param">lon</em>, <em class="sig-param">alt</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_MATS_coordinates.html#lla2ECEF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._MATS_coordinates.lla2ECEF" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._MATS_coordinates.</code><code class="descname">lla2ECEF</code><span class="sig-paren">(</span><em>lat</em>, <em>lon</em>, <em>alt</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_MATS_coordinates.html#lla2ECEF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._MATS_coordinates.lla2ECEF" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="OPT._MATS_coordinates.los_from_tanpoint_spherical">
-<code class="sig-prename descclassname">OPT._MATS_coordinates.</code><code class="sig-name descname">los_from_tanpoint_spherical</code><span class="sig-paren">(</span><em class="sig-param">satpos1_eci_1</em>, <em class="sig-param">satpos2_eci</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_MATS_coordinates.html#los_from_tanpoint_spherical"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._MATS_coordinates.los_from_tanpoint_spherical" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._MATS_coordinates.</code><code class="descname">los_from_tanpoint_spherical</code><span class="sig-paren">(</span><em>satpos1_eci_1</em>, <em>satpos2_eci</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_MATS_coordinates.html#los_from_tanpoint_spherical"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._MATS_coordinates.los_from_tanpoint_spherical" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="function">
 <dt id="OPT._MATS_coordinates.starlist_from_ra_dec">
-<code class="sig-prename descclassname">OPT._MATS_coordinates.</code><code class="sig-name descname">starlist_from_ra_dec</code><span class="sig-paren">(</span><em class="sig-param">ra_in</em>, <em class="sig-param">dec_in</em>, <em class="sig-param">width_in</em>, <em class="sig-param">height_in</em>, <em class="sig-param">Vmag</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_MATS_coordinates.html#starlist_from_ra_dec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._MATS_coordinates.starlist_from_ra_dec" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">OPT._MATS_coordinates.</code><code class="descname">starlist_from_ra_dec</code><span class="sig-paren">(</span><em>ra_in</em>, <em>dec_in</em>, <em>width_in</em>, <em>height_in</em>, <em>Vmag</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_MATS_coordinates.html#starlist_from_ra_dec"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._MATS_coordinates.starlist_from_ra_dec" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </div>
@@ -1395,7 +1376,6 @@ the operational code for both OSIRIS and SMR on-board- the Odin satellite.</p>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">OPT package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#subpackages">Subpackages</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="OPT._CheckConfigFile.html">OPT._CheckConfigFile package</a></li>
-<li class="toctree-l3"><a class="reference internal" href="OPT._DataPlotter.html">OPT._DataPlotter package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="OPT._Plot_Timeline_Plotter_Plots.html">OPT._Plot_Timeline_Plotter_Plots package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="OPT._TimelineAnalyzer.html">OPT._TimelineAnalyzer package</a></li>
 <li class="toctree-l3"><a class="reference internal" href="OPT._TimelineGenerator.html">OPT._TimelineGenerator package</a></li>
@@ -1422,10 +1402,10 @@ the operational code for both OSIRIS and SMR on-board- the Odin satellite.</p>
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
+  <h3>Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" />
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -1447,7 +1427,7 @@ the operational code for both OSIRIS and SMR on-board- the Odin satellite.</p>
       &copy;2019, David Skånberg.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

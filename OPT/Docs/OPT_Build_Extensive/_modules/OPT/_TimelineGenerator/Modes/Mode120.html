@@ -113,7 +113,7 @@
     <span class="s2">&quot;Constants&quot;</span>
     <span class="n">Mode120Iteration</span> <span class="o">=</span> <span class="n">_Globals</span><span class="o">.</span><span class="n">Mode120Iteration</span>
     <span class="s2">&quot;Make the V_offset_Index go from 0 to len(Mode120_settings[&#39;V_offset&#39;]&quot;</span>
-    <span class="n">V_offset_Index</span> <span class="o">=</span> <span class="p">(</span><span class="n">Mode120Iteration</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;V_offset&#39;</span><span class="p">])</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">V_offset_Index</span> <span class="o">=</span> <span class="p">(</span><span class="n">Mode120Iteration</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;V_offset&#39;</span><span class="p">]))</span>
     
     <span class="n">V_offset</span> <span class="o">=</span> <span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;V_offset&#39;</span><span class="p">][</span><span class="n">V_offset_Index</span><span class="p">]</span>
     <span class="n">H_offset</span> <span class="o">=</span> <span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;H_offset&#39;</span><span class="p">]</span>
@@ -576,10 +576,10 @@
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
+  <h3>Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" />
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -601,7 +601,7 @@
       &copy;2019, David Skånberg.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

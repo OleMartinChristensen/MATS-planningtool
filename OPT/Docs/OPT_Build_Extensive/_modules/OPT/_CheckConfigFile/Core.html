@@ -225,7 +225,7 @@
     <span class="k">if</span> <span class="ow">not</span><span class="p">(</span> <span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;freeze_start&#39;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;pointing_stabilization&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="mi">12</span> <span class="o">*</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;CMD_separation&#39;</span><span class="p">]</span>  <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;freeze_start&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="nb">int</span>  <span class="p">):</span>
         <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Mode120_settings&quot;</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">TypeError</span>
-    <span class="k">if</span> <span class="ow">not</span><span class="p">(</span> <span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;V_offset&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="nb">list</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span><span class="p">(</span> <span class="nb">type</span><span class="p">(</span><span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;V_offset&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="nb">list</span><span class="p">):</span>
         <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Mode120_settings[&#39;V_offset&#39;] != list&quot;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;V_offset&#39;</span><span class="p">])):</span>
         <span class="k">if</span> <span class="ow">not</span><span class="p">(</span> <span class="nb">abs</span><span class="p">(</span><span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;V_offset&#39;</span><span class="p">][</span><span class="n">x</span><span class="p">])</span> <span class="o">&lt;=</span> <span class="mi">10</span> <span class="ow">and</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="nb">abs</span><span class="p">(</span><span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;H_offset&#39;</span><span class="p">])</span> <span class="o">&lt;=</span> <span class="mi">10</span> <span class="p">):</span>
@@ -257,14 +257,16 @@
     <span class="k">if</span> <span class="ow">not</span><span class="p">(</span> <span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;TimeToConsider&#39;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;duration&#39;</span><span class="p">]</span> <span class="p">):</span>
         <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Mode120_settings[&#39;TimeToConsider&#39;] &lt;= Timeline_settings[&#39;duration&#39;]&quot;</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span>
-    <span class="k">if</span> <span class="ow">not</span><span class="p">(</span> <span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;CCDSELs&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="nb">list</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span><span class="p">(</span> <span class="nb">type</span><span class="p">(</span><span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;CCDSELs&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="nb">list</span><span class="p">):</span>
         <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Mode120_settings[&#39;CCDSELs&#39;] != list&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span>
     <span class="k">if</span> <span class="ow">not</span><span class="p">(</span> <span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;SnapshotSpacing&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;CCDSELs&#39;</span><span class="p">])</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;SnapshotTime&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;freeze_duration&#39;</span><span class="p">]</span> <span class="p">):</span>
         <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Mode120_settings[&#39;SnapshotSpacing&#39;] * (len(Mode120_settings[&#39;CCDSELs&#39;])-1) + Mode120_settings[&#39;SnapshotTime&#39;] &gt; Mode120_settings[&#39;freeze_duration&#39;]&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span>
     <span class="k">for</span> <span class="n">CCDSEL</span> <span class="ow">in</span> <span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;CCDSELs&#39;</span><span class="p">]:</span>
         <span class="k">if</span> <span class="ow">not</span><span class="p">(</span> <span class="n">CCDSEL</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">32</span><span class="p">]</span> <span class="p">):</span>
             <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span> <span class="s2">&quot;Mode120_settings[&#39;CCDSELs&#39;] element != [1,2,4,8,16,32]&quot;</span> <span class="p">)</span>
-        
+            <span class="k">raise</span> <span class="ne">ValueError</span>
         
     
     
@@ -348,7 +350,7 @@
     <span class="k">if</span> <span class="ow">not</span><span class="p">(</span> <span class="n">Mode124_settings</span><span class="p">[</span><span class="s1">&#39;freeze_start&#39;</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;pointing_stabilization&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="mi">12</span> <span class="o">*</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;CMD_separation&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">Mode124_settings</span><span class="p">[</span><span class="s1">&#39;freeze_start&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="nb">int</span>  <span class="p">):</span>
         <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Mode124_settings&quot;</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">TypeError</span>
-    <span class="k">if</span> <span class="ow">not</span><span class="p">(</span> <span class="n">Mode124_settings</span><span class="p">[</span><span class="s1">&#39;V_offset&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="nb">list</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span><span class="p">(</span> <span class="nb">type</span><span class="p">(</span><span class="n">Mode124_settings</span><span class="p">[</span><span class="s1">&#39;V_offset&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="nb">list</span><span class="p">):</span>
         <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Mode124_settings[&#39;V_offset&#39;] != list&quot;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;V_offset&#39;</span><span class="p">])):</span>
         <span class="k">if</span> <span class="ow">not</span><span class="p">(</span> <span class="nb">abs</span><span class="p">(</span><span class="n">Mode124_settings</span><span class="p">[</span><span class="s1">&#39;V_offset&#39;</span><span class="p">][</span><span class="n">x</span><span class="p">])</span> <span class="o">&lt;=</span> <span class="mi">1</span> <span class="ow">and</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">Mode124_settings</span><span class="p">[</span><span class="s1">&#39;H_offset&#39;</span><span class="p">])</span> <span class="o">&lt;=</span> <span class="mi">10</span> <span class="p">):</span>
@@ -369,14 +371,16 @@
     <span class="k">if</span> <span class="ow">not</span><span class="p">(</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">Mode124_settings</span><span class="p">[</span><span class="s1">&#39;SnapshotSpacing&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">Mode124_settings</span><span class="p">[</span><span class="s1">&#39;SnapshotSpacing&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="nb">int</span><span class="p">):</span>
         <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Mode124_settings[&#39;SnapshotSpacing&#39;]&quot;</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span>
-    <span class="k">if</span> <span class="ow">not</span><span class="p">(</span> <span class="n">Mode124_settings</span><span class="p">[</span><span class="s1">&#39;CCDSELs&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="nb">list</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span><span class="p">(</span> <span class="nb">type</span><span class="p">(</span><span class="n">Mode124_settings</span><span class="p">[</span><span class="s1">&#39;CCDSELs&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="nb">list</span><span class="p">):</span>
         <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Mode124_settings[&#39;CCDSELs&#39;] != list&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span>
     <span class="k">if</span> <span class="ow">not</span><span class="p">(</span> <span class="n">Mode124_settings</span><span class="p">[</span><span class="s1">&#39;SnapshotSpacing&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Mode124_settings</span><span class="p">[</span><span class="s1">&#39;CCDSELs&#39;</span><span class="p">])</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">Mode124_settings</span><span class="p">[</span><span class="s1">&#39;SnapshotTime&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">Mode124_settings</span><span class="p">[</span><span class="s1">&#39;freeze_duration&#39;</span><span class="p">]</span> <span class="p">):</span>
         <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Mode124_settings[&#39;SnapshotSpacing&#39;] * (len(Mode124_settings[&#39;CCDSELs&#39;])-1) + Mode124_settings[&#39;SnapshotTime&#39;] &gt; Mode124_settings[&#39;freeze_duration&#39;]&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span>
     <span class="k">for</span> <span class="n">CCDSEL</span> <span class="ow">in</span> <span class="n">Mode124_settings</span><span class="p">[</span><span class="s1">&#39;CCDSELs&#39;</span><span class="p">]:</span>
         <span class="k">if</span> <span class="ow">not</span><span class="p">(</span> <span class="n">CCDSEL</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">32</span><span class="p">]</span> <span class="p">):</span>
             <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span> <span class="s2">&quot;Mode124_settings[&#39;CCDSELs&#39;] element != [1,2,4,8,16,32]&quot;</span> <span class="p">)</span>
-        
+            <span class="k">raise</span> <span class="ne">ValueError</span>
     
     
     <span class="n">MaximumNumberOfCMDsInMacro</span> <span class="o">=</span> <span class="mi">12</span>
@@ -478,10 +482,10 @@
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
+  <h3>Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" />
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -503,7 +507,7 @@
       &copy;2019, David Skånberg.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

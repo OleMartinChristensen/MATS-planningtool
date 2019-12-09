@@ -129,8 +129,8 @@ def Copy_ConfigFile(Config_File_Name):
     
 
 
-def Set_ConfigFile(Config_File_Name, Date, TLE1='1 54321U 19100G   20172.75043981 0.00000000  00000-0  75180-4 0  0014', 
-                   TLE2='2 54321  97.7044   6.9210 0014595 313.2372  91.8750 14.93194142000010'):
+def Set_ConfigFile(Config_File_Name, Date, TLE1='', 
+                   TLE2=''):
     """Sets the StartTime and TLE for OPT, and the name of the *.py* file that shall be used as a *Configuration file* for OPT.
     
     The *Configuration file* chosen must be visible in sys.path.
@@ -231,14 +231,14 @@ def Timeline_analyzer(science_mode_timeline_path, date):
     Mode, Parameters = Timeline_analyzer(science_mode_timeline_path, date)
     
     return Mode, Parameters
-    
+
     
 def Timeline_Plotter(Science_Mode_Path, OHB_H5_Path = '', STK_CSV_PATH = '', Timestep = 16 ):
     '''Invokes the *Timeline_Plotter* program part of *Operational_Planning_Tool*.
     
     Simulates the position and attitude of MATS from a given Science Mode Timeline and also optionally compares it to
     positional and attitude data given in a .h5 data set, located at *OHB_H5_Path*. Plots both the simulated data and given data. 
-    The attitude data shows only the target orientation and does not mimic MATS's actual control system. The timesteps of both the .h5 data and the Science Mode is synchronized to allow direct comparison if possible. \n
+    The attitude data shows only the target pointing orientation and does not mimic MATS's actual attitude control system. The timesteps of both the .h5 data and the Science Mode is synchronized to allow direct comparison if possible. \n
     A .csv file, generated in STK, may also be included to plot the predicted positional error of the satellite compared to STK data.
     Saves generated plots as binary files. \n
     Settings for the operation of the program are stated in the chosen *Configuration File*. 
@@ -247,7 +247,7 @@ def Timeline_Plotter(Science_Mode_Path, OHB_H5_Path = '', STK_CSV_PATH = '', Tim
     Arguments:
         Science_Mode_Path (str): Path to the Science Mode Timeline to be plotted.
         OHB_H5_Path (str): *Optional*. Path to the .h5 file containing position, time, and attitude data. The .h5 file is defined in the "Ground Segment ICD" document.
-        STK_CSV_PATH (str): *Optional*. Path to the .csv file containing position (column 1-3), velocity (column 4-6), and time (column 7), generated in STK. Position and velocity data is assumed to be in km and in ICRF.
+        STK_CSV_PATH (str): *Optional*. Path to the .csv file containing position (column 1-3), velocity (column 4-6), and time (column 7), generated in STK. Position and velocity data is assumed to be in km and in ICRF. 
         Timestep (int): *Optional*. The chosen timestep of the simulation [s].
         
     Returns:

@@ -192,7 +192,7 @@ def CheckConfigFile():
     if not( Mode120_settings['freeze_start'] >= Timeline_settings['pointing_stabilization'] + 12 * Timeline_settings['CMD_separation']  and type(Mode120_settings['freeze_start']) == int  ):
         Logger.error("Mode120_settings")
         raise TypeError
-    if not( Mode120_settings['V_offset'] == list):
+    if not( type(Mode120_settings['V_offset']) == list):
         Logger.error("Mode120_settings['V_offset'] != list")
     for x in range(len(Mode120_settings['V_offset'])):
         if not( abs(Mode120_settings['V_offset'][x]) <= 10 and 0 < abs(Mode120_settings['H_offset']) <= 10 ):
@@ -224,14 +224,16 @@ def CheckConfigFile():
     if not( Mode120_settings['TimeToConsider'] <= Timeline_settings['duration'] ):
         Logger.error("Mode120_settings['TimeToConsider'] <= Timeline_settings['duration']")
         raise ValueError
-    if not( Mode120_settings['CCDSELs'] == list):
+    if not( type(Mode120_settings['CCDSELs']) == list):
         Logger.error("Mode120_settings['CCDSELs'] != list")
+        raise TypeError
     if not( Mode120_settings['SnapshotSpacing'] * (len(Mode120_settings['CCDSELs'])-1) + Mode120_settings['SnapshotTime'] < Mode120_settings['freeze_duration'] ):
         Logger.error("Mode120_settings['SnapshotSpacing'] * (len(Mode120_settings['CCDSELs'])-1) + Mode120_settings['SnapshotTime'] > Mode120_settings['freeze_duration']")
+        raise ValueError
     for CCDSEL in Mode120_settings['CCDSELs']:
         if not( CCDSEL in [1,2,4,8,16,32] ):
             Logger.error( "Mode120_settings['CCDSELs'] element != [1,2,4,8,16,32]" )
-        
+            raise ValueError
         
     
     
@@ -315,7 +317,7 @@ def CheckConfigFile():
     if not( Mode124_settings['freeze_start'] >= Timeline_settings['pointing_stabilization'] + 12 * Timeline_settings['CMD_separation'] and type(Mode124_settings['freeze_start']) == int  ):
         Logger.error("Mode124_settings")
         raise TypeError
-    if not( Mode124_settings['V_offset'] == list):
+    if not( type(Mode124_settings['V_offset']) == list):
         Logger.error("Mode124_settings['V_offset'] != list")
     for x in range(len(Mode120_settings['V_offset'])):
         if not( abs(Mode124_settings['V_offset'][x]) <= 1 and 0 <= abs(Mode124_settings['H_offset']) <= 10 ):
@@ -336,14 +338,16 @@ def CheckConfigFile():
     if not( 0 <= Mode124_settings['SnapshotSpacing'] and type(Mode124_settings['SnapshotSpacing']) == int):
         Logger.error("Mode124_settings['SnapshotSpacing']")
         raise ValueError
-    if not( Mode124_settings['CCDSELs'] == list):
+    if not( type(Mode124_settings['CCDSELs']) == list):
         Logger.error("Mode124_settings['CCDSELs'] != list")
+        raise TypeError
     if not( Mode124_settings['SnapshotSpacing'] * (len(Mode124_settings['CCDSELs'])-1) + Mode124_settings['SnapshotTime'] < Mode124_settings['freeze_duration'] ):
         Logger.error("Mode124_settings['SnapshotSpacing'] * (len(Mode124_settings['CCDSELs'])-1) + Mode124_settings['SnapshotTime'] > Mode124_settings['freeze_duration']")
+        raise ValueError
     for CCDSEL in Mode124_settings['CCDSELs']:
         if not( CCDSEL in [1,2,4,8,16,32] ):
             Logger.error( "Mode124_settings['CCDSELs'] element != [1,2,4,8,16,32]" )
-        
+            raise ValueError
     
     
     MaximumNumberOfCMDsInMacro = 12

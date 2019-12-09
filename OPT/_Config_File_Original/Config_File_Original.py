@@ -100,15 +100,22 @@ def Scheduling_priority():
 def getTLE():
     '''Returns the TLE as two strings in a list.
     
-    Returns a given TLE in the _Globals module if *SetTLE* has been ran.
+    Returns a TLE from the *_Globals* module if *Set_ConfigFile* has been ran.
+    The returned TLE values can ofcourse be changed directly by manually editing them right here.
     
     Returns:
         (:obj:`list` of :obj:`str`): First Element is the first TLE row, and the second Element is the second row.
     
     '''
     
-    TLE1 = _Globals.TLE[0]
-    TLE2 = _Globals.TLE[1]
+    
+    if not(_Globals.TLE == ('','') ):
+        TLE1 = _Globals.TLE[0]
+        TLE2 = _Globals.TLE[1]
+    else:
+        TLE1 = '1 54321U 19100G   20172.75043981 0.00000000  00000-0  75180-4 0  0014'
+        TLE2 = '2 54321  97.7044   6.9210 0014595 313.2372  91.8750 14.93194142000010'
+    
     
     return [TLE1, TLE2]
 

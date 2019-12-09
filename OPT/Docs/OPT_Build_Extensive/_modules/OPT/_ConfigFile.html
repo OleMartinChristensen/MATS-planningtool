@@ -133,15 +133,22 @@
 <div class="viewcode-block" id="getTLE"><a class="viewcode-back" href="../../OPT.html#OPT._ConfigFile.getTLE">[docs]</a><span class="k">def</span> <span class="nf">getTLE</span><span class="p">():</span>
     <span class="sd">&#39;&#39;&#39;Returns the TLE as two strings in a list.</span>
 <span class="sd">    </span>
-<span class="sd">    Returns a given TLE in the _Globals module if *SetTLE* has been ran.</span>
+<span class="sd">    Returns a TLE from the *_Globals* module if *Set_ConfigFile* has been ran.</span>
+<span class="sd">    The returned TLE values can ofcourse be changed directly by manually editing them right here.</span>
 <span class="sd">    </span>
 <span class="sd">    Returns:</span>
 <span class="sd">        (:obj:`list` of :obj:`str`): First Element is the first TLE row, and the second Element is the second row.</span>
 <span class="sd">    </span>
 <span class="sd">    &#39;&#39;&#39;</span>
     
-    <span class="n">TLE1</span> <span class="o">=</span> <span class="n">_Globals</span><span class="o">.</span><span class="n">TLE</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">TLE2</span> <span class="o">=</span> <span class="n">_Globals</span><span class="o">.</span><span class="n">TLE</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    
+    <span class="k">if</span> <span class="ow">not</span><span class="p">(</span><span class="n">_Globals</span><span class="o">.</span><span class="n">TLE</span> <span class="o">==</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="p">):</span>
+        <span class="n">TLE1</span> <span class="o">=</span> <span class="n">_Globals</span><span class="o">.</span><span class="n">TLE</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">TLE2</span> <span class="o">=</span> <span class="n">_Globals</span><span class="o">.</span><span class="n">TLE</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">TLE1</span> <span class="o">=</span> <span class="s1">&#39;1 54321U 19100G   20172.75043981 0.00000000  00000-0  75180-4 0  0014&#39;</span>
+        <span class="n">TLE2</span> <span class="o">=</span> <span class="s1">&#39;2 54321  97.7044   6.9210 0014595 313.2372  91.8750 14.93194142000010&#39;</span>
+    
     
     <span class="k">return</span> <span class="p">[</span><span class="n">TLE1</span><span class="p">,</span> <span class="n">TLE2</span><span class="p">]</span></div>
 
@@ -842,10 +849,10 @@
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
+  <h3>Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" />
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -867,7 +874,7 @@
       &copy;2019, David Skånberg.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>
