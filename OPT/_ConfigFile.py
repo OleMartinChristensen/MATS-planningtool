@@ -62,7 +62,7 @@ def Scheduling_priority():
      
     The order of which the Modes/CMDs appear is also their priority order (top-down). \n
     Repeat Modes/CMDs to schedule them several times, though there is currently not feature that allows multiple Modes/CMDs 
-    to be scheduled with different settings unless they are manually changed in the generated *Science Mode Timeline*.
+    to be scheduled with different settings. Some settings that does not affect the duration of the Mode can still be changed manually afterwards in the generated Science Mode Timeline.
     Each string must be equal to the name of a function imported in the *_Timeline_generator.Modes.Modes_Header* module. \n
     
     'Payload_Power_Toggle', 'TurnONCCDs', 'ArgEnableYawComp', 'CCDFlushBadColumns', 'CCDBadColumn', 'PM', 'CCDBIAS' are recommended to run at the start of each 

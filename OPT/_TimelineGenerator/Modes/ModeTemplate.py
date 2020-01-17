@@ -8,7 +8,7 @@ The Mode is here scheduled at the start of the timeline.
 For *Timeline_gen* to be able to find and schedule this mode, this function must be imported in the *Modes_Header* module.
 Remember to also add the name of this Mode into the *Scheduling_priority* function, in the *Configuration_File*.
 
-@author: David
+@author: David Skånberg
 """
 
 

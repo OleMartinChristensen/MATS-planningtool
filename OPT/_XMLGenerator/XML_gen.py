@@ -23,16 +23,13 @@ To add your own Mode to be converted into CMDs using *XML_gen* you need to follo
 
  - Go into the *Modes* module, inside the *Modes_and_Tests* package. At the bottom you should find a Mode template function called "XML_generator_X". Copy this function. Replace the X for the name of your Mode.
  - Calculate or define any appropriate parameters for your Mode's CMDs/Macros.
- - Now use these parameters to add any calls for Macros/Command functions located in the modules inside the *Macros_Commands* package. By default there is a call for the *TC_acfLimbPointingAltitudeOffset* CMD and the *Operational_Limb_Pointing_macro* as an example, you can remove these.
+ - Now use these parameters to add any calls for Macros/Command functions located in the modules inside the *Macros_Commands* package. By default there is a call for the *TC_acfLimbPointingAltitudeOffset* CMD and the *Operational_Limb_Pointing_macro* as an example. You can remove these and add any combination of CMDs and macros as you like. 
  - It is recommended (but not necessary) to also give the new Mode its own "Configuration function" inside the *_ConfigFile*. This function will hold tuneable settings for the Mode, such as pointing altitude for the *TC_acfLimbPointingAltitudeOffset* CMD.
 
-You should now have working Mode in XML_gen. Feel free to check the other Modes defined in the *MODES* module to understand how they are implemented. There are also some outcommented lines of code which you might find useful when defining your Mode. 
-These outcommented rows of code calls for Mode and CCD settings from the *Configuration File*, and by using *params_checker* it compares the Mode settings to the Mode settings given in the *Science Mode Timeline*. Lastly there is a outcommented call for a Macro called *Operational_Limb_Pointing_macro*.
+You should now have a working Mode in XML_gen. Feel free to check the other Modes defined in the *MODES* module to understand how they are implemented. There are also some outcommented lines of code which you might find useful when defining your Mode. 
+These outcommented rows of code calls for Mode and CCD settings from the *Configuration File*, and by using *dict_comparator* it compares those Mode settings to the Mode settings given in the *Science Mode Timeline*. Lastly there is a outcommented call for a Macro called *Operational_Limb_Pointing_macro*.
 
-Creates the base of the XML-tree and calculates initial values such as the 
-start and end time and also duration of the timeline. Then goes through the 
-supplied Science Mode Timeline List chronologically and calls for the corresponding function in one of the modules located in the *Modes_and_Tests* package. \n
-
+**Note:** Keep in my that the duration of the Mode is scheduled in OPT.Timeline_gen and is given in the generated Science Mode Timeline. When adding CMDs and Macros to a new Mode, make sure that there is enough time scheduled for them.
 
 """
 
@@ -69,6 +66,10 @@ def XML_generator(SCIMOD_Path):
     except:
         pass
     
+    "Reset temporary Globals"
+    _Globals.latestRelativeTime = 0
+    _Globals.current_pointing = None
+    _Globals.LargestSetTEXPMS = 0
     
     ############# Set up Logger #################################
     _Library.SetupLogger(OPT_Config_File.Logger_name())
@@ -91,7 +92,7 @@ def XML_generator(SCIMOD_Path):
     "Check if there are Timeline_settings given in the Science Mode Timeline"
     if( str(SCIMOD[0][0]) == 'Timeline_settings' ):
         Timeline_settings_from_Timeline = SCIMOD[0][3]
-        Timeline_settings = _Library.params_checker( Timeline_settings_from_Timeline, OPT_Config_File.Timeline_settings())
+        Timeline_settings = _Library.dict_comparator( Timeline_settings_from_Timeline, OPT_Config_File.Timeline_settings())
         Logger.info('Timeline_settings found in Science Mode Timeline. Using them')
         
         TLE_from_Timeline = SCIMOD[0][4]
@@ -152,7 +153,7 @@ def XML_generator(SCIMOD_Path):
         
         Logger.debug('Call XML_generator_select')
         XML_generator_select(root=root, duration=mode_duration, relativeTime=relativeTime, 
-                             name=SCIMOD[x][0], date=ephem.Date(SCIMOD[x][1]), params=SCIMOD[x][3], 
+                             name=SCIMOD[x][0], date=ephem.Date(SCIMOD[x][1]), Settings=SCIMOD[x][3], 
                              Timeline_settings = Timeline_settings)
         
     
@@ -174,6 +175,10 @@ def XML_generator(SCIMOD_Path):
     if( SizeOfXML > DataLimitInBytes ):
         input('Size of XML Timeline file exceeds allowed datalimit (20Mb). Press enter to acknowledge')
     
+    "Reset temporary Globals"
+    _Globals.latestRelativeTime = 0
+    _Globals.current_pointing = None
+    _Globals.LargestSetTEXPMS = 0
     logging.shutdown()
 
 
@@ -241,7 +246,7 @@ def XML_Initial_Basis_Creator(timeline_start,timeline_duration, SCIMOD_Path):
 
 ####################### Mode selecter ###################################
 
-def XML_generator_select(name, root, date, duration, relativeTime, params, Timeline_settings):
+def XML_generator_select(name, root, date, duration, relativeTime, Settings, Timeline_settings):
     '''Subfunction, Selects corresponding mode, test or CMD function in the package *Modes_and_Tests* from the variable *name*.
     
     Calls for any function named *X* in the modules *MODES*, *SeparateCmds*, and *Tests*, where X is the string in the input *name*.
@@ -252,7 +257,8 @@ def XML_generator_select(name, root, date, duration, relativeTime, params, Timel
         date (ephem.Date): Starting date of the Mode. On the form of the ephem.Date class.
         duration (int): The duration of the mode [s] as an integer class.
         relativeTime (int): The starting time of the mode with regard to the start of the timeline [s] as an integer class
-        params (dict): Dictionary containing the parameters of the Mode, CMD, or Test given in the Science_Mode_Timeline. 
+        Settings (dict): Dictionary containing the settings of the Mode, CMD, or Test given in the Science_Mode_Timeline. 
+        Timeline_settings (dict): Dictionary containing the settings of the Timeline given in the *Science_Mode_Timeline*. If no Timeline settings were present in the Science Mode Timeline, they were instead taken from the *Configuration File*.
     
     Returns:
         None
@@ -271,13 +277,13 @@ def XML_generator_select(name, root, date, duration, relativeTime, params, Timel
                 Logger.error('No XML-generator is defined for '+name)
                 raise AttributeError
     
-    "Check if no parameters are given"
-    if(len(params.keys()) == 0):
+    "Check if any settings were given in the Science Mode Timeline"
+    if(len(Settings.keys()) == 0):
         Mode_Test_SeparateCmd_func(root, date, duration, relativeTime, 
-                                   Timeline_settings = Timeline_settings)
+                                   Timeline_settings)
     else:
         Mode_Test_SeparateCmd_func(root, date, duration, relativeTime, 
-                                   params = params, Timeline_settings = Timeline_settings)
+                                    Timeline_settings, Settings)
         
     
 ####################### End of Mode selecter #############################

@@ -2,7 +2,7 @@
 """
 Created on Tue Oct 29 16:06:10 2019
 
-@author: David
+@author: David Skånberg
 """
 
 import pickle, os

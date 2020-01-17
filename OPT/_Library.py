@@ -196,7 +196,7 @@ def scheduler(Occupied_Timeline, date, endDate):
     return date, endDate, iterations
 
 
-def params_checker(dict1, dict2, Logger = None):
+def dict_comparator(dict1, dict2, Logger = None):
     """Function which compares the keys of two dictionaries and outputs a new dictionary. 
     
     A dict_new will be created containing all the keys and values of dict2. Then for any keys that 

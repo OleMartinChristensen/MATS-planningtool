@@ -42,8 +42,8 @@
 <span class="sd">        **date** (*ephem.Date*): Starting date of the Mode. On the form of the ephem.Date class. \n</span>
 <span class="sd">        **duration** (*int*): The duration of the mode [s]. \n</span>
 <span class="sd">        **relativeTime** (*int*): The starting time of the mode with regard to the start of the timeline [s]. \n</span>
-<span class="sd">        **Timeline_settings** (*dict*): Dictionary containing the settings of the Timeline given in either the *Science_Mode_Timeline* or the *Configuration File*. \n</span>
-<span class="sd">        **params** (*dict*): Dictionary containing the settings of the Mode given in the *Science_Mode_Timeline*.</span>
+<span class="sd">        **Timeline_settings** (*dict*): Dictionary containing the settings of the Timeline given in the *Science_Mode_Timeline*. If no Timeline settings were present in the Science Mode Timeline, they were instead taken from the *Configuration File*. \n</span>
+<span class="sd">        **Mode_settings** (*dict*): Dictionary containing the settings of the Mode given in the *Science_Mode_Timeline*.</span>
 
 <span class="sd">    **Returns:**</span>
 <span class="sd">        None</span>
@@ -57,11 +57,11 @@
 
 <span class="kn">import</span> <span class="nn">ephem</span><span class="o">,</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">pylab</span><span class="o">,</span> <span class="nn">importlib</span><span class="o">,</span> <span class="nn">skyfield.api</span>
 
-<span class="kn">from</span> <span class="nn">OPT</span> <span class="k">import</span> <span class="n">_Globals</span>
+<span class="kn">from</span> <span class="nn">OPT</span> <span class="kn">import</span> <span class="n">_Globals</span>
 
 <span class="n">OPT_Config_File</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">_Globals</span><span class="o">.</span><span class="n">Config_File</span><span class="p">)</span>
-<span class="kn">from</span> <span class="nn">OPT._Library</span> <span class="k">import</span> <span class="n">Satellite_Simulator</span><span class="p">,</span> <span class="n">params_checker</span><span class="p">,</span> <span class="n">utc_to_onboardTime</span><span class="p">,</span> <span class="n">SunAngle</span><span class="p">,</span> <span class="n">CCDSELExtracter</span>
-<span class="kn">from</span> <span class="nn">.Macros_Commands</span> <span class="k">import</span> <span class="n">Macros</span><span class="p">,</span> <span class="n">Commands</span>
+<span class="kn">from</span> <span class="nn">OPT._Library</span> <span class="kn">import</span> <span class="n">Satellite_Simulator</span><span class="p">,</span> <span class="n">dict_comparator</span><span class="p">,</span> <span class="n">utc_to_onboardTime</span><span class="p">,</span> <span class="n">SunAngle</span><span class="p">,</span> <span class="n">CCDSELExtracter</span>
+<span class="kn">from</span> <span class="nn">.Macros_Commands</span> <span class="kn">import</span> <span class="n">Macros</span><span class="p">,</span> <span class="n">Commands</span>
 
 <span class="n">Logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Logger_name</span><span class="p">())</span>
 <span class="c1">#Timeline_settings = OPT_Config_File.Timeline_settings()</span>
@@ -70,7 +70,7 @@
 <span class="s2">&quot;######### Operational Science Modes #########################&quot;</span>
 <span class="s2">&quot;##############################################################&quot;</span>
 
-<div class="viewcode-block" id="Mode5"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode5">[docs]</a><span class="k">def</span> <span class="nf">Mode5</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
+<div class="viewcode-block" id="Mode5"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode5">[docs]</a><span class="k">def</span> <span class="nf">Mode5</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">Mode_settings</span> <span class="o">=</span> <span class="p">{}):</span>
     <span class="sd">&#39;&#39;&#39;Mode5</span>
 <span class="sd">    </span>
 <span class="sd">    **Macro:** Operational_Limb_Pointing_macro \n</span>
@@ -81,17 +81,17 @@
     <span class="n">pointing_altitude</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;StandardPointingAltitude&#39;</span><span class="p">]</span>
     
     
-    <span class="n">settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Operational_Science_Mode_settings</span><span class="p">()</span>
+    <span class="n">Mode_settings_ConfigFile</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Operational_Science_Mode_settings</span><span class="p">()</span>
     
-    <span class="n">params</span> <span class="o">=</span> <span class="n">params_checker</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">Logger</span><span class="p">)</span>
+    <span class="n">Mode_settings</span> <span class="o">=</span> <span class="n">dict_comparator</span><span class="p">(</span><span class="n">Mode_settings</span><span class="p">,</span> <span class="n">Mode_settings_ConfigFile</span><span class="p">,</span> <span class="n">Logger</span><span class="p">)</span>
     
-    <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">CCD_macro_settings</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;Choose_Mode5CCDMacro&#39;</span><span class="p">])</span>
+    <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">CCD_macro_settings</span><span class="p">(</span><span class="n">Mode_settings</span><span class="p">[</span><span class="s1">&#39;Choose_Mode5CCDMacro&#39;</span><span class="p">])</span>
     <span class="n">PM_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">PM_settings</span><span class="p">()</span>
     
     <span class="n">Mode_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
-    <span class="n">comment</span> <span class="o">=</span> <span class="n">Mode_name</span><span class="o">+</span><span class="s1">&#39; starting date: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+    <span class="n">comment</span> <span class="o">=</span> <span class="n">Mode_name</span><span class="o">+</span><span class="s1">&#39; starting date: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">Mode_settings</span><span class="p">)</span>
     
-    <span class="c1">#pointing_altitude = params[&#39;pointing_altitude&#39;]</span>
+    <span class="c1">#pointing_altitude = Mode_settings[&#39;pointing_altitude&#39;]</span>
     
     <span class="c1">#Macros.Custom_Binning_Macro(root,relativeTime, pointing_altitude=pointing_altitude, Timeline_settings = Timeline_settings, comment = comment)</span>
     <span class="n">Macros</span><span class="o">.</span><span class="n">Operational_Limb_Pointing_macro</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCD_settings</span><span class="p">,</span> <span class="n">PM_settings</span> <span class="o">=</span> <span class="n">PM_settings</span><span class="p">,</span>  
@@ -101,7 +101,7 @@
 
 <span class="c1">############################################################################################</span>
     
-<div class="viewcode-block" id="Mode1"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode1">[docs]</a><span class="k">def</span> <span class="nf">Mode1</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
+<div class="viewcode-block" id="Mode1"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode1">[docs]</a><span class="k">def</span> <span class="nf">Mode1</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">Mode_settings</span> <span class="o">=</span> <span class="p">{}):</span>
     <span class="sd">&quot;&quot;&quot;Mode1</span>
 <span class="sd">    </span>
 <span class="sd">    **Macro:** Operational_Limb_Pointing_macro \n</span>
@@ -121,18 +121,18 @@
     
     <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">CCD_macro_settings</span><span class="p">(</span><span class="s1">&#39;HighResUV&#39;</span><span class="p">)</span>
     <span class="n">PM_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">PM_settings</span><span class="p">()</span>
-    <span class="n">settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Operational_Science_Mode_settings</span><span class="p">()</span>
+    <span class="n">Mode_settings_ConfigFile</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Operational_Science_Mode_settings</span><span class="p">()</span>
     
     
-    <span class="n">params</span> <span class="o">=</span> <span class="n">params_checker</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">Logger</span><span class="p">)</span>
+    <span class="n">Mode_settings</span> <span class="o">=</span> <span class="n">dict_comparator</span><span class="p">(</span><span class="n">Mode_settings</span><span class="p">,</span> <span class="n">Mode_settings_ConfigFile</span><span class="p">,</span> <span class="n">Logger</span><span class="p">)</span>
     
-    <span class="n">timestep</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;timestep&#39;</span><span class="p">]</span>
+    <span class="n">timestep</span> <span class="o">=</span> <span class="n">Mode_settings</span><span class="p">[</span><span class="s1">&#39;timestep&#39;</span><span class="p">]</span>
     <span class="n">TEXPMS_16</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">16</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span>
     <span class="n">TEXPMS_32</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">32</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span>
     <span class="n">TEXPMS_nadir</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">64</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span>
     
     
-    <span class="n">log_timestep</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;log_timestep&#39;</span><span class="p">]</span>
+    <span class="n">log_timestep</span> <span class="o">=</span> <span class="n">Mode_settings</span><span class="p">[</span><span class="s1">&#39;log_timestep&#39;</span><span class="p">]</span>
     <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;log_timestep [s]: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">log_timestep</span><span class="p">))</span>
     
     <span class="n">TLE</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">getTLE</span><span class="p">()</span>
@@ -153,7 +153,7 @@
     
     <span class="n">R_mean</span> <span class="o">=</span> <span class="mi">6371000</span> <span class="c1">#Radius of Earth in m</span>
     <span class="n">pointing_altitude</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;StandardPointingAltitude&#39;</span><span class="p">]</span>
-    <span class="n">lat</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">]</span>
+    <span class="n">lat</span> <span class="o">=</span> <span class="n">Mode_settings</span><span class="p">[</span><span class="s1">&#39;lat&#39;</span><span class="p">]</span>
     
     <span class="n">heightAboveSurface</span> <span class="o">=</span> <span class="mi">35000</span> <span class="c1">#Altitude in km where sun is deemed to reflect in atmosphere, determining night and day below satellite&quot;</span>
     
@@ -217,7 +217,7 @@
                 
                 <span class="k">if</span><span class="p">(</span> <span class="nb">abs</span><span class="p">(</span><span class="n">lat_LP</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">&lt;</span> <span class="n">lat</span><span class="p">):</span>
                     <span class="n">current_state</span> <span class="o">=</span> <span class="s2">&quot;Mode1_night_UV_off&quot;</span>
-                    <span class="n">comment</span> <span class="o">=</span> <span class="n">current_state</span><span class="o">+</span><span class="s1">&#39;: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">current_time</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, parameters: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+                    <span class="n">comment</span> <span class="o">=</span> <span class="n">current_state</span><span class="o">+</span><span class="s1">&#39;: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">current_time</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, parameters: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">Mode_settings</span><span class="p">)</span>
                     <span class="c1">#new_relativeTime = Macros.Mode1_macro(root,relativeTime, pointing_altitude=pointing_altitude, UV_on = False, nadir_on = True, Timeline_settings = Timeline_settings, comment = comment)</span>
                     <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">16</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
                     <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">32</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
@@ -227,7 +227,7 @@
                     
                 <span class="k">elif</span><span class="p">(</span> <span class="nb">abs</span><span class="p">(</span><span class="n">lat_LP</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">lat</span><span class="p">):</span>
                     <span class="n">current_state</span> <span class="o">=</span> <span class="s2">&quot;Mode1_night_UV_on&quot;</span>
-                    <span class="n">comment</span> <span class="o">=</span> <span class="n">current_state</span><span class="o">+</span><span class="s1">&#39;: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">current_time</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, parameters: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+                    <span class="n">comment</span> <span class="o">=</span> <span class="n">current_state</span><span class="o">+</span><span class="s1">&#39;: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">current_time</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, parameters: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">Mode_settings</span><span class="p">)</span>
                     <span class="c1">#new_relativeTime = Macros.Mode1_macro(root,relativeTime, pointing_altitude=pointing_altitude, UV_on = True, nadir_on = True, Timeline_settings = Timeline_settings, comment = comment)</span>
                     <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">16</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">TEXPMS_16</span>
                     <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">32</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">TEXPMS_32</span>
@@ -240,7 +240,7 @@
                 
                 <span class="k">if</span><span class="p">(</span> <span class="nb">abs</span><span class="p">(</span><span class="n">lat_LP</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">&lt;</span> <span class="n">lat</span><span class="p">):</span>
                     <span class="n">current_state</span> <span class="o">=</span> <span class="s2">&quot;Mode1_day_UV_off&quot;</span>
-                    <span class="n">comment</span> <span class="o">=</span> <span class="n">current_state</span><span class="o">+</span><span class="s1">&#39;: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">current_time</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, parameters: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+                    <span class="n">comment</span> <span class="o">=</span> <span class="n">current_state</span><span class="o">+</span><span class="s1">&#39;: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">current_time</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, parameters: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">Mode_settings</span><span class="p">)</span>
                     <span class="c1">#new_relativeTime = Macros.Mode1_macro(root,relativeTime,pointing_altitude, UV_on = False, nadir_on = False, Timeline_settings = Timeline_settings, comment = comment)</span>
                     <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">16</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
                     <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">32</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
@@ -250,7 +250,7 @@
                     
                 <span class="k">elif</span><span class="p">(</span> <span class="nb">abs</span><span class="p">(</span><span class="n">lat_LP</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">&gt;</span> <span class="n">lat</span><span class="p">):</span>
                     <span class="n">current_state</span> <span class="o">=</span> <span class="s2">&quot;Mode1_day_UV_on&quot;</span>
-                    <span class="n">comment</span> <span class="o">=</span> <span class="n">current_state</span><span class="o">+</span><span class="s1">&#39;: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">current_time</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, parameters: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+                    <span class="n">comment</span> <span class="o">=</span> <span class="n">current_state</span><span class="o">+</span><span class="s1">&#39;: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">current_time</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, parameters: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">Mode_settings</span><span class="p">)</span>
                     <span class="c1">#new_relativeTime = Macros.Mode1_macro(root,relativeTime,pointing_altitude, UV_on = True, nadir_on = False, Timeline_settings = Timeline_settings, comment = comment)</span>
                     <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">16</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">TEXPMS_16</span>
                     <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">32</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">TEXPMS_32</span>
@@ -281,7 +281,7 @@
                         
                         <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
                         <span class="n">current_state</span> <span class="o">=</span> <span class="s2">&quot;Mode1_night_UV_off&quot;</span>
-                        <span class="n">comment</span> <span class="o">=</span> <span class="n">current_state</span><span class="o">+</span><span class="s1">&#39;: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">current_time</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, parameters: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+                        <span class="n">comment</span> <span class="o">=</span> <span class="n">current_state</span><span class="o">+</span><span class="s1">&#39;: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">current_time</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, parameters: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">Mode_settings</span><span class="p">)</span>
                         <span class="c1">#new_relativeTime = Macros.Mode1_macro(root, relativeTime, pointing_altitude, UV_on = False, nadir_on = True, Timeline_settings = Timeline_settings, comment = comment)</span>
                         <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">16</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
                         <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">32</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
@@ -307,7 +307,7 @@
                         
                         <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
                         <span class="n">current_state</span> <span class="o">=</span> <span class="s2">&quot;Mode1_night_UV_on&quot;</span>
-                        <span class="n">comment</span> <span class="o">=</span> <span class="n">current_state</span><span class="o">+</span><span class="s1">&#39;: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">current_time</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, parameters: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+                        <span class="n">comment</span> <span class="o">=</span> <span class="n">current_state</span><span class="o">+</span><span class="s1">&#39;: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">current_time</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, parameters: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">Mode_settings</span><span class="p">)</span>
                         <span class="c1">#new_relativeTime = Macros.Mode1_macro(root, relativeTime, pointing_altitude=pointing_altitude, UV_on = True, nadir_on = True, Timeline_settings = Timeline_settings, comment = comment)</span>
                         <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">16</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">TEXPMS_16</span>
                         <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">32</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">TEXPMS_32</span>
@@ -338,7 +338,7 @@
                         
                         <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
                         <span class="n">current_state</span> <span class="o">=</span> <span class="s2">&quot;Mode1_day_UV_off&quot;</span>
-                        <span class="n">comment</span> <span class="o">=</span> <span class="n">current_state</span><span class="o">+</span><span class="s1">&#39;: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">current_time</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, parameters: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+                        <span class="n">comment</span> <span class="o">=</span> <span class="n">current_state</span><span class="o">+</span><span class="s1">&#39;: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">current_time</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, parameters: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">Mode_settings</span><span class="p">)</span>
                         <span class="c1">#new_relativeTime = Macros.Mode1_macro(root, relativeTime, pointing_altitude=pointing_altitude, UV_on = False, nadir_on = False, Timeline_settings = Timeline_settings, comment = comment)</span>
                         <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">16</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
                         <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">32</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
@@ -366,7 +366,7 @@
                         
                         <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
                         <span class="n">current_state</span> <span class="o">=</span> <span class="s2">&quot;Mode1_day_UV_on&quot;</span>
-                        <span class="n">comment</span> <span class="o">=</span> <span class="n">current_state</span><span class="o">+</span><span class="s1">&#39;: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">current_time</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, parameters: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+                        <span class="n">comment</span> <span class="o">=</span> <span class="n">current_state</span><span class="o">+</span><span class="s1">&#39;: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">current_time</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, parameters: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">Mode_settings</span><span class="p">)</span>
                         <span class="c1">#new_relativeTime = Macros.Mode1_macro(root, relativeTime, pointing_altitude=pointing_altitude, UV_on = True, nadir_on = False, Timeline_settings = Timeline_settings, comment = comment)</span>
                         <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">16</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">TEXPMS_16</span>
                         <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">32</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">TEXPMS_32</span>
@@ -392,7 +392,7 @@
 
 <span class="c1">#######################################################################################</span>
 
-<div class="viewcode-block" id="Mode2"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode2">[docs]</a><span class="k">def</span> <span class="nf">Mode2</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
+<div class="viewcode-block" id="Mode2"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode2">[docs]</a><span class="k">def</span> <span class="nf">Mode2</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">Mode_settings</span> <span class="o">=</span> <span class="p">{}):</span>
     <span class="sd">&quot;&quot;&quot;Mode2</span>
 <span class="sd">    </span>
 <span class="sd">    **Macro**: Operational_Limb_Pointing_macro. \n</span>
@@ -405,19 +405,19 @@
     
     <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">CCD_macro_settings</span><span class="p">(</span><span class="s1">&#39;HighResIR&#39;</span><span class="p">)</span>
     <span class="n">PM_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">PM_settings</span><span class="p">()</span>
-    <span class="n">settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Operational_Science_Mode_settings</span><span class="p">()</span>
+    <span class="n">Mode_settings_ConfigFile</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Operational_Science_Mode_settings</span><span class="p">()</span>
     <span class="c1">#Timeline_settings = OPT_Config_File.Timeline_settings()</span>
     
     <span class="n">zeros</span> <span class="o">=</span> <span class="n">pylab</span><span class="o">.</span><span class="n">zeros</span>
     <span class="n">pi</span> <span class="o">=</span> <span class="n">pylab</span><span class="o">.</span><span class="n">pi</span>
     <span class="n">arccos</span> <span class="o">=</span> <span class="n">pylab</span><span class="o">.</span><span class="n">arccos</span>
     
-    <span class="n">params</span> <span class="o">=</span> <span class="n">params_checker</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">Logger</span><span class="p">)</span>
+    <span class="n">Mode_settings</span> <span class="o">=</span> <span class="n">dict_comparator</span><span class="p">(</span><span class="n">Mode_settings</span><span class="p">,</span> <span class="n">Mode_settings_ConfigFile</span><span class="p">,</span> <span class="n">Logger</span><span class="p">)</span>
     
-    <span class="n">timestep</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;timestep&#39;</span><span class="p">]</span>
+    <span class="n">timestep</span> <span class="o">=</span> <span class="n">Mode_settings</span><span class="p">[</span><span class="s1">&#39;timestep&#39;</span><span class="p">]</span>
     <span class="n">TEXPMS_nadir</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">64</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span>
     
-    <span class="n">log_timestep</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;log_timestep&#39;</span><span class="p">]</span>
+    <span class="n">log_timestep</span> <span class="o">=</span> <span class="n">Mode_settings</span><span class="p">[</span><span class="s1">&#39;log_timestep&#39;</span><span class="p">]</span>
     <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;log_timestep [s]: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">log_timestep</span><span class="p">))</span>
     
     
@@ -488,7 +488,7 @@
             <span class="s2">&quot;Check if night or day&quot;</span>
             <span class="k">if</span><span class="p">(</span> <span class="n">sun_angle</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">MATS_nadir_eclipse_angle</span><span class="p">):</span>
                 <span class="n">current_state</span> <span class="o">=</span> <span class="s2">&quot;Mode2_night&quot;</span>
-                <span class="n">comment</span> <span class="o">=</span> <span class="n">current_state</span><span class="o">+</span><span class="s1">&#39;: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+                <span class="n">comment</span> <span class="o">=</span> <span class="n">current_state</span><span class="o">+</span><span class="s1">&#39;: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">Mode_settings</span><span class="p">)</span>
                 <span class="c1">#new_relativeTime = Macros.Mode1_macro(root,relativeTime, pointing_altitude=pointing_altitude, nadir_on = True, Timeline_settings = Timeline_settings, comment = comment)</span>
                 <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">64</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">TEXPMS_nadir</span>
                 <span class="n">new_relativeTime</span> <span class="o">=</span> <span class="n">Macros</span><span class="o">.</span><span class="n">Operational_Limb_Pointing_macro</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCD_settings</span><span class="p">,</span> <span class="n">PM_settings</span> <span class="o">=</span> <span class="n">PM_settings</span><span class="p">,</span>  
@@ -496,7 +496,7 @@
                 
             <span class="k">elif</span><span class="p">(</span> <span class="n">sun_angle</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">MATS_nadir_eclipse_angle</span><span class="p">):</span>
                 <span class="n">current_state</span> <span class="o">=</span> <span class="s2">&quot;Mode2_day&quot;</span>
-                <span class="n">comment</span> <span class="o">=</span> <span class="n">current_state</span><span class="o">+</span><span class="s1">&#39;: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+                <span class="n">comment</span> <span class="o">=</span> <span class="n">current_state</span><span class="o">+</span><span class="s1">&#39;: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">Mode_settings</span><span class="p">)</span>
                 <span class="c1">#new_relativeTime = Macros.Mode1_macro(root,relativeTime, pointing_altitude=pointing_altitude, nadir_on = False, Timeline_settings = Timeline_settings, comment = comment)</span>
                 <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">64</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
                 <span class="n">new_relativeTime</span> <span class="o">=</span> <span class="n">Macros</span><span class="o">.</span><span class="n">Operational_Limb_Pointing_macro</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCD_settings</span><span class="p">,</span> <span class="n">PM_settings</span> <span class="o">=</span> <span class="n">PM_settings</span><span class="p">,</span>  
@@ -518,7 +518,7 @@
                     
                     <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
                     <span class="n">current_state</span> <span class="o">=</span> <span class="s2">&quot;Mode2_night&quot;</span>
-                    <span class="n">comment</span> <span class="o">=</span> <span class="n">current_state</span><span class="o">+</span><span class="s1">&#39;: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+                    <span class="n">comment</span> <span class="o">=</span> <span class="n">current_state</span><span class="o">+</span><span class="s1">&#39;: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">Mode_settings</span><span class="p">)</span>
                     <span class="c1">#new_relativeTime = Macros.Mode1_macro(root, relativeTime, pointing_altitude=pointing_altitude, nadir_on = True, Timeline_settings = Timeline_settings, comment = comment)</span>
                     <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">64</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">TEXPMS_nadir</span>
                     <span class="n">new_relativeTime</span> <span class="o">=</span> <span class="n">Macros</span><span class="o">.</span><span class="n">Operational_Limb_Pointing_macro</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCD_settings</span><span class="p">,</span> <span class="n">PM_settings</span> <span class="o">=</span> <span class="n">PM_settings</span><span class="p">,</span>  
@@ -537,7 +537,7 @@
                     
                     <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
                     <span class="n">current_state</span> <span class="o">=</span> <span class="s2">&quot;Mode2_day&quot;</span>
-                    <span class="n">comment</span> <span class="o">=</span> <span class="n">current_state</span><span class="o">+</span><span class="s1">&#39;: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+                    <span class="n">comment</span> <span class="o">=</span> <span class="n">current_state</span><span class="o">+</span><span class="s1">&#39;: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">Mode_settings</span><span class="p">)</span>
                     <span class="c1">#new_relativeTime = Macros.Mode1_macro(root, relativeTime, pointing_altitude=pointing_altitude, nadir_on = False, Timeline_settings = Timeline_settings, comment = comment)</span>
                     <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">64</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
                     <span class="n">new_relativeTime</span> <span class="o">=</span> <span class="n">Macros</span><span class="o">.</span><span class="n">Operational_Limb_Pointing_macro</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCD_settings</span><span class="p">,</span> <span class="n">PM_settings</span> <span class="o">=</span> <span class="n">PM_settings</span><span class="p">,</span>  
@@ -560,7 +560,7 @@
 <span class="s2">&quot;######### Calibration Modes ##################################&quot;</span>
 <span class="s2">&quot;##############################################################&quot;</span>
 
-<div class="viewcode-block" id="Mode100"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode100">[docs]</a><span class="k">def</span> <span class="nf">Mode100</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
+<div class="viewcode-block" id="Mode100"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode100">[docs]</a><span class="k">def</span> <span class="nf">Mode100</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">Mode_settings</span> <span class="o">=</span> <span class="p">{}):</span>
     <span class="sd">&quot;&quot;&quot; Mode100</span>
 <span class="sd">    </span>
 <span class="sd">    **Macro**: Operational_Limb_Pointing_macro. \n</span>
@@ -575,21 +575,21 @@
     
     <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">CCD_macro_settings</span><span class="p">(</span><span class="s1">&#39;BinnedCalibration&#39;</span><span class="p">)</span>
     <span class="n">PM_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">PM_settings</span><span class="p">()</span>
-    <span class="n">settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Mode100_settings</span><span class="p">()</span>
+    <span class="n">Mode_settings_ConfigFile</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Mode100_settings</span><span class="p">()</span>
     
     
-    <span class="n">params</span> <span class="o">=</span> <span class="n">params_checker</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">Logger</span><span class="p">)</span>
+    <span class="n">Mode_settings</span> <span class="o">=</span> <span class="n">dict_comparator</span><span class="p">(</span><span class="n">Mode_settings</span><span class="p">,</span> <span class="n">Mode_settings_ConfigFile</span><span class="p">,</span> <span class="n">Logger</span><span class="p">)</span>
     
     <span class="n">Mode_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>
-    <span class="n">comment</span> <span class="o">=</span> <span class="n">Mode_name</span><span class="o">+</span><span class="s1">&#39; starting date: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+    <span class="n">comment</span> <span class="o">=</span> <span class="n">Mode_name</span><span class="o">+</span><span class="s1">&#39; starting date: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">Mode_settings</span><span class="p">)</span>
     
     
-    <span class="n">pointing_altitude_from</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;pointing_altitude_from&#39;</span><span class="p">]</span>
-    <span class="n">pointing_altitude_to</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;pointing_altitude_to&#39;</span><span class="p">]</span>
-    <span class="n">pointing_altitude_interval</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;pointing_altitude_interval&#39;</span><span class="p">]</span>
-    <span class="n">ExpTimeUV</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;Exp_Time_UV&#39;</span><span class="p">]</span>
-    <span class="n">ExpTimeIR</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;Exp_Time_IR&#39;</span><span class="p">]</span>
-    <span class="n">ExpTime_step</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;ExpTime_step&#39;</span><span class="p">]</span>
+    <span class="n">pointing_altitude_from</span> <span class="o">=</span> <span class="n">Mode_settings</span><span class="p">[</span><span class="s1">&#39;pointing_altitude_from&#39;</span><span class="p">]</span>
+    <span class="n">pointing_altitude_to</span> <span class="o">=</span> <span class="n">Mode_settings</span><span class="p">[</span><span class="s1">&#39;pointing_altitude_to&#39;</span><span class="p">]</span>
+    <span class="n">pointing_altitude_interval</span> <span class="o">=</span> <span class="n">Mode_settings</span><span class="p">[</span><span class="s1">&#39;pointing_altitude_interval&#39;</span><span class="p">]</span>
+    <span class="n">ExpTimeUV</span> <span class="o">=</span> <span class="n">Mode_settings</span><span class="p">[</span><span class="s1">&#39;Exp_Time_UV&#39;</span><span class="p">]</span>
+    <span class="n">ExpTimeIR</span> <span class="o">=</span> <span class="n">Mode_settings</span><span class="p">[</span><span class="s1">&#39;Exp_Time_IR&#39;</span><span class="p">]</span>
+    <span class="n">ExpTime_step</span> <span class="o">=</span> <span class="n">Mode_settings</span><span class="p">[</span><span class="s1">&#39;ExpTime_step&#39;</span><span class="p">]</span>
     
     <span class="n">number_of_altitudes</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span> <span class="nb">abs</span><span class="p">(</span> <span class="p">(</span><span class="n">pointing_altitude_to</span> <span class="o">-</span> <span class="n">pointing_altitude_from</span><span class="p">)</span> <span class="o">/</span> <span class="n">pointing_altitude_interval</span> <span class="o">+</span><span class="mi">1</span> <span class="p">)</span> <span class="p">)</span>
     <span class="n">pointing_altitudes</span> <span class="o">=</span> <span class="p">[</span><span class="n">pointing_altitude_from</span> <span class="o">+</span> <span class="n">x</span><span class="o">*</span><span class="n">pointing_altitude_interval</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">number_of_altitudes</span><span class="p">)]</span>
@@ -619,7 +619,7 @@
         <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">Macros</span><span class="o">.</span><span class="n">Operational_Limb_Pointing_macro</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">relativeTime</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">CCD_settings</span><span class="p">,</span> <span class="n">PM_settings</span> <span class="o">=</span> <span class="n">PM_settings</span><span class="p">,</span> 
                                   <span class="n">pointing_altitude</span> <span class="o">=</span> <span class="n">pointing_altitude</span><span class="p">,</span> <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">)</span>
         
-        <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">relativeTime</span> <span class="o">+</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;pointing_duration&#39;</span><span class="p">]</span>
+        <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">relativeTime</span> <span class="o">+</span> <span class="n">Mode_settings</span><span class="p">[</span><span class="s1">&#39;pointing_duration&#39;</span><span class="p">]</span>
         
         <span class="n">x</span> <span class="o">+=</span> <span class="mi">1</span>
         
@@ -633,7 +633,7 @@
 
 
 
-<div class="viewcode-block" id="Mode110"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode110">[docs]</a><span class="k">def</span> <span class="nf">Mode110</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
+<div class="viewcode-block" id="Mode110"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode110">[docs]</a><span class="k">def</span> <span class="nf">Mode110</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">Mode_settings</span> <span class="o">=</span> <span class="p">{}):</span>
     <span class="sd">&quot;&quot;&quot;Mode110</span>
 <span class="sd">    </span>
 <span class="sd">    **Macro**: Operational_Sweep_macro. \n</span>
@@ -647,12 +647,12 @@
     
     <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">CCD_macro_settings</span><span class="p">(</span><span class="s1">&#39;BinnedCalibration&#39;</span><span class="p">)</span>
     <span class="n">PM_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">PM_settings</span><span class="p">()</span>
-    <span class="n">settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Mode110_settings</span><span class="p">()</span>
+    <span class="n">Mode_settings_ConfigFile</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Mode110_settings</span><span class="p">()</span>
     
-    <span class="n">params</span> <span class="o">=</span> <span class="n">params_checker</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">Logger</span><span class="p">)</span>
+    <span class="n">Mode_settings</span> <span class="o">=</span> <span class="n">dict_comparator</span><span class="p">(</span><span class="n">Mode_settings</span><span class="p">,</span> <span class="n">Mode_settings_ConfigFile</span><span class="p">,</span> <span class="n">Logger</span><span class="p">)</span>
     
-    <span class="n">ExpTimeUV</span><span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;Exp_Time_UV&#39;</span><span class="p">]</span>
-    <span class="n">ExpTimeIR</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;Exp_Time_IR&#39;</span><span class="p">]</span>
+    <span class="n">ExpTimeUV</span><span class="o">=</span> <span class="n">Mode_settings</span><span class="p">[</span><span class="s1">&#39;Exp_Time_UV&#39;</span><span class="p">]</span>
+    <span class="n">ExpTimeIR</span> <span class="o">=</span> <span class="n">Mode_settings</span><span class="p">[</span><span class="s1">&#39;Exp_Time_IR&#39;</span><span class="p">]</span>
     <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">16</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ExpTimeUV</span>
     <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">32</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ExpTimeUV</span>
     <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ExpTimeIR</span>
@@ -661,11 +661,11 @@
     <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ExpTimeIR</span>
     
     <span class="n">Mode_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>
-    <span class="n">comment</span> <span class="o">=</span> <span class="n">Mode_name</span><span class="o">+</span><span class="s1">&#39; starting date: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+    <span class="n">comment</span> <span class="o">=</span> <span class="n">Mode_name</span><span class="o">+</span><span class="s1">&#39; starting date: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">Mode_settings</span><span class="p">)</span>
     
-    <span class="n">pointing_altitude_from</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;pointing_altitude_from&#39;</span><span class="p">]</span>
-    <span class="n">pointing_altitude_to</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;pointing_altitude_to&#39;</span><span class="p">]</span>
-    <span class="n">sweep_rate</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;sweep_rate&#39;</span><span class="p">]</span>
+    <span class="n">pointing_altitude_from</span> <span class="o">=</span> <span class="n">Mode_settings</span><span class="p">[</span><span class="s1">&#39;pointing_altitude_from&#39;</span><span class="p">]</span>
+    <span class="n">pointing_altitude_to</span> <span class="o">=</span> <span class="n">Mode_settings</span><span class="p">[</span><span class="s1">&#39;pointing_altitude_to&#39;</span><span class="p">]</span>
+    <span class="n">sweep_rate</span> <span class="o">=</span> <span class="n">Mode_settings</span><span class="p">[</span><span class="s1">&#39;sweep_rate&#39;</span><span class="p">]</span>
     
     <span class="n">relativeTimeEndOfMode</span> <span class="o">=</span> <span class="n">relativeTime</span><span class="o">+</span><span class="n">duration</span><span class="o">-</span><span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;mode_separation&#39;</span><span class="p">]</span>
     <span class="c1">#Mode_macro = getattr(Macros,Mode_name+&#39;_macro&#39;)</span>
@@ -683,7 +683,7 @@
 <span class="c1">#######################################################################################################</span>
 
 <div class="viewcode-block" id="Mode12X"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode12X">[docs]</a><span class="k">def</span> <span class="nf">Mode12X</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
-                       <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">CCD_settings</span><span class="p">):</span>
+                       <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">Mode_settings</span><span class="p">,</span> <span class="n">CCD_settings</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Subfunction of Mode12X, where X is 1,2,3....</span>
 <span class="sd">    </span>
 <span class="sd">    **Macro**: Snapshot_Inertial_macro. \n</span>
@@ -698,19 +698,19 @@
     
     
     <span class="n">Mode_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
-    <span class="n">comment</span> <span class="o">=</span> <span class="n">Mode_name</span><span class="o">+</span><span class="s1">&#39; starting date: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+    <span class="n">comment</span> <span class="o">=</span> <span class="n">Mode_name</span><span class="o">+</span><span class="s1">&#39; starting date: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">Mode_settings</span><span class="p">)</span>
     
-    <span class="n">freeze_start_utc</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">date</span><span class="o">+</span><span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="n">params</span><span class="p">[</span><span class="s1">&#39;freeze_start&#39;</span><span class="p">])</span>
+    <span class="n">freeze_start_utc</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">date</span><span class="o">+</span><span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="n">Mode_settings</span><span class="p">[</span><span class="s1">&#39;freeze_start&#39;</span><span class="p">])</span>
     
-    <span class="n">Snapshot_relativeTime</span> <span class="o">=</span> <span class="n">relativeTime</span> <span class="o">+</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;freeze_start&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;SnapshotTime&#39;</span><span class="p">]</span>
+    <span class="n">Snapshot_relativeTime</span> <span class="o">=</span> <span class="n">relativeTime</span> <span class="o">+</span> <span class="n">Mode_settings</span><span class="p">[</span><span class="s1">&#39;freeze_start&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">Mode_settings</span><span class="p">[</span><span class="s1">&#39;SnapshotTime&#39;</span><span class="p">]</span>
     
     <span class="n">FreezeTime</span> <span class="o">=</span> <span class="n">utc_to_onboardTime</span><span class="p">(</span><span class="n">freeze_start_utc</span><span class="p">)</span>
     
-    <span class="n">FreezeDuration</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;freeze_duration&#39;</span><span class="p">]</span>
+    <span class="n">FreezeDuration</span> <span class="o">=</span> <span class="n">Mode_settings</span><span class="p">[</span><span class="s1">&#39;freeze_duration&#39;</span><span class="p">]</span>
     
-    <span class="n">pointing_altitude</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;pointing_altitude&#39;</span><span class="p">]</span>
+    <span class="n">pointing_altitude</span> <span class="o">=</span> <span class="n">Mode_settings</span><span class="p">[</span><span class="s1">&#39;pointing_altitude&#39;</span><span class="p">]</span>
     
-    <span class="n">SnapshotSpacing</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;SnapshotSpacing&#39;</span><span class="p">]</span>
+    <span class="n">SnapshotSpacing</span> <span class="o">=</span> <span class="n">Mode_settings</span><span class="p">[</span><span class="s1">&#39;SnapshotSpacing&#39;</span><span class="p">]</span>
     
     <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;freeze_start_utc: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">freeze_start_utc</span><span class="p">))</span>
     <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;FreezeTime [GPS]: &#39;</span><span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">FreezeTime</span><span class="p">))</span>
@@ -728,7 +728,7 @@
 
 
 <div class="viewcode-block" id="Mode120"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode120">[docs]</a><span class="k">def</span> <span class="nf">Mode120</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
-                       <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
+                       <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">Mode_settings</span> <span class="o">=</span> <span class="p">{}):</span>
     <span class="sd">&quot;&quot;&quot;Mode120</span>
 <span class="sd">    </span>
 <span class="sd">    **Macro**: Snapshot_Inertial_macro. \n</span>
@@ -739,18 +739,18 @@
 <span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
-    <span class="n">settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Mode120_settings</span><span class="p">()</span>
-    <span class="n">params</span> <span class="o">=</span> <span class="n">params_checker</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">Logger</span><span class="p">)</span>
+    <span class="n">Mode_settings_ConfigFile</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Mode120_settings</span><span class="p">()</span>
+    <span class="n">Mode_settings</span> <span class="o">=</span> <span class="n">dict_comparator</span><span class="p">(</span><span class="n">Mode_settings</span><span class="p">,</span> <span class="n">Mode_settings_ConfigFile</span><span class="p">,</span> <span class="n">Logger</span><span class="p">)</span>
     
     <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">CCD_macro_settings</span><span class="p">(</span><span class="s1">&#39;FullReadout&#39;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">CCDSEL</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span><span class="mi">64</span><span class="p">]:</span>
-        <span class="k">if</span><span class="p">(</span> <span class="n">CCDSEL</span> <span class="ow">in</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;CCDSELs&#39;</span><span class="p">]</span> <span class="p">):</span>
+        <span class="k">if</span><span class="p">(</span> <span class="n">CCDSEL</span> <span class="ow">in</span> <span class="n">Mode_settings</span><span class="p">[</span><span class="s1">&#39;CCDSELs&#39;</span><span class="p">]</span> <span class="p">):</span>
             <span class="k">continue</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">CCD_settings</span><span class="p">[</span><span class="n">CCDSEL</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
     
     <span class="n">Mode12X</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
-                                  <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">params</span><span class="p">,</span> <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">)</span></div>
+                                  <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">Mode_settings</span> <span class="o">=</span> <span class="n">Mode_settings</span><span class="p">,</span> <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">)</span></div>
 
 
 <span class="c1">################################################################################################</span>
@@ -760,7 +760,7 @@
 
 
 <div class="viewcode-block" id="Mode121"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode121">[docs]</a><span class="k">def</span> <span class="nf">Mode121</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
-                       <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
+                       <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">Mode_settings</span> <span class="o">=</span> <span class="p">{}):</span>
     <span class="sd">&quot;&quot;&quot;Mode121</span>
 <span class="sd">    </span>
 <span class="sd">    **Macro**: Snapshot_Inertial_macro. \n</span>
@@ -770,13 +770,13 @@
 <span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
-    <span class="n">settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Mode121_settings</span><span class="p">()</span>
-    <span class="n">params</span> <span class="o">=</span> <span class="n">params_checker</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">Logger</span><span class="p">)</span>
+    <span class="n">Mode_settings_ConfigFile</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Mode121_settings</span><span class="p">()</span>
+    <span class="n">Mode_settings</span> <span class="o">=</span> <span class="n">dict_comparator</span><span class="p">(</span><span class="n">Mode_settings</span><span class="p">,</span> <span class="n">Mode_settings_ConfigFile</span><span class="p">,</span> <span class="n">Logger</span><span class="p">)</span>
     
     <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">CCD_macro_settings</span><span class="p">(</span><span class="s1">&#39;FullReadout&#39;</span><span class="p">)</span>
     
     <span class="n">Mode12X</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
-                       <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">params</span><span class="p">,</span> <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">)</span></div>
+                       <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">Mode_settings</span> <span class="o">=</span> <span class="n">Mode_settings</span><span class="p">,</span> <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">)</span></div>
 
 
 <span class="c1">############################################################################################</span>
@@ -785,7 +785,7 @@
 
 
 <div class="viewcode-block" id="Mode122"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode122">[docs]</a><span class="k">def</span> <span class="nf">Mode122</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
-                       <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
+                       <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">Mode_settings</span> <span class="o">=</span> <span class="p">{}):</span>
     <span class="sd">&quot;&quot;&quot;Mode122</span>
 <span class="sd">    </span>
 <span class="sd">    **Macro**: Snapshot_Inertial_macro. \n</span>
@@ -795,12 +795,12 @@
 <span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
-    <span class="n">settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Mode122_settings</span><span class="p">()</span>
-    <span class="n">params</span> <span class="o">=</span> <span class="n">params_checker</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">Logger</span><span class="p">)</span>
+    <span class="n">Mode_settings_ConfigFile</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Mode122_settings</span><span class="p">()</span>
+    <span class="n">Mode_settings</span> <span class="o">=</span> <span class="n">dict_comparator</span><span class="p">(</span><span class="n">Mode_settings</span><span class="p">,</span> <span class="n">Mode_settings_ConfigFile</span><span class="p">,</span> <span class="n">Logger</span><span class="p">)</span>
     
     <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">CCD_macro_settings</span><span class="p">(</span><span class="s1">&#39;BinnedCalibration&#39;</span><span class="p">)</span>
-    <span class="n">ExpTimeUV</span><span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;Exp_Time_UV&#39;</span><span class="p">]</span>
-    <span class="n">ExpTimeIR</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;Exp_Time_IR&#39;</span><span class="p">]</span>
+    <span class="n">ExpTimeUV</span><span class="o">=</span> <span class="n">Mode_settings</span><span class="p">[</span><span class="s1">&#39;Exp_Time_UV&#39;</span><span class="p">]</span>
+    <span class="n">ExpTimeIR</span> <span class="o">=</span> <span class="n">Mode_settings</span><span class="p">[</span><span class="s1">&#39;Exp_Time_IR&#39;</span><span class="p">]</span>
     <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">16</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ExpTimeUV</span>
     <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">32</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ExpTimeUV</span>
     <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ExpTimeIR</span>
@@ -809,7 +809,7 @@
     <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ExpTimeIR</span>
     
     <span class="n">Mode12X</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
-                        <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">params</span><span class="p">,</span> <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">)</span></div>
+                        <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">Mode_settings</span> <span class="o">=</span> <span class="n">Mode_settings</span><span class="p">,</span> <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">)</span></div>
     
 
 <span class="c1">################################################################################################</span>
@@ -820,7 +820,7 @@
 
 
 <div class="viewcode-block" id="Mode123"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode123">[docs]</a><span class="k">def</span> <span class="nf">Mode123</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
-                       <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
+                       <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">Mode_settings</span> <span class="o">=</span> <span class="p">{}):</span>
     <span class="sd">&quot;&quot;&quot;Mode123</span>
 <span class="sd">    </span>
 <span class="sd">    </span>
@@ -832,12 +832,12 @@
 <span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
-    <span class="n">settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Mode123_settings</span><span class="p">()</span>
-    <span class="n">params</span> <span class="o">=</span> <span class="n">params_checker</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">Logger</span><span class="p">)</span>
+    <span class="n">Mode_settings_ConfigFile</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Mode123_settings</span><span class="p">()</span>
+    <span class="n">Mode_settings</span> <span class="o">=</span> <span class="n">dict_comparator</span><span class="p">(</span><span class="n">Mode_settings</span><span class="p">,</span> <span class="n">Mode_settings_ConfigFile</span><span class="p">,</span> <span class="n">Logger</span><span class="p">)</span>
     
     <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">CCD_macro_settings</span><span class="p">(</span><span class="s1">&#39;LowPixel&#39;</span><span class="p">)</span>
-    <span class="n">ExpTimeUV</span><span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;Exp_Time_UV&#39;</span><span class="p">]</span>
-    <span class="n">ExpTimeIR</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;Exp_Time_IR&#39;</span><span class="p">]</span>
+    <span class="n">ExpTimeUV</span><span class="o">=</span> <span class="n">Mode_settings</span><span class="p">[</span><span class="s1">&#39;Exp_Time_UV&#39;</span><span class="p">]</span>
+    <span class="n">ExpTimeIR</span> <span class="o">=</span> <span class="n">Mode_settings</span><span class="p">[</span><span class="s1">&#39;Exp_Time_IR&#39;</span><span class="p">]</span>
     <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">16</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ExpTimeUV</span>
     <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">32</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ExpTimeUV</span>
     <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ExpTimeIR</span>
@@ -846,7 +846,7 @@
     <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ExpTimeIR</span>
     
     <span class="n">Mode12X</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
-                        <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">params</span><span class="p">,</span> <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">)</span></div>
+                        <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">Mode_settings</span> <span class="o">=</span> <span class="n">Mode_settings</span><span class="p">,</span> <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">)</span></div>
     
 
 
@@ -855,7 +855,7 @@
 
 
 <div class="viewcode-block" id="Mode124"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode124">[docs]</a><span class="k">def</span> <span class="nf">Mode124</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
-                       <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
+                       <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">Mode_settings</span> <span class="o">=</span> <span class="p">{}):</span>
     <span class="sd">&quot;&quot;&quot;Mode124</span>
 <span class="sd">    </span>
 <span class="sd">    **Macro**: Snapshot_Inertial_macro. \n</span>
@@ -866,18 +866,18 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     
     
-    <span class="n">settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Mode124_settings</span><span class="p">()</span>
-    <span class="n">params</span> <span class="o">=</span> <span class="n">params_checker</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">Logger</span><span class="p">)</span>
+    <span class="n">Mode_settings_ConfigFile</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Mode124_settings</span><span class="p">()</span>
+    <span class="n">Mode_settings</span> <span class="o">=</span> <span class="n">dict_comparator</span><span class="p">(</span><span class="n">Mode_settings</span><span class="p">,</span> <span class="n">Mode_settings_ConfigFile</span><span class="p">,</span> <span class="n">Logger</span><span class="p">)</span>
     
     <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">CCD_macro_settings</span><span class="p">(</span><span class="s1">&#39;FullReadout&#39;</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">CCDSEL</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">32</span><span class="p">]:</span>
-        <span class="k">if</span><span class="p">(</span> <span class="n">CCDSEL</span> <span class="ow">in</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;CCDSELs&#39;</span><span class="p">]</span> <span class="p">):</span>
+        <span class="k">if</span><span class="p">(</span> <span class="n">CCDSEL</span> <span class="ow">in</span> <span class="n">Mode_settings</span><span class="p">[</span><span class="s1">&#39;CCDSELs&#39;</span><span class="p">]</span> <span class="p">):</span>
             <span class="k">continue</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">CCD_settings</span><span class="p">[</span><span class="n">CCDSEL</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
     
     <span class="n">Mode12X</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
-                        <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">params</span><span class="p">,</span> <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">)</span></div>
+                        <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">Mode_settings</span> <span class="o">=</span> <span class="n">Mode_settings</span><span class="p">,</span> <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">)</span></div>
 
 <span class="c1">##############################################################################################</span>
 
@@ -887,7 +887,7 @@
 
 
 <div class="viewcode-block" id="Mode130"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode130">[docs]</a><span class="k">def</span> <span class="nf">Mode130</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
-                       <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
+                       <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">Mode_settings</span> <span class="o">=</span> <span class="p">{}):</span>
     <span class="sd">&quot;&quot;&quot;Mode130</span>
 <span class="sd">    </span>
 <span class="sd">    **Macro**: Snapshot_Limb_Pointing_macro. \n</span>
@@ -897,15 +897,15 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     
     <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">CCD_macro_settings</span><span class="p">(</span><span class="s1">&#39;FullReadout&#39;</span><span class="p">)</span>
-    <span class="n">settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Mode130_settings</span><span class="p">()</span>
+    <span class="n">Mode_settings_ConfigFile</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Mode130_settings</span><span class="p">()</span>
     
-    <span class="n">params</span> <span class="o">=</span> <span class="n">params_checker</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">Logger</span><span class="p">)</span>
+    <span class="n">Mode_settings</span> <span class="o">=</span> <span class="n">dict_comparator</span><span class="p">(</span><span class="n">Mode_settings</span><span class="p">,</span> <span class="n">Mode_settings_ConfigFile</span><span class="p">,</span> <span class="n">Logger</span><span class="p">)</span>
     
     <span class="n">Mode_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>
-    <span class="n">comment</span> <span class="o">=</span> <span class="n">Mode_name</span><span class="o">+</span><span class="s1">&#39; starting date: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+    <span class="n">comment</span> <span class="o">=</span> <span class="n">Mode_name</span><span class="o">+</span><span class="s1">&#39; starting date: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">Mode_settings</span><span class="p">)</span>
     
-    <span class="n">pointing_altitude</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;pointing_altitude&#39;</span><span class="p">]</span>
-    <span class="n">SnapshotSpacing</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;SnapshotSpacing&#39;</span><span class="p">]</span>
+    <span class="n">pointing_altitude</span> <span class="o">=</span> <span class="n">Mode_settings</span><span class="p">[</span><span class="s1">&#39;pointing_altitude&#39;</span><span class="p">]</span>
+    <span class="n">SnapshotSpacing</span> <span class="o">=</span> <span class="n">Mode_settings</span><span class="p">[</span><span class="s1">&#39;SnapshotSpacing&#39;</span><span class="p">]</span>
     
     <span class="c1">#Mode_macro = getattr(Macros,Mode_name+&#39;_macro&#39;)</span>
     
@@ -918,7 +918,7 @@
 <span class="c1">##############################################################################################</span>
 
 <div class="viewcode-block" id="Mode131"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode131">[docs]</a><span class="k">def</span> <span class="nf">Mode131</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
-                       <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
+                       <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">Mode_settings</span> <span class="o">=</span> <span class="p">{}):</span>
     <span class="sd">&quot;&quot;&quot;Mode131</span>
 <span class="sd">    </span>
 <span class="sd">    **Macro**: Operational_Limb_Pointing_macro. \n</span>
@@ -929,14 +929,14 @@
     
     <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">CCD_macro_settings</span><span class="p">(</span><span class="s1">&#39;FullReadout&#39;</span><span class="p">)</span>
     <span class="n">PM_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">PM_settings</span><span class="p">()</span>
-    <span class="n">settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Mode131_settings</span><span class="p">()</span>
+    <span class="n">Mode_settings_ConfigFile</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Mode131_settings</span><span class="p">()</span>
     
-    <span class="n">params</span> <span class="o">=</span> <span class="n">params_checker</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">Logger</span><span class="p">)</span>
+    <span class="n">Mode_settings</span> <span class="o">=</span> <span class="n">dict_comparator</span><span class="p">(</span><span class="n">Mode_settings</span><span class="p">,</span> <span class="n">Mode_settings_ConfigFile</span><span class="p">,</span> <span class="n">Logger</span><span class="p">)</span>
     
     <span class="n">Mode_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>
-    <span class="n">comment</span> <span class="o">=</span> <span class="n">Mode_name</span><span class="o">+</span><span class="s1">&#39; starting date: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+    <span class="n">comment</span> <span class="o">=</span> <span class="n">Mode_name</span><span class="o">+</span><span class="s1">&#39; starting date: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">Mode_settings</span><span class="p">)</span>
     
-    <span class="n">pointing_altitude</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;pointing_altitude&#39;</span><span class="p">]</span>
+    <span class="n">pointing_altitude</span> <span class="o">=</span> <span class="n">Mode_settings</span><span class="p">[</span><span class="s1">&#39;pointing_altitude&#39;</span><span class="p">]</span>
     <span class="n">relativeTimeEndOfMode</span> <span class="o">=</span> <span class="n">relativeTime</span><span class="o">+</span><span class="n">duration</span><span class="o">-</span><span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;mode_separation&#39;</span><span class="p">]</span>
     
     <span class="s2">&quot;CMDs and Macros&quot;</span>
@@ -951,7 +951,7 @@
 <span class="c1">##############################################################################################</span>
 
 <div class="viewcode-block" id="Mode132_133"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode132_133">[docs]</a><span class="k">def</span> <span class="nf">Mode132_133</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
-                       <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">CCD_settings</span><span class="p">):</span>
+                       <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">Mode_settings</span><span class="p">,</span> <span class="n">CCD_settings</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Subfunction of Mode132 and Mode133</span>
 <span class="sd">    </span>
 <span class="sd">    **Macro**: Operational_Limb_Pointing_macro. \n</span>
@@ -963,13 +963,13 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     
     <span class="n">Mode_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
-    <span class="n">comment</span> <span class="o">=</span> <span class="n">Mode_name</span><span class="o">+</span><span class="s1">&#39; starting date: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+    <span class="n">comment</span> <span class="o">=</span> <span class="n">Mode_name</span><span class="o">+</span><span class="s1">&#39; starting date: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">Mode_settings</span><span class="p">)</span>
     
     <span class="n">PM_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">PM_settings</span><span class="p">()</span>
-    <span class="n">pointing_altitude</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;pointing_altitude&#39;</span><span class="p">]</span>
+    <span class="n">pointing_altitude</span> <span class="o">=</span> <span class="n">Mode_settings</span><span class="p">[</span><span class="s1">&#39;pointing_altitude&#39;</span><span class="p">]</span>
     <span class="n">relativeTimeEndOfMode</span> <span class="o">=</span> <span class="n">relativeTime</span><span class="o">+</span><span class="n">duration</span><span class="o">-</span><span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;mode_separation&#39;</span><span class="p">]</span>
     
-    <span class="k">for</span> <span class="n">ExpTimeUV</span><span class="p">,</span><span class="n">ExpTimeIR</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;Exp_Times_UV&#39;</span><span class="p">],</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;Exp_Times_IR&#39;</span><span class="p">]</span> <span class="p">):</span>
+    <span class="k">for</span> <span class="n">ExpTimeUV</span><span class="p">,</span><span class="n">ExpTimeIR</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span> <span class="n">Mode_settings</span><span class="p">[</span><span class="s1">&#39;Exp_Times_UV&#39;</span><span class="p">],</span> <span class="n">Mode_settings</span><span class="p">[</span><span class="s1">&#39;Exp_Times_IR&#39;</span><span class="p">]</span> <span class="p">):</span>
         
         <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">16</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ExpTimeUV</span>
         <span class="n">CCD_settings</span><span class="p">[</span><span class="mi">32</span><span class="p">][</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ExpTimeUV</span>
@@ -980,7 +980,7 @@
         <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">Macros</span><span class="o">.</span><span class="n">Operational_Limb_Pointing_macro</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">relativeTime</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">CCD_settings</span><span class="p">,</span> <span class="n">PM_settings</span> <span class="o">=</span> <span class="n">PM_settings</span><span class="p">,</span> 
                                   <span class="n">pointing_altitude</span> <span class="o">=</span> <span class="n">pointing_altitude</span><span class="p">,</span> <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">)</span>
         
-        <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">relativeTime</span> <span class="o">+</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;session_duration&#39;</span><span class="p">]</span>
+        <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">relativeTime</span> <span class="o">+</span> <span class="n">Mode_settings</span><span class="p">[</span><span class="s1">&#39;session_duration&#39;</span><span class="p">]</span>
         
     <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafMode</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTimeEndOfMode</span><span class="p">,</span> <span class="n">MODE</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">)</span></div>
     
@@ -991,7 +991,7 @@
 
 
 <div class="viewcode-block" id="Mode132"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode132">[docs]</a><span class="k">def</span> <span class="nf">Mode132</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
-                       <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
+                       <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">Mode_settings</span> <span class="o">=</span> <span class="p">{}):</span>
     <span class="sd">&quot;&quot;&quot;Mode132</span>
 <span class="sd">    </span>
 <span class="sd">    **Macro**: Operational_Limb_Pointing_macro. \n</span>
@@ -1001,12 +1001,12 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     
     <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">CCD_macro_settings</span><span class="p">(</span><span class="s1">&#39;BinnedCalibration&#39;</span><span class="p">)</span>
-    <span class="n">settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Mode132_settings</span><span class="p">()</span>
+    <span class="n">Mode_settings_ConfigFile</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Mode132_settings</span><span class="p">()</span>
     
-    <span class="n">params</span> <span class="o">=</span> <span class="n">params_checker</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">Logger</span><span class="p">)</span>
+    <span class="n">Mode_settings</span> <span class="o">=</span> <span class="n">dict_comparator</span><span class="p">(</span><span class="n">Mode_settings</span><span class="p">,</span> <span class="n">Mode_settings_ConfigFile</span><span class="p">,</span> <span class="n">Logger</span><span class="p">)</span>
     
     <span class="n">Mode132_133</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
-                       <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">params</span><span class="p">,</span> <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">)</span></div>
+                       <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">Mode_settings</span> <span class="o">=</span> <span class="n">Mode_settings</span><span class="p">,</span> <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">)</span></div>
 
 
 
@@ -1017,7 +1017,7 @@
 
 
 <div class="viewcode-block" id="Mode133"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode133">[docs]</a><span class="k">def</span> <span class="nf">Mode133</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
-                       <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
+                       <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">Mode_settings</span> <span class="o">=</span> <span class="p">{}):</span>
     <span class="sd">&quot;&quot;&quot;Mode133,</span>
 <span class="sd">    </span>
 <span class="sd">    **Macro**: Operational_Limb_Pointing_macro. \n</span>
@@ -1027,12 +1027,12 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     
     <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">CCD_macro_settings</span><span class="p">(</span><span class="s1">&#39;LowPixel&#39;</span><span class="p">)</span>
-    <span class="n">settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Mode133_settings</span><span class="p">()</span>
+    <span class="n">Mode_settings_ConfigFile</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Mode133_settings</span><span class="p">()</span>
     
-    <span class="n">params</span> <span class="o">=</span> <span class="n">params_checker</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">Logger</span><span class="p">)</span>
+    <span class="n">Mode_settings</span> <span class="o">=</span> <span class="n">dict_comparator</span><span class="p">(</span><span class="n">Mode_settings</span><span class="p">,</span> <span class="n">Mode_settings_ConfigFile</span><span class="p">,</span> <span class="n">Logger</span><span class="p">)</span>
     
     <span class="n">Mode132_133</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
-                       <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="n">params</span><span class="p">,</span> <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">)</span></div>
+                       <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">Mode_settings</span> <span class="o">=</span> <span class="n">Mode_settings</span><span class="p">,</span> <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">CCD_settings</span><span class="p">)</span></div>
         
 
 
@@ -1042,7 +1042,7 @@
 <span class="c1">##############################################################################################</span>
 
 <div class="viewcode-block" id="Mode134"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode134">[docs]</a><span class="k">def</span> <span class="nf">Mode134</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
-                       <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
+                       <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">Mode_settings</span> <span class="o">=</span> <span class="p">{}):</span>
     <span class="sd">&quot;&quot;&quot;Mode134, Operational_Limb_Pointing_macro.</span>
 <span class="sd">    </span>
 <span class="sd">    **Macro**: Operational_Limb_Pointing_macro. \n</span>
@@ -1053,14 +1053,14 @@
     
     <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">CCD_macro_settings</span><span class="p">(</span><span class="s1">&#39;CustomBinning&#39;</span><span class="p">)</span>
     <span class="n">PM_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">PM_settings</span><span class="p">()</span>
-    <span class="n">settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Mode134_settings</span><span class="p">()</span>
+    <span class="n">Mode_settings_ConfigFile</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Mode134_settings</span><span class="p">()</span>
     
-    <span class="n">params</span> <span class="o">=</span> <span class="n">params_checker</span><span class="p">(</span><span class="n">params</span><span class="p">,</span> <span class="n">settings</span><span class="p">,</span> <span class="n">Logger</span><span class="p">)</span>
+    <span class="n">Mode_settings</span> <span class="o">=</span> <span class="n">dict_comparator</span><span class="p">(</span><span class="n">Mode_settings</span><span class="p">,</span> <span class="n">Mode_settings_ConfigFile</span><span class="p">,</span> <span class="n">Logger</span><span class="p">)</span>
     
     <span class="n">Mode_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>
-    <span class="n">comment</span> <span class="o">=</span> <span class="n">Mode_name</span><span class="o">+</span><span class="s1">&#39; starting date: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+    <span class="n">comment</span> <span class="o">=</span> <span class="n">Mode_name</span><span class="o">+</span><span class="s1">&#39; starting date: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">Mode_settings</span><span class="p">)</span>
     
-    <span class="n">pointing_altitude</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;pointing_altitude&#39;</span><span class="p">]</span>
+    <span class="n">pointing_altitude</span> <span class="o">=</span> <span class="n">Mode_settings</span><span class="p">[</span><span class="s1">&#39;pointing_altitude&#39;</span><span class="p">]</span>
     <span class="n">relativeTimeEndOfMode</span> <span class="o">=</span> <span class="n">relativeTime</span><span class="o">+</span><span class="n">duration</span><span class="o">-</span><span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;mode_separation&#39;</span><span class="p">]</span>
     
     <span class="s2">&quot;CMDs and Macros&quot;</span>
@@ -1080,23 +1080,23 @@
 <span class="c1">##############################################################################################</span>
 
 
-<div class="viewcode-block" id="X"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.X">[docs]</a><span class="k">def</span> <span class="nf">X</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="p">{}):</span>
+<div class="viewcode-block" id="X"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.MODES.X">[docs]</a><span class="k">def</span> <span class="nf">X</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">Mode_settings</span> <span class="o">=</span> <span class="p">{}):</span>
     <span class="sd">&quot;&quot;&quot;This is a template for a new mode or test. Exchange &#39;X&#39; for the name of the new mode/test&quot;</span>
 <span class="sd">    </span>
 <span class="sd">    Currently this template mode only schedules a *TC_acfLimbPointingAltitudeOffset* CMD.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
     <span class="s2">&quot;Calls for settings stated in the Configuration File&quot;</span>
-    <span class="c1">#settings = OPT_Config_File.X_settings()</span>
+    <span class="c1">#Mode_settings_ConfigFile = OPT_Config_File.X_settings()</span>
     <span class="s2">&quot;Calls for CCD settings for a specific CCD macro, here the CCD macro is &#39;CustomBinning&#39;&quot;</span>
     <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">CCD_macro_settings</span><span class="p">(</span><span class="s1">&#39;CustomBinning&#39;</span><span class="p">)</span>
     
     <span class="s2">&quot;Compares settings given in the Science Mode Timeline to settings given in the Configuration File&quot;</span>
-    <span class="c1">#params = params_checker(params,settings)</span>
+    <span class="c1">#Mode_settings = dict_comparator(Mode_settings,Mode_settings_ConfigFile)</span>
     
     
     <span class="n">Mode_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>
-    <span class="n">comment</span> <span class="o">=</span> <span class="n">Mode_name</span><span class="o">+</span><span class="s1">&#39; starting date: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+    <span class="n">comment</span> <span class="o">=</span> <span class="n">Mode_name</span><span class="o">+</span><span class="s1">&#39; starting date: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39;, &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">Mode_settings</span><span class="p">)</span>
     <span class="n">relativeTimeEndOfMode</span> <span class="o">=</span> <span class="n">relativeTime</span><span class="o">+</span><span class="n">duration</span><span class="o">-</span><span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;mode_separation&#39;</span><span class="p">]</span>
     
     <span class="n">Commands</span><span class="o">.</span><span class="n">TC_acfLimbPointingAltitudeOffset</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">relativeTime</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">Initial</span> <span class="o">=</span> <span class="mi">120000</span><span class="p">,</span> 
@@ -1151,10 +1151,10 @@
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -1176,7 +1176,7 @@
       &copy;2019, David Skånberg.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.3.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

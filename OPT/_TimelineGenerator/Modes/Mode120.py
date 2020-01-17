@@ -121,7 +121,7 @@ def Mode120_date_calculator():
     
     
     "Get relevant stars"
-    result = Vizier(columns=['all'], row_limit=200).query_constraints(catalog='I/239/hip_main',Vmag=Mode120_settings['Vmag'])
+    result = Vizier(columns=['all'], row_limit=3000).query_constraints(catalog='I/239/hip_main',Vmag=Mode120_settings['Vmag'])
     star_cat = result[0]
     ROWS = star_cat[0][:].count()
     stars = []

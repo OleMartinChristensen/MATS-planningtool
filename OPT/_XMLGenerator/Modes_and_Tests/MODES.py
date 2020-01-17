@@ -9,8 +9,8 @@ Functions on the form "X", where X is any Mode:
         **date** (*ephem.Date*): Starting date of the Mode. On the form of the ephem.Date class. \n
         **duration** (*int*): The duration of the mode [s]. \n
         **relativeTime** (*int*): The starting time of the mode with regard to the start of the timeline [s]. \n
-        **Timeline_settings** (*dict*): Dictionary containing the settings of the Timeline given in either the *Science_Mode_Timeline* or the *Configuration File*. \n
-        **params** (*dict*): Dictionary containing the settings of the Mode given in the *Science_Mode_Timeline*.
+        **Timeline_settings** (*dict*): Dictionary containing the settings of the Timeline given in the *Science_Mode_Timeline*. If no Timeline settings were present in the Science Mode Timeline, they were instead taken from the *Configuration File*. \n
+        **Mode_settings** (*dict*): Dictionary containing the settings of the Mode given in the *Science_Mode_Timeline*.
 
     **Returns:**
         None
@@ -27,7 +27,7 @@ import ephem, logging, sys, pylab, importlib, skyfield.api
 from OPT import _Globals
 
 OPT_Config_File = importlib.import_module(_Globals.Config_File)
-from OPT._Library import Satellite_Simulator, params_checker, utc_to_onboardTime, SunAngle, CCDSELExtracter
+from OPT._Library import Satellite_Simulator, dict_comparator, utc_to_onboardTime, SunAngle, CCDSELExtracter
 from .Macros_Commands import Macros, Commands
 
 Logger = logging.getLogger(OPT_Config_File.Logger_name())
@@ -37,7 +37,7 @@ Logger = logging.getLogger(OPT_Config_File.Logger_name())
 "######### Operational Science Modes #########################"
 "##############################################################"
 
-def Mode5(root, date, duration, relativeTime, Timeline_settings, params = {}):
+def Mode5(root, date, duration, relativeTime, Timeline_settings, Mode_settings = {}):
     '''Mode5
     
     **Macro:** Operational_Limb_Pointing_macro \n
@@ -48,17 +48,17 @@ def Mode5(root, date, duration, relativeTime, Timeline_settings, params = {}):
     pointing_altitude = Timeline_settings['StandardPointingAltitude']
     
     
-    settings = OPT_Config_File.Operational_Science_Mode_settings()
+    Mode_settings_ConfigFile = OPT_Config_File.Operational_Science_Mode_settings()
     
-    params = params_checker(params, settings, Logger)
+    Mode_settings = dict_comparator(Mode_settings, Mode_settings_ConfigFile, Logger)
     
-    CCD_settings = OPT_Config_File.CCD_macro_settings(params['Choose_Mode5CCDMacro'])
+    CCD_settings = OPT_Config_File.CCD_macro_settings(Mode_settings['Choose_Mode5CCDMacro'])
     PM_settings = OPT_Config_File.PM_settings()
     
     Mode_name = sys._getframe(0).f_code.co_name.replace('','')
-    comment = Mode_name+' starting date: '+str(date)+', '+str(params)
+    comment = Mode_name+' starting date: '+str(date)+', '+str(Mode_settings)
     
-    #pointing_altitude = params['pointing_altitude']
+    #pointing_altitude = Mode_settings['pointing_altitude']
     
     #Macros.Custom_Binning_Macro(root,relativeTime, pointing_altitude=pointing_altitude, Timeline_settings = Timeline_settings, comment = comment)
     Macros.Operational_Limb_Pointing_macro(root, relativeTime, CCD_settings, PM_settings = PM_settings,  
@@ -68,7 +68,7 @@ def Mode5(root, date, duration, relativeTime, Timeline_settings, params = {}):
 
 ############################################################################################
     
-def Mode1(root, date, duration, relativeTime, Timeline_settings, params = {}):
+def Mode1(root, date, duration, relativeTime, Timeline_settings, Mode_settings = {}):
     """Mode1
     
     **Macro:** Operational_Limb_Pointing_macro \n
@@ -88,18 +88,18 @@ def Mode1(root, date, duration, relativeTime, Timeline_settings, params = {}):
     
     CCD_settings = OPT_Config_File.CCD_macro_settings('HighResUV')
     PM_settings = OPT_Config_File.PM_settings()
-    settings = OPT_Config_File.Operational_Science_Mode_settings()
+    Mode_settings_ConfigFile = OPT_Config_File.Operational_Science_Mode_settings()
     
     
-    params = params_checker(params, settings, Logger)
+    Mode_settings = dict_comparator(Mode_settings, Mode_settings_ConfigFile, Logger)
     
-    timestep = params['timestep']
+    timestep = Mode_settings['timestep']
     TEXPMS_16 = CCD_settings[16]['TEXPMS']
     TEXPMS_32 = CCD_settings[32]['TEXPMS']
     TEXPMS_nadir = CCD_settings[64]['TEXPMS']
     
     
-    log_timestep = params['log_timestep']
+    log_timestep = Mode_settings['log_timestep']
     Logger.debug('log_timestep [s]: '+str(log_timestep))
     
     TLE = OPT_Config_File.getTLE()
@@ -120,7 +120,7 @@ def Mode1(root, date, duration, relativeTime, Timeline_settings, params = {}):
     
     R_mean = 6371000 #Radius of Earth in m
     pointing_altitude = Timeline_settings['StandardPointingAltitude']
-    lat = params['lat']
+    lat = Mode_settings['lat']
     
     heightAboveSurface = 35000 #Altitude in km where sun is deemed to reflect in atmosphere, determining night and day below satellite"
     
@@ -184,7 +184,7 @@ def Mode1(root, date, duration, relativeTime, Timeline_settings, params = {}):
                 
                 if( abs(lat_LP[t]) < lat):
                     current_state = "Mode1_night_UV_off"
-                    comment = current_state+': '+str(current_time)+', parameters: '+str(params)
+                    comment = current_state+': '+str(current_time)+', parameters: '+str(Mode_settings)
                     #new_relativeTime = Macros.Mode1_macro(root,relativeTime, pointing_altitude=pointing_altitude, UV_on = False, nadir_on = True, Timeline_settings = Timeline_settings, comment = comment)
                     CCD_settings[16]['TEXPMS'] = 0
                     CCD_settings[32]['TEXPMS'] = 0
@@ -194,7 +194,7 @@ def Mode1(root, date, duration, relativeTime, Timeline_settings, params = {}):
                     
                 elif( abs(lat_LP[t]) > lat):
                     current_state = "Mode1_night_UV_on"
-                    comment = current_state+': '+str(current_time)+', parameters: '+str(params)
+                    comment = current_state+': '+str(current_time)+', parameters: '+str(Mode_settings)
                     #new_relativeTime = Macros.Mode1_macro(root,relativeTime, pointing_altitude=pointing_altitude, UV_on = True, nadir_on = True, Timeline_settings = Timeline_settings, comment = comment)
                     CCD_settings[16]['TEXPMS'] = TEXPMS_16
                     CCD_settings[32]['TEXPMS'] = TEXPMS_32
@@ -207,7 +207,7 @@ def Mode1(root, date, duration, relativeTime, Timeline_settings, params = {}):
                 
                 if( abs(lat_LP[t]) < lat):
                     current_state = "Mode1_day_UV_off"
-                    comment = current_state+': '+str(current_time)+', parameters: '+str(params)
+                    comment = current_state+': '+str(current_time)+', parameters: '+str(Mode_settings)
                     #new_relativeTime = Macros.Mode1_macro(root,relativeTime,pointing_altitude, UV_on = False, nadir_on = False, Timeline_settings = Timeline_settings, comment = comment)
                     CCD_settings[16]['TEXPMS'] = 0
                     CCD_settings[32]['TEXPMS'] = 0
@@ -217,7 +217,7 @@ def Mode1(root, date, duration, relativeTime, Timeline_settings, params = {}):
                     
                 elif( abs(lat_LP[t]) > lat):
                     current_state = "Mode1_day_UV_on"
-                    comment = current_state+': '+str(current_time)+', parameters: '+str(params)
+                    comment = current_state+': '+str(current_time)+', parameters: '+str(Mode_settings)
                     #new_relativeTime = Macros.Mode1_macro(root,relativeTime,pointing_altitude, UV_on = True, nadir_on = False, Timeline_settings = Timeline_settings, comment = comment)
                     CCD_settings[16]['TEXPMS'] = TEXPMS_16
                     CCD_settings[32]['TEXPMS'] = TEXPMS_32
@@ -248,7 +248,7 @@ def Mode1(root, date, duration, relativeTime, Timeline_settings, params = {}):
                         
                         Logger.debug('')
                         current_state = "Mode1_night_UV_off"
-                        comment = current_state+': '+str(current_time)+', parameters: '+str(params)
+                        comment = current_state+': '+str(current_time)+', parameters: '+str(Mode_settings)
                         #new_relativeTime = Macros.Mode1_macro(root, relativeTime, pointing_altitude, UV_on = False, nadir_on = True, Timeline_settings = Timeline_settings, comment = comment)
                         CCD_settings[16]['TEXPMS'] = 0
                         CCD_settings[32]['TEXPMS'] = 0
@@ -274,7 +274,7 @@ def Mode1(root, date, duration, relativeTime, Timeline_settings, params = {}):
                         
                         Logger.debug('')
                         current_state = "Mode1_night_UV_on"
-                        comment = current_state+': '+str(current_time)+', parameters: '+str(params)
+                        comment = current_state+': '+str(current_time)+', parameters: '+str(Mode_settings)
                         #new_relativeTime = Macros.Mode1_macro(root, relativeTime, pointing_altitude=pointing_altitude, UV_on = True, nadir_on = True, Timeline_settings = Timeline_settings, comment = comment)
                         CCD_settings[16]['TEXPMS'] = TEXPMS_16
                         CCD_settings[32]['TEXPMS'] = TEXPMS_32
@@ -305,7 +305,7 @@ def Mode1(root, date, duration, relativeTime, Timeline_settings, params = {}):
                         
                         Logger.debug('')
                         current_state = "Mode1_day_UV_off"
-                        comment = current_state+': '+str(current_time)+', parameters: '+str(params)
+                        comment = current_state+': '+str(current_time)+', parameters: '+str(Mode_settings)
                         #new_relativeTime = Macros.Mode1_macro(root, relativeTime, pointing_altitude=pointing_altitude, UV_on = False, nadir_on = False, Timeline_settings = Timeline_settings, comment = comment)
                         CCD_settings[16]['TEXPMS'] = 0
                         CCD_settings[32]['TEXPMS'] = 0
@@ -333,7 +333,7 @@ def Mode1(root, date, duration, relativeTime, Timeline_settings, params = {}):
                         
                         Logger.debug('')
                         current_state = "Mode1_day_UV_on"
-                        comment = current_state+': '+str(current_time)+', parameters: '+str(params)
+                        comment = current_state+': '+str(current_time)+', parameters: '+str(Mode_settings)
                         #new_relativeTime = Macros.Mode1_macro(root, relativeTime, pointing_altitude=pointing_altitude, UV_on = True, nadir_on = False, Timeline_settings = Timeline_settings, comment = comment)
                         CCD_settings[16]['TEXPMS'] = TEXPMS_16
                         CCD_settings[32]['TEXPMS'] = TEXPMS_32
@@ -359,7 +359,7 @@ def Mode1(root, date, duration, relativeTime, Timeline_settings, params = {}):
 
 #######################################################################################
 
-def Mode2(root, date, duration, relativeTime, Timeline_settings, params = {}):
+def Mode2(root, date, duration, relativeTime, Timeline_settings, Mode_settings = {}):
     """Mode2
     
     **Macro**: Operational_Limb_Pointing_macro. \n
@@ -372,19 +372,19 @@ def Mode2(root, date, duration, relativeTime, Timeline_settings, params = {}):
     
     CCD_settings = OPT_Config_File.CCD_macro_settings('HighResIR')
     PM_settings = OPT_Config_File.PM_settings()
-    settings = OPT_Config_File.Operational_Science_Mode_settings()
+    Mode_settings_ConfigFile = OPT_Config_File.Operational_Science_Mode_settings()
     #Timeline_settings = OPT_Config_File.Timeline_settings()
     
     zeros = pylab.zeros
     pi = pylab.pi
     arccos = pylab.arccos
     
-    params = params_checker(params, settings, Logger)
+    Mode_settings = dict_comparator(Mode_settings, Mode_settings_ConfigFile, Logger)
     
-    timestep = params['timestep']
+    timestep = Mode_settings['timestep']
     TEXPMS_nadir = CCD_settings[64]['TEXPMS']
     
-    log_timestep = params['log_timestep']
+    log_timestep = Mode_settings['log_timestep']
     Logger.debug('log_timestep [s]: '+str(log_timestep))
     
     
@@ -455,7 +455,7 @@ def Mode2(root, date, duration, relativeTime, Timeline_settings, params = {}):
             "Check if night or day"
             if( sun_angle[t] > MATS_nadir_eclipse_angle):
                 current_state = "Mode2_night"
-                comment = current_state+': '+str(params)
+                comment = current_state+': '+str(Mode_settings)
                 #new_relativeTime = Macros.Mode1_macro(root,relativeTime, pointing_altitude=pointing_altitude, nadir_on = True, Timeline_settings = Timeline_settings, comment = comment)
                 CCD_settings[64]['TEXPMS'] = TEXPMS_nadir
                 new_relativeTime = Macros.Operational_Limb_Pointing_macro(root, relativeTime, CCD_settings, PM_settings = PM_settings,  
@@ -463,7 +463,7 @@ def Mode2(root, date, duration, relativeTime, Timeline_settings, params = {}):
                 
             elif( sun_angle[t] < MATS_nadir_eclipse_angle):
                 current_state = "Mode2_day"
-                comment = current_state+': '+str(params)
+                comment = current_state+': '+str(Mode_settings)
                 #new_relativeTime = Macros.Mode1_macro(root,relativeTime, pointing_altitude=pointing_altitude, nadir_on = False, Timeline_settings = Timeline_settings, comment = comment)
                 CCD_settings[64]['TEXPMS'] = 0
                 new_relativeTime = Macros.Operational_Limb_Pointing_macro(root, relativeTime, CCD_settings, PM_settings = PM_settings,  
@@ -485,7 +485,7 @@ def Mode2(root, date, duration, relativeTime, Timeline_settings, params = {}):
                     
                     Logger.debug('')
                     current_state = "Mode2_night"
-                    comment = current_state+': '+str(params)
+                    comment = current_state+': '+str(Mode_settings)
                     #new_relativeTime = Macros.Mode1_macro(root, relativeTime, pointing_altitude=pointing_altitude, nadir_on = True, Timeline_settings = Timeline_settings, comment = comment)
                     CCD_settings[64]['TEXPMS'] = TEXPMS_nadir
                     new_relativeTime = Macros.Operational_Limb_Pointing_macro(root, relativeTime, CCD_settings, PM_settings = PM_settings,  
@@ -504,7 +504,7 @@ def Mode2(root, date, duration, relativeTime, Timeline_settings, params = {}):
                     
                     Logger.debug('')
                     current_state = "Mode2_day"
-                    comment = current_state+': '+str(params)
+                    comment = current_state+': '+str(Mode_settings)
                     #new_relativeTime = Macros.Mode1_macro(root, relativeTime, pointing_altitude=pointing_altitude, nadir_on = False, Timeline_settings = Timeline_settings, comment = comment)
                     CCD_settings[64]['TEXPMS'] = 0
                     new_relativeTime = Macros.Operational_Limb_Pointing_macro(root, relativeTime, CCD_settings, PM_settings = PM_settings,  
@@ -527,7 +527,7 @@ def Mode2(root, date, duration, relativeTime, Timeline_settings, params = {}):
 "######### Calibration Modes ##################################"
 "##############################################################"
 
-def Mode100(root, date, duration, relativeTime, Timeline_settings, params = {}):
+def Mode100(root, date, duration, relativeTime, Timeline_settings, Mode_settings = {}):
     """ Mode100
     
     **Macro**: Operational_Limb_Pointing_macro. \n
@@ -542,21 +542,21 @@ def Mode100(root, date, duration, relativeTime, Timeline_settings, params = {}):
     
     CCD_settings = OPT_Config_File.CCD_macro_settings('BinnedCalibration')
     PM_settings = OPT_Config_File.PM_settings()
-    settings = OPT_Config_File.Mode100_settings()
+    Mode_settings_ConfigFile = OPT_Config_File.Mode100_settings()
     
     
-    params = params_checker(params, settings, Logger)
+    Mode_settings = dict_comparator(Mode_settings, Mode_settings_ConfigFile, Logger)
     
     Mode_name = sys._getframe(0).f_code.co_name
-    comment = Mode_name+' starting date: '+str(date)+', '+str(params)
+    comment = Mode_name+' starting date: '+str(date)+', '+str(Mode_settings)
     
     
-    pointing_altitude_from = params['pointing_altitude_from']
-    pointing_altitude_to = params['pointing_altitude_to']
-    pointing_altitude_interval = params['pointing_altitude_interval']
-    ExpTimeUV = params['Exp_Time_UV']
-    ExpTimeIR = params['Exp_Time_IR']
-    ExpTime_step = params['ExpTime_step']
+    pointing_altitude_from = Mode_settings['pointing_altitude_from']
+    pointing_altitude_to = Mode_settings['pointing_altitude_to']
+    pointing_altitude_interval = Mode_settings['pointing_altitude_interval']
+    ExpTimeUV = Mode_settings['Exp_Time_UV']
+    ExpTimeIR = Mode_settings['Exp_Time_IR']
+    ExpTime_step = Mode_settings['ExpTime_step']
     
     number_of_altitudes = int( abs( (pointing_altitude_to - pointing_altitude_from) / pointing_altitude_interval +1 ) )
     pointing_altitudes = [pointing_altitude_from + x*pointing_altitude_interval for x in range(number_of_altitudes)]
@@ -586,7 +586,7 @@ def Mode100(root, date, duration, relativeTime, Timeline_settings, params = {}):
         relativeTime = Macros.Operational_Limb_Pointing_macro(root, round(relativeTime,2), CCD_settings, PM_settings = PM_settings, 
                                   pointing_altitude = pointing_altitude, Timeline_settings = Timeline_settings, comment = comment)
         
-        relativeTime = relativeTime + params['pointing_duration']
+        relativeTime = relativeTime + Mode_settings['pointing_duration']
         
         x += 1
         
@@ -600,7 +600,7 @@ def Mode100(root, date, duration, relativeTime, Timeline_settings, params = {}):
 
 
 
-def Mode110(root, date, duration, relativeTime, Timeline_settings, params = {}):
+def Mode110(root, date, duration, relativeTime, Timeline_settings, Mode_settings = {}):
     """Mode110
     
     **Macro**: Operational_Sweep_macro. \n
@@ -614,12 +614,12 @@ def Mode110(root, date, duration, relativeTime, Timeline_settings, params = {}):
     
     CCD_settings = OPT_Config_File.CCD_macro_settings('BinnedCalibration')
     PM_settings = OPT_Config_File.PM_settings()
-    settings = OPT_Config_File.Mode110_settings()
+    Mode_settings_ConfigFile = OPT_Config_File.Mode110_settings()
     
-    params = params_checker(params, settings, Logger)
+    Mode_settings = dict_comparator(Mode_settings, Mode_settings_ConfigFile, Logger)
     
-    ExpTimeUV= params['Exp_Time_UV']
-    ExpTimeIR = params['Exp_Time_IR']
+    ExpTimeUV= Mode_settings['Exp_Time_UV']
+    ExpTimeIR = Mode_settings['Exp_Time_IR']
     CCD_settings[16]['TEXPMS'] = ExpTimeUV
     CCD_settings[32]['TEXPMS'] = ExpTimeUV
     CCD_settings[1]['TEXPMS'] = ExpTimeIR
@@ -628,11 +628,11 @@ def Mode110(root, date, duration, relativeTime, Timeline_settings, params = {}):
     CCD_settings[4]['TEXPMS'] = ExpTimeIR
     
     Mode_name = sys._getframe(0).f_code.co_name
-    comment = Mode_name+' starting date: '+str(date)+', '+str(params)
+    comment = Mode_name+' starting date: '+str(date)+', '+str(Mode_settings)
     
-    pointing_altitude_from = params['pointing_altitude_from']
-    pointing_altitude_to = params['pointing_altitude_to']
-    sweep_rate = params['sweep_rate']
+    pointing_altitude_from = Mode_settings['pointing_altitude_from']
+    pointing_altitude_to = Mode_settings['pointing_altitude_to']
+    sweep_rate = Mode_settings['sweep_rate']
     
     relativeTimeEndOfMode = relativeTime+duration-Timeline_settings['mode_separation']
     #Mode_macro = getattr(Macros,Mode_name+'_macro')
@@ -650,7 +650,7 @@ def Mode110(root, date, duration, relativeTime, Timeline_settings, params = {}):
 #######################################################################################################
 
 def Mode12X(root, date, duration, relativeTime, 
-                       Timeline_settings, params, CCD_settings):
+                       Timeline_settings, Mode_settings, CCD_settings):
     """Subfunction of Mode12X, where X is 1,2,3....
     
     **Macro**: Snapshot_Inertial_macro. \n
@@ -665,19 +665,19 @@ def Mode12X(root, date, duration, relativeTime,
     
     
     Mode_name = sys._getframe(1).f_code.co_name.replace('','')
-    comment = Mode_name+' starting date: '+str(date)+', '+str(params)
+    comment = Mode_name+' starting date: '+str(date)+', '+str(Mode_settings)
     
-    freeze_start_utc = ephem.Date(date+ephem.second*params['freeze_start'])
+    freeze_start_utc = ephem.Date(date+ephem.second*Mode_settings['freeze_start'])
     
-    Snapshot_relativeTime = relativeTime + params['freeze_start'] + params['SnapshotTime']
+    Snapshot_relativeTime = relativeTime + Mode_settings['freeze_start'] + Mode_settings['SnapshotTime']
     
     FreezeTime = utc_to_onboardTime(freeze_start_utc)
     
-    FreezeDuration = params['freeze_duration']
+    FreezeDuration = Mode_settings['freeze_duration']
     
-    pointing_altitude = params['pointing_altitude']
+    pointing_altitude = Mode_settings['pointing_altitude']
     
-    SnapshotSpacing = params['SnapshotSpacing']
+    SnapshotSpacing = Mode_settings['SnapshotSpacing']
     
     Logger.debug('freeze_start_utc: '+str(freeze_start_utc))
     Logger.debug('FreezeTime [GPS]: '+ str(FreezeTime))
@@ -695,7 +695,7 @@ def Mode12X(root, date, duration, relativeTime,
 
 
 def Mode120(root, date, duration, relativeTime, 
-                       Timeline_settings, params = {}):
+                       Timeline_settings, Mode_settings = {}):
     """Mode120
     
     **Macro**: Snapshot_Inertial_macro. \n
@@ -706,18 +706,18 @@ def Mode120(root, date, duration, relativeTime,
     
     """
     
-    settings = OPT_Config_File.Mode120_settings()
-    params = params_checker(params, settings, Logger)
+    Mode_settings_ConfigFile = OPT_Config_File.Mode120_settings()
+    Mode_settings = dict_comparator(Mode_settings, Mode_settings_ConfigFile, Logger)
     
     CCD_settings = OPT_Config_File.CCD_macro_settings('FullReadout')
     for CCDSEL in [1,2,4,8,16,32,64]:
-        if( CCDSEL in params['CCDSELs'] ):
+        if( CCDSEL in Mode_settings['CCDSELs'] ):
             continue
         else:
             CCD_settings[CCDSEL]['TEXPMS'] = 0
     
     Mode12X(root, date, duration, relativeTime, 
-                                  Timeline_settings = Timeline_settings, params = params, CCD_settings = CCD_settings)
+                                  Timeline_settings = Timeline_settings, Mode_settings = Mode_settings, CCD_settings = CCD_settings)
 
 
 ################################################################################################
@@ -727,7 +727,7 @@ def Mode120(root, date, duration, relativeTime,
 
 
 def Mode121(root, date, duration, relativeTime, 
-                       Timeline_settings, params = {}):
+                       Timeline_settings, Mode_settings = {}):
     """Mode121
     
     **Macro**: Snapshot_Inertial_macro. \n
@@ -737,13 +737,13 @@ def Mode121(root, date, duration, relativeTime,
     
     """
     
-    settings = OPT_Config_File.Mode121_settings()
-    params = params_checker(params, settings, Logger)
+    Mode_settings_ConfigFile = OPT_Config_File.Mode121_settings()
+    Mode_settings = dict_comparator(Mode_settings, Mode_settings_ConfigFile, Logger)
     
     CCD_settings = OPT_Config_File.CCD_macro_settings('FullReadout')
     
     Mode12X(root, date, duration, relativeTime, 
-                       Timeline_settings = Timeline_settings, params = params, CCD_settings = CCD_settings)
+                       Timeline_settings = Timeline_settings, Mode_settings = Mode_settings, CCD_settings = CCD_settings)
 
 
 ############################################################################################
@@ -752,7 +752,7 @@ def Mode121(root, date, duration, relativeTime,
 
 
 def Mode122(root, date, duration, relativeTime, 
-                       Timeline_settings, params = {}):
+                       Timeline_settings, Mode_settings = {}):
     """Mode122
     
     **Macro**: Snapshot_Inertial_macro. \n
@@ -762,12 +762,12 @@ def Mode122(root, date, duration, relativeTime,
     
     """
     
-    settings = OPT_Config_File.Mode122_settings()
-    params = params_checker(params, settings, Logger)
+    Mode_settings_ConfigFile = OPT_Config_File.Mode122_settings()
+    Mode_settings = dict_comparator(Mode_settings, Mode_settings_ConfigFile, Logger)
     
     CCD_settings = OPT_Config_File.CCD_macro_settings('BinnedCalibration')
-    ExpTimeUV= params['Exp_Time_UV']
-    ExpTimeIR = params['Exp_Time_IR']
+    ExpTimeUV= Mode_settings['Exp_Time_UV']
+    ExpTimeIR = Mode_settings['Exp_Time_IR']
     CCD_settings[16]['TEXPMS'] = ExpTimeUV
     CCD_settings[32]['TEXPMS'] = ExpTimeUV
     CCD_settings[1]['TEXPMS'] = ExpTimeIR
@@ -776,7 +776,7 @@ def Mode122(root, date, duration, relativeTime,
     CCD_settings[4]['TEXPMS'] = ExpTimeIR
     
     Mode12X(root, date, duration, relativeTime, 
-                        Timeline_settings = Timeline_settings, params = params, CCD_settings = CCD_settings)
+                        Timeline_settings = Timeline_settings, Mode_settings = Mode_settings, CCD_settings = CCD_settings)
     
 
 ################################################################################################
@@ -787,7 +787,7 @@ def Mode122(root, date, duration, relativeTime,
 
 
 def Mode123(root, date, duration, relativeTime, 
-                       Timeline_settings, params = {}):
+                       Timeline_settings, Mode_settings = {}):
     """Mode123
     
     
@@ -799,12 +799,12 @@ def Mode123(root, date, duration, relativeTime,
     
     """
     
-    settings = OPT_Config_File.Mode123_settings()
-    params = params_checker(params, settings, Logger)
+    Mode_settings_ConfigFile = OPT_Config_File.Mode123_settings()
+    Mode_settings = dict_comparator(Mode_settings, Mode_settings_ConfigFile, Logger)
     
     CCD_settings = OPT_Config_File.CCD_macro_settings('LowPixel')
-    ExpTimeUV= params['Exp_Time_UV']
-    ExpTimeIR = params['Exp_Time_IR']
+    ExpTimeUV= Mode_settings['Exp_Time_UV']
+    ExpTimeIR = Mode_settings['Exp_Time_IR']
     CCD_settings[16]['TEXPMS'] = ExpTimeUV
     CCD_settings[32]['TEXPMS'] = ExpTimeUV
     CCD_settings[1]['TEXPMS'] = ExpTimeIR
@@ -813,7 +813,7 @@ def Mode123(root, date, duration, relativeTime,
     CCD_settings[4]['TEXPMS'] = ExpTimeIR
     
     Mode12X(root, date, duration, relativeTime, 
-                        Timeline_settings = Timeline_settings, params = params, CCD_settings = CCD_settings)
+                        Timeline_settings = Timeline_settings, Mode_settings = Mode_settings, CCD_settings = CCD_settings)
     
 
 
@@ -822,7 +822,7 @@ def Mode123(root, date, duration, relativeTime,
 
 
 def Mode124(root, date, duration, relativeTime, 
-                       Timeline_settings, params = {}):
+                       Timeline_settings, Mode_settings = {}):
     """Mode124
     
     **Macro**: Snapshot_Inertial_macro. \n
@@ -833,18 +833,18 @@ def Mode124(root, date, duration, relativeTime,
     """
     
     
-    settings = OPT_Config_File.Mode124_settings()
-    params = params_checker(params, settings, Logger)
+    Mode_settings_ConfigFile = OPT_Config_File.Mode124_settings()
+    Mode_settings = dict_comparator(Mode_settings, Mode_settings_ConfigFile, Logger)
     
     CCD_settings = OPT_Config_File.CCD_macro_settings('FullReadout')
     for CCDSEL in [1,2,4,8,16,32]:
-        if( CCDSEL in params['CCDSELs'] ):
+        if( CCDSEL in Mode_settings['CCDSELs'] ):
             continue
         else:
             CCD_settings[CCDSEL]['TEXPMS'] = 0
     
     Mode12X(root, date, duration, relativeTime, 
-                        Timeline_settings = Timeline_settings, params = params, CCD_settings = CCD_settings)
+                        Timeline_settings = Timeline_settings, Mode_settings = Mode_settings, CCD_settings = CCD_settings)
 
 ##############################################################################################
 
@@ -854,7 +854,7 @@ def Mode124(root, date, duration, relativeTime,
 
 
 def Mode130(root, date, duration, relativeTime, 
-                       Timeline_settings, params = {}):
+                       Timeline_settings, Mode_settings = {}):
     """Mode130
     
     **Macro**: Snapshot_Limb_Pointing_macro. \n
@@ -864,15 +864,15 @@ def Mode130(root, date, duration, relativeTime,
     """
     
     CCD_settings = OPT_Config_File.CCD_macro_settings('FullReadout')
-    settings = OPT_Config_File.Mode130_settings()
+    Mode_settings_ConfigFile = OPT_Config_File.Mode130_settings()
     
-    params = params_checker(params, settings, Logger)
+    Mode_settings = dict_comparator(Mode_settings, Mode_settings_ConfigFile, Logger)
     
     Mode_name = sys._getframe(0).f_code.co_name
-    comment = Mode_name+' starting date: '+str(date)+', '+str(params)
+    comment = Mode_name+' starting date: '+str(date)+', '+str(Mode_settings)
     
-    pointing_altitude = params['pointing_altitude']
-    SnapshotSpacing = params['SnapshotSpacing']
+    pointing_altitude = Mode_settings['pointing_altitude']
+    SnapshotSpacing = Mode_settings['SnapshotSpacing']
     
     #Mode_macro = getattr(Macros,Mode_name+'_macro')
     
@@ -885,7 +885,7 @@ def Mode130(root, date, duration, relativeTime,
 ##############################################################################################
 
 def Mode131(root, date, duration, relativeTime, 
-                       Timeline_settings, params = {}):
+                       Timeline_settings, Mode_settings = {}):
     """Mode131
     
     **Macro**: Operational_Limb_Pointing_macro. \n
@@ -896,14 +896,14 @@ def Mode131(root, date, duration, relativeTime,
     
     CCD_settings = OPT_Config_File.CCD_macro_settings('FullReadout')
     PM_settings = OPT_Config_File.PM_settings()
-    settings = OPT_Config_File.Mode131_settings()
+    Mode_settings_ConfigFile = OPT_Config_File.Mode131_settings()
     
-    params = params_checker(params, settings, Logger)
+    Mode_settings = dict_comparator(Mode_settings, Mode_settings_ConfigFile, Logger)
     
     Mode_name = sys._getframe(0).f_code.co_name
-    comment = Mode_name+' starting date: '+str(date)+', '+str(params)
+    comment = Mode_name+' starting date: '+str(date)+', '+str(Mode_settings)
     
-    pointing_altitude = params['pointing_altitude']
+    pointing_altitude = Mode_settings['pointing_altitude']
     relativeTimeEndOfMode = relativeTime+duration-Timeline_settings['mode_separation']
     
     "CMDs and Macros"
@@ -918,7 +918,7 @@ def Mode131(root, date, duration, relativeTime,
 ##############################################################################################
 
 def Mode132_133(root, date, duration, relativeTime, 
-                       Timeline_settings, params, CCD_settings):
+                       Timeline_settings, Mode_settings, CCD_settings):
     """Subfunction of Mode132 and Mode133
     
     **Macro**: Operational_Limb_Pointing_macro. \n
@@ -930,13 +930,13 @@ def Mode132_133(root, date, duration, relativeTime,
     """
     
     Mode_name = sys._getframe(1).f_code.co_name.replace('','')
-    comment = Mode_name+' starting date: '+str(date)+', '+str(params)
+    comment = Mode_name+' starting date: '+str(date)+', '+str(Mode_settings)
     
     PM_settings = OPT_Config_File.PM_settings()
-    pointing_altitude = params['pointing_altitude']
+    pointing_altitude = Mode_settings['pointing_altitude']
     relativeTimeEndOfMode = relativeTime+duration-Timeline_settings['mode_separation']
     
-    for ExpTimeUV,ExpTimeIR in zip( params['Exp_Times_UV'], params['Exp_Times_IR'] ):
+    for ExpTimeUV,ExpTimeIR in zip( Mode_settings['Exp_Times_UV'], Mode_settings['Exp_Times_IR'] ):
         
         CCD_settings[16]['TEXPMS'] = ExpTimeUV
         CCD_settings[32]['TEXPMS'] = ExpTimeUV
@@ -947,7 +947,7 @@ def Mode132_133(root, date, duration, relativeTime,
         relativeTime = Macros.Operational_Limb_Pointing_macro(root, round(relativeTime,2), CCD_settings, PM_settings = PM_settings, 
                                   pointing_altitude = pointing_altitude, Timeline_settings = Timeline_settings, comment = comment)
         
-        relativeTime = relativeTime + params['session_duration']
+        relativeTime = relativeTime + Mode_settings['session_duration']
         
     Commands.TC_pafMode(root, relativeTimeEndOfMode, MODE = 2, Timeline_settings = Timeline_settings, comment = comment)
     
@@ -958,7 +958,7 @@ def Mode132_133(root, date, duration, relativeTime,
 
 
 def Mode132(root, date, duration, relativeTime, 
-                       Timeline_settings, params = {}):
+                       Timeline_settings, Mode_settings = {}):
     """Mode132
     
     **Macro**: Operational_Limb_Pointing_macro. \n
@@ -968,12 +968,12 @@ def Mode132(root, date, duration, relativeTime,
     """
     
     CCD_settings = OPT_Config_File.CCD_macro_settings('BinnedCalibration')
-    settings = OPT_Config_File.Mode132_settings()
+    Mode_settings_ConfigFile = OPT_Config_File.Mode132_settings()
     
-    params = params_checker(params, settings, Logger)
+    Mode_settings = dict_comparator(Mode_settings, Mode_settings_ConfigFile, Logger)
     
     Mode132_133(root, date, duration, relativeTime, 
-                       Timeline_settings = Timeline_settings, params = params, CCD_settings = CCD_settings)
+                       Timeline_settings = Timeline_settings, Mode_settings = Mode_settings, CCD_settings = CCD_settings)
 
 
 
@@ -984,7 +984,7 @@ def Mode132(root, date, duration, relativeTime,
 
 
 def Mode133(root, date, duration, relativeTime, 
-                       Timeline_settings, params = {}):
+                       Timeline_settings, Mode_settings = {}):
     """Mode133,
     
     **Macro**: Operational_Limb_Pointing_macro. \n
@@ -994,12 +994,12 @@ def Mode133(root, date, duration, relativeTime,
     """
     
     CCD_settings = OPT_Config_File.CCD_macro_settings('LowPixel')
-    settings = OPT_Config_File.Mode133_settings()
+    Mode_settings_ConfigFile = OPT_Config_File.Mode133_settings()
     
-    params = params_checker(params, settings, Logger)
+    Mode_settings = dict_comparator(Mode_settings, Mode_settings_ConfigFile, Logger)
     
     Mode132_133(root, date, duration, relativeTime, 
-                       Timeline_settings = Timeline_settings, params = params, CCD_settings = CCD_settings)
+                       Timeline_settings = Timeline_settings, Mode_settings = Mode_settings, CCD_settings = CCD_settings)
         
 
 
@@ -1009,7 +1009,7 @@ def Mode133(root, date, duration, relativeTime,
 ##############################################################################################
 
 def Mode134(root, date, duration, relativeTime, 
-                       Timeline_settings, params = {}):
+                       Timeline_settings, Mode_settings = {}):
     """Mode134, Operational_Limb_Pointing_macro.
     
     **Macro**: Operational_Limb_Pointing_macro. \n
@@ -1020,14 +1020,14 @@ def Mode134(root, date, duration, relativeTime,
     
     CCD_settings = OPT_Config_File.CCD_macro_settings('CustomBinning')
     PM_settings = OPT_Config_File.PM_settings()
-    settings = OPT_Config_File.Mode134_settings()
+    Mode_settings_ConfigFile = OPT_Config_File.Mode134_settings()
     
-    params = params_checker(params, settings, Logger)
+    Mode_settings = dict_comparator(Mode_settings, Mode_settings_ConfigFile, Logger)
     
     Mode_name = sys._getframe(0).f_code.co_name
-    comment = Mode_name+' starting date: '+str(date)+', '+str(params)
+    comment = Mode_name+' starting date: '+str(date)+', '+str(Mode_settings)
     
-    pointing_altitude = params['pointing_altitude']
+    pointing_altitude = Mode_settings['pointing_altitude']
     relativeTimeEndOfMode = relativeTime+duration-Timeline_settings['mode_separation']
     
     "CMDs and Macros"
@@ -1047,23 +1047,23 @@ def Mode134(root, date, duration, relativeTime,
 ##############################################################################################
 
 
-def X(root, date, duration, relativeTime, Timeline_settings, params = {}):
+def X(root, date, duration, relativeTime, Timeline_settings, Mode_settings = {}):
     """This is a template for a new mode or test. Exchange 'X' for the name of the new mode/test"
     
     Currently this template mode only schedules a *TC_acfLimbPointingAltitudeOffset* CMD.
     """
     
     "Calls for settings stated in the Configuration File"
-    #settings = OPT_Config_File.X_settings()
+    #Mode_settings_ConfigFile = OPT_Config_File.X_settings()
     "Calls for CCD settings for a specific CCD macro, here the CCD macro is 'CustomBinning'"
     CCD_settings = OPT_Config_File.CCD_macro_settings('CustomBinning')
     
     "Compares settings given in the Science Mode Timeline to settings given in the Configuration File"
-    #params = params_checker(params,settings)
+    #Mode_settings = dict_comparator(Mode_settings,Mode_settings_ConfigFile)
     
     
     Mode_name = sys._getframe(0).f_code.co_name
-    comment = Mode_name+' starting date: '+str(date)+', '+str(params)
+    comment = Mode_name+' starting date: '+str(date)+', '+str(Mode_settings)
     relativeTimeEndOfMode = relativeTime+duration-Timeline_settings['mode_separation']
     
     Commands.TC_acfLimbPointingAltitudeOffset(root, round(relativeTime,2), Initial = 120000, 

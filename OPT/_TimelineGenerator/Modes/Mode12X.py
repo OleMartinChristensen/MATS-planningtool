@@ -118,7 +118,7 @@ def date_calculator(Settings):
         
         
         "Get relevant stars"
-        result = Vizier(columns=['all'], row_limit=2500).query_constraints(catalog='I/239/hip_main',Vmag=Settings['Vmag'])
+        result = Vizier(columns=['all'], row_limit=3000).query_constraints(catalog='I/239/hip_main',Vmag=Settings['Vmag'])
         star_cat = result[0]
         ROWS = star_cat[0][:].count()
         stars = []

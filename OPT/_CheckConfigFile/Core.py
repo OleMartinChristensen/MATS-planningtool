@@ -3,7 +3,7 @@
 
 Checks the values given in the *Configuration File* set by *Set_ConfigFile*.
 
-@author: David
+@author: David Skånberg
 """
 
 import importlib, logging, sys, ephem

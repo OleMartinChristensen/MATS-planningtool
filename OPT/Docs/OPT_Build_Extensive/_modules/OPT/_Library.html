@@ -36,10 +36,10 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">ephem</span><span class="o">,</span> <span class="nn">importlib</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">astropy</span>
-<span class="kn">from</span> <span class="nn">pylab</span> <span class="k">import</span> <span class="n">cos</span><span class="p">,</span> <span class="n">sin</span><span class="p">,</span> <span class="n">cross</span><span class="p">,</span> <span class="n">dot</span><span class="p">,</span> <span class="n">arctan</span><span class="p">,</span> <span class="n">sqrt</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">arccos</span><span class="p">,</span> <span class="n">pi</span><span class="p">,</span> <span class="n">floor</span><span class="p">,</span> <span class="n">around</span><span class="p">,</span> <span class="n">norm</span>
-<span class="kn">from</span> <span class="nn">skyfield</span> <span class="k">import</span> <span class="n">api</span>
+<span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="n">cos</span><span class="p">,</span> <span class="n">sin</span><span class="p">,</span> <span class="n">cross</span><span class="p">,</span> <span class="n">dot</span><span class="p">,</span> <span class="n">arctan</span><span class="p">,</span> <span class="n">sqrt</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">arccos</span><span class="p">,</span> <span class="n">pi</span><span class="p">,</span> <span class="n">floor</span><span class="p">,</span> <span class="n">around</span><span class="p">,</span> <span class="n">norm</span>
+<span class="kn">from</span> <span class="nn">skyfield</span> <span class="kn">import</span> <span class="n">api</span>
 
-<span class="kn">from</span> <span class="nn">OPT</span> <span class="k">import</span> <span class="n">_Globals</span><span class="p">,</span> <span class="n">_MATS_coordinates</span>
+<span class="kn">from</span> <span class="nn">OPT</span> <span class="kn">import</span> <span class="n">_Globals</span><span class="p">,</span> <span class="n">_MATS_coordinates</span>
 
 
 <span class="n">timescale_skyfield</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">load</span><span class="o">.</span><span class="n">timescale</span><span class="p">(</span><span class="n">builtin</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -229,7 +229,7 @@
     <span class="k">return</span> <span class="n">date</span><span class="p">,</span> <span class="n">endDate</span><span class="p">,</span> <span class="n">iterations</span></div>
 
 
-<div class="viewcode-block" id="params_checker"><a class="viewcode-back" href="../../OPT.html#OPT._Library.params_checker">[docs]</a><span class="k">def</span> <span class="nf">params_checker</span><span class="p">(</span><span class="n">dict1</span><span class="p">,</span> <span class="n">dict2</span><span class="p">,</span> <span class="n">Logger</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<div class="viewcode-block" id="dict_comparator"><a class="viewcode-back" href="../../OPT.html#OPT._Library.dict_comparator">[docs]</a><span class="k">def</span> <span class="nf">dict_comparator</span><span class="p">(</span><span class="n">dict1</span><span class="p">,</span> <span class="n">dict2</span><span class="p">,</span> <span class="n">Logger</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Function which compares the keys of two dictionaries and outputs a new dictionary. </span>
 <span class="sd">    </span>
 <span class="sd">    A dict_new will be created containing all the keys and values of dict2. Then for any keys that </span>
@@ -1088,10 +1088,10 @@
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -1113,7 +1113,7 @@
       &copy;2019, David Skånberg.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.3.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

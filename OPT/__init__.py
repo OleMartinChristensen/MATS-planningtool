@@ -29,7 +29,7 @@ Create your own *Configuration File* with an appropriate name by running *Copy_C
 Your *Configuration File* and its date must be chosen by running *Set_ConfigFile*. \n
 
 The objective of *Operational_Planning_Tool* is to create a file consisting of planned Science Modes and Commands with timestamps (specified in "Science Modes for MATS" document). 
-A *Science Mode Timeline*, as it is called, is created by running *Timeline_gen*. Remember to edit and choose your *Configuration File* by running *Set_ConfigFile*. \n
+A *Science Mode Timeline*, as it is called, is created by running *Timeline_gen*. Remember to edit (in a text editor) and choose your *Configuration File* by running *Set_ConfigFile*. \n
 
 The created *Science Mode Timeline* can be converted into a XML-file containing Payload and Platform Commands (formatted as specified in the "Innosat Payload Timeline XML Definition" document) 
 by running *XML_gen* with the *Science Mode Timeline* as the input. The *_XMLGenerator* package also contains the definition of Science Modes and Macros on an operational level.
@@ -73,7 +73,7 @@ Example:
 
 Science Modes are separated into 2 different areas, *Operational Science Modes* (Mode 1,2,5) and *Calibration Modes*. \n
 *Calibration Modes* are scheduled at specific points of time and are usually only scheduled once per *Science Mode Timeline*. 
-*Operational Science Modes* (Mode 1,2,5) are scheduled whenever time is available (after the scheduling of *Calibration Modes*) and only 1 *Operational Science Mode* is scheduled per Timeline.
+*Operational Science Modes* (Mode 1,2,5) are scheduled whenever time is available (after the scheduling of *Calibration Modes*) and only one *Operational Science Mode* is scheduled per Timeline.
 
 """
 
@@ -188,7 +188,7 @@ def Timeline_gen():
 def XML_gen(science_mode_timeline_path):
     """Invokes the XML generator program part of Operational Planning Tool for MATS.
     
-    Converts a *Science Mode Timeline*  (.json file) containing a list of scheduled Science Modes/CMDs/Tests into Payload and Plattoform commands and saves them as a .xml command file.  \n
+    Converts a *Science Mode Timeline*  (.json file) containing a list of scheduled Science Modes/CMDs/Tests into Payload and Platform commands and saves them as a .xml command file.  \n
     Settings for the operation of the program are stated in the chosen *Configuration File*, set by *Set_ConfigFile*.
     Settings given in the *Science Mode Timeline* override the settings given in the chosen *Configuration file*.
     
@@ -246,7 +246,7 @@ def Timeline_Plotter(Science_Mode_Path, OHB_H5_Path = '', STK_CSV_PATH = '', Tim
     
     Arguments:
         Science_Mode_Path (str): Path to the Science Mode Timeline to be plotted.
-        OHB_H5_Path (str): *Optional*. Path to the .h5 file containing position, time, and attitude data. The .h5 file is defined in the "Ground Segment ICD" document.
+        OHB_H5_Path (str): *Optional*. Path to the .h5 file containing position, time, and attitude data. The .h5 file is defined in the "Ground Segment ICD" document. The timestamps for the attitude and state data is assumed to be synchronized.
         STK_CSV_PATH (str): *Optional*. Path to the .csv file containing position (column 1-3), velocity (column 4-6), and time (column 7), generated in STK. Position and velocity data is assumed to be in km and in ICRF. 
         Timestep (int): *Optional*. The chosen timestep of the simulation [s].
         

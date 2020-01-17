@@ -33,16 +33,17 @@
   <h1>Source code for OPT._XMLGenerator.MinimalScienceXML_gen</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 <span class="sd">&quot;&quot;&quot;Contains the core function of the *MinimalScienceXMLGenerator*, </span>
-<span class="sd">which creates a minimal Science XML file with set Commands with arguments taken from the chosen *Configuration File*.</span>
+<span class="sd">which creates a minimal Science XML file with fixed Commands with arguments taken from the chosen *Configuration File*.</span>
 
+<span class="sd">The minimal Science XML file defines the procedure for OHB to upload to the satellite after unscheduled payload shutdown.</span>
 <span class="sd">&quot;&quot;&quot;</span>
-<span class="kn">from</span> <span class="nn">lxml</span> <span class="k">import</span> <span class="n">etree</span>
+<span class="kn">from</span> <span class="nn">lxml</span> <span class="kn">import</span> <span class="n">etree</span>
 <span class="kn">import</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">importlib</span>
 
-<span class="kn">from</span> <span class="nn">OPT</span> <span class="k">import</span> <span class="n">_Globals</span><span class="p">,</span> <span class="n">_Library</span>
+<span class="kn">from</span> <span class="nn">OPT</span> <span class="kn">import</span> <span class="n">_Globals</span><span class="p">,</span> <span class="n">_Library</span>
 <span class="n">OPT_Config_File</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">_Globals</span><span class="o">.</span><span class="n">Config_File</span><span class="p">)</span>
 <span class="c1">#from OPT_Config_File import Timeline_settings, initialConditions, Logger_name, Version</span>
-<span class="kn">from</span> <span class="nn">.Modes_and_Tests.Macros_Commands</span> <span class="k">import</span> <span class="n">Macros</span><span class="p">,</span> <span class="n">Commands</span>
+<span class="kn">from</span> <span class="nn">.Modes_and_Tests.Macros_Commands</span> <span class="kn">import</span> <span class="n">Macros</span><span class="p">,</span> <span class="n">Commands</span>
 
 <span class="n">Logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Logger_name</span><span class="p">())</span>
 
@@ -55,6 +56,8 @@
 <span class="sd">        2. Run TC_pafCCDFlushBadColumns</span>
 <span class="sd">        3. Run TC_pafCCDBadColumn</span>
 <span class="sd">        4. Run Operational_Limb_Pointing_macro with CCD_macro equal to &#39;HighResIR&#39;.</span>
+<span class="sd">        </span>
+<span class="sd">    The time between CMDs (CMD_separation) is fixed to 2 s. The start date is not set and needs to be added manually later.</span>
 <span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
@@ -63,6 +66,11 @@
         <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="s1">&#39;Output&#39;</span><span class="p">)</span>
     <span class="k">except</span><span class="p">:</span>
         <span class="k">pass</span>
+    
+    <span class="s2">&quot;Reset temporary Globals&quot;</span>
+    <span class="n">_Globals</span><span class="o">.</span><span class="n">latestRelativeTime</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">_Globals</span><span class="o">.</span><span class="n">current_pointing</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_Globals</span><span class="o">.</span><span class="n">LargestSetTEXPMS</span> <span class="o">=</span> <span class="mi">0</span>
     
     <span class="s2">&quot;############# Set up Logger #################################&quot;</span>
     <span class="n">_Library</span><span class="o">.</span><span class="n">SetupLogger</span><span class="p">(</span><span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Logger_name</span><span class="p">())</span>
@@ -138,6 +146,11 @@
     <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">etree</span><span class="o">.</span><span class="n">tostring</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">pretty_print</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">encoding</span> <span class="o">=</span> <span class="s1">&#39;unicode&#39;</span><span class="p">))</span>
     <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
     
+    <span class="s2">&quot;Reset temporary Globals&quot;</span>
+    <span class="n">_Globals</span><span class="o">.</span><span class="n">latestRelativeTime</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">_Globals</span><span class="o">.</span><span class="n">current_pointing</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">_Globals</span><span class="o">.</span><span class="n">LargestSetTEXPMS</span> <span class="o">=</span> <span class="mi">0</span>
+    
     <span class="n">logging</span><span class="o">.</span><span class="n">shutdown</span><span class="p">()</span></div>
 
 </pre></div>
@@ -174,10 +187,10 @@
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -199,7 +212,7 @@
       &copy;2019, David Skånberg.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.3.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

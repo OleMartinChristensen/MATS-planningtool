@@ -3,7 +3,7 @@
 The *Timeline_gen* part of the *Operational_Planning_Tool* which purpose is to automatically generate a
 *Science Mode Timeline* from settings defined in the set *Configuration File*. The generated timeline consists of
 Science Modes and separate CMDs together with their planned start/end dates, settings, and comments, 
-expressed as a list in chronological order. \n
+expressed as a list in that order. \n
 
 *Timeline_gen* has a setable priority for the scheduling of modes and CMDs, 
 which can be seen in the order of the modes in the list fetched from the 

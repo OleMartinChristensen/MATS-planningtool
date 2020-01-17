@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """Contains the core function of the *MinimalScienceXMLGenerator*, 
-which creates a minimal Science XML file with set Commands with arguments taken from the chosen *Configuration File*.
+which creates a minimal Science XML file with fixed Commands with arguments taken from the chosen *Configuration File*.
 
+The minimal Science XML file defines the procedure for OHB to upload to the satellite after unscheduled payload shutdown.
 """
 from lxml import etree
 import logging, os, importlib
@@ -22,6 +23,8 @@ def MinimalScienceXMLGenerator():
         2. Run TC_pafCCDFlushBadColumns
         3. Run TC_pafCCDBadColumn
         4. Run Operational_Limb_Pointing_macro with CCD_macro equal to 'HighResIR'.
+        
+    The time between CMDs (CMD_separation) is fixed to 2 s. The start date is not set and needs to be added manually later.
     
     """
     
@@ -30,6 +33,11 @@ def MinimalScienceXMLGenerator():
         os.mkdir('Output')
     except:
         pass
+    
+    "Reset temporary Globals"
+    _Globals.latestRelativeTime = 0
+    _Globals.current_pointing = None
+    _Globals.LargestSetTEXPMS = 0
     
     "############# Set up Logger #################################"
     _Library.SetupLogger(OPT_Config_File.Logger_name())
@@ -104,6 +112,11 @@ def MinimalScienceXMLGenerator():
     f = open(XML_TIMELINE, 'w')
     f.write(etree.tostring(root, pretty_print=True, encoding = 'unicode'))
     f.close()
+    
+    "Reset temporary Globals"
+    _Globals.latestRelativeTime = 0
+    _Globals.current_pointing = None
+    _Globals.LargestSetTEXPMS = 0
     
     logging.shutdown()
 

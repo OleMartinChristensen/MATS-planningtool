@@ -15,7 +15,7 @@ Functions on the form "X", where the last X is any Test:
         **duration** (*int*): The duration of the test [s]. \n
         **relativeTime** (*int*): The starting time of the mode with regard to the start of the timeline [s]. \n
         **Timeline_settings** (*dict*): Dictionary containing the settings of the Timeline given in either the *Science_Mode_Timeline* or the *Configuration File*. \n
-        **params** (*dict*): Dictionary containing the settings of the *Test* given in the *Science_Mode_Timeline*.
+        **Test_settings** (*dict*): Dictionary containing the settings of the *Test* given in the *Science_Mode_Timeline*.
 
     Returns:
         None
@@ -39,8 +39,8 @@ from .Macros_Commands import Macros, Commands
 Logger = logging.getLogger(OPT_Config_File.Logger_name())
 
 
-def All_Tests(root, date, duration, relativeTime, Timeline_settings, params = ['Limb_functional_test', 'Photometer_test_1', 'CCD_stability_test', 'Nadir_functional_test']):
-    """ Runs all the Test functions which have their function name as a string in the input *params*.
+def All_Tests(root, date, duration, relativeTime, Timeline_settings, Test_settings = ['Limb_functional_test', 'Photometer_test_1', 'CCD_stability_test', 'Nadir_functional_test']):
+    """ Runs all the Test functions which have their function name as a string in the input *Test_settings*.
     
     Allows the tests to be dynamically scheduled.
     
@@ -51,16 +51,16 @@ def All_Tests(root, date, duration, relativeTime, Timeline_settings, params = ['
     "Set duration to length of timeline to allow all tests to be scheduled"
     duration = Timeline_settings['duration']
     
-    if( 'Limb_functional_test' in params):
+    if( 'Limb_functional_test' in Test_settings):
         relativeTime, date = Limb_functional_test(root, date, duration = duration, relativeTime = relativeTime, 
                                                   Timeline_settings = Timeline_settings)
-    if( 'Photometer_test_1' in params):
+    if( 'Photometer_test_1' in Test_settings):
         relativeTime, date = Photometer_test_1(root, date, duration = 5400, relativeTime = relativeTime, 
                                                Timeline_settings = Timeline_settings)
-    if( 'CCD_stability_test' in params):
+    if( 'CCD_stability_test' in Test_settings):
         relativeTime, date = CCD_stability_test(root, date, duration = duration, relativeTime = relativeTime, 
                                                 Timeline_settings = Timeline_settings)
-    if( 'Nadir_functional_test' in params):
+    if( 'Nadir_functional_test' in Test_settings):
         relativeTime, date = Nadir_functional_test(root, date, duration = duration, relativeTime = relativeTime, 
                                                    Timeline_settings = Timeline_settings)
     
@@ -69,7 +69,7 @@ def All_Tests(root, date, duration, relativeTime, Timeline_settings, params = ['
     
     
 
-def Limb_functional_test(root, date, duration, relativeTime, Timeline_settings, params = {'ExpTimes': [1000, 2000, 4000, 8000, 16000]}):
+def Limb_functional_test(root, date, duration, relativeTime, Timeline_settings, Test_settings = {'ExpTimes': [1000, 2000, 4000, 8000, 16000]}):
     """Limb_functional_test. 
     
     Schedules Limb_functional_test with defined parameters and simulates MATS propagation from TLE.
@@ -79,7 +79,7 @@ def Limb_functional_test(root, date, duration, relativeTime, Timeline_settings, 
     Logger.info('')
     Logger.info('Start of Limb_functional_test')
     
-    Logger.debug('params from Science Mode List: '+str(params))
+    Logger.debug('Test_settings from Science Mode List: '+str(Test_settings))
     
     
     log_timestep = 500
@@ -94,14 +94,14 @@ def Limb_functional_test(root, date, duration, relativeTime, Timeline_settings, 
     JPEGQs = [100,95]
     WDWs = [7, 128]
     altitudes = [50000,70000,90000,110000,130000,160000,200000]
-    ExpTimes = params['ExpTimes']
+    ExpTimes = Test_settings['ExpTimes']
     SnapshotSpacing = 5
     
     R_mean = 6371 #km
     Altitude_defining_night = 45 #km
     Altitude_defining_day = 25 #km
     
-    #lat = params['lat']/180*pi
+    #lat = Test_settings['lat']/180*pi
     lat = 30
     
     Mode_name = sys._getframe(0).f_code.co_name
@@ -235,14 +235,14 @@ def Limb_functional_test(root, date, duration, relativeTime, Timeline_settings, 
 
 
 
-def Photometer_test_1(root, date, relativeTime, duration, Timeline_settings, params = {'ExpTimes': [1000,2000,4000,8000,16000]}):
+def Photometer_test_1(root, date, relativeTime, duration, Timeline_settings, Test_settings = {'ExpTimes': [1000,2000,4000,8000,16000]}):
     """Photometer_test_1
     
     Sets the payload in operational mode and then cycles PM settings as defined in the Test.
     """
     
     
-    #params = params_checker(params,Mode=X=_settings)
+    #Test_settings = params_checker(Test_settings,Mode=X=_settings)
     
     Logger.info('')
     Logger.info('Start of Photometer_test_1')
@@ -250,7 +250,7 @@ def Photometer_test_1(root, date, relativeTime, duration, Timeline_settings, par
     Logger.debug('')
     
     CCD_settings = OPT_Config_File.CCD_macro_settings('BinnedCalibration')
-    ExpTimes = params['ExpTimes']
+    ExpTimes = Test_settings['ExpTimes']
     
     initial_relativeTime = relativeTime
     
@@ -305,7 +305,7 @@ def Photometer_test_1(root, date, relativeTime, duration, Timeline_settings, par
 
 
 
-def Nadir_functional_test(root, date, duration, relativeTime, Timeline_settings, params = {'ExpTimes': [1000,2000,4000,8000,16000]}):
+def Nadir_functional_test(root, date, duration, relativeTime, Timeline_settings, Test_settings = {'ExpTimes': [1000,2000,4000,8000,16000]}):
     """Nadir_functional_test
     
     Schedules Nadir_functional_test with defined parameters and simulates MATS propagation from TLE.
@@ -315,13 +315,13 @@ def Nadir_functional_test(root, date, duration, relativeTime, Timeline_settings,
     Logger.info('')
     Logger.info('Start of Nadir_functional_test')
     
-    Logger.debug('params from Science Mode List: '+str(params))
+    Logger.debug('Test_settings from Science Mode List: '+str(Test_settings))
     
     
     CCD_settings = OPT_Config_File.CCD_macro_settings('FullReadout')
     altitude = Timeline_settings['StandardPointingAltitude']
     
-    ExpTimes = params['ExpTimes']
+    ExpTimes = Test_settings['ExpTimes']
     
     log_timestep = 500
     Logger.debug('log_timestep [s]: '+str(log_timestep))
@@ -465,7 +465,7 @@ def Nadir_functional_test(root, date, duration, relativeTime, Timeline_settings,
 
 #######################################################################################################
 
-def CCD_stability_test(root, date, duration, relativeTime, Timeline_settings, params = {'ExpTimes': [1000, 2000, 4000, 8000, 16000, 32000]}):
+def CCD_stability_test(root, date, duration, relativeTime, Timeline_settings, Test_settings = {'ExpTimes': [1000, 2000, 4000, 8000, 16000, 32000]}):
     """CCD_stability_test. 
     
     Schedules CCD_stability_test with defined parameters and simulates MATS propagation from TLE.
@@ -474,8 +474,8 @@ def CCD_stability_test(root, date, duration, relativeTime, Timeline_settings, pa
     Logger.info('')
     Logger.info('Start of CCD_stability_test')
     
-    Logger.debug('params from Science Mode List: '+str(params))
-    #params = params_checker(params,Mode=X=_settings)
+    Logger.debug('Test_settings from Science Mode List: '+str(Test_settings))
+    #Test_settings = params_checker(Test_settings,Mode=X=_settings)
     
     
     CCD_settings = OPT_Config_File.CCD_macro_settings('FullReadout')
@@ -484,7 +484,7 @@ def CCD_stability_test(root, date, duration, relativeTime, Timeline_settings, pa
     JPEGQs = [100]
     WDWs = [7]
     altitudes = [200000]
-    ExpTimes = params['ExpTimes']
+    ExpTimes = Test_settings['ExpTimes']
     SnapshotSpacing = 5
     
     initial_relativeTime = relativeTime

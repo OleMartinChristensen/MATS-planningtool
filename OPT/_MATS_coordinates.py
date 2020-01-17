@@ -32,7 +32,6 @@ from astropy import units as units
 from astropy import time as time
 
 
-
 from astroquery.vizier import Vizier
 
 import astropy.coordinates as coord
@@ -523,7 +522,6 @@ def los_from_tanpoint_spherical(satpos1_eci_1,satpos2_eci):
     
 
     return n_norm
-
 
 
 

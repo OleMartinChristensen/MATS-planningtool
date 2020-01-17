@@ -6,13 +6,13 @@ Config_File: Contains the name of the used *Configuration File* as set by *Set_C
 
 StartTime = Contains the starting time and date of OPT as set by *Set_ConfigFile*. \n
 
-current_pointing = Only applicable to XML_generator. Contains the pointing altitude of the last scheduled *TC_acfLimbPointingAltitudeOffset* command. Is  \n
+TLE = Contains a TLE as a duple of strings which is used by the *Configuration File*. If the strings are empty, a default TLE specified in the *Configuration File* will be used. \n
 
-TLE = Contains a TLE as a duple of strings which is used by the *Configuration File*. If the strings are empty, the Configuration File will used a default TLE specified in the *Configuration File*. \n
+current_pointing = Only applicable to XML_generator. Contains the pointing altitude of the last scheduled *TC_acfLimbPointingAltitudeOffset* command.  \n
 
 latestRelativeTime = Only applicable to XML_generator. The *relativeTime* of the latest scheduled CMD. Used to make sure that CMDs always are scheduled in a chronological order. \n
 
-LargestSetTEXPMS = The latest largest set TEXPMS on the CCDs whenever CCD_macro is ran. This is the least amount of time that need to pass from going into idle mode and and changing CCD settings. \n
+LargestSetTEXPMS = Only applicable to XML_generator. The latest largest set TEXPMS on the CCDs whenever CCD_macro is ran. This is the least amount of time that need to pass from going into idle mode and changing the CCD settings. \n
 
 Mode120Iteration = Only applicable to Timeline_gen. Used to keep track of the current iteration of the scheduling process for Mode120. Used to cycle through the V_offsets chosen in the Configuration File. \n
 
@@ -20,10 +20,9 @@ Mode124Iteration = Only applicable to Timeline_gen. Used to keep track of the cu
 """
 
 Config_File = 'OPT_Config_File'
-current_pointing = None
-#science_mode_timeline_path = None
 StartTime = None
 TLE = ('','')
+current_pointing = None
 latestRelativeTime = 0
 LargestSetTEXPMS = 0
 Mode120Iteration = 1

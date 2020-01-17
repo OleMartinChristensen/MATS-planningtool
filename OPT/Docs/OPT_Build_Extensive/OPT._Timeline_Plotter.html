@@ -43,10 +43,10 @@ purpose is to simulate a <em>Science Mode Timeline</em>, and also save and plot 
 </div>
 <div class="section" id="module-OPT._Timeline_Plotter.Core">
 <span id="opt-timeline-plotter-core-module"></span><h2>OPT._Timeline_Plotter.Core module<a class="headerlink" href="#module-OPT._Timeline_Plotter.Core" title="Permalink to this headline">¶</a></h2>
-<p>&#64;author: David</p>
+<p>&#64;author: David Skånberg</p>
 <dl class="function">
 <dt id="OPT._Timeline_Plotter.Core.Plotter">
-<code class="descclassname">OPT._Timeline_Plotter.Core.</code><code class="descname">Plotter</code><span class="sig-paren">(</span><em>Data_MATS</em>, <em>Data_LP</em>, <em>Time</em>, <em>DataIndexStep</em>, <em>OHB_StartIndex</em>, <em>OHB_H5_Path=''</em>, <em>STK_CSV_FILE=''</em>, <em>Science_Mode_Path=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Timeline_Plotter/Core.html#Plotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Timeline_Plotter.Core.Plotter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">OPT._Timeline_Plotter.Core.</code><code class="sig-name descname">Plotter</code><span class="sig-paren">(</span><em class="sig-param">Data_MATS</em>, <em class="sig-param">Data_LP</em>, <em class="sig-param">Time</em>, <em class="sig-param">DataIndexStep</em>, <em class="sig-param">OHB_StartIndex</em>, <em class="sig-param">OHB_H5_Path=''</em>, <em class="sig-param">STK_CSV_FILE=''</em>, <em class="sig-param">Science_Mode_Path=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Timeline_Plotter/Core.html#Plotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Timeline_Plotter.Core.Plotter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Subfunction, Performs calculations and plots the position and attitude data of MATS and LP.</p>
 <p>Performs calculations on the data given in the file located at <em>OHB_H5_Path</em> and plots the results.
 Also plots the simulated data given in <em>Data_MATS</em> and <em>Data_LP</em> as a function of the
@@ -74,7 +74,7 @@ timestamps in <em>Time</em>. May also plot positional error compared to STK data
 
 <dl class="function">
 <dt id="OPT._Timeline_Plotter.Core.Simulator">
-<code class="descclassname">OPT._Timeline_Plotter.Core.</code><code class="descname">Simulator</code><span class="sig-paren">(</span><em>ScienceMode</em>, <em>Timestamp_fraction_of_second</em>, <em>Timestep</em>, <em>Timeline_settings</em>, <em>TLE</em>, <em>Data_MATS</em>, <em>Data_LP</em>, <em>Time</em>, <em>OHB_StartTime</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Timeline_Plotter/Core.html#Simulator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Timeline_Plotter.Core.Simulator" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">OPT._Timeline_Plotter.Core.</code><code class="sig-name descname">Simulator</code><span class="sig-paren">(</span><em class="sig-param">ScienceMode</em>, <em class="sig-param">Timestamp_fraction_of_second</em>, <em class="sig-param">Timestep</em>, <em class="sig-param">Timeline_settings</em>, <em class="sig-param">TLE</em>, <em class="sig-param">Data_MATS</em>, <em class="sig-param">Data_LP</em>, <em class="sig-param">Time</em>, <em class="sig-param">OHB_StartTime</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Timeline_Plotter/Core.html#Simulator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Timeline_Plotter.Core.Simulator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Subfunction, Simulates the position and attitude of MATS depending on the Mode given in <em>ScienceMode</em>.</p>
 <p>Appends the data during each timestep to <em>Data_MATS</em>, <em>Data_LP</em>, and <em>Time</em>.</p>
 <dl class="field-list simple">
@@ -108,7 +108,7 @@ timestamps in <em>Time</em>. May also plot positional error compared to STK data
 
 <dl class="function">
 <dt id="OPT._Timeline_Plotter.Core.Timeline_Plotter">
-<code class="descclassname">OPT._Timeline_Plotter.Core.</code><code class="descname">Timeline_Plotter</code><span class="sig-paren">(</span><em>Science_Mode_Path</em>, <em>OHB_H5_Path</em>, <em>STK_CSV_FILE</em>, <em>Timestep</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Timeline_Plotter/Core.html#Timeline_Plotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Timeline_Plotter.Core.Timeline_Plotter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">OPT._Timeline_Plotter.Core.</code><code class="sig-name descname">Timeline_Plotter</code><span class="sig-paren">(</span><em class="sig-param">Science_Mode_Path</em>, <em class="sig-param">OHB_H5_Path</em>, <em class="sig-param">STK_CSV_FILE</em>, <em class="sig-param">Timestep</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Timeline_Plotter/Core.html#Timeline_Plotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Timeline_Plotter.Core.Timeline_Plotter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Core function of the Timeline_Plotter.</p>
 <p>Goes through the <em>Science Mode Timeline</em>, one mode at a time.</p>
 <dl class="field-list simple">
@@ -192,10 +192,10 @@ timestamps in <em>Time</em>. May also plot positional error compared to STK data
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -217,7 +217,7 @@ timestamps in <em>Time</em>. May also plot positional error compared to STK data
       &copy;2019, David Skånberg.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.3.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

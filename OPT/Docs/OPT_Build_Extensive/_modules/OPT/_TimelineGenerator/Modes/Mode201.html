@@ -41,8 +41,8 @@
 
 <span class="kn">import</span> <span class="nn">ephem</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">importlib</span>
 
-<span class="kn">from</span> <span class="nn">OPT._Library</span> <span class="k">import</span> <span class="n">scheduler</span>
-<span class="kn">from</span> <span class="nn">OPT</span> <span class="k">import</span> <span class="n">_Globals</span>
+<span class="kn">from</span> <span class="nn">OPT._Library</span> <span class="kn">import</span> <span class="n">scheduler</span>
+<span class="kn">from</span> <span class="nn">OPT</span> <span class="kn">import</span> <span class="n">_Globals</span>
 
 <span class="n">OPT_Config_File</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">_Globals</span><span class="o">.</span><span class="n">Config_File</span><span class="p">)</span>
 <span class="n">Logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Logger_name</span><span class="p">())</span>
@@ -147,10 +147,10 @@
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -172,7 +172,7 @@
       &copy;2019, David Skånberg.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.3.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

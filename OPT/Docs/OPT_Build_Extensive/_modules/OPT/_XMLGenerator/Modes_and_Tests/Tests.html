@@ -48,7 +48,7 @@
 <span class="sd">        **duration** (*int*): The duration of the test [s]. \n</span>
 <span class="sd">        **relativeTime** (*int*): The starting time of the mode with regard to the start of the timeline [s]. \n</span>
 <span class="sd">        **Timeline_settings** (*dict*): Dictionary containing the settings of the Timeline given in either the *Science_Mode_Timeline* or the *Configuration File*. \n</span>
-<span class="sd">        **params** (*dict*): Dictionary containing the settings of the *Test* given in the *Science_Mode_Timeline*.</span>
+<span class="sd">        **Test_settings** (*dict*): Dictionary containing the settings of the *Test* given in the *Science_Mode_Timeline*.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        None</span>
@@ -60,20 +60,20 @@
 <span class="sd">&quot;&quot;&quot;</span>
 
 <span class="kn">import</span> <span class="nn">ephem</span><span class="o">,</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">importlib</span><span class="o">,</span> <span class="nn">skyfield.api</span>
-<span class="kn">from</span> <span class="nn">pylab</span> <span class="k">import</span> <span class="n">dot</span><span class="p">,</span> <span class="n">arccos</span><span class="p">,</span> <span class="n">zeros</span><span class="p">,</span> <span class="n">pi</span><span class="p">,</span> <span class="n">sin</span><span class="p">,</span> <span class="n">cos</span><span class="p">,</span> <span class="n">arctan</span><span class="p">,</span> <span class="n">cross</span><span class="p">,</span> <span class="n">norm</span><span class="p">,</span> <span class="n">sqrt</span>
+<span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="n">dot</span><span class="p">,</span> <span class="n">arccos</span><span class="p">,</span> <span class="n">zeros</span><span class="p">,</span> <span class="n">pi</span><span class="p">,</span> <span class="n">sin</span><span class="p">,</span> <span class="n">cos</span><span class="p">,</span> <span class="n">arctan</span><span class="p">,</span> <span class="n">cross</span><span class="p">,</span> <span class="n">norm</span><span class="p">,</span> <span class="n">sqrt</span>
 
-<span class="kn">from</span> <span class="nn">OPT</span> <span class="k">import</span> <span class="n">_Globals</span><span class="p">,</span> <span class="n">_Library</span><span class="p">,</span> <span class="n">_MATS_coordinates</span>
+<span class="kn">from</span> <span class="nn">OPT</span> <span class="kn">import</span> <span class="n">_Globals</span><span class="p">,</span> <span class="n">_Library</span><span class="p">,</span> <span class="n">_MATS_coordinates</span>
 
 <span class="n">OPT_Config_File</span> <span class="o">=</span> <span class="n">importlib</span><span class="o">.</span><span class="n">import_module</span><span class="p">(</span><span class="n">_Globals</span><span class="o">.</span><span class="n">Config_File</span><span class="p">)</span>
 <span class="c1">#from OPT_Config_File import Logger_name, Timeline_settings, getTLE</span>
 
-<span class="kn">from</span> <span class="nn">.Macros_Commands</span> <span class="k">import</span> <span class="n">Macros</span><span class="p">,</span> <span class="n">Commands</span>
+<span class="kn">from</span> <span class="nn">.Macros_Commands</span> <span class="kn">import</span> <span class="n">Macros</span><span class="p">,</span> <span class="n">Commands</span>
 
 <span class="n">Logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Logger_name</span><span class="p">())</span>
 
 
-<div class="viewcode-block" id="All_Tests"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.Tests.All_Tests">[docs]</a><span class="k">def</span> <span class="nf">All_Tests</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Limb_functional_test&#39;</span><span class="p">,</span> <span class="s1">&#39;Photometer_test_1&#39;</span><span class="p">,</span> <span class="s1">&#39;CCD_stability_test&#39;</span><span class="p">,</span> <span class="s1">&#39;Nadir_functional_test&#39;</span><span class="p">]):</span>
-    <span class="sd">&quot;&quot;&quot; Runs all the Test functions which have their function name as a string in the input *params*.</span>
+<div class="viewcode-block" id="All_Tests"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.Tests.All_Tests">[docs]</a><span class="k">def</span> <span class="nf">All_Tests</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">Test_settings</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Limb_functional_test&#39;</span><span class="p">,</span> <span class="s1">&#39;Photometer_test_1&#39;</span><span class="p">,</span> <span class="s1">&#39;CCD_stability_test&#39;</span><span class="p">,</span> <span class="s1">&#39;Nadir_functional_test&#39;</span><span class="p">]):</span>
+    <span class="sd">&quot;&quot;&quot; Runs all the Test functions which have their function name as a string in the input *Test_settings*.</span>
 <span class="sd">    </span>
 <span class="sd">    Allows the tests to be dynamically scheduled.</span>
 <span class="sd">    </span>
@@ -84,16 +84,16 @@
     <span class="s2">&quot;Set duration to length of timeline to allow all tests to be scheduled&quot;</span>
     <span class="n">duration</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;duration&#39;</span><span class="p">]</span>
     
-    <span class="k">if</span><span class="p">(</span> <span class="s1">&#39;Limb_functional_test&#39;</span> <span class="ow">in</span> <span class="n">params</span><span class="p">):</span>
+    <span class="k">if</span><span class="p">(</span> <span class="s1">&#39;Limb_functional_test&#39;</span> <span class="ow">in</span> <span class="n">Test_settings</span><span class="p">):</span>
         <span class="n">relativeTime</span><span class="p">,</span> <span class="n">date</span> <span class="o">=</span> <span class="n">Limb_functional_test</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span> <span class="o">=</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">relativeTime</span><span class="p">,</span> 
                                                   <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">)</span>
-    <span class="k">if</span><span class="p">(</span> <span class="s1">&#39;Photometer_test_1&#39;</span> <span class="ow">in</span> <span class="n">params</span><span class="p">):</span>
+    <span class="k">if</span><span class="p">(</span> <span class="s1">&#39;Photometer_test_1&#39;</span> <span class="ow">in</span> <span class="n">Test_settings</span><span class="p">):</span>
         <span class="n">relativeTime</span><span class="p">,</span> <span class="n">date</span> <span class="o">=</span> <span class="n">Photometer_test_1</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span> <span class="o">=</span> <span class="mi">5400</span><span class="p">,</span> <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">relativeTime</span><span class="p">,</span> 
                                                <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">)</span>
-    <span class="k">if</span><span class="p">(</span> <span class="s1">&#39;CCD_stability_test&#39;</span> <span class="ow">in</span> <span class="n">params</span><span class="p">):</span>
+    <span class="k">if</span><span class="p">(</span> <span class="s1">&#39;CCD_stability_test&#39;</span> <span class="ow">in</span> <span class="n">Test_settings</span><span class="p">):</span>
         <span class="n">relativeTime</span><span class="p">,</span> <span class="n">date</span> <span class="o">=</span> <span class="n">CCD_stability_test</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span> <span class="o">=</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">relativeTime</span><span class="p">,</span> 
                                                 <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">)</span>
-    <span class="k">if</span><span class="p">(</span> <span class="s1">&#39;Nadir_functional_test&#39;</span> <span class="ow">in</span> <span class="n">params</span><span class="p">):</span>
+    <span class="k">if</span><span class="p">(</span> <span class="s1">&#39;Nadir_functional_test&#39;</span> <span class="ow">in</span> <span class="n">Test_settings</span><span class="p">):</span>
         <span class="n">relativeTime</span><span class="p">,</span> <span class="n">date</span> <span class="o">=</span> <span class="n">Nadir_functional_test</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span> <span class="o">=</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">relativeTime</span><span class="p">,</span> 
                                                    <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">)</span>
     
@@ -102,7 +102,7 @@
     
     
 
-<div class="viewcode-block" id="Limb_functional_test"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.Tests.Limb_functional_test">[docs]</a><span class="k">def</span> <span class="nf">Limb_functional_test</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;ExpTimes&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">4000</span><span class="p">,</span> <span class="mi">8000</span><span class="p">,</span> <span class="mi">16000</span><span class="p">]}):</span>
+<div class="viewcode-block" id="Limb_functional_test"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.Tests.Limb_functional_test">[docs]</a><span class="k">def</span> <span class="nf">Limb_functional_test</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">Test_settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;ExpTimes&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">4000</span><span class="p">,</span> <span class="mi">8000</span><span class="p">,</span> <span class="mi">16000</span><span class="p">]}):</span>
     <span class="sd">&quot;&quot;&quot;Limb_functional_test. </span>
 <span class="sd">    </span>
 <span class="sd">    Schedules Limb_functional_test with defined parameters and simulates MATS propagation from TLE.</span>
@@ -112,7 +112,7 @@
     <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
     <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Start of Limb_functional_test&#39;</span><span class="p">)</span>
     
-    <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;params from Science Mode List: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">))</span>
+    <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Test_settings from Science Mode List: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">Test_settings</span><span class="p">))</span>
     
     
     <span class="n">log_timestep</span> <span class="o">=</span> <span class="mi">500</span>
@@ -127,14 +127,14 @@
     <span class="n">JPEGQs</span> <span class="o">=</span> <span class="p">[</span><span class="mi">100</span><span class="p">,</span><span class="mi">95</span><span class="p">]</span>
     <span class="n">WDWs</span> <span class="o">=</span> <span class="p">[</span><span class="mi">7</span><span class="p">,</span> <span class="mi">128</span><span class="p">]</span>
     <span class="n">altitudes</span> <span class="o">=</span> <span class="p">[</span><span class="mi">50000</span><span class="p">,</span><span class="mi">70000</span><span class="p">,</span><span class="mi">90000</span><span class="p">,</span><span class="mi">110000</span><span class="p">,</span><span class="mi">130000</span><span class="p">,</span><span class="mi">160000</span><span class="p">,</span><span class="mi">200000</span><span class="p">]</span>
-    <span class="n">ExpTimes</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;ExpTimes&#39;</span><span class="p">]</span>
+    <span class="n">ExpTimes</span> <span class="o">=</span> <span class="n">Test_settings</span><span class="p">[</span><span class="s1">&#39;ExpTimes&#39;</span><span class="p">]</span>
     <span class="n">SnapshotSpacing</span> <span class="o">=</span> <span class="mi">5</span>
     
     <span class="n">R_mean</span> <span class="o">=</span> <span class="mi">6371</span> <span class="c1">#km</span>
     <span class="n">Altitude_defining_night</span> <span class="o">=</span> <span class="mi">45</span> <span class="c1">#km</span>
     <span class="n">Altitude_defining_day</span> <span class="o">=</span> <span class="mi">25</span> <span class="c1">#km</span>
     
-    <span class="c1">#lat = params[&#39;lat&#39;]/180*pi</span>
+    <span class="c1">#lat = Test_settings[&#39;lat&#39;]/180*pi</span>
     <span class="n">lat</span> <span class="o">=</span> <span class="mi">30</span>
     
     <span class="n">Mode_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>
@@ -268,14 +268,14 @@
 
 
 
-<div class="viewcode-block" id="Photometer_test_1"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.Tests.Photometer_test_1">[docs]</a><span class="k">def</span> <span class="nf">Photometer_test_1</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;ExpTimes&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1000</span><span class="p">,</span><span class="mi">2000</span><span class="p">,</span><span class="mi">4000</span><span class="p">,</span><span class="mi">8000</span><span class="p">,</span><span class="mi">16000</span><span class="p">]}):</span>
+<div class="viewcode-block" id="Photometer_test_1"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.Tests.Photometer_test_1">[docs]</a><span class="k">def</span> <span class="nf">Photometer_test_1</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">Test_settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;ExpTimes&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1000</span><span class="p">,</span><span class="mi">2000</span><span class="p">,</span><span class="mi">4000</span><span class="p">,</span><span class="mi">8000</span><span class="p">,</span><span class="mi">16000</span><span class="p">]}):</span>
     <span class="sd">&quot;&quot;&quot;Photometer_test_1</span>
 <span class="sd">    </span>
 <span class="sd">    Sets the payload in operational mode and then cycles PM settings as defined in the Test.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
     
-    <span class="c1">#params = params_checker(params,Mode=X=_settings)</span>
+    <span class="c1">#Test_settings = params_checker(Test_settings,Mode=X=_settings)</span>
     
     <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
     <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Start of Photometer_test_1&#39;</span><span class="p">)</span>
@@ -283,7 +283,7 @@
     <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
     
     <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">CCD_macro_settings</span><span class="p">(</span><span class="s1">&#39;BinnedCalibration&#39;</span><span class="p">)</span>
-    <span class="n">ExpTimes</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;ExpTimes&#39;</span><span class="p">]</span>
+    <span class="n">ExpTimes</span> <span class="o">=</span> <span class="n">Test_settings</span><span class="p">[</span><span class="s1">&#39;ExpTimes&#39;</span><span class="p">]</span>
     
     <span class="n">initial_relativeTime</span> <span class="o">=</span> <span class="n">relativeTime</span>
     
@@ -338,7 +338,7 @@
 
 
 
-<div class="viewcode-block" id="Nadir_functional_test"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.Tests.Nadir_functional_test">[docs]</a><span class="k">def</span> <span class="nf">Nadir_functional_test</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;ExpTimes&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1000</span><span class="p">,</span><span class="mi">2000</span><span class="p">,</span><span class="mi">4000</span><span class="p">,</span><span class="mi">8000</span><span class="p">,</span><span class="mi">16000</span><span class="p">]}):</span>
+<div class="viewcode-block" id="Nadir_functional_test"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.Tests.Nadir_functional_test">[docs]</a><span class="k">def</span> <span class="nf">Nadir_functional_test</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">Test_settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;ExpTimes&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1000</span><span class="p">,</span><span class="mi">2000</span><span class="p">,</span><span class="mi">4000</span><span class="p">,</span><span class="mi">8000</span><span class="p">,</span><span class="mi">16000</span><span class="p">]}):</span>
     <span class="sd">&quot;&quot;&quot;Nadir_functional_test</span>
 <span class="sd">    </span>
 <span class="sd">    Schedules Nadir_functional_test with defined parameters and simulates MATS propagation from TLE.</span>
@@ -348,13 +348,13 @@
     <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
     <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Start of Nadir_functional_test&#39;</span><span class="p">)</span>
     
-    <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;params from Science Mode List: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">))</span>
+    <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Test_settings from Science Mode List: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">Test_settings</span><span class="p">))</span>
     
     
     <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">CCD_macro_settings</span><span class="p">(</span><span class="s1">&#39;FullReadout&#39;</span><span class="p">)</span>
     <span class="n">altitude</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;StandardPointingAltitude&#39;</span><span class="p">]</span>
     
-    <span class="n">ExpTimes</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;ExpTimes&#39;</span><span class="p">]</span>
+    <span class="n">ExpTimes</span> <span class="o">=</span> <span class="n">Test_settings</span><span class="p">[</span><span class="s1">&#39;ExpTimes&#39;</span><span class="p">]</span>
     
     <span class="n">log_timestep</span> <span class="o">=</span> <span class="mi">500</span>
     <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;log_timestep [s]: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">log_timestep</span><span class="p">))</span>
@@ -498,7 +498,7 @@
 
 <span class="c1">#######################################################################################################</span>
 
-<div class="viewcode-block" id="CCD_stability_test"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.Tests.CCD_stability_test">[docs]</a><span class="k">def</span> <span class="nf">CCD_stability_test</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;ExpTimes&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">4000</span><span class="p">,</span> <span class="mi">8000</span><span class="p">,</span> <span class="mi">16000</span><span class="p">,</span> <span class="mi">32000</span><span class="p">]}):</span>
+<div class="viewcode-block" id="CCD_stability_test"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.Tests.CCD_stability_test">[docs]</a><span class="k">def</span> <span class="nf">CCD_stability_test</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">Test_settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;ExpTimes&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1000</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">4000</span><span class="p">,</span> <span class="mi">8000</span><span class="p">,</span> <span class="mi">16000</span><span class="p">,</span> <span class="mi">32000</span><span class="p">]}):</span>
     <span class="sd">&quot;&quot;&quot;CCD_stability_test. </span>
 <span class="sd">    </span>
 <span class="sd">    Schedules CCD_stability_test with defined parameters and simulates MATS propagation from TLE.</span>
@@ -507,8 +507,8 @@
     <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
     <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Start of CCD_stability_test&#39;</span><span class="p">)</span>
     
-    <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;params from Science Mode List: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">params</span><span class="p">))</span>
-    <span class="c1">#params = params_checker(params,Mode=X=_settings)</span>
+    <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Test_settings from Science Mode List: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">Test_settings</span><span class="p">))</span>
+    <span class="c1">#Test_settings = params_checker(Test_settings,Mode=X=_settings)</span>
     
     
     <span class="n">CCD_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">CCD_macro_settings</span><span class="p">(</span><span class="s1">&#39;FullReadout&#39;</span><span class="p">)</span>
@@ -517,7 +517,7 @@
     <span class="n">JPEGQs</span> <span class="o">=</span> <span class="p">[</span><span class="mi">100</span><span class="p">]</span>
     <span class="n">WDWs</span> <span class="o">=</span> <span class="p">[</span><span class="mi">7</span><span class="p">]</span>
     <span class="n">altitudes</span> <span class="o">=</span> <span class="p">[</span><span class="mi">200000</span><span class="p">]</span>
-    <span class="n">ExpTimes</span> <span class="o">=</span> <span class="n">params</span><span class="p">[</span><span class="s1">&#39;ExpTimes&#39;</span><span class="p">]</span>
+    <span class="n">ExpTimes</span> <span class="o">=</span> <span class="n">Test_settings</span><span class="p">[</span><span class="s1">&#39;ExpTimes&#39;</span><span class="p">]</span>
     <span class="n">SnapshotSpacing</span> <span class="o">=</span> <span class="mi">5</span>
     
     <span class="n">initial_relativeTime</span> <span class="o">=</span> <span class="n">relativeTime</span>
@@ -601,10 +601,10 @@
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../../../../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -626,7 +626,7 @@
       &copy;2019, David Skånberg.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.3.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

@@ -62,7 +62,7 @@
 <span class="sd">Your *Configuration File* and its date must be chosen by running *Set_ConfigFile*. \n</span>
 
 <span class="sd">The objective of *Operational_Planning_Tool* is to create a file consisting of planned Science Modes and Commands with timestamps (specified in &quot;Science Modes for MATS&quot; document). </span>
-<span class="sd">A *Science Mode Timeline*, as it is called, is created by running *Timeline_gen*. Remember to edit and choose your *Configuration File* by running *Set_ConfigFile*. \n</span>
+<span class="sd">A *Science Mode Timeline*, as it is called, is created by running *Timeline_gen*. Remember to edit (in a text editor) and choose your *Configuration File* by running *Set_ConfigFile*. \n</span>
 
 <span class="sd">The created *Science Mode Timeline* can be converted into a XML-file containing Payload and Platform Commands (formatted as specified in the &quot;Innosat Payload Timeline XML Definition&quot; document) </span>
 <span class="sd">by running *XML_gen* with the *Science Mode Timeline* as the input. The *_XMLGenerator* package also contains the definition of Science Modes and Macros on an operational level.</span>
@@ -106,7 +106,7 @@
 
 <span class="sd">Science Modes are separated into 2 different areas, *Operational Science Modes* (Mode 1,2,5) and *Calibration Modes*. \n</span>
 <span class="sd">*Calibration Modes* are scheduled at specific points of time and are usually only scheduled once per *Science Mode Timeline*. </span>
-<span class="sd">*Operational Science Modes* (Mode 1,2,5) are scheduled whenever time is available (after the scheduling of *Calibration Modes*) and only 1 *Operational Science Mode* is scheduled per Timeline.</span>
+<span class="sd">*Operational Science Modes* (Mode 1,2,5) are scheduled whenever time is available (after the scheduling of *Calibration Modes*) and only one *Operational Science Mode* is scheduled per Timeline.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 
@@ -178,7 +178,7 @@
 <span class="sd">        None</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
-    <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">_Globals</span> <span class="k">as</span> <span class="n">Globals</span>
+    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">_Globals</span> <span class="k">as</span> <span class="n">Globals</span>
     
     <span class="n">Globals</span><span class="o">.</span><span class="n">Config_File</span> <span class="o">=</span> <span class="n">Config_File_Name</span>
     <span class="n">Globals</span><span class="o">.</span><span class="n">StartTime</span> <span class="o">=</span> <span class="n">Date</span>
@@ -192,7 +192,7 @@
 <span class="sd">    Also prints out the currently selected *Configuration File* and which starting date and TLE it currently uses.</span>
 <span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">._CheckConfigFile.Core</span> <span class="k">import</span> <span class="n">CheckConfigFile</span>
+    <span class="kn">from</span> <span class="nn">._CheckConfigFile.Core</span> <span class="kn">import</span> <span class="n">CheckConfigFile</span>
     
     <span class="n">CheckConfigFile</span><span class="p">()</span></div>
 
@@ -212,7 +212,7 @@
 <span class="sd">    Returns:</span>
 <span class="sd">        None</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span> <span class="nn">._TimelineGenerator.Core</span> <span class="k">import</span> <span class="n">Timeline_generator</span>
+    <span class="kn">from</span> <span class="nn">._TimelineGenerator.Core</span> <span class="kn">import</span> <span class="n">Timeline_generator</span>
     
     
     <span class="n">Timeline_generator</span><span class="p">()</span></div>
@@ -221,7 +221,7 @@
 <div class="viewcode-block" id="XML_gen"><a class="viewcode-back" href="../OPT.html#OPT.XML_gen">[docs]</a><span class="k">def</span> <span class="nf">XML_gen</span><span class="p">(</span><span class="n">science_mode_timeline_path</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Invokes the XML generator program part of Operational Planning Tool for MATS.</span>
 <span class="sd">    </span>
-<span class="sd">    Converts a *Science Mode Timeline*  (.json file) containing a list of scheduled Science Modes/CMDs/Tests into Payload and Plattoform commands and saves them as a .xml command file.  \n</span>
+<span class="sd">    Converts a *Science Mode Timeline*  (.json file) containing a list of scheduled Science Modes/CMDs/Tests into Payload and Platform commands and saves them as a .xml command file.  \n</span>
 <span class="sd">    Settings for the operation of the program are stated in the chosen *Configuration File*, set by *Set_ConfigFile*.</span>
 <span class="sd">    Settings given in the *Science Mode Timeline* override the settings given in the chosen *Configuration file*.</span>
 <span class="sd">    </span>
@@ -232,8 +232,8 @@
 <span class="sd">        None</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
-    <span class="kn">from</span> <span class="nn">._XMLGenerator.XML_gen</span> <span class="k">import</span> <span class="n">XML_generator</span>
-    <span class="kn">from</span> <span class="nn">.</span> <span class="k">import</span> <span class="n">_Globals</span> <span class="k">as</span> <span class="n">Globals</span>
+    <span class="kn">from</span> <span class="nn">._XMLGenerator.XML_gen</span> <span class="kn">import</span> <span class="n">XML_generator</span>
+    <span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">_Globals</span> <span class="k">as</span> <span class="n">Globals</span>
     
     
     <span class="s2">&quot;Initialize current_pointing to None&quot;</span>
@@ -258,7 +258,7 @@
 <span class="sd">            **Mode** (*str*): The currently scheduled Mode. \n</span>
 <span class="sd">            **Parameters** (*dict*): The parameters of the Mode. \n</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="kn">from</span> <span class="nn">._TimelineAnalyzer.Core</span> <span class="k">import</span> <span class="n">Timeline_analyzer</span>
+    <span class="kn">from</span> <span class="nn">._TimelineAnalyzer.Core</span> <span class="kn">import</span> <span class="n">Timeline_analyzer</span>
     
     
     <span class="n">Mode</span><span class="p">,</span> <span class="n">Parameters</span> <span class="o">=</span> <span class="n">Timeline_analyzer</span><span class="p">(</span><span class="n">science_mode_timeline_path</span><span class="p">,</span> <span class="n">date</span><span class="p">)</span>
@@ -279,7 +279,7 @@
 <span class="sd">    </span>
 <span class="sd">    Arguments:</span>
 <span class="sd">        Science_Mode_Path (str): Path to the Science Mode Timeline to be plotted.</span>
-<span class="sd">        OHB_H5_Path (str): *Optional*. Path to the .h5 file containing position, time, and attitude data. The .h5 file is defined in the &quot;Ground Segment ICD&quot; document.</span>
+<span class="sd">        OHB_H5_Path (str): *Optional*. Path to the .h5 file containing position, time, and attitude data. The .h5 file is defined in the &quot;Ground Segment ICD&quot; document. The timestamps for the attitude and state data is assumed to be synchronized.</span>
 <span class="sd">        STK_CSV_PATH (str): *Optional*. Path to the .csv file containing position (column 1-3), velocity (column 4-6), and time (column 7), generated in STK. Position and velocity data is assumed to be in km and in ICRF. </span>
 <span class="sd">        Timestep (int): *Optional*. The chosen timestep of the simulation [s].</span>
 <span class="sd">        </span>
@@ -293,7 +293,7 @@
 <span class="sd">        </span>
 <span class="sd">        </span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="kn">from</span> <span class="nn">._Timeline_Plotter.Core</span> <span class="k">import</span> <span class="n">Timeline_Plotter</span>
+    <span class="kn">from</span> <span class="nn">._Timeline_Plotter.Core</span> <span class="kn">import</span> <span class="n">Timeline_Plotter</span>
     
     
     <span class="n">Data_MATS</span><span class="p">,</span> <span class="n">Data_LP</span><span class="p">,</span> <span class="n">Time</span><span class="p">,</span> <span class="n">Time_OHB</span>  <span class="o">=</span> <span class="n">Timeline_Plotter</span><span class="p">(</span><span class="n">Science_Mode_Path</span> <span class="o">=</span> <span class="n">Science_Mode_Path</span><span class="p">,</span> <span class="n">OHB_H5_Path</span> <span class="o">=</span> <span class="n">OHB_H5_Path</span><span class="p">,</span> <span class="n">STK_CSV_FILE</span> <span class="o">=</span> <span class="n">STK_CSV_PATH</span><span class="p">,</span> <span class="n">Timestep</span> <span class="o">=</span> <span class="n">Timestep</span><span class="p">)</span>
@@ -318,7 +318,7 @@
 <span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
-    <span class="kn">from</span> <span class="nn">._Plot_Timeline_Plotter_Plots.Core</span> <span class="k">import</span> <span class="n">Plot_Timeline_Plotter_Plots</span>
+    <span class="kn">from</span> <span class="nn">._Plot_Timeline_Plotter_Plots.Core</span> <span class="kn">import</span> <span class="n">Plot_Timeline_Plotter_Plots</span>
     
     <span class="n">Plot_Timeline_Plotter_Plots</span><span class="p">(</span><span class="n">FigureDirectory</span><span class="p">,</span> <span class="n">FilesToPlot</span><span class="p">)</span></div>
     
@@ -335,7 +335,7 @@
 <span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
-    <span class="kn">from</span> <span class="nn">._XMLGenerator.MinimalScienceXML_gen</span> <span class="k">import</span> <span class="n">MinimalScienceXMLGenerator</span>
+    <span class="kn">from</span> <span class="nn">._XMLGenerator.MinimalScienceXML_gen</span> <span class="kn">import</span> <span class="n">MinimalScienceXMLGenerator</span>
     
     <span class="n">MinimalScienceXMLGenerator</span><span class="p">()</span></div>
 </pre></div>
@@ -370,10 +370,10 @@
 </ul>
 </div>
 <div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
+  <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="../search.html" method="get">
-      <input type="text" name="q" />
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -395,7 +395,7 @@
       &copy;2019, David Skånberg.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.0.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.3.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
     </div>

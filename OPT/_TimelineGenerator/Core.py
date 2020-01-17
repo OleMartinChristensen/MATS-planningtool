@@ -4,7 +4,7 @@ Created on Fri Nov  2 14:57:28 2018
 
 
 
-@author: David
+@author: David Skånberg
 """
 
 import json, logging, sys, time, os, ephem, importlib
@@ -263,5 +263,8 @@ def Timeline_generator():
     with open(SCIMOD_NAME, "w") as write_file:
         json.dump(SCIMOD_Timeline, write_file, indent = 2)
         
+    "Reset temporary Globals"
+    _Globals.Mode120Iteration = 1
+    _Globals.Mode124Iteration = 1
     logging.shutdown()
     
