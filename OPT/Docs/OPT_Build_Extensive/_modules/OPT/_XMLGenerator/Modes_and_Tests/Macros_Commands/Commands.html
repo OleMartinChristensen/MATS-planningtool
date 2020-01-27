@@ -32,7 +32,7 @@
             
   <h1>Source code for OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
-<span class="sd">&quot;&quot;&quot;Contain Command functions. Each Command function represent a CMD/Procedure listed in the &quot;InnoSat Payload Timeline XML Definition&quot; document.</span>
+<span class="sd">&quot;&quot;&quot;Contain command functions. Each command function represent a CMD/Procedure listed in the &quot;InnoSat Payload Timeline XML Definition&quot; document.</span>
 
 <span class="sd">Add commands to the XML-tree as specified in &quot;InnoSat Payload Timeline XML Definition&quot; document.</span>
 <span class="sd">Also checks if parameters given are valid for the CMDs.</span>
@@ -98,7 +98,8 @@
     <span class="sd">&quot;&quot;&quot;Schedules Pointing Command</span>
 <span class="sd">    </span>
 <span class="sd">    If the desired pointing altitude is already set, the maximum TEXPMS last set with a CCD_macro is added to *relativeTime*.</span>
-<span class="sd">    Otherwise if Rate == 0 a delay equal to *Timeline_settings[&#39;pointing_stabilization&#39;]* is added to *relativeTime*.</span>
+<span class="sd">    Otherwise if Rate == 0, a delay equal to *Timeline_settings[&#39;pointing_stabilization&#39;]* is added to *relativeTime*.</span>
+<span class="sd">    If Rate != 0, only *Timeline_settings[&#39;CMD_separation&#39;]* is added to *relativeTime* to allow the payload to enter operation mode during the sweep.</span>
 <span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
@@ -202,7 +203,7 @@
         <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Invalid argument: negative relativeTime, decreasing relativeTime, exceeding timeline duration&#39;</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span>
     <span class="k">if</span> <span class="ow">not</span><span class="p">(</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="n">FreezeDuration</span> <span class="o">&lt;=</span> <span class="mi">3600</span> <span class="p">):</span>
-        <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Invalid argument: negative FreezeDuration or exceeding timeline duration&#39;</span><span class="p">)</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Invalid argument: negative FreezeDuration or too long.&#39;</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span>
     
     <span class="n">etree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">root</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;command&#39;</span><span class="p">,</span> <span class="n">mnemonic</span> <span class="o">=</span> <span class="s2">&quot;TC_affArgFreezeDuration&quot;</span><span class="p">)</span>
@@ -528,6 +529,7 @@
     
 
 <div class="viewcode-block" id="TC_pafCCDSYNCHRONIZE"><a class="viewcode-back" href="../../../../../OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.html#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.TC_pafCCDSYNCHRONIZE">[docs]</a><span class="k">def</span> <span class="nf">TC_pafCCDSYNCHRONIZE</span><span class="p">(</span> <span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCDSEL</span><span class="p">,</span> <span class="n">NCCD</span><span class="p">,</span> <span class="n">TEXPIOFS</span><span class="p">,</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span> <span class="p">):</span>
+    <span class="s2">&quot;Note: CCDSYNCHRONIZE takes one TEXPIMS cycle to execute.&quot;</span>
     
     <span class="k">if</span> <span class="ow">not</span><span class="p">(</span> <span class="n">_Globals</span><span class="o">.</span><span class="n">latestRelativeTime</span> <span class="o">&lt;=</span> <span class="n">relativeTime</span> <span class="o">&lt;=</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;duration&#39;</span><span class="p">]):</span>
         <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Invalid argument: negative relativeTime, decreasing relativeTime, exceeding timeline duration&#39;</span><span class="p">)</span>
@@ -826,12 +828,13 @@
     <span class="k">return</span> <span class="n">incremented_time</span></div>
 
 
-<span class="c1">#################### PROCEDURES ###############################</span>
+<span class="s2">&quot;#################### PROCEDURES ###############################&quot;</span>
+<span class="s2">&quot;###############################################################&quot;</span>
 
 <div class="viewcode-block" id="Payload_Power_Toggle"><a class="viewcode-back" href="../../../../../OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.html#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Commands.Payload_Power_Toggle">[docs]</a><span class="k">def</span> <span class="nf">Payload_Power_Toggle</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
     
     <span class="k">if</span> <span class="ow">not</span><span class="p">(</span> <span class="n">_Globals</span><span class="o">.</span><span class="n">latestRelativeTime</span> <span class="o">&lt;=</span> <span class="n">relativeTime</span> <span class="o">&lt;=</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;duration&#39;</span><span class="p">]):</span>
-        <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Invalid argument: negative relativeTime, decreasing relativeTime, exceeding timeline duration&#39;</span><span class="p">)</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Invalid argument: negative relativeTime, decreasing relativeTime, or exceeding timeline duration&#39;</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span>
         
     <span class="n">etree</span><span class="o">.</span><span class="n">SubElement</span><span class="p">(</span><span class="n">root</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;procedure&#39;</span><span class="p">,</span> <span class="n">mnemonic</span> <span class="o">=</span> <span class="s2">&quot;FCP-MTS-0035_Payload_Power_Toggle&quot;</span><span class="p">)</span>

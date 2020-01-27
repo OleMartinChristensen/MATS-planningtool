@@ -14,19 +14,19 @@
 **Abbreviations:**
     CMD = Command \n
     FOV = Field of View \n
-    LP = Look point of the instrument \n
+    LP = Look point of the instrument. \n
     OPT = Operational Planning Tool
     
 **Description:**
 *Operational_Planning_Tool* uses a hiearchy structure with a procedural programming paradigm. Meaning that only the top level functions (the ones mentioned above) are supposed to be called by a user. \n
 
-*Operational_Planning_Tool* uses a special .py file as a *Configuration File*, meaning that the settings inside the *Configuration File* dictate the operation of the program (unless the same settings are explicitly stated in the input of a function, see *XML_gen* and *Timeline_Plotter*). 
+*Operational_Planning_Tool* uses a special .py file as a *Configuration File*, meaning that the settings inside the *Configuration File* dictate the operation of the program (unless the same settings are also present in the input of a function, see *XML_gen* and *Timeline_Plotter*). 
 An example of a *Configuration_File* with default values is located in the Operational_Planning_Tool and is called *_ConfigFile.py*.  \n
 
 Create your own *Configuration File* with an appropriate name by running *Copy_ConfigFile* with a chosen name as an input. 
 *Copy_ConfigFile* makes a copy of *_ConfigFile.py*. The settings in your copy are modified manually in a text editor. \n
 
-Your *Configuration File* and its date must be chosen by running *Set_ConfigFile*. \n
+Your *Configuration File* must be chosen by running *Set_ConfigFile*. The TLE and start date to be used can either be manually edited directly in the *Configuration File* or they can be set with *Set_ConfigFile*. If a TLE or date has been set with *Set_ConfigFile*, the TLE and date in the *Configuration File* will be ignored. \n
 
 The objective of *Operational_Planning_Tool* is to create a file consisting of planned Science Modes and Commands with timestamps (specified in "Science Modes for MATS" document). 
 A *Science Mode Timeline*, as it is called, is created by running *Timeline_gen*. Remember to edit (in a text editor) and choose your *Configuration File* by running *Set_ConfigFile*. \n
@@ -34,11 +34,11 @@ A *Science Mode Timeline*, as it is called, is created by running *Timeline_gen*
 The created *Science Mode Timeline* can be converted into a XML-file containing Payload and Platform Commands (formatted as specified in the "Innosat Payload Timeline XML Definition" document) 
 by running *XML_gen* with the *Science Mode Timeline* as the input. The *_XMLGenerator* package also contains the definition of Science Modes and Macros on an operational level.
 
-The *Science Mode Timeline* can also be simulated and and plotted by running *Timeline_Plotter* with the *Science Mode Timeline* as the input. 
-*Timeline_Plotter* can also optionally plot a special kind of .h5 data-files, created by OHB SWEDEN. \n
+The *Science Mode Timeline* can also be simulated and plotted by running *Timeline_Plotter* with the *Science Mode Timeline* as the input. 
+*Timeline_Plotter* can also optionally plot a special kind of .h5 data-files, created by OHB SWEDEN and defined in the "IS-OSE-OCD-0001 Ground Segment ICD" document. CSV files can also be plotted which can for example hold data created with STK. \n
 
 **Note:** A *Science Mode Timeline* usually contains settings that are taken from the chosen *Configuration File* when the *Science Mode Timeline* was created. 
-Any time a function uses a *Science Mode Timeline* as an input, these settings will be given priority over any similar settings stated in the currently chosen *Configuration File*. \n
+Any time a program/function uses a *Science Mode Timeline* as an input (*Timeline_Plotter* and *XML_gen*), these settings will be given priority over any shared settings stated in the currently chosen *Configuration File*. \n
 
 *Check_ConfigFile* is used to check if the values stated in the chosen *Configuration File* are plausible. \n
 
@@ -52,12 +52,12 @@ Example:
     *#Create a new Configuration File named OPT_Config_File.#* \n
     OPT.Copy_ConfigFile('OPT_Config_File')
     
-    *#Optionally change any settings in OPT_Config_File by using a text editor.#* \n
+    *#Optionally change any settings in OPT_Config_File by using a text editor. For example change the TLE and start date used.#* \n
     
-    *#Choose the newly created Configuration File and set the starting date.#* \n
-    OPT.Set_ConfigFile('OPT_Config_File', '2019/09/05 08:00:00')
+    *#Choose the newly created and edited Configuration File. #* \n
+    OPT.Set_ConfigFile('OPT_Config_File')
     
-    *#Sanity check for values in the chosen Configuration File.#* \n
+    *#Sanity check for values in the chosen Configuration File. Also prints out the currently used start date and TLE.#* \n
     OPT.CheckConfigFile()
     
     *#Creates a Science Mode Timeline specified by settings given in the chosen Configuration File.#* \n
@@ -72,8 +72,9 @@ Example:
 **Note:** \n
 
 Science Modes are separated into 2 different areas, *Operational Science Modes* (Mode 1,2,5) and *Calibration Modes*. \n
-*Calibration Modes* are scheduled at specific points of time and are usually only scheduled once per *Science Mode Timeline*. 
-*Operational Science Modes* (Mode 1,2,5) are scheduled whenever time is available (after the scheduling of *Calibration Modes*) and only one *Operational Science Mode* is scheduled per Timeline.
+*Calibration Modes* are scheduled at specific points of time and are mostly only scheduled once per *Science Mode Timeline*. 
+*Operational Science Modes* (Mode 1,2,5) are scheduled whenever time is available (after the scheduling of *Calibration Modes*) and only one *Operational Science Mode* is scheduled per timeline.
+The scheduling of certain *Calibration Modes* (science mode 120-124) depend on celestial object such as stars and the Moon. Therefore are the position of MATS and the pointing of the limb imager usually simulated to allow celestial object to be located in the FOV.
 
 """
 
@@ -83,9 +84,9 @@ def Copy_ConfigFile(Config_File_Name):
     """Makes a copy of the *_ConfigFile* located in *Operational_Planning_Tool*.
     
     The copy is created in the working directory of the user call and can be freely modified.
-    Do not forget to also use *Set_ConfigFile* to choose your specific copy.
-    *_ConfigFile* is imagined to contain the default settings of the program, while each copy contains week specific settings.
-    If the default *_ConfigFile* is ever changed it is recommended to change the Version Name of it to keep track of changes.
+    Do not forget to also run *Set_ConfigFile* to choose your specific copy.
+    *OPT._ConfigFile* is imagined to contain the default settings of the program, while each copy contains week specific settings.
+    If the default *OPT._ConfigFile* is ever changed it is recommended to change the Version Name of it to keep track of changes.
     
     Arguments:
         Config_File_Name (str): The name of the newly created copy of the *_ConfigFile* (excluding *.py*).
@@ -129,17 +130,19 @@ def Copy_ConfigFile(Config_File_Name):
     
 
 
-def Set_ConfigFile(Config_File_Name, Date, TLE1='', 
+def Set_ConfigFile(Config_File_Name, Date=None, TLE1='', 
                    TLE2=''):
-    """Sets the StartTime and TLE for OPT, and the name of the *.py* file that shall be used as a *Configuration file* for OPT.
+    """ Sets the name of the *.py* file that shall be used as a *Configuration file* for OPT. 
+    
+    Can also be used to set the start date and TLE for OPT which then will be used instead of the values stated in the *Configuration File*. 
     
     The *Configuration file* chosen must be visible in sys.path.
     
     Arguments:
         Config_File_Name (str): The name of the Config File to be used (excluding .py).
-        Date (str): The start time and date for the Operational Planning Tool (yyyy/mm/dd hh:mm:ss).
-        TLE1 (str): The first row of the TLE.
-        TLE2 (str): The second row of the TLE.
+        Date (str): *Optional.* The start time and date for the Operational Planning Tool (yyyy/mm/dd hh:mm:ss). Will override any Timeline_settings['start_date'] value stated in the *Configuration File*.
+        TLE1 (str): *Optional.* The first row of the TLE. Will override any TLE value stated in the *Configuration File*.
+        TLE2 (str): *Optional.* The second row of the TLE. Will override any TLE value stated in the *Configuration File*.
         
     Returns:
         None
@@ -148,7 +151,9 @@ def Set_ConfigFile(Config_File_Name, Date, TLE1='',
     from . import _Globals as Globals
     
     Globals.Config_File = Config_File_Name
+    "Will be used if not set to None"
     Globals.StartTime = Date
+    "Will be used if not set to ('','')"
     Globals.TLE = (TLE1,TLE2)
     
 
@@ -190,7 +195,7 @@ def XML_gen(science_mode_timeline_path):
     
     Converts a *Science Mode Timeline*  (.json file) containing a list of scheduled Science Modes/CMDs/Tests into Payload and Platform commands and saves them as a .xml command file.  \n
     Settings for the operation of the program are stated in the chosen *Configuration File*, set by *Set_ConfigFile*.
-    Settings given in the *Science Mode Timeline* override the settings given in the chosen *Configuration file*.
+    Settings given in the *Science Mode Timeline* override the settings given in the chosen *Configuration file* or set with *Set_ConfigFile*.
     
     Arguments: 
         science_mode_timeline_path (str): Path to the .json file containing the Science Mode Timeline.
@@ -222,7 +227,7 @@ def Timeline_analyzer(science_mode_timeline_path, date):
     Returns:
         (tuple): tuple containing: 
             
-            **Mode** (*str*): The currently scheduled Mode. \n
+            **Mode** (*str*): The currently scheduled Mode ath the given date. \n
             **Parameters** (*dict*): The parameters of the Mode. \n
     '''
     from ._TimelineAnalyzer.Core import Timeline_analyzer
@@ -239,7 +244,7 @@ def Timeline_Plotter(Science_Mode_Path, OHB_H5_Path = '', STK_CSV_PATH = '', Tim
     Simulates the position and attitude of MATS from a given Science Mode Timeline and also optionally compares it to
     positional and attitude data given in a .h5 data set, located at *OHB_H5_Path*. Plots both the simulated data and given data. 
     The attitude data shows only the target pointing orientation and does not mimic MATS's actual attitude control system. The timesteps of both the .h5 data and the Science Mode is synchronized to allow direct comparison if possible. \n
-    A .csv file, generated in STK, may also be included to plot the predicted positional error of the satellite compared to STK data.
+    A .csv file, generated in STK, may also be included to plot the predicted positional error of the satellite compared to STK data. Only data points with equal timestamps to the simulated Science Mode Timeline data will be plotted.
     Saves generated plots as binary files. \n
     Settings for the operation of the program are stated in the chosen *Configuration File*. 
     Settings stated in the *Science Mode Timeline* override settings given in the chosen *Configuration file*.
@@ -248,7 +253,7 @@ def Timeline_Plotter(Science_Mode_Path, OHB_H5_Path = '', STK_CSV_PATH = '', Tim
         Science_Mode_Path (str): Path to the Science Mode Timeline to be plotted.
         OHB_H5_Path (str): *Optional*. Path to the .h5 file containing position, time, and attitude data. The .h5 file is defined in the "Ground Segment ICD" document. The timestamps for the attitude and state data is assumed to be synchronized.
         STK_CSV_PATH (str): *Optional*. Path to the .csv file containing position (column 1-3), velocity (column 4-6), and time (column 7), generated in STK. Position and velocity data is assumed to be in km and in ICRF. 
-        Timestep (int): *Optional*. The chosen timestep of the simulation [s].
+        Timestep (int): *Optional*. The chosen timestep of the Science Mode Timeline simulation [s]. Drastically changes runtime of the program 
         
     Returns:
         (tuple): tuple containing:
@@ -269,7 +274,7 @@ def Timeline_Plotter(Science_Mode_Path, OHB_H5_Path = '', STK_CSV_PATH = '', Tim
     
 
 def Plot_Timeline_Plotter_Plots(FigureDirectory, FilesToPlot = ['ActiveScienceMode', 'Yaw', 
-                                               'Pitch', 'Roll','Lat', 'Long', 'Alt', 'PosError', 
+                                               'Pitch', 'Roll','Lat', 'Long', 'Alt', 'ECEFerror', 'PosError', 
                                                'PosErrorRCI', 'MagPosError', 'Lat_LP', 'Long_LP', 
                                                'Alt_LP', 'AltError_LP', 'PosError_LP', 'PosErrorRCI_LP',
                                                'MagPosError_LP', 'RA_OpticalAxis', 'RA_OpticalAxisError', 
@@ -296,7 +301,7 @@ def MinimalScienceXML_gen():
     
     Creates an .xml file with fixed CMDs which purpose is to define a flight procedure which is ran on the satellite 
     following unscheduled power termination of the payload.
-    Runs startup CMDs and sets the payload in operational mode with the CCD macro *HighResIR*.
+    Runs startup CMDs and sets the payload in operation mode with the CCD macro *HighResIR*.
     The CMD staggering is fixed. No date is given in the generated XML and will need to be added manually.
     Uses settings for the CMDs from the currently set *Configuration File*.
     

@@ -5,7 +5,7 @@ which creates a minimal Science XML file with fixed Commands with arguments take
 The minimal Science XML file defines the procedure for OHB to upload to the satellite after unscheduled payload shutdown.
 """
 from lxml import etree
-import logging, os, importlib
+import logging, os, importlib, datetime
 
 from OPT import _Globals, _Library
 OPT_Config_File = importlib.import_module(_Globals.Config_File)
@@ -50,7 +50,7 @@ def MinimalScienceXMLGenerator():
     CCD_settings = OPT_Config_File.CCD_macro_settings('HighResIR')
     PM_settings = OPT_Config_File.PM_settings()
     
-    "######## SET CMD separation to 2 sek #################"
+    "######## SET CMD separation to 2 sec #################"
     Timeline_settings['CMD_separation'] = 2
     
     "################### XML-tree basis creator ####################################"
@@ -61,11 +61,11 @@ def MinimalScienceXMLGenerator():
     root.append(etree.Element('description'))
     
     
-    etree.SubElement(root[0], 'timelineID', procedureIdentifier = "", descriptiveName = "", version = "1.0")
+    etree.SubElement(root[0], 'timelineID', procedureIdentifier = "", descriptiveName = "MinimalScience", version = "1.0")
     
     etree.SubElement(root[0], 'changeLog')
-    etree.SubElement(root[0][1], 'changeLogItem', version = "1.1", date = "2019-01-17", author = "David Skanberg")
-    root[0][1][0].text = "Created Document"
+    etree.SubElement(root[0][1], 'changeLogItem', version = "1.0", date = str(datetime.date.today()), author = "David Skanberg")
+    root[0][1][0].text = "The file was created using OPT"
     
     
     etree.SubElement(root[0], 'validity')
@@ -75,7 +75,7 @@ def MinimalScienceXMLGenerator():
     root[0][2][1].text = ""
     
     etree.SubElement(root[0], 'comment')
-    root[0][3].text = "This command sequence is a 'Minimum Science' Innosat timeline. Configuration File used: "+_Globals.Config_File
+    root[0][3].text = "This command sequence is a 'Minimum Science' Innosat timeline for MATS, created with OPT. Configuration File used: "+_Globals.Config_File
     
     
     root.append(etree.Element('listOfCommands'))

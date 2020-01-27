@@ -651,14 +651,14 @@ def Mode110(root, date, duration, relativeTime, Timeline_settings, Mode_settings
 
 def Mode12X(root, date, duration, relativeTime, 
                        Timeline_settings, Mode_settings, CCD_settings):
-    """Subfunction of Mode12X, where X is 1,2,3....
+    """Subfunction of Mode12X, where X is 0,1,2,3....
     
     **Macro**: Snapshot_Inertial_macro. \n
     
     Arguments:
         CCD_settings (:obj:`dict` of :obj:`dict` of int): Settings for the CCDs. Defined in the *Configuration File*.
     
-    Stare at a point in inertial reference frame and take a Snapshot with each CCD except nadir.
+    Stare at a point in inertial reference frame and take a Snapshot with each CCD except nadir and also do not have TEXPMS set to 0.
     
     """
     
@@ -701,7 +701,7 @@ def Mode120(root, date, duration, relativeTime,
     **Macro**: Snapshot_Inertial_macro. \n
     **CCD_Macro**: FullReadout \n
     
-    Stare at a point in inertial reference frame and take a Snapshot with each CCD except nadir.
+    Stare at a point in inertial reference frame and take one Snapshot with each CCDSEL argument defined by the 'CCDSELs' settings and also do not have TEXPMS set to 0. 
     Used for star calibration.
     
     """
@@ -710,6 +710,7 @@ def Mode120(root, date, duration, relativeTime,
     Mode_settings = dict_comparator(Mode_settings, Mode_settings_ConfigFile, Logger)
     
     CCD_settings = OPT_Config_File.CCD_macro_settings('FullReadout')
+    "Set TEXPMS to 0 for CCDs that are not going to take snapshots"
     for CCDSEL in [1,2,4,8,16,32,64]:
         if( CCDSEL in Mode_settings['CCDSELs'] ):
             continue
@@ -733,7 +734,7 @@ def Mode121(root, date, duration, relativeTime,
     **Macro**: Snapshot_Inertial_macro. \n
     **CCD_Macro**: FullReadout \n
     
-    Stare at a point in inertial reference frame and take a Snapshot with each CCD except nadir.
+    Stare at a point in inertial reference frame and take one Snapshot with each CCDSEL argument defined by the 'CCDSELs' settings and also do not have TEXPMS set to 0.
     
     """
     
@@ -741,6 +742,12 @@ def Mode121(root, date, duration, relativeTime,
     Mode_settings = dict_comparator(Mode_settings, Mode_settings_ConfigFile, Logger)
     
     CCD_settings = OPT_Config_File.CCD_macro_settings('FullReadout')
+    "Set TEXPMS to 0 for CCDs that are not going to take snapshots"
+    for CCDSEL in [1,2,4,8,16,32,64]:
+        if( CCDSEL in Mode_settings['CCDSELs'] ):
+            continue
+        else:
+            CCD_settings[CCDSEL]['TEXPMS'] = 0
     
     Mode12X(root, date, duration, relativeTime, 
                        Timeline_settings = Timeline_settings, Mode_settings = Mode_settings, CCD_settings = CCD_settings)
@@ -758,7 +765,7 @@ def Mode122(root, date, duration, relativeTime,
     **Macro**: Snapshot_Inertial_macro. \n
     **CCD_Macro**: BinnedCalibration with configurable exposure time of UV and IR CCDs. \n
     
-    Stare at a point in inertial reference frame and take a Snapshot with each CCD except nadir.
+    Stare at a point in inertial reference frame and take a Snapshot with each CCD except nadir and also do not have TEXPMS set to 0.
     
     """
     
@@ -794,7 +801,7 @@ def Mode123(root, date, duration, relativeTime,
     **Macro**: Snapshot_Inertial_macro. \n
     **CCD_Macro**: LowPixel with configurable exposure time of UV and IR CCDs. \n
     
-    Stare at a point in inertial reference frame and take a Snapshot with each CCD except nadir.
+    Stare at a point in inertial reference frame and take a Snapshot with each CCD except nadir and also do not have TEXPMS set to 0.
     
     
     """
@@ -828,7 +835,7 @@ def Mode124(root, date, duration, relativeTime,
     **Macro**: Snapshot_Inertial_macro. \n
     **CCD_Macro**: FullReadout. \n
     
-    Stare at a point in inertial reference frame and take one Snapshot with each CCD except Nadir. 
+    Stare at a point in inertial reference frame and take one Snapshot with each CCDSEL argument defined by the 'CCDSELs' settings and also do not have TEXPMS set to 0. 
     Used for moon calibration.
     """
     
@@ -837,6 +844,8 @@ def Mode124(root, date, duration, relativeTime,
     Mode_settings = dict_comparator(Mode_settings, Mode_settings_ConfigFile, Logger)
     
     CCD_settings = OPT_Config_File.CCD_macro_settings('FullReadout')
+    
+    "Set TEXPMS to 0 for CCDs that are not going to take snapshots"
     for CCDSEL in [1,2,4,8,16,32]:
         if( CCDSEL in Mode_settings['CCDSELs'] ):
             continue
@@ -860,7 +869,7 @@ def Mode130(root, date, duration, relativeTime,
     **Macro**: Snapshot_Limb_Pointing_macro. \n
     **CCD_Macro**: FullReadout. \n
     
-    Look at fixed limb altitude and take Snapshots with all CCD except nadir.
+    Look at fixed limb altitude and take Snapshots with all CCD except nadir  and also do not have TEXPMS set to 0.
     """
     
     CCD_settings = OPT_Config_File.CCD_macro_settings('FullReadout')

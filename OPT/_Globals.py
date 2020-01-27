@@ -2,11 +2,11 @@
 """Global variables for Operational_Planning_Tool.
 
 **Globals:** \n
-Config_File: Contains the name of the used *Configuration File* as set by *Set_ConfigFile*. \n
+Config_File: Contains the name of the used *Configuration File* as set by *Set_ConfigFile*. By default it is set to 'OPT_Config_File'. \n
 
-StartTime = Contains the starting time and date of OPT as set by *Set_ConfigFile*. \n
+StartTime = Contains the starting time and date of OPT when set with *Set_ConfigFile*. If the value is None, the date specified directly in the *Configuration FIle* will be used. \n
 
-TLE = Contains a TLE as a duple of strings which is used by the *Configuration File*. If the strings are empty, a default TLE specified in the *Configuration File* will be used. \n
+TLE = Contains a TLE as a duple of strings when set by *Set_ConfigFile*. If the strings are empty, the TLE specified directly in the *Configuration File* will be used. \n
 
 current_pointing = Only applicable to XML_generator. Contains the pointing altitude of the last scheduled *TC_acfLimbPointingAltitudeOffset* command.  \n
 

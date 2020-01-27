@@ -71,7 +71,8 @@
         <span class="n">initialDate</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;start_date&#39;</span><span class="p">])</span>
     
     
-    <span class="n">endDate</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">initialDate</span> <span class="o">+</span> <span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span> <span class="p">(</span><span class="n">Settings</span><span class="p">[</span><span class="s1">&#39;SnapshotSpacing&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">7</span> <span class="o">+</span> 
+    <span class="n">NumberOfCCDs</span> <span class="o">=</span> <span class="mi">7</span>
+    <span class="n">endDate</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">initialDate</span> <span class="o">+</span> <span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span> <span class="p">(</span><span class="n">Settings</span><span class="p">[</span><span class="s1">&#39;SnapshotSpacing&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">NumberOfCCDs</span> <span class="o">+</span> 
                          <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;pointing_stabilization&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;mode_separation&#39;</span><span class="p">]</span> <span class="p">)</span> <span class="p">)</span>
     
     

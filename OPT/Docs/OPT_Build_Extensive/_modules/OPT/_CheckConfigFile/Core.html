@@ -59,22 +59,6 @@
     
     <span class="n">_Library</span><span class="o">.</span><span class="n">SetupLogger</span><span class="p">(</span><span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Logger_name</span><span class="p">())</span>
     
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Currently used Configuration File: &#39;</span><span class="o">+</span><span class="n">_Globals</span><span class="o">.</span><span class="n">Config_File</span><span class="p">)</span>
-    <span class="k">except</span><span class="p">:</span>
-        <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Currently stated Configuration File is invalid. Try running Set_ConfigFile.&#39;</span><span class="p">)</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Currently used starting date: &#39;</span><span class="o">+</span><span class="n">_Globals</span><span class="o">.</span><span class="n">StartTime</span><span class="p">)</span>
-    <span class="k">except</span><span class="p">:</span>
-        <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Currently stated starting date is invalid. Try running Set_ConfigFile.&#39;</span><span class="p">)</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Currently used TLE: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">getTLE</span><span class="p">()))</span>
-    <span class="k">except</span><span class="p">:</span>
-        <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Currently stated TLE is invalid. Try running Set_ConfigFile.&#39;</span><span class="p">)</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span>
-        
     <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Timeline_settings</span><span class="p">()</span>
     <span class="n">Operational_Science_Mode_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Operational_Science_Mode_settings</span><span class="p">()</span>
     <span class="c1">#Mode5_settings = OPT_Config_File.Mode5_settings()</span>
@@ -91,6 +75,24 @@
     <span class="n">Mode132_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Mode132_settings</span><span class="p">()</span>
     <span class="n">Mode133_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Mode133_settings</span><span class="p">()</span>
     <span class="n">Mode134_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Mode134_settings</span><span class="p">()</span>
+    
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Currently used Configuration File: &#39;</span><span class="o">+</span><span class="n">_Globals</span><span class="o">.</span><span class="n">Config_File</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Currently stated Configuration File is invalid. Try running Set_ConfigFile.&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Currently used starting date: &#39;</span><span class="o">+</span><span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;start_date&#39;</span><span class="p">])</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Currently stated starting date is invalid. Try running Set_ConfigFile.&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Currently used TLE: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">getTLE</span><span class="p">()))</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;Currently stated TLE is invalid. Try running Set_ConfigFile.&#39;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span>
+        
+    
     
     
     
@@ -255,7 +257,7 @@
         <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Mode120_settings[&#39;pointing_altitude&#39;]&quot;</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span>
     <span class="k">if</span> <span class="ow">not</span><span class="p">(</span> <span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;TimeToConsider&#39;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;duration&#39;</span><span class="p">]</span> <span class="p">):</span>
-        <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Mode120_settings[&#39;TimeToConsider&#39;] &lt;= Timeline_settings[&#39;duration&#39;]&quot;</span><span class="p">)</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Mode120_settings[&#39;TimeToConsider&#39;] &gt; Timeline_settings[&#39;duration&#39;]&quot;</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span>
     <span class="k">if</span> <span class="ow">not</span><span class="p">(</span> <span class="nb">type</span><span class="p">(</span><span class="n">Mode120_settings</span><span class="p">[</span><span class="s1">&#39;CCDSELs&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="nb">list</span><span class="p">):</span>
         <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Mode120_settings[&#39;CCDSELs&#39;] != list&quot;</span><span class="p">)</span>
@@ -298,14 +300,20 @@
     <span class="k">if</span> <span class="ow">not</span><span class="p">(</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">Mode121_122_123_settings</span><span class="p">[</span><span class="s1">&#39;SnapshotSpacing&#39;</span><span class="p">]</span> <span class="ow">and</span> <span class="nb">type</span><span class="p">(</span><span class="n">Mode121_122_123_settings</span><span class="p">[</span><span class="s1">&#39;SnapshotSpacing&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="nb">int</span><span class="p">):</span>
         <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Mode121_122_123_settings[&#39;SnapshotSpacing&#39;]&quot;</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span>
-    <span class="k">if</span> <span class="ow">not</span><span class="p">(</span> <span class="n">Mode121_122_123_settings</span><span class="p">[</span><span class="s1">&#39;SnapshotSpacing&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">5</span> <span class="o">+</span> <span class="n">Mode121_122_123_settings</span><span class="p">[</span><span class="s1">&#39;SnapshotTime&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">Mode121_122_123_settings</span><span class="p">[</span><span class="s1">&#39;freeze_duration&#39;</span><span class="p">]</span> <span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span><span class="p">(</span> <span class="n">Mode121_122_123_settings</span><span class="p">[</span><span class="s1">&#39;SnapshotSpacing&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="mi">6</span> <span class="o">+</span> <span class="n">Mode121_122_123_settings</span><span class="p">[</span><span class="s1">&#39;SnapshotTime&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">Mode121_122_123_settings</span><span class="p">[</span><span class="s1">&#39;freeze_duration&#39;</span><span class="p">]</span> <span class="p">):</span>
         <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Mode121_122_123_settings[&#39;SnapshotSpacing&#39;] * 5 + Mode121_122_123_settings[&#39;SnapshotTime&#39;] &gt; Mode121_122_123_settings[&#39;freeze_duration&#39;]&quot;</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span>
     <span class="k">if</span> <span class="ow">not</span><span class="p">(</span> <span class="n">Mode121_122_123_settings</span><span class="p">[</span><span class="s1">&#39;TimeToConsider&#39;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;duration&#39;</span><span class="p">]</span> <span class="p">):</span>
-        <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Mode121_122_123_settings[&#39;TimeToConsider&#39;] &lt;= Timeline_settings[&#39;duration&#39;]&quot;</span><span class="p">)</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Mode121_122_123_settings[&#39;TimeToConsider&#39;] &gt; Timeline_settings[&#39;duration&#39;]&quot;</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">ValueError</span>
         
-    
+    <span class="k">if</span> <span class="ow">not</span><span class="p">(</span> <span class="nb">type</span><span class="p">(</span><span class="n">Mode121_settings</span><span class="p">[</span><span class="s1">&#39;CCDSELs&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="nb">list</span><span class="p">):</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Mode121_settings[&#39;CCDSELs&#39;] != list&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span>
+    <span class="k">for</span> <span class="n">CCDSEL</span> <span class="ow">in</span> <span class="n">Mode121_settings</span><span class="p">[</span><span class="s1">&#39;CCDSELs&#39;</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="ow">not</span><span class="p">(</span> <span class="n">CCDSEL</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">32</span><span class="p">]</span> <span class="p">):</span>
+            <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span> <span class="s2">&quot;Mode121_settings[&#39;CCDSELs&#39;] element != [1,2,4,8,16,32]&quot;</span> <span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span>
     
     <span class="k">if</span> <span class="ow">not</span><span class="p">(</span> <span class="nb">type</span><span class="p">(</span><span class="n">Mode121_settings</span><span class="p">[</span><span class="s1">&#39;start_date&#39;</span><span class="p">])</span> <span class="o">==</span> <span class="nb">str</span><span class="p">):</span>
         <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Mode121_settings[&#39;start_date&#39;]&quot;</span><span class="p">)</span>
@@ -381,6 +389,9 @@
         <span class="k">if</span> <span class="ow">not</span><span class="p">(</span> <span class="n">CCDSEL</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">16</span><span class="p">,</span><span class="mi">32</span><span class="p">]</span> <span class="p">):</span>
             <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span> <span class="s2">&quot;Mode124_settings[&#39;CCDSELs&#39;] element != [1,2,4,8,16,32]&quot;</span> <span class="p">)</span>
             <span class="k">raise</span> <span class="ne">ValueError</span>
+    <span class="k">if</span> <span class="ow">not</span><span class="p">(</span> <span class="n">Mode124_settings</span><span class="p">[</span><span class="s1">&#39;TimeToConsider&#39;</span><span class="p">]</span> <span class="o">&lt;=</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;duration&#39;</span><span class="p">]</span> <span class="p">):</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s2">&quot;Mode124_settings[&#39;TimeToConsider&#39;] &gt; Timeline_settings[&#39;duration&#39;]&quot;</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span>
     
     
     <span class="n">MaximumNumberOfCMDsInMacro</span> <span class="o">=</span> <span class="mi">12</span>

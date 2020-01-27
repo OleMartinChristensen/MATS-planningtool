@@ -33,7 +33,7 @@
   <h1>Source code for OPT._ConfigFile</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 <span class="sd">&quot;&quot;&quot;Contains functions that return settings for the Operational Planning Tool. A ConfigFile must be chosen</span>
-<span class="sd">by calling *OPT.Set_ConfigFile()* and must be visible in *sys.path*.</span>
+<span class="sd">by calling *OPT.Set_ConfigFile()* and ir must be visible in *sys.path*.</span>
 <span class="sd">    </span>
 <span class="sd">&quot;&quot;&quot;</span>
 
@@ -93,13 +93,17 @@
 <span class="sd">        - &#39;Mode130&#39;, </span>
 <span class="sd">        - &#39;Mode134&#39;</span>
 <span class="sd">     </span>
-<span class="sd">    The order of which the Modes/CMDs appear is also their priority order (top-down). \n</span>
+<span class="sd">    The order of which the Modes/StartUpCMDs appear is also their priority order (top-down). \n</span>
 <span class="sd">    Repeat Modes/CMDs to schedule them several times, though there is currently not feature that allows multiple Modes/CMDs </span>
-<span class="sd">    to be scheduled with different settings unless they are manually changed in the generated *Science Mode Timeline*.</span>
+<span class="sd">    to be scheduled with different settings. Some settings that does not affect the duration of the Mode can still be changed manually afterwards in the generated Science Mode Timeline.</span>
 <span class="sd">    Each string must be equal to the name of a function imported in the *_Timeline_generator.Modes.Modes_Header* module. \n</span>
 <span class="sd">    </span>
 <span class="sd">    &#39;Payload_Power_Toggle&#39;, &#39;TurnONCCDs&#39;, &#39;ArgEnableYawComp&#39;, &#39;CCDFlushBadColumns&#39;, &#39;CCDBadColumn&#39;, &#39;PM&#39;, &#39;CCDBIAS&#39; are recommended to run at the start of each </span>
 <span class="sd">    timeline, as they together reset and initialize the intrument. If &quot;HTR&quot; is scheduled, arguments is needed to be entered manually into the created *Science Mode Timeline* because of safety reasons.</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;Payload_Power_Toggle&#39; is a OHB procedure that safely power toggles the instrument. \n</span>
+<span class="sd">    </span>
+<span class="sd">    &#39;TurnONCCDs&#39; is a special CCD macro that turns on the CCDs.</span>
 <span class="sd">    </span>
 <span class="sd">    Returns:</span>
 <span class="sd">        (:obj:`list` of :obj:`str`): Modes_priority</span>
@@ -114,13 +118,14 @@
             <span class="s1">&#39;CCDBIAS&#39;</span><span class="p">,</span>
             <span class="s1">&#39;PM&#39;</span><span class="p">,</span>
             <span class="s1">&#39;TurnONCCDs&#39;</span><span class="p">,</span>
-            <span class="s1">&#39;Mode130&#39;</span><span class="p">,</span> 
             <span class="s1">&#39;Mode124&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Mode120&#39;</span><span class="p">,</span>
             <span class="s1">&#39;Mode120&#39;</span><span class="p">,</span>
             <span class="s1">&#39;Mode123&#39;</span><span class="p">,</span>
             <span class="s1">&#39;Mode121&#39;</span><span class="p">,</span>
             <span class="s1">&#39;Mode110&#39;</span><span class="p">,</span>
             <span class="s1">&#39;Mode100&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Mode130&#39;</span><span class="p">,</span>
             <span class="s1">&#39;Mode132&#39;</span><span class="p">,</span>
             <span class="s1">&#39;Mode133&#39;</span><span class="p">,</span>
             <span class="s1">&#39;Mode122&#39;</span><span class="p">,</span>
@@ -133,19 +138,19 @@
 <div class="viewcode-block" id="getTLE"><a class="viewcode-back" href="../../OPT.html#OPT._ConfigFile.getTLE">[docs]</a><span class="k">def</span> <span class="nf">getTLE</span><span class="p">():</span>
     <span class="sd">&#39;&#39;&#39;Returns the TLE as two strings in a list.</span>
 <span class="sd">    </span>
-<span class="sd">    Returns a TLE from the *_Globals* module if *Set_ConfigFile* has been ran.</span>
-<span class="sd">    The returned TLE values can ofcourse be changed directly by manually editing them right here.</span>
+<span class="sd">    Returns a TLE from the *_Globals* module if *Set_ConfigFile* has been ran with a TLE as input.</span>
+<span class="sd">    Otherwise returns any TLE values stated here.</span>
 <span class="sd">    </span>
 <span class="sd">    Returns:</span>
 <span class="sd">        (:obj:`list` of :obj:`str`): First Element is the first TLE row, and the second Element is the second row.</span>
 <span class="sd">    </span>
 <span class="sd">    &#39;&#39;&#39;</span>
     
-    
     <span class="k">if</span> <span class="ow">not</span><span class="p">(</span><span class="n">_Globals</span><span class="o">.</span><span class="n">TLE</span> <span class="o">==</span> <span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">,</span><span class="s1">&#39;&#39;</span><span class="p">)</span> <span class="p">):</span>
         <span class="n">TLE1</span> <span class="o">=</span> <span class="n">_Globals</span><span class="o">.</span><span class="n">TLE</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
         <span class="n">TLE2</span> <span class="o">=</span> <span class="n">_Globals</span><span class="o">.</span><span class="n">TLE</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
     <span class="k">else</span><span class="p">:</span>
+        <span class="s2">&quot;If no TLE has been chosen with *Set_ConfigFile*, these values are used instead.&quot;</span>
         <span class="n">TLE1</span> <span class="o">=</span> <span class="s1">&#39;1 54321U 19100G   20172.75043981 0.00000000  00000-0  75180-4 0  0014&#39;</span>
         <span class="n">TLE2</span> <span class="o">=</span> <span class="s1">&#39;2 54321  97.7044   6.9210 0014595 313.2372  91.8750 14.93194142000010&#39;</span>
     
@@ -159,32 +164,39 @@
     <span class="sd">&#39;&#39;&#39;Returns settings related to a *Science Mode Timeline* as a whole.</span>
 <span class="sd">    </span>
 <span class="sd">    **Keys:**</span>
-<span class="sd">        &#39;start_date&#39;: Is usually set to *_Globals.StartTime*, where *_Globals.StartTime* is set by running *Set_ConfigFile*. Sets the starting date of the timeline (str), (example: &#39;2018/9/3 08:00:40&#39;).  \n</span>
+<span class="sd">        &#39;start_date&#39;: Sets the starting date of the timeline (str), (example: &#39;2018/9/3 08:00:40&#39;). Contains _Globals.StartTime if *Set_ConfigFile* has been ran with a start date as an input. Otherwise any value stated here.  \n</span>
 <span class="sd">        &#39;duration&#39;: Sets the duration [s] of the timeline. Will drastically change the runtime of *Timeline_gen*. A runtime of around 15 min is estimated for a duration of 1 week (int) \n</span>
 <span class="sd">        </span>
-<span class="sd">        &#39;Mode1_2_5_minDuration&#39;: Minimum amount of available time needed, inbetween scheduled Modes/CMDs in a *Science Mode Timeline*, for the scheduling of *Operational Science Modes* when running *Timeline_gen* [s]. \n</span>
+<span class="sd">        &#39;Mode1_2_5_minDuration&#39;: Minimum amount of available time needed, inbetween scheduled Modes/CMDs in a *Science Mode Timeline*, to allow the scheduling of *Operational Science Modes* when running *Timeline_gen* [s]. \n</span>
 <span class="sd">        &#39;mode_separation&#39;: Time in seconds for an added buffer when determining the duration of a Mode/CMD. (int) \n</span>
 <span class="sd">        &#39;CMD_duration&#39;: Sets the amount of time scheduled for separate PayloadCMDs when using *Timeline_gen*. Should be large enough to allow any separate CMD to finish processing.  (int) \n</span>
 <span class="sd">        </span>
-<span class="sd">        &#39;yaw_correction&#39;: Determines if yaw correction shall be used for the duration of the timeline. Mainly impacts simulations of MATS&#39;s pointing as when I am writing this there is no actual CMD to enable yaw-correction. (bool) \n</span>
+<span class="sd">        &#39;yaw_correction&#39;: Determines if yaw correction shall be used for the duration of the timeline. Mainly impacts simulations of MATS&#39;s pointing. But also determines the argument of the ArgEnableYawComp CMD. (bool) \n</span>
 <span class="sd">        &#39;yaw_amplitude&#39;: Amplitude of the yaw function (float). \n</span>
 <span class="sd">        &#39;yaw_phase&#39;: Phase of the yaw function (float). \n</span>
 <span class="sd">        &#39;Choose_Operational_Science_Mode&#39;: Set to 1, 2, or 5 to choose either Mode1, Mode2, or Mode5 as the *Operational Science Mode*. Set to 0 to schedule either Mode1 or Mode2 depending of the time of the year.</span>
-<span class="sd">        &#39;StandardPointingAltitude&#39;: Sets pointing altitude in meters for the timeline. Used to set the pointing altitude of *Operational Science Modes* and to calculate the duration of attitude freezes (because attitude freezes last until the pointing altitude is once again set to this value).  (int) \n</span>
+<span class="sd">        &#39;StandardPointingAltitude&#39;: Sets pointing altitude in meters for the timeline. Used to set the pointing altitude of *Operational Science Modes* and to calculate the duration of attitude freezes (because attitude freezes last until the pointing altitude is reorientated to this value).  (int) \n</span>
 <span class="sd">        </span>
-<span class="sd">        &#39;CMD_separation&#39;: Changes the separation in time [s] between commands that are scheduled in *XML_gen*. If set too large, it is possible that not enough time is scheduled for the duration of Modes, causing Modes to overlap in time. (float) \n</span>
-<span class="sd">        &#39;pointing_stabilization&#39;: The maximum time it takes for an attitude change to stabilize [s]. Used before scheduling certain Commands in *XML_gen* to make sure that the attitude has been stabilized after running *TC_acfLimbPointingAltitudeOffset*. Also impact the estimated duration of Science Modes in *Timeline_gen*. (int) \n</span>
+<span class="sd">        &#39;CMD_separation&#39;: Changes the separation in time [s] between commands that are scheduled in *XML_gen*. If set too large, it is possible that not enough time is scheduled for the duration of Modes, causing Modes to overlap in time. Impacts the estimated duration of certain Science Modes in *Timeline_gen*. (float) \n</span>
+<span class="sd">        &#39;pointing_stabilization&#39;: The maximum time it takes for an attitude change to stabilize [s]. Used before scheduling certain CMDs in *XML_gen* to make sure that the attitude has been stabilized after running *TC_acfLimbPointingAltitudeOffset*. Impacts the estimated duration of Science Modes in *Timeline_gen*. (int) \n</span>
 <span class="sd">        &#39;CCDSYNC_ExtraOffset&#39;: Extra offset time [ms] that is added to an estimated ReadoutTime when calculating TEXPIOFS for the CCD Synchronize CMD. (int) \n</span>
 <span class="sd">        &#39;CCDSYNC_ExtraIntervalTime&#39;: Extra time [ms] that is added to the calculated Exposure Interval Time (for example when calculating arguments for the CCD Synchronize CMD or nadir TEXPIMS). (int) \n</span>
 <span class="sd">        </span>
 <span class="sd">    Returns:</span>
 <span class="sd">        (:obj:`dict`): Timeline_settings</span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="n">_Globals</span><span class="o">.</span><span class="n">StartTime</span><span class="p">,</span> <span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="o">*</span><span class="mi">4</span><span class="o">*</span><span class="mi">3600</span><span class="p">,</span> 
+    
+    <span class="k">if</span><span class="p">(</span> <span class="n">_Globals</span><span class="o">.</span><span class="n">StartTime</span> <span class="o">!=</span> <span class="kc">None</span> <span class="p">):</span>
+        <span class="n">StartTime</span> <span class="o">=</span> <span class="n">_Globals</span><span class="o">.</span><span class="n">StartTime</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="s2">&quot;If no start date has been chosen with *Set_ConfigFile*, this value is used instead.&quot;</span>
+        <span class="n">StartTime</span> <span class="o">=</span> <span class="s1">&#39;2020/6/20 18:32:42&#39;</span>
+    
+    <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="n">StartTime</span><span class="p">,</span> <span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="o">*</span><span class="mi">8</span><span class="o">*</span><span class="mi">3600</span><span class="p">,</span> 
                          <span class="s1">&#39;Mode1_2_5_minDuration&#39;</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span> <span class="s1">&#39;mode_separation&#39;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span>
-                       <span class="s1">&#39;CMD_duration&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span> <span class="s1">&#39;yaw_correction&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;yaw_amplitude&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">3.8</span><span class="p">,</span> <span class="s1">&#39;yaw_phase&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">20</span><span class="p">,</span> 
-                       <span class="s1">&#39;Choose_Operational_Science_Mode&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;StandardPointingAltitude&#39;</span><span class="p">:</span> <span class="mi">92500</span><span class="p">,</span> 
-                       <span class="s1">&#39;CMD_separation&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;pointing_stabilization&#39;</span><span class="p">:</span> <span class="mi">110</span><span class="p">,</span> <span class="s1">&#39;CCDSYNC_ExtraOffset&#39;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span> <span class="s1">&#39;CCDSYNC_ExtraIntervalTime&#39;</span><span class="p">:</span> <span class="mi">200</span><span class="p">}</span>
+                         <span class="s1">&#39;CMD_duration&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span> <span class="s1">&#39;yaw_correction&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;yaw_amplitude&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">3.8</span><span class="p">,</span> <span class="s1">&#39;yaw_phase&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">20</span><span class="p">,</span> 
+                         <span class="s1">&#39;Choose_Operational_Science_Mode&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;StandardPointingAltitude&#39;</span><span class="p">:</span> <span class="mi">92500</span><span class="p">,</span> 
+                         <span class="s1">&#39;CMD_separation&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;pointing_stabilization&#39;</span><span class="p">:</span> <span class="mi">110</span><span class="p">,</span> <span class="s1">&#39;CCDSYNC_ExtraOffset&#39;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span> <span class="s1">&#39;CCDSYNC_ExtraIntervalTime&#39;</span><span class="p">:</span> <span class="mi">200</span><span class="p">}</span>
     
     
     <span class="k">return</span> <span class="n">Timeline_settings</span></div>
@@ -197,7 +209,7 @@
 <span class="sd">        &#39;lat&#39;: Applies only to Mode1! Sets in degrees the latitude (+ and -) that the LP crosses that causes the UV exposure to swith on/off. (int) \n</span>
 <span class="sd">        &#39;log_timestep&#39;: Used only in *XML_gen*. Sets the frequency of data being logged [s] for Mode1-2. Only determines how much of simulated data is logged for debugging purposes. (int) \n</span>
 <span class="sd">        &#39;timestep&#39;: Sets the timestep [s] of the XML generator simulation of Mode1-2. Will impact accuracy of command generation but also drastically changes the runtime of XML-gen. (int) \n</span>
-<span class="sd">        &#39;Choose_Mode5CCDMacro&#39;: Applies only to Mode5! Sets the CCD macro to be used by Mode5. Used as input to *CCD_macro_settings* (str).</span>
+<span class="sd">        &#39;Choose_Mode5CCDMacro&#39;: Applies only to Mode5! Sets the CCD macro to be used by Mode5. Used as input to *CCD_macro_settings* in the ConfigFile (str).</span>
 <span class="sd">        </span>
 <span class="sd">    Returns:</span>
 <span class="sd">        (:obj:`dict`): settings</span>
@@ -235,7 +247,7 @@
 <span class="sd">        &#39;Exp_Time_IR&#39;: Sets starting exposure time [ms] as a integer. \n</span>
 <span class="sd">        &#39;Exp_Time_UV&#39;: Sets starting exposure time [ms] as a integer. \n</span>
 <span class="sd">        &#39;ExpTime_step&#39;: Sets in ms the interval size of both ExpTimeUV and ExpTimeIR for each succesive pointing. (int) \n</span>
-<span class="sd">        &#39;start_date&#39;: Sets the scheduled date for the mode as a str, (example: &#39;2018/9/3 08:00:40&#39;). If the date is set to &#39;0&#39;, Timeline start_date will be used.</span>
+<span class="sd">        &#39;start_date&#39;: Sets the scheduled date for the mode as a str, (example: &#39;2018/9/3 08:00:40&#39;). If the date is set to &#39;0&#39;, Timeline_settings[&#39;start_date&#39;] will be used.</span>
 <span class="sd">        </span>
 <span class="sd">    Returns:</span>
 <span class="sd">        (:obj:`dict`): settings</span>
@@ -272,11 +284,11 @@
 <span class="sd">    </span>
 <span class="sd">    **Keys in returned dict:**</span>
 <span class="sd">        &#39;pointing_altitude&#39;: Sets in meters the altitude of the pointing command. (int) \n</span>
-<span class="sd">        &#39;V_offset&#39;: Used only in *Timeline_gen*. Sets the Vertical-offset angle (position in FOV) in degrees for the star, when the attitude freeze command is scheduled. </span>
+<span class="sd">        &#39;V_offset&#39;: Used only in *Timeline_gen*. Sets the Vertical-offset angle (position in FOV) in degrees for the star to have passed, when the attitude freeze command is scheduled. </span>
 <span class="sd">        Multiple values can be set but additional values will only be used when Mode120 is scheduled several times. (list of int) \n</span>
 <span class="sd">        &#39;H_offset&#39;: Used only in *Timeline_gen*. Sets the maximum Horizontal-offset angle in degrees that determines if stars are visible. (int) \n</span>
 <span class="sd">        &#39;Vmag&#39;: Used only in *Timeline_gen*. Sets the Johnson V magnitude of stars to be considered (as a string expression, example &#39;&lt;2&#39;). Drastically changes the runtime. \n</span>
-<span class="sd">        &#39;TimeToConsider&#39;: Used only in *Timeline_gen*. Sets the time in seconds for which scheduling is valid. Used to plan star calibration at the start of each timeline (useful as TLE accuracy deteriorates). Drastically affects simulation time. (int) \n</span>
+<span class="sd">        &#39;TimeToConsider&#39;: Used only in *Timeline_gen*. Sets the time in seconds for which scheduling is considered. Used to plan star calibration at the start of each timeline (useful as TLE accuracy deteriorates). Drastically affects simulation time. (int) \n</span>
 <span class="sd">        &#39;timestep&#39;: Used only in *Timeline_gen*. Sets timestep used in scheduling simulation [s]. Will impact scheduling accuracy. (int) \n</span>
 <span class="sd">        &#39;TimeSkip&#39;: Used only in *Timeline_gen*. Set the amount of seconds to skip ahead after one complete orbit is simulated. Will drastically change the runtime of the simulation. (int) \n</span>
 <span class="sd">        &#39;log_timestep&#39;: Used only in *Timeline_gen*. Sets the timestep of data being logged [s]. Only determines how much of simulated data is logged for debugging purposes.. (int) \n</span>
@@ -293,7 +305,7 @@
 <span class="sd">        (:obj:`dict`): settings</span>
 <span class="sd">    </span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;pointing_altitude&#39;</span><span class="p">:</span> <span class="mi">230000</span><span class="p">,</span> <span class="s1">&#39;V_offset&#39;</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">],</span> <span class="s1">&#39;H_offset&#39;</span><span class="p">:</span> <span class="mf">1.5</span><span class="p">,</span> <span class="s1">&#39;TimeToConsider&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="o">*</span><span class="mi">3600</span><span class="p">,</span>  <span class="s1">&#39;Vmag&#39;</span><span class="p">:</span> <span class="s1">&#39;&lt;2&#39;</span><span class="p">,</span> <span class="s1">&#39;timestep&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;TimeSkip&#39;</span><span class="p">:</span> <span class="mi">3600</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;log_timestep&#39;</span><span class="p">:</span> <span class="mi">3600</span><span class="p">,</span> 
+    <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;pointing_altitude&#39;</span><span class="p">:</span> <span class="mi">230000</span><span class="p">,</span> <span class="s1">&#39;V_offset&#39;</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">],</span> <span class="s1">&#39;H_offset&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;TimeToConsider&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="o">*</span><span class="mi">3600</span><span class="p">,</span>  <span class="s1">&#39;Vmag&#39;</span><span class="p">:</span> <span class="s1">&#39;&lt;2&#39;</span><span class="p">,</span> <span class="s1">&#39;timestep&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;TimeSkip&#39;</span><span class="p">:</span> <span class="mi">3600</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;log_timestep&#39;</span><span class="p">:</span> <span class="mi">3600</span><span class="p">,</span> 
                       <span class="s1">&#39;automatic&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;freeze_start&#39;</span><span class="p">:</span> <span class="mi">150</span><span class="p">,</span> 
                       <span class="s1">&#39;freeze_duration&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SnapshotTime&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;SnapshotSpacing&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s1">&#39;CCDSELs&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">16</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">8</span><span class="p">]}</span>
     
@@ -310,7 +322,7 @@
 <span class="sd">        &#39;pointing_altitude&#39;: Sets in meters the altitude of the pointing command. (int) \n</span>
 <span class="sd">        &#39;H_FOV&#39;: Used only in *Timeline_gen*. Sets full Horizontal FOV of the Limb instrument in degrees. Used to determine if stars are visible. (float) \n</span>
 <span class="sd">        &#39;V_FOV&#39;: Used only in *Timeline_gen*. Sets full Vertical FOV of the Limb instrument in degrees. Used to determine if stars are visible. (float) \n</span>
-<span class="sd">        &#39;TimeToConsider&#39;: Used only in *Timeline_gen*. Sets the time in seconds for which scheduling is valid. Used to plan calibration at the start of each timeline (useful as TLE accuracy deteriorates). Drastically affects simulation time at the cost of fewer time slots being considered. (int) \n</span>
+<span class="sd">        &#39;TimeToConsider&#39;: Used only in *Timeline_gen*. Sets the time in seconds for which scheduling is considered. Used to plan calibration at the start of each timeline (useful as TLE accuracy deteriorates). Drastically affects simulation time at the cost of fewer time slots being considered. (int) \n</span>
 <span class="sd">        &#39;Vmag&#39;: Used only in *Timeline_gen*. Sets the Johnson V magnitude of stars to be considered (as a string expression, example &#39;&lt;2&#39;). Drastically changes the runtime. \n</span>
 <span class="sd">        &#39;timestep&#39;: Used only in *Timeline_gen*. Set timestep used in scheduling simulation [s]. Will impact scheduling accuracy. (int) \n</span>
 <span class="sd">        &#39;TimeSkip&#39;: Used only in *Timeline_gen*. Set the amount of seconds to skip ahead after one complete orbit is simulated. Will drastically change the runtime of the simulation. (float) \n</span>
@@ -325,7 +337,7 @@
 <span class="sd">        (:obj:`dict`): settings</span>
 <span class="sd">    </span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;pointing_altitude&#39;</span><span class="p">:</span> <span class="mi">230000</span><span class="p">,</span> <span class="s1">&#39;H_FOV&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s1">&#39;V_FOV&#39;</span><span class="p">:</span> <span class="mf">1.5</span><span class="p">,</span> <span class="s1">&#39;TimeToConsider&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="o">*</span><span class="mi">3600</span><span class="p">,</span> <span class="s1">&#39;Vmag&#39;</span><span class="p">:</span> <span class="s1">&#39;&lt;4&#39;</span><span class="p">,</span> 
+    <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;pointing_altitude&#39;</span><span class="p">:</span> <span class="mi">230000</span><span class="p">,</span> <span class="s1">&#39;H_FOV&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s1">&#39;V_FOV&#39;</span><span class="p">:</span> <span class="mf">1.5</span><span class="p">,</span> <span class="s1">&#39;TimeToConsider&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="o">*</span><span class="mi">3600</span><span class="p">,</span> <span class="s1">&#39;Vmag&#39;</span><span class="p">:</span> <span class="s1">&#39;&lt;4&#39;</span><span class="p">,</span> 
                 <span class="s1">&#39;timestep&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s1">&#39;TimeSkip&#39;</span><span class="p">:</span> <span class="mi">3600</span><span class="o">*</span><span class="mi">4</span><span class="p">,</span> <span class="s1">&#39;log_timestep&#39;</span><span class="p">:</span> <span class="mi">3600</span><span class="p">,</span> <span class="s1">&#39;freeze_start&#39;</span><span class="p">:</span> <span class="mi">150</span><span class="p">,</span> 
                       <span class="s1">&#39;freeze_duration&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;SnapshotTime&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;SnapshotSpacing&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
     
@@ -342,12 +354,13 @@
 <span class="sd">    **Keys in returned dict:**</span>
 <span class="sd">        &#39;start_date&#39;:  Note! only applies if *automatic* is set to False. Used only in *Timeline_gen*. Sets the scheduled date for the mode as a str, (example: &#39;2018/9/3 08:00:40&#39;). If set to &#39;0&#39;, Timeline_settings[&#39;start_date&#39;] will be used. \n</span>
 <span class="sd">        &#39;automatic&#39;: Used only in *Timeline_gen*. Sets if &#39;start_date&#39; will be calculated or user provided. True for calculated and False for user provided. (bool) \n</span>
+<span class="sd">        &#39;CCDSELs&#39;: List of CCDSEL arguments (except nadir) for which to take snapshots with. (list of int)</span>
 <span class="sd">        </span>
 <span class="sd">    Returns:</span>
 <span class="sd">        (:obj:`dict`): settings</span>
 <span class="sd">    &#39;&#39;&#39;</span>
     
-    <span class="n">Settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;automatic&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">}</span>
+    <span class="n">Settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;automatic&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;CCDSELs&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">16</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">8</span><span class="p">]}</span>
     <span class="n">CommonSettings</span> <span class="o">=</span> <span class="n">Mode121_122_123_settings</span><span class="p">()</span>
     
     <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="o">**</span><span class="n">CommonSettings</span><span class="p">,</span> <span class="o">**</span><span class="n">Settings</span><span class="p">}</span>
@@ -403,10 +416,10 @@
 <span class="sd">    </span>
 <span class="sd">    **Keys in returned dict:**</span>
 <span class="sd">        &#39;pointing_altitude&#39;: Sets in meters the altitude of the pointing command. (int) \n</span>
-<span class="sd">        &#39;V_offset&#39;: Used only in *Timeline_gen*. Sets the Vertical-offset angle (position in FOV) in degrees for the star , when the attitude freeze command is scheduled. </span>
+<span class="sd">        &#39;V_offset&#39;: Used only in *Timeline_gen*. Sets the Vertical-offset angle (position in FOV) in degrees for the Moon to pass, for when the attitude freeze command is scheduled. </span>
 <span class="sd">        Multiple values can be set but additional values will only be used when Mode124 is scheduled several times. (list of int) \n</span>
 <span class="sd">        &#39;H_offset&#39;: Used only in *Timeline_gen*. Sets the maximum H-offset angle from the optical axis in degrees that determines if the Moon is available. (float) \n</span>
-<span class="sd">        &#39;TimeToConsider&#39;: Used only in *Timeline_gen*. Sets the time in seconds for which scheduling is valid. Used to plan calibration at the start of each timeline (useful as TLE accuracy deteriorates). Drastically affects simulation time at the cost of fewer time slots being considered. (int) \n</span>
+<span class="sd">        &#39;TimeToConsider&#39;: Used only in *Timeline_gen*. Sets the time in seconds for which scheduling is considered. Used to plan calibration at the start of each timeline (useful as TLE accuracy deteriorates). Drastically affects simulation time at the cost of fewer time slots being considered. (int) \n</span>
 <span class="sd">        &#39;timestep&#39;:  Used only in *Timeline_gen*. Sets in seconds the timestep during scheduling simulation [s]. Will impact scheduling accuracy. (int) \n</span>
 <span class="sd">        &#39;log_timestep&#39;: Used only in *Timeline_gen*. Sets the timestep of data being logged [s]. Only determines how much of simulated data is logged for debugging purposes. (int) \n</span>
 <span class="sd">        &#39;automatic&#39;:  Used only in *Timeline_gen*. Sets if the mode date is to be calculated or user provided. True for calculated or False for user provided. (bool) \n</span>
@@ -422,7 +435,7 @@
 <span class="sd">        (:obj:`dict`): settings</span>
 <span class="sd">    </span>
 <span class="sd">    &#39;&#39;&#39;</span>
-    <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;pointing_altitude&#39;</span><span class="p">:</span> <span class="mi">230000</span><span class="p">,</span> <span class="s1">&#39;V_offset&#39;</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.6</span><span class="p">,</span><span class="mf">0.6</span><span class="p">],</span> <span class="s1">&#39;H_offset&#39;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span> <span class="s1">&#39;TimeToConsider&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="o">*</span><span class="mi">3600</span><span class="p">,</span> <span class="s1">&#39;timestep&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;log_timestep&#39;</span><span class="p">:</span> <span class="mi">1200</span><span class="p">,</span> 
+    <span class="n">settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;pointing_altitude&#39;</span><span class="p">:</span> <span class="mi">230000</span><span class="p">,</span> <span class="s1">&#39;V_offset&#39;</span><span class="p">:</span> <span class="p">[</span><span class="o">-</span><span class="mf">0.6</span><span class="p">,</span><span class="mf">0.6</span><span class="p">],</span> <span class="s1">&#39;H_offset&#39;</span><span class="p">:</span> <span class="mf">2.5</span><span class="p">,</span> <span class="s1">&#39;TimeToConsider&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="o">*</span><span class="mi">3600</span><span class="p">,</span> <span class="s1">&#39;timestep&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;log_timestep&#39;</span><span class="p">:</span> <span class="mi">1200</span><span class="p">,</span> 
                       <span class="s1">&#39;automatic&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="s1">&#39;0&#39;</span><span class="p">,</span> <span class="s1">&#39;freeze_start&#39;</span><span class="p">:</span> <span class="mi">150</span><span class="p">,</span> <span class="s1">&#39;freeze_duration&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> 
                       <span class="s1">&#39;SnapshotTime&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;SnapshotSpacing&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span> <span class="s1">&#39;CCDSELs&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">16</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">8</span><span class="p">]}</span>
     
@@ -438,7 +451,7 @@
 <span class="sd">    **Keys in returned dict:**</span>
 <span class="sd">        &#39;pointing_altitude&#39;: Sets in meters the altitude of the pointing command. (int) \n</span>
 <span class="sd">        &#39;SnapshotSpacing&#39;: Sets in seconds the time inbetween Snapshots with individual CCDs. Part in determining the estimated duration of the mode. (int) \n</span>
-<span class="sd">        &#39;start_date&#39;: Sets the scheduled date for the mode as a str, (example: &#39;2018/9/3 08:00:40&#39;). If the date is set to &#39;0&#39;, Timeline start_date will be used.</span>
+<span class="sd">        &#39;start_date&#39;: Sets the scheduled date for the mode as a str, (example: &#39;2018/9/3 08:00:40&#39;). If the date is set to &#39;0&#39;, Timeline_settings[&#39;start_date&#39;] will be used.</span>
 <span class="sd">    </span>
 <span class="sd">    Returns:</span>
 <span class="sd">        (:obj:`dict`): settings</span>
@@ -453,8 +466,8 @@
 <span class="sd">    </span>
 <span class="sd">    **Keys in returned dict:**</span>
 <span class="sd">        &#39;pointing_altitude&#39;: Sets in meters the altitude of the pointing command. (int) \n</span>
-<span class="sd">        &#39;mode_duration&#39;: Sets the scheduled duration of the Mode in seconds. Must be long enough to allow any pointing stabilization and execution of CMDs to occur. (int) \n</span>
-<span class="sd">        &#39;start_date&#39;: Sets the scheduled date for the mode as a str, (example: &#39;2018/9/3 08:00:40&#39;). If the date is set to &#39;0&#39;, Timeline start_date will be used.</span>
+<span class="sd">        &#39;mode_duration&#39;: Sets the scheduled duration of the Mode in seconds. Must be long enough to allow any pointing stabilization, CCD synchronization (takes 1 TEXPIMS cycle to execute), and execution of CMDs to occur. (int) \n</span>
+<span class="sd">        &#39;start_date&#39;: Sets the scheduled date for the mode as a str, (example: &#39;2018/9/3 08:00:40&#39;). If the date is set to &#39;0&#39;, Timeline_settings[&#39;start_date&#39;] will be used.</span>
 <span class="sd">    </span>
 <span class="sd">    Returns:</span>
 <span class="sd">        (:obj:`dict`): settings</span>
@@ -469,7 +482,7 @@
 <span class="sd">    </span>
 <span class="sd">    **Keys in returned dict:**</span>
 <span class="sd">        &#39;pointing_altitude&#39;: Sets in meters the altitude of the pointing command. (int) \n</span>
-<span class="sd">        &#39;start_date&#39;: Sets the scheduled date for the mode as a str, (example: &#39;2018/9/3 08:00:40&#39;). If the date is set to &#39;0&#39;, Timeline start_date will be used. \n</span>
+<span class="sd">        &#39;start_date&#39;: Sets the scheduled date for the mode as a str, (example: &#39;2018/9/3 08:00:40&#39;). If the date is set to &#39;0&#39;, Timeline_settings[&#39;start_date&#39;] will be used. \n</span>
 <span class="sd">        &#39;Exp_Times_IR&#39;: Sets exposure times [ms] as a list of integers. Part in determining the estimated duration of the mode. Shall have equal length to &#39;Exp_Times_UV&#39;.  \n</span>
 <span class="sd">        &#39;Exp_Times_UV&#39;: Sets exposure times [ms] as a list of integers. Part in determining the estimated duration of the mode. Shall have equal length to &#39;Exp_Times_IR&#39;. \n</span>
 <span class="sd">        &#39;session_duration&#39;: Sets the duration [s] of each session spent in operational mode using the different exposure times in *Exp_Times*. Part in determining the estimated duration of the mode. (int)</span>
@@ -488,7 +501,7 @@
 <span class="sd">    </span>
 <span class="sd">    **Keys in returned dict:**</span>
 <span class="sd">        &#39;pointing_altitude&#39;: Sets in meters the altitude of the pointing command. (int) \n</span>
-<span class="sd">        &#39;start_date&#39;: Sets the scheduled date for the mode as a str, (example: &#39;2018/9/3 08:00:40&#39;). If the date is set to &#39;0&#39;, Timeline start_date will be used. \n</span>
+<span class="sd">        &#39;start_date&#39;: Sets the scheduled date for the mode as a str, (example: &#39;2018/9/3 08:00:40&#39;). If the date is set to &#39;0&#39;, Timeline_settings[&#39;start_date&#39;] will be used. \n</span>
 <span class="sd">        &#39;Exp_Times_IR&#39;: Sets exposure times [ms] as a list of integers. Part in determining the estimated duration of the mode. Shall have equal length to &#39;Exp_Times_UV&#39;.  \n</span>
 <span class="sd">        &#39;Exp_Times_UV&#39;: Sets exposure times [ms] as a list of integers. Part in determining the estimated duration of the mode. Shall have equal length to &#39;Exp_Times_IR&#39;. \n</span>
 <span class="sd">        &#39;session_duration&#39;: Sets the duration [s] of each session spent in operational mode using the different exposure times in *Exp_Times_UV* and *Exp_Times_IR*. Part in determining the estimated duration of the mode. (int)</span>
@@ -507,8 +520,8 @@
 <span class="sd">    </span>
 <span class="sd">    **Keys in returned dict:**</span>
 <span class="sd">        &#39;pointing_altitude&#39;: Sets in meters the altitude of the pointing command. (int) \n</span>
-<span class="sd">        &#39;mode_duration&#39;: Sets the scheduled duration of the Mode in seconds. Must be long enough to allow any pointing stabilization and execution of CMDs to occur. (int) \n</span>
-<span class="sd">        &#39;start_date&#39;: Sets the scheduled date for the mode as a str, (example: &#39;2018/9/3 08:00:40&#39;). If the date is set to &#39;0&#39;, Timeline start_date will be used.</span>
+<span class="sd">        &#39;mode_duration&#39;: Sets the scheduled duration of the Mode in seconds. Must be long enough to allow any pointing stabilization, CCD synchronization (takes 1 TEXPIMS cycle to execute), and execution of CMDs to occur. (int) \n</span>
+<span class="sd">        &#39;start_date&#39;: Sets the scheduled date for the mode as a str, (example: &#39;2018/9/3 08:00:40&#39;). If the date is set to &#39;0&#39;, Timeline_settings[&#39;start_date&#39;] will be used.</span>
 <span class="sd">    </span>
 <span class="sd">    Returns:</span>
 <span class="sd">        (:obj:`dict`): settings</span>
@@ -527,7 +540,7 @@
 <span class="sd">    **Keys in returned dict:**</span>
 <span class="sd">        &#39;pointing_altitude&#39;: Sets in meters the altitude of the pointing command. \n</span>
 <span class="sd">        &#39;mode_duration&#39;: Sets the scheduled duration of the Mode in seconds. \n</span>
-<span class="sd">        &#39;start_date&#39;: Sets the scheduled date for the mode as a str, (example: &#39;2018/9/3 08:00:40&#39;). If the date is set to &#39;0&#39;, Timeline start_date will be used.</span>
+<span class="sd">        &#39;start_date&#39;: Sets the scheduled date for the mode as a str, (example: &#39;2018/9/3 08:00:40&#39;). If the date is set to &#39;0&#39;, Timeline_settings[&#39;start_date&#39;] will be used.</span>
 <span class="sd">    </span>
 <span class="sd">    Returns:</span>
 <span class="sd">        (:obj:`dict`): settings</span>

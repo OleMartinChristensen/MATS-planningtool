@@ -1,10 +1,10 @@
 [
   [
     "Timeline_settings",
-    "This Timeline was created using these settings from OPT_Config_File",
+    "This Timeline was created using these settings from OPT_Config_File_OHBSimulation_Okt15",
     "Note: These Timeline_settings and TLE will be used when converting into a XML",
     {
-      "start_date": "2019/9/6 08:00:40",
+      "start_date": "2020/6/20 18:12:38",
       "duration": 14400,
       "Mode1_2_5_minDuration": 300,
       "mode_separation": 15,
@@ -15,7 +15,7 @@
       "Choose_Operational_Science_Mode": 0,
       "StandardPointingAltitude": 92500,
       "CMD_separation": 1,
-      "pointing_stabilization": 110,
+      "pointing_stabilization": 60,
       "CCDSYNC_ExtraOffset": 50,
       "CCDSYNC_ExtraIntervalTime": 200
     },
@@ -25,16 +25,18 @@
     ]
   ],
   [
-    "Payload_Power_Toggle",
-    "2019/9/6 08:00:40",
-    "2019/9/6 08:01:25",
-    {},
+    "PWRTOGGLE",
+    "2020/6/20 18:12:38",
+    "2020/6/20 18:13:23",
+    {
+      "CONST": 165
+    },
     "Number of times date postponed: 0"
   ],
   [
     "ArgEnableYawComp",
-    "2019/9/6 08:01:25",
-    "2019/9/6 08:02:10",
+    "2020/6/20 18:13:23",
+    "2020/6/20 18:14:08",
     {
       "EnableYawComp": 1
     },
@@ -42,8 +44,8 @@
   ],
   [
     "CCDFlushBadColumns",
-    "2019/9/6 08:02:10",
-    "2019/9/6 08:02:55",
+    "2020/6/20 18:14:08",
+    "2020/6/20 18:14:53",
     {
       "CCDSEL": 127
     },
@@ -51,8 +53,8 @@
   ],
   [
     "CCDBadColumn",
-    "2019/9/6 08:02:55",
-    "2019/9/6 08:03:40",
+    "2020/6/20 18:14:53",
+    "2020/6/20 18:15:38",
     {
       "CCDSEL": 1,
       "NBC": 0,
@@ -62,8 +64,8 @@
   ],
   [
     "CCDBIAS",
-    "2019/9/6 08:03:40",
-    "2019/9/6 08:04:25",
+    "2020/6/20 18:15:38",
+    "2020/6/20 18:16:23",
     {
       "CCDSEL": 127,
       "VGATE": 0,
@@ -75,8 +77,8 @@
   ],
   [
     "PM",
-    "2019/9/6 08:04:25",
-    "2019/9/6 08:05:10",
+    "2020/6/20 18:16:23",
+    "2020/6/20 18:17:08",
     {
       "TEXPMS": 1500,
       "TEXPIMS": 2000
@@ -84,36 +86,29 @@
     "Number of times date postponed: 5"
   ],
   [
-    "TurnONCCDs",
-    "2019/9/6 08:05:10",
-    "2019/9/6 08:05:55",
-    {},
+    "Mode130",
+    "2020/6/20 18:17:08",
+    "2020/6/20 18:18:37",
+    {
+      "pointing_altitude": 230000,
+      "SnapshotSpacing": 2,
+      "start_date": "0"
+    },
     "Number of times date postponed: 6"
   ],
   [
-    "Mode130",
-    "2019/9/6 08:05:55",
-    "2019/9/6 08:08:21",
-    {
-      "pointing_altitude": 230000,
-      "SnapshotSpacing": 3,
-      "start_date": "0"
-    },
-    "Number of times date postponed: 7"
-  ],
-  [
     "Mode123",
-    "2019/9/6 08:08:25",
-    "2019/9/6 08:12:02",
+    "2020/6/20 18:18:38",
+    "2020/6/20 18:21:45",
     {
       "pointing_altitude": 230000,
       "H_FOV": 5.67,
       "V_FOV": 0.91,
-      "Vmag": "<5",
+      "Vmag": "<4",
       "timestep": 5,
       "TimeSkip": 14400,
       "log_timestep": 3600,
-      "freeze_start": 150,
+      "freeze_start": 120,
       "freeze_duration": 52,
       "SnapshotTime": 2,
       "SnapshotSpacing": 3,
@@ -122,33 +117,33 @@
       "Exp_Time_IR": 5000,
       "Exp_Time_UV": 3000
     },
-    "Number of times date changed: 273, faintest magnitude visible (100 equals no stars visible): 100.0, Dec (J2000): -44.7537000683103, RA (J2000): 254.23652837024292"
+    "Number of times date changed: 219, faintest magnitude visible (100 equals no stars visible): 100.0, Dec (J2000): 10.469456032409145, RA (J2000): 4.620744286915647"
   ],
   [
     "Mode121",
-    "2019/9/6 08:12:05",
-    "2019/9/6 08:15:42",
+    "2020/6/20 18:21:48",
+    "2020/6/20 18:24:55",
     {
       "pointing_altitude": 230000,
       "H_FOV": 5.67,
       "V_FOV": 0.91,
-      "Vmag": "<5",
+      "Vmag": "<4",
       "timestep": 5,
       "TimeSkip": 14400,
       "log_timestep": 3600,
-      "freeze_start": 150,
+      "freeze_start": 120,
       "freeze_duration": 52,
       "SnapshotTime": 2,
       "SnapshotSpacing": 3,
       "start_date": "0",
       "automatic": true
     },
-    "Number of times date changed: 339, faintest magnitude visible (100 equals no stars visible): 100.0, Dec (J2000): -57.81334807911149, RA (J2000): 247.2343334282876"
+    "Number of times date changed: 288, faintest magnitude visible (100 equals no stars visible): 100.0, Dec (J2000): 22.27358946152113, RA (J2000): 3.6452587482240086"
   ],
   [
     "Mode110",
-    "2019/9/6 08:15:42",
-    "2019/9/6 08:21:27",
+    "2020/6/20 18:24:55",
+    "2020/6/20 18:29:50",
     {
       "pointing_altitude_from": 40000,
       "pointing_altitude_to": 150000,
@@ -157,72 +152,51 @@
       "Exp_Time_IR": 5000,
       "Exp_Time_UV": 3000
     },
-    "Number of times date postponed: 10"
-  ],
-  [
-    "Mode122",
-    "2019/9/6 08:21:30",
-    "2019/9/6 08:25:07",
-    {
-      "pointing_altitude": 230000,
-      "H_FOV": 5.67,
-      "V_FOV": 0.91,
-      "Vmag": "<5",
-      "timestep": 5,
-      "TimeSkip": 14400,
-      "log_timestep": 3600,
-      "freeze_start": 150,
-      "freeze_duration": 52,
-      "SnapshotTime": 2,
-      "SnapshotSpacing": 3,
-      "start_date": "0",
-      "automatic": true,
-      "Exp_Time_IR": 5000,
-      "Exp_Time_UV": 3000
-    },
-    "Number of times date changed: 505, faintest magnitude visible (100 equals no stars visible): 100.0, Dec (J2000): -77.82093204778602, RA (J2000): 151.95930209048868"
-  ],
-  [
-    "Mode120",
-    "2019/9/6 08:29:04",
-    "2019/9/6 08:32:41",
-    {
-      "pointing_altitude": 230000,
-      "V_offset": 0,
-      "H_offset": 2.5,
-      "Vmag": "<2",
-      "timestep": 2,
-      "TimeSkip": 14400,
-      "log_timestep": 3600,
-      "automatic": true,
-      "start_date": "0",
-      "freeze_start": 150,
-      "freeze_duration": 52,
-      "SnapshotTime": 3,
-      "SnapshotSpacing": 3
-    },
-    "Star name:30438, V-offset: -0.0, H-offset: -2.22, V-mag: -0.62, Number of times date changed: 0, MATS (long,lat) in degrees = (-38.08028531873367, 51.07310334011221), optical-axis Dec (J2000 ICRS): [-55.38644772]), optical-axis RA (J2000 ICRS): [102.20368465]), star Dec (J2000 ICRS): [-54.64944287], star RA (J2000 ICRS): [105.85319578]"
+    "Number of times date postponed: 9"
   ],
   [
     "Mode100",
-    "2019/9/6 08:32:41",
-    "2019/9/6 09:42:27",
+    "2020/6/20 18:29:50",
+    "2020/6/20 19:06:15",
     {
       "pointing_altitude_from": 40000,
       "pointing_altitude_to": 150000,
       "pointing_altitude_interval": 5000,
-      "pointing_duration": 60,
+      "pointing_duration": 20,
       "Exp_Time_UV": 1000,
       "Exp_Time_IR": 1000,
       "ExpTime_step": 500,
       "start_date": "0"
     },
-    "Number of times date postponed: 9"
+    "Number of times date postponed: 10"
   ],
   [
     "Mode132",
-    "2019/9/6 09:42:27",
-    "2019/9/6 09:58:50",
+    "2020/6/20 19:06:15",
+    "2020/6/20 19:19:30",
+    {
+      "pointing_altitude": 230000,
+      "start_date": "0",
+      "Exp_Times_IR": [
+        1000,
+        5000,
+        10000,
+        20000
+      ],
+      "Exp_Times_UV": [
+        1000,
+        5000,
+        10000,
+        20000
+      ],
+      "session_duration": 120
+    },
+    "Number of times date postponed: 11"
+  ],
+  [
+    "Mode133",
+    "2020/6/20 19:19:30",
+    "2020/6/20 19:32:30",
     {
       "pointing_altitude": 230000,
       "start_date": "0",
@@ -243,54 +217,43 @@
     "Number of times date postponed: 12"
   ],
   [
-    "Mode133",
-    "2019/9/6 09:58:50",
-    "2019/9/6 10:14:58",
+    "Mode122",
+    "2020/6/20 19:32:33",
+    "2020/6/20 19:35:40",
     {
       "pointing_altitude": 230000,
+      "H_FOV": 5.67,
+      "V_FOV": 0.91,
+      "Vmag": "<4",
+      "timestep": 5,
+      "TimeSkip": 14400,
+      "log_timestep": 3600,
+      "freeze_start": 120,
+      "freeze_duration": 52,
+      "SnapshotTime": 2,
+      "SnapshotSpacing": 3,
       "start_date": "0",
-      "Exp_Times_IR": [
-        1000,
-        5000,
-        10000,
-        20000
-      ],
-      "Exp_Times_UV": [
-        1000,
-        5000,
-        10000,
-        20000
-      ],
-      "session_duration": 120
+      "automatic": true,
+      "Exp_Time_IR": 5000,
+      "Exp_Time_UV": 3000
     },
-    "Number of times date postponed: 13"
+    "Number of times date changed: 1298, faintest magnitude visible (100 equals no stars visible): 100.0, Dec (J2000): -72.58584589797485, RA (J2000): 19.410520584806005"
   ],
   [
     "Mode131",
-    "2019/9/6 10:14:58",
-    "2019/9/6 10:19:58",
+    "2020/6/20 19:35:40",
+    "2020/6/20 19:37:40",
     {
       "pointing_altitude": 230000,
-      "mode_duration": 300,
+      "mode_duration": 120,
       "start_date": "0"
     },
-    "Number of times date postponed: 16"
-  ],
-  [
-    "Mode134",
-    "2019/9/6 10:19:58",
-    "2019/9/6 10:34:58",
-    {
-      "pointing_altitude": 110000,
-      "mode_duration": 900,
-      "start_date": "0"
-    },
-    "Number of times date postponed: 15"
+    "Number of times date postponed: 14"
   ],
   [
     "Mode1",
-    "2019/9/6 10:34:58",
-    "2019/9/6 11:14:30",
+    "2020/6/20 19:37:40",
+    "2020/6/20 19:46:47",
     {
       "lat": 45,
       "log_timestep": 800,
@@ -300,28 +263,41 @@
     "Number of Modes inserted: 2"
   ],
   [
-    "Mode124",
-    "2019/9/6 11:14:45",
-    "2019/9/6 11:18:22",
+    "Mode120",
+    "2020/6/20 19:47:02",
+    "2020/6/20 19:50:09",
     {
       "pointing_altitude": 230000,
       "V_offset": 0,
-      "H_offset": 5.5,
+      "H_offset": 2.5,
+      "Vmag": "<2",
       "timestep": 2,
-      "log_timestep": 1200,
+      "TimeSkip": 14400,
+      "log_timestep": 3600,
       "automatic": true,
       "start_date": "0",
-      "freeze_start": 150,
+      "freeze_start": 120,
       "freeze_duration": 52,
-      "SnapshotTime": 2,
+      "SnapshotTime": 3,
       "SnapshotSpacing": 3
     },
-    "V-offset: -0.11, H-offset: -4.54, Times date changed: 0, MATS (long,lat) in degrees = (-60.74, -49.83), Moon Dec (J2000) [degrees]: -20.42, Moon RA (J2000) [degrees]: 256.52, OpticalAxis Dec = -20.29, Optical Axis RA = 261.47"
+    "Star name:113368, V-offset: -0.012232271236121332, H-offset: -1.2756843622544813, V-mag: 1.17, Number of times date changed: 0, MATS (long,lat) in degrees = (4182.851763107681, 4717.062870431537), optical-axis Dec (J2000 ICRS): [-19.54419887]), optical-axis RA (J2000 ICRS): [7.02535115]), star Dec (J2000 ICRS): [-19.37009394], star RA (J2000 ICRS): [8.3657084]"
+  ],
+  [
+    "Mode134",
+    "2020/6/20 19:50:09",
+    "2020/6/20 20:05:09",
+    {
+      "pointing_altitude": 110000,
+      "mode_duration": 900,
+      "start_date": "0"
+    },
+    "Number of times date postponed: 16"
   ],
   [
     "Mode1",
-    "2019/9/6 11:18:22",
-    "2019/9/6 12:00:25",
+    "2020/6/20 20:05:09",
+    "2020/6/20 20:12:23",
     {
       "lat": 45,
       "log_timestep": 800,

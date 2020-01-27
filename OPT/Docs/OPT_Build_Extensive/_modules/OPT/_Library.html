@@ -147,7 +147,7 @@
 <div class="viewcode-block" id="lat_calculator"><a class="viewcode-back" href="../../OPT.html#OPT._Library.lat_calculator">[docs]</a><span class="k">def</span> <span class="nf">lat_calculator</span><span class="p">(</span> <span class="n">Satellite_skyfield</span><span class="p">,</span> <span class="n">date</span> <span class="p">):</span>
     <span class="sd">&#39;&#39;&#39; Function that calculates the latitude of a skyfield.sgp4lib.EarthSatellite object at a certain date</span>
 <span class="sd">    </span>
-<span class="sd">    Mainly used to approximate the latitude of the LP as the LP is close to being in the same orbital plane.</span>
+<span class="sd">    Mainly used to approximate the latitude of the LP as the LP is close to being in the same plane as the orbital plane.</span>
 <span class="sd">    </span>
 <span class="sd">    Arguments:</span>
 <span class="sd">        Satellite_skyfield (:obj:`skyfield.sgp4lib.EarthSatellite`): A Skyfield object representing an EarthSatellite defined by a TLE.</span>
@@ -172,6 +172,7 @@
     
     
     <span class="k">return</span> <span class="n">latitude</span></div>
+
 
 <div class="viewcode-block" id="scheduler"><a class="viewcode-back" href="../../OPT.html#OPT._Library.scheduler">[docs]</a><span class="k">def</span> <span class="nf">scheduler</span><span class="p">(</span><span class="n">Occupied_Timeline</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">endDate</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39; Function that checks if the scheduled time is available.</span>
@@ -679,6 +680,7 @@
     <span class="sd">&quot;&quot;&quot;Calculates a list of CCDSEL (1,2,4,8,16,32) arguments corresponding to their TEXPMS in increasing order.</span>
 <span class="sd">    </span>
 <span class="sd">    Used to take snapshots in increasing order of TEXPMS, which will prevent streak from simultaneous readouts to occur when snapshots are staggered.</span>
+<span class="sd">    Any CCDs with TEXPMS equal to 0 will be ignored and not added to the list.</span>
 <span class="sd">    </span>
 <span class="sd">    Arguments:</span>
 <span class="sd">        CCD_settings (dict of dict of int): Dictionary containing settings for the CCDs.</span>
@@ -701,6 +703,7 @@
     
     <span class="n">CCDSEL</span> <span class="o">=</span> <span class="p">[]</span>
     
+    <span class="s2">&quot;Make a list with CCDSEL arguments in increasing order of TEXPMS, CCDs with TEXPMS equal to 0 are ignored&quot;</span>
     <span class="k">for</span> <span class="n">ExpTime</span> <span class="ow">in</span> <span class="n">ExpTimes</span><span class="p">:</span>
         <span class="k">if</span><span class="p">(</span> <span class="n">CCDSEL_16</span><span class="p">[</span><span class="s1">&#39;TEXPMS&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">ExpTime</span> <span class="ow">and</span> <span class="mi">16</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">CCDSEL</span> <span class="ow">and</span> <span class="n">ExpTime</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">):</span>
             <span class="n">CCDSEL</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>

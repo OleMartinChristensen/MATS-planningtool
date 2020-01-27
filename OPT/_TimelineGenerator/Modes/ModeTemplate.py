@@ -2,11 +2,11 @@
 """
 Created on Thu Mar 14 10:35:32 2019
 
-Template for a new Mode where 'X' is exchanged for the number or name of the mode. 
+Template for a new Science Mode where 'X' is exchanged for the number or name of the science mode. 
 The Mode is here scheduled at the start of the timeline.
 
 For *Timeline_gen* to be able to find and schedule this mode, this function must be imported in the *Modes_Header* module.
-Remember to also add the name of this Mode into the *Scheduling_priority* function, in the *Configuration_File*.
+Remember to also add the name of this Science Mode into the *Scheduling_priority* function, in the *Configuration_File*.
 
 @author: David Skånberg
 """
@@ -36,11 +36,13 @@ def ModeX(Occupied_Timeline):
     
     comment = 'Number of times date postponed: ' + str(iterations)
     
-    "Get the name of the function, which is always also the name of the mode"
+    "Get the name of the function, which shall also be the name of the mode"
     Mode_name = sys._getframe(0).f_code.co_name
     
+    "Add the scheduled startDate and endDate as a duple to the Occupied_Timeline dictionary using your Mode name as the key"
     Occupied_Timeline[Mode_name].append((startDate,endDate))
     
+    "Return the updated Occupied_Timeline variable and a comment"
     return Occupied_Timeline, comment
     
 

@@ -50,25 +50,25 @@
 <dl>
 <dt><strong>Abbreviations:</strong></dt><dd><p>CMD = Command</p>
 <p>FOV = Field of View</p>
-<p>LP = Look point of the instrument</p>
+<p>LP = Look point of the instrument.</p>
 <p>OPT = Operational Planning Tool</p>
 </dd>
 </dl>
 <p><strong>Description:</strong>
 <em>Operational_Planning_Tool</em> uses a hiearchy structure with a procedural programming paradigm. Meaning that only the top level functions (the ones mentioned above) are supposed to be called by a user.</p>
-<p><em>Operational_Planning_Tool</em> uses a special .py file as a <em>Configuration File</em>, meaning that the settings inside the <em>Configuration File</em> dictate the operation of the program (unless the same settings are explicitly stated in the input of a function, see <em>XML_gen</em> and <em>Timeline_Plotter</em>).
+<p><em>Operational_Planning_Tool</em> uses a special .py file as a <em>Configuration File</em>, meaning that the settings inside the <em>Configuration File</em> dictate the operation of the program (unless the same settings are also present in the input of a function, see <em>XML_gen</em> and <em>Timeline_Plotter</em>).
 An example of a <em>Configuration_File</em> with default values is located in the Operational_Planning_Tool and is called <em>_ConfigFile.py</em>.</p>
 <p>Create your own <em>Configuration File</em> with an appropriate name by running <em>Copy_ConfigFile</em> with a chosen name as an input.
 <em>Copy_ConfigFile</em> makes a copy of <em>_ConfigFile.py</em>. The settings in your copy are modified manually in a text editor.</p>
-<p>Your <em>Configuration File</em> and its date must be chosen by running <em>Set_ConfigFile</em>.</p>
+<p>Your <em>Configuration File</em> must be chosen by running <em>Set_ConfigFile</em>. The TLE and start date to be used can either be manually edited directly in the <em>Configuration File</em> or they can be set with <em>Set_ConfigFile</em>. If a TLE or date has been set with <em>Set_ConfigFile</em>, the TLE and date in the <em>Configuration File</em> will be ignored.</p>
 <p>The objective of <em>Operational_Planning_Tool</em> is to create a file consisting of planned Science Modes and Commands with timestamps (specified in &quot;Science Modes for MATS&quot; document).
 A <em>Science Mode Timeline</em>, as it is called, is created by running <em>Timeline_gen</em>. Remember to edit (in a text editor) and choose your <em>Configuration File</em> by running <em>Set_ConfigFile</em>.</p>
 <p>The created <em>Science Mode Timeline</em> can be converted into a XML-file containing Payload and Platform Commands (formatted as specified in the &quot;Innosat Payload Timeline XML Definition&quot; document)
 by running <em>XML_gen</em> with the <em>Science Mode Timeline</em> as the input. The <em>_XMLGenerator</em> package also contains the definition of Science Modes and Macros on an operational level.</p>
-<p>The <em>Science Mode Timeline</em> can also be simulated and and plotted by running <em>Timeline_Plotter</em> with the <em>Science Mode Timeline</em> as the input.
-<em>Timeline_Plotter</em> can also optionally plot a special kind of .h5 data-files, created by OHB SWEDEN.</p>
+<p>The <em>Science Mode Timeline</em> can also be simulated and plotted by running <em>Timeline_Plotter</em> with the <em>Science Mode Timeline</em> as the input.
+<em>Timeline_Plotter</em> can also optionally plot a special kind of .h5 data-files, created by OHB SWEDEN and defined in the &quot;IS-OSE-OCD-0001 Ground Segment ICD&quot; document. CSV files can also be plotted which can for example hold data created with STK.</p>
 <p><strong>Note:</strong> A <em>Science Mode Timeline</em> usually contains settings that are taken from the chosen <em>Configuration File</em> when the <em>Science Mode Timeline</em> was created.
-Any time a function uses a <em>Science Mode Timeline</em> as an input, these settings will be given priority over any similar settings stated in the currently chosen <em>Configuration File</em>.</p>
+Any time a program/function uses a <em>Science Mode Timeline</em> as an input (<em>Timeline_Plotter</em> and <em>XML_gen</em>), these settings will be given priority over any shared settings stated in the currently chosen <em>Configuration File</em>.</p>
 <p><em>Check_ConfigFile</em> is used to check if the values stated in the chosen <em>Configuration File</em> are plausible.</p>
 <p>All generated output files are saved in a folder called 'Output' in the working directory.
 Generated logs are saved in folders created in the working directory.</p>
@@ -76,10 +76,10 @@ Generated logs are saved in folders created in the working directory.</p>
 <p>import OPT</p>
 <p><em>#Create a new Configuration File named OPT_Config_File.#</em></p>
 <p>OPT.Copy_ConfigFile('OPT_Config_File')</p>
-<p><em>#Optionally change any settings in OPT_Config_File by using a text editor.#</em></p>
-<p><em>#Choose the newly created Configuration File and set the starting date.#</em></p>
-<p>OPT.Set_ConfigFile('OPT_Config_File', '2019/09/05 08:00:00')</p>
-<p><em>#Sanity check for values in the chosen Configuration File.#</em></p>
+<p><em>#Optionally change any settings in OPT_Config_File by using a text editor. For example change the TLE and start date used.#</em></p>
+<p><em>#Choose the newly created and edited Configuration File. #</em></p>
+<p>OPT.Set_ConfigFile('OPT_Config_File')</p>
+<p><em>#Sanity check for values in the chosen Configuration File. Also prints out the currently used start date and TLE.#</em></p>
 <p>OPT.CheckConfigFile()</p>
 <p><em>#Creates a Science Mode Timeline specified by settings given in the chosen Configuration File.#</em></p>
 <p>OPT.Timeline_gen()</p>
@@ -89,8 +89,9 @@ Generated logs are saved in folders created in the working directory.</p>
 <p>Data_MATS, Data_LP, Time, Time_OHB  = OPT.Timeline_Plotter('Output/Science_Mode_Timeline__OPT_Config_File.json')</p>
 <p><strong>Note:</strong></p>
 <p>Science Modes are separated into 2 different areas, <em>Operational Science Modes</em> (Mode 1,2,5) and <em>Calibration Modes</em>.</p>
-<p><em>Calibration Modes</em> are scheduled at specific points of time and are usually only scheduled once per <em>Science Mode Timeline</em>.
-<em>Operational Science Modes</em> (Mode 1,2,5) are scheduled whenever time is available (after the scheduling of <em>Calibration Modes</em>) and only one <em>Operational Science Mode</em> is scheduled per Timeline.</p>
+<p><em>Calibration Modes</em> are scheduled at specific points of time and are mostly only scheduled once per <em>Science Mode Timeline</em>.
+<em>Operational Science Modes</em> (Mode 1,2,5) are scheduled whenever time is available (after the scheduling of <em>Calibration Modes</em>) and only one <em>Operational Science Mode</em> is scheduled per timeline.
+The scheduling of certain <em>Calibration Modes</em> (science mode 120-124) depend on celestial object such as stars and the Moon. Therefore are the position of MATS and the pointing of the limb imager usually simulated to allow celestial object to be located in the FOV.</p>
 <dl class="function">
 <dt id="OPT.CheckConfigFile">
 <code class="sig-prename descclassname">OPT.</code><code class="sig-name descname">CheckConfigFile</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#CheckConfigFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.CheckConfigFile" title="Permalink to this definition">¶</a></dt>
@@ -103,9 +104,9 @@ Generated logs are saved in folders created in the working directory.</p>
 <code class="sig-prename descclassname">OPT.</code><code class="sig-name descname">Copy_ConfigFile</code><span class="sig-paren">(</span><em class="sig-param">Config_File_Name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#Copy_ConfigFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.Copy_ConfigFile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Makes a copy of the <em>_ConfigFile</em> located in <em>Operational_Planning_Tool</em>.</p>
 <p>The copy is created in the working directory of the user call and can be freely modified.
-Do not forget to also use <em>Set_ConfigFile</em> to choose your specific copy.
-<em>_ConfigFile</em> is imagined to contain the default settings of the program, while each copy contains week specific settings.
-If the default <em>_ConfigFile</em> is ever changed it is recommended to change the Version Name of it to keep track of changes.</p>
+Do not forget to also run <em>Set_ConfigFile</em> to choose your specific copy.
+<em>OPT._ConfigFile</em> is imagined to contain the default settings of the program, while each copy contains week specific settings.
+If the default <em>OPT._ConfigFile</em> is ever changed it is recommended to change the Version Name of it to keep track of changes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>Config_File_Name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- The name of the newly created copy of the <em>_ConfigFile</em> (excluding <em>.py</em>).</p>
@@ -122,7 +123,7 @@ If the default <em>_ConfigFile</em> is ever changed it is recommended to change 
 <dd><p>Invokes the <em>MinimalScienceXML_gen</em> part of the <em>OPT</em>.</p>
 <p>Creates an .xml file with fixed CMDs which purpose is to define a flight procedure which is ran on the satellite
 following unscheduled power termination of the payload.
-Runs startup CMDs and sets the payload in operational mode with the CCD macro <em>HighResIR</em>.
+Runs startup CMDs and sets the payload in operation mode with the CCD macro <em>HighResIR</em>.
 The CMD staggering is fixed. No date is given in the generated XML and will need to be added manually.
 Uses settings for the CMDs from the currently set <em>Configuration File</em>.</p>
 </dd></dl>
@@ -144,16 +145,17 @@ Uses settings for the CMDs from the currently set <em>Configuration File</em>.</
 
 <dl class="function">
 <dt id="OPT.Set_ConfigFile">
-<code class="sig-prename descclassname">OPT.</code><code class="sig-name descname">Set_ConfigFile</code><span class="sig-paren">(</span><em class="sig-param">Config_File_Name</em>, <em class="sig-param">Date</em>, <em class="sig-param">TLE1=''</em>, <em class="sig-param">TLE2=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#Set_ConfigFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.Set_ConfigFile" title="Permalink to this definition">¶</a></dt>
-<dd><p>Sets the StartTime and TLE for OPT, and the name of the <em>.py</em> file that shall be used as a <em>Configuration file</em> for OPT.</p>
+<code class="sig-prename descclassname">OPT.</code><code class="sig-name descname">Set_ConfigFile</code><span class="sig-paren">(</span><em class="sig-param">Config_File_Name</em>, <em class="sig-param">Date=None</em>, <em class="sig-param">TLE1=''</em>, <em class="sig-param">TLE2=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#Set_ConfigFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.Set_ConfigFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sets the name of the <em>.py</em> file that shall be used as a <em>Configuration file</em> for OPT.</p>
+<p>Can also be used to set the start date and TLE for OPT which then will be used instead of the values stated in the <em>Configuration File</em>.</p>
 <p>The <em>Configuration file</em> chosen must be visible in sys.path.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>Config_File_Name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- The name of the Config File to be used (excluding .py).</p></li>
-<li><p><strong>Date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- The start time and date for the Operational Planning Tool (yyyy/mm/dd hh:mm:ss).</p></li>
-<li><p><strong>TLE1</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- The first row of the TLE.</p></li>
-<li><p><strong>TLE2</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- The second row of the TLE.</p></li>
+<li><p><strong>Date</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Optional. The start time and date for the Operational Planning Tool (yyyy/mm/dd hh:mm:ss).</p></li>
+<li><p><strong>TLE1</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Optional. The first row of the TLE.</p></li>
+<li><p><strong>TLE2</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Optional. The second row of the TLE.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -215,7 +217,7 @@ Settings stated in the <em>Science Mode Timeline</em> override settings given in
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p><p>tuple containing:</p>
 <blockquote>
-<div><p><strong>Mode</strong> (<em>str</em>): The currently scheduled Mode.</p>
+<div><p><strong>Mode</strong> (<em>str</em>): The currently scheduled Mode ath the given date.</p>
 <p><strong>Parameters</strong> (<em>dict</em>): The parameters of the Mode.</p>
 </div></blockquote>
 </p>
@@ -249,7 +251,7 @@ The Science Modes and StartUpCMDs to be scheduled are listed in <em>Modes_priori
 <dd><p>Invokes the XML generator program part of Operational Planning Tool for MATS.</p>
 <p>Converts a <em>Science Mode Timeline</em>  (.json file) containing a list of scheduled Science Modes/CMDs/Tests into Payload and Platform commands and saves them as a .xml command file.</p>
 <p>Settings for the operation of the program are stated in the chosen <em>Configuration File</em>, set by <em>Set_ConfigFile</em>.
-Settings given in the <em>Science Mode Timeline</em> override the settings given in the chosen <em>Configuration file</em>.</p>
+Settings given in the <em>Science Mode Timeline</em> override the settings given in the chosen <em>Configuration file</em> or set with <em>Set_ConfigFile</em>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>science_mode_timeline_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the .json file containing the Science Mode Timeline.</p>

@@ -33,6 +33,7 @@ def UserProvidedDateScheduler(Occupied_Timeline, Settings):
     
     
     """
+    
     "Get the name of the parent function, which is always defined as the name of the mode"
     Mode_name = sys._getframe(1).f_code.co_name
     
@@ -105,11 +106,15 @@ def date_calculator(Settings):
         timestep = Settings['timestep'] #In seconds
         Logger.info('timestep set to: '+str(timestep)+' s')
         
-        duration = Settings['TimeToConsider']
+        if( Settings['TimeToConsider'] <= Timeline_settings['duration']):
+            duration = Settings['TimeToConsider']
+        else:
+            duration = Timeline_settings['duration']
+            
         Logger.info('Duration set to: '+str(duration)+' s')
         
         timesteps = int(ceil(duration / timestep)) + 2
-        Logger.info('Maximum number of timesteps set to: '+str(timesteps)+' s')
+        Logger.info('Maximum number of timesteps set to: '+str(timesteps))
         
         timeline_start = ephem.Date(Timeline_settings['start_date'])
         

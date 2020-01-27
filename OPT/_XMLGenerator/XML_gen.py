@@ -222,8 +222,10 @@ def XML_Initial_Basis_Creator(timeline_start,timeline_duration, SCIMOD_Path):
     etree.SubElement(root[0], 'timelineID', procedureIdentifier = "", descriptiveName = "", version = "1.0")
     
     etree.SubElement(root[0], 'changeLog')
-    etree.SubElement(root[0][1], 'changeLogItem', version = "1.1", date = "2019-01-17", author = "David Skanberg")
-    root[0][1][0].text = "Created Document"
+    etree.SubElement(root[0][1], 'changeLogItem', version = "1.0", date = str(datetime.date.today()), author = "David Skanberg")
+    root[0][1][0].text = "The file was created using OPT"
+    
+    
     
     
     etree.SubElement(root[0], 'validity')
@@ -233,7 +235,7 @@ def XML_Initial_Basis_Creator(timeline_start,timeline_duration, SCIMOD_Path):
     root[0][2][1].text = str(timeline_duration)
     
     etree.SubElement(root[0], 'comment')
-    root[0][3].text = "This command sequence is an Innosat timeline. Science Mode Timeline used to generate: "+SCIMOD_Path+', Configuration File used: '+_Globals.Config_File
+    root[0][3].text = "This command sequence is an Innosat timeline for MATS created with OPT. Science Mode Timeline used to generate: "+SCIMOD_Path+', Configuration File used: '+_Globals.Config_File
     
     
     root.append(etree.Element('listOfCommands'))

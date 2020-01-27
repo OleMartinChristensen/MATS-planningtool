@@ -167,7 +167,7 @@ def Operational_Sweep_macro(root, relativeTime, CCD_settings, PM_settings, point
 
 def Snapshot_Inertial_macro(root, relativeTime, CCD_settings, FreezeTime, FreezeDuration, pointing_altitude, 
                   StandardPointingAltitude, SnapshotSpacing, Snapshot_relativeTime, Timeline_settings, comment):
-    ''' Macro that corresponds to pointing towards an Inertial direction and take a Snapshot with all the CCDs (except Nadir).
+    ''' Macro that corresponds to pointing towards an Inertial direction and take a Snapshot with all the CCDs (except Nadir) which do not have TEXPMS set to 0.
     
     The order of the snapshots taken is determined by the CCDs TEXPMS in increasing order. This to prevent simultaneous readout.
     
@@ -186,7 +186,7 @@ def Snapshot_Inertial_macro(root, relativeTime, CCD_settings, FreezeTime, Freeze
         FreezeTime (float): Start time of attitude freeze command in on-board time [s].
         FreezeDuration (int): Duration of freeze [s].
         pointing_altitude (int): The altitude of the tangential point [m].
-        StandardPointingAltitude (int): The altitude of the LP [m].
+        StandardPointingAltitude (int): The standard altitude of the LP  [m].
         SnapshotSpacing (int): The time in seconds inbetween snapshots of individual CCDs.
         Snapshot_relativeTime (float): The relativeTime (time from start of timeline) at which the first Snapshot is taken.
         Timeline_settings (dict): Dictionary containing the settings of the Timeline given in either the *Science_Mode_Timeline* or the *Configuration File*.
@@ -198,7 +198,10 @@ def Snapshot_Inertial_macro(root, relativeTime, CCD_settings, FreezeTime, Freeze
     
     comment = comment + ', Snapshot_Inertial_macro'
     
+    "TEXPIMS is unused but still need to be set to a plausible value to not get errors"
     Disregarded, Disregarded, Disregarded, TEXPIMS = _Library.SyncArgCalculator(CCD_settings, Timeline_settings['CCDSYNC_ExtraOffset'], Timeline_settings['CCDSYNC_ExtraIntervalTime'])
+    
+    "CCDSEL arguments in order of increasing TEXPMS"
     CCDSELs = _Library.OrderingOfCCDSnapshots(CCD_settings)
     
     relativeTime = Commands.TC_pafMode(root, relativeTime, MODE = 2, Timeline_settings = Timeline_settings, comment = comment)

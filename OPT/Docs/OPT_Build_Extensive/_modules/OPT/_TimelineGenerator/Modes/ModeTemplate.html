@@ -35,11 +35,11 @@
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Created on Thu Mar 14 10:35:32 2019</span>
 
-<span class="sd">Template for a new Mode where &#39;X&#39; is exchanged for the number or name of the mode. </span>
+<span class="sd">Template for a new Science Mode where &#39;X&#39; is exchanged for the number or name of the science mode. </span>
 <span class="sd">The Mode is here scheduled at the start of the timeline.</span>
 
 <span class="sd">For *Timeline_gen* to be able to find and schedule this mode, this function must be imported in the *Modes_Header* module.</span>
-<span class="sd">Remember to also add the name of this Mode into the *Scheduling_priority* function, in the *Configuration_File*.</span>
+<span class="sd">Remember to also add the name of this Science Mode into the *Scheduling_priority* function, in the *Configuration_File*.</span>
 
 <span class="sd">@author: David Skånberg</span>
 <span class="sd">&quot;&quot;&quot;</span>
@@ -69,11 +69,13 @@
     
     <span class="n">comment</span> <span class="o">=</span> <span class="s1">&#39;Number of times date postponed: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">iterations</span><span class="p">)</span>
     
-    <span class="s2">&quot;Get the name of the function, which is always also the name of the mode&quot;</span>
+    <span class="s2">&quot;Get the name of the function, which shall also be the name of the mode&quot;</span>
     <span class="n">Mode_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>
     
+    <span class="s2">&quot;Add the scheduled startDate and endDate as a duple to the Occupied_Timeline dictionary using your Mode name as the key&quot;</span>
     <span class="n">Occupied_Timeline</span><span class="p">[</span><span class="n">Mode_name</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">startDate</span><span class="p">,</span><span class="n">endDate</span><span class="p">))</span>
     
+    <span class="s2">&quot;Return the updated Occupied_Timeline variable and a comment&quot;</span>
     <span class="k">return</span> <span class="n">Occupied_Timeline</span><span class="p">,</span> <span class="n">comment</span></div>
     
 

@@ -62,12 +62,14 @@
 <span class="sd">    </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
+    
+    <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Timeline_settings</span><span class="p">()</span>
+    
     <span class="s2">&quot;Earliest possible date an Operational Science Mode is scheduled&quot;</span>
-    <span class="n">initial_date</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Timeline_settings</span><span class="p">()[</span><span class="s1">&#39;start_date&#39;</span><span class="p">])</span>
+    <span class="n">initial_date</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;start_date&#39;</span><span class="p">])</span>
     
-    <span class="n">settings</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Timeline_settings</span><span class="p">()</span>
     
-    <span class="n">Occupied_values</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">Occupied_Timeline_values</span> <span class="o">=</span> <span class="p">[]</span>
     
     <span class="s2">&quot;Extract all scheduled modes with their scheduled dates and sort them in chronological order. Skip the ones which are empty or entirely scheduled before initial_date&quot;</span>
     <span class="k">for</span> <span class="n">Occupied_value</span> <span class="ow">in</span> <span class="n">Occupied_Timeline</span><span class="o">.</span><span class="n">values</span><span class="p">():</span>
@@ -80,60 +82,62 @@
                 <span class="k">continue</span>
                 
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">Occupied_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">date</span><span class="p">)</span>
+                <span class="n">Occupied_Timeline_values</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">date</span><span class="p">)</span>
     
-    <span class="n">Occupied_values</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+    <span class="n">Occupied_Timeline_values</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
     
     <span class="n">dates</span> <span class="o">=</span> <span class="p">[]</span>
     
     <span class="s2">&quot;The least amount of time that needs to be available for mode1/2 to be scheduled&quot;</span>
-    <span class="n">minDuration</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;Mode1_2_5_minDuration&#39;</span><span class="p">]</span>
+    <span class="n">minDuration</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;Mode1_2_5_minDuration&#39;</span><span class="p">]</span>
     <span class="n">iterations</span> <span class="o">=</span> <span class="mi">0</span>
     
-    <span class="c1">## To fill in modes inbetween already schedueled modes. The amount of iterations is equal to </span>
-    <span class="c1">## the number of modes scheduled plus 1 as there is a possibility for the modes to be scheduled </span>
-    <span class="c1">## at the start and end of the timeline.</span>
-    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Occupied_values</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;To fill in modes inbetween already schedueled modes. The amount of iterations is equal to </span>
+<span class="sd">    the number of modes scheduled plus 1 as there is a possibility for the modes to be scheduled </span>
+<span class="sd">    at the start and end of the timeline.&quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Occupied_Timeline_values</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span>
         
-        <span class="c1">## If Occupied_values is empty then just schedule until the end of the timeline</span>
-        <span class="k">if</span><span class="p">(</span> <span class="nb">len</span><span class="p">(</span><span class="n">Occupied_values</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">):</span>
-            <span class="n">timeline_end</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;start_date&#39;</span><span class="p">])</span><span class="o">+</span><span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;duration&#39;</span><span class="p">])</span>
+        <span class="c1">## If Occupied_Timeline_values is empty then just schedule until the end of the timeline</span>
+        <span class="k">if</span><span class="p">(</span> <span class="nb">len</span><span class="p">(</span><span class="n">Occupied_Timeline_values</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">):</span>
+            <span class="n">timeline_end</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;start_date&#39;</span><span class="p">])</span><span class="o">+</span><span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;duration&#39;</span><span class="p">])</span>
             <span class="n">date</span> <span class="o">=</span> <span class="n">initial_date</span>
-            <span class="n">endDate</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">timeline_end</span> <span class="o">-</span> <span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;mode_separation&#39;</span><span class="p">])</span>
+            <span class="n">endDate</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">timeline_end</span> <span class="o">-</span> <span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;mode_separation&#39;</span><span class="p">])</span>
             <span class="n">dates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">endDate</span><span class="p">)</span> <span class="p">)</span>
             
             <span class="n">iterations</span> <span class="o">=</span> <span class="n">iterations</span> <span class="o">+</span> <span class="mi">1</span>
             
         <span class="c1">## For first iteration; Check if there is spacing between initial_date and the the first mode running</span>
-        <span class="k">elif</span><span class="p">(</span> <span class="n">x</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">Occupied_values</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">initial_date</span><span class="p">):</span>
-            <span class="n">time_between_modes</span> <span class="o">=</span> <span class="n">Occupied_values</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">initial_date</span> 
+        <span class="k">elif</span><span class="p">(</span> <span class="n">x</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">Occupied_Timeline_values</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="n">initial_date</span><span class="p">):</span>
+            <span class="n">time_between_modes</span> <span class="o">=</span> <span class="n">Occupied_Timeline_values</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">initial_date</span> 
             <span class="k">if</span><span class="p">(</span><span class="n">time_between_modes</span> <span class="o">&gt;</span> <span class="n">minDuration</span> <span class="p">):</span>
                 <span class="n">date</span> <span class="o">=</span> <span class="n">initial_date</span>
                 
-                <span class="n">endDate</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">Occupied_values</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;mode_separation&#39;</span><span class="p">])</span>
+                <span class="n">endDate</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">Occupied_Timeline_values</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;mode_separation&#39;</span><span class="p">])</span>
                 <span class="n">dates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">endDate</span><span class="p">)</span> <span class="p">)</span>
                 <span class="n">iterations</span> <span class="o">=</span> <span class="n">iterations</span> <span class="o">+</span> <span class="mi">1</span>
                 
         <span class="c1">## For last iteration; Check if there is spacing in between end of the last mode and the end of the timeline</span>
-        <span class="k">elif</span><span class="p">(</span> <span class="n">x</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">Occupied_values</span><span class="p">)</span> <span class="p">):</span>
-            <span class="n">timeline_end</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;start_date&#39;</span><span class="p">])</span><span class="o">+</span><span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;duration&#39;</span><span class="p">])</span>
-            <span class="n">time_between_modes</span> <span class="o">=</span> <span class="n">timeline_end</span> <span class="o">-</span> <span class="n">Occupied_values</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> 
+        <span class="k">elif</span><span class="p">(</span> <span class="n">x</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">Occupied_Timeline_values</span><span class="p">)</span> <span class="p">):</span>
+            <span class="n">timeline_end</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;start_date&#39;</span><span class="p">])</span><span class="o">+</span><span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;duration&#39;</span><span class="p">])</span>
+            <span class="n">time_between_modes</span> <span class="o">=</span> <span class="n">timeline_end</span> <span class="o">-</span> <span class="n">Occupied_Timeline_values</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> 
             <span class="k">if</span><span class="p">(</span><span class="n">time_between_modes</span> <span class="o">&gt;</span> <span class="n">minDuration</span> <span class="p">):</span>
-                <span class="n">date</span> <span class="o">=</span> <span class="n">Occupied_values</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
-                <span class="n">endDate</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">timeline_end</span> <span class="o">-</span> <span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;mode_separation&#39;</span><span class="p">])</span>
+                <span class="n">date</span> <span class="o">=</span> <span class="n">Occupied_Timeline_values</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">endDate</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">timeline_end</span> <span class="o">-</span> <span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;mode_separation&#39;</span><span class="p">])</span>
                 <span class="n">dates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">endDate</span><span class="p">)</span> <span class="p">)</span>
                 <span class="n">iterations</span> <span class="o">=</span> <span class="n">iterations</span> <span class="o">+</span> <span class="mi">1</span>
                 
         <span class="c1">## For all other iterations; Start scheduling Mode1,2,5 inbetween already schedueled modes and CMDs</span>
-        <span class="k">elif</span><span class="p">(</span> <span class="n">x</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">x</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">Occupied_values</span><span class="p">)</span> <span class="p">):</span>
-            <span class="n">time_between_modes</span> <span class="o">=</span> <span class="n">Occupied_values</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">Occupied_values</span><span class="p">[</span><span class="n">x</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> 
+        <span class="k">elif</span><span class="p">(</span> <span class="n">x</span> <span class="o">!=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">x</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">Occupied_Timeline_values</span><span class="p">)</span> <span class="p">):</span>
+            <span class="n">time_between_modes</span> <span class="o">=</span> <span class="n">Occupied_Timeline_values</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">Occupied_Timeline_values</span><span class="p">[</span><span class="n">x</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> 
             <span class="k">if</span><span class="p">(</span><span class="n">time_between_modes</span> <span class="o">&gt;</span> <span class="n">minDuration</span> <span class="p">):</span>
-                <span class="n">date</span> <span class="o">=</span> <span class="n">Occupied_values</span><span class="p">[</span><span class="n">x</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
-                <span class="n">endDate</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">Occupied_values</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="n">settings</span><span class="p">[</span><span class="s1">&#39;mode_separation&#39;</span><span class="p">])</span>
+                <span class="n">date</span> <span class="o">=</span> <span class="n">Occupied_Timeline_values</span><span class="p">[</span><span class="n">x</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">endDate</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">Occupied_Timeline_values</span><span class="p">[</span><span class="n">x</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">ephem</span><span class="o">.</span><span class="n">second</span><span class="o">*</span><span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;mode_separation&#39;</span><span class="p">])</span>
                 <span class="n">dates</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="n">date</span><span class="p">,</span> <span class="n">endDate</span><span class="p">)</span> <span class="p">)</span>
                 <span class="n">iterations</span> <span class="o">=</span> <span class="n">iterations</span> <span class="o">+</span> <span class="mi">1</span>
                 
-    
+        
+        
+        
     
     <span class="k">if</span><span class="p">(</span> <span class="s1">&#39;Mode1&#39;</span> <span class="ow">in</span> <span class="n">Occupied_Timeline</span> <span class="p">):</span>
         <span class="n">Occupied_Timeline</span><span class="p">[</span><span class="s1">&#39;Mode1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dates</span>
@@ -142,26 +146,7 @@
     <span class="k">elif</span><span class="p">(</span> <span class="s1">&#39;Mode5&#39;</span> <span class="ow">in</span> <span class="n">Occupied_Timeline</span>  <span class="p">):</span>
         <span class="n">Occupied_Timeline</span><span class="p">[</span><span class="s1">&#39;Mode5&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">dates</span>
         
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    if( settings[&#39;Choose_Operational_Science_Mode&#39;] == 0 ):</span>
-<span class="sd">        if( settings[&#39;Schedule_Mode5&#39;] == True):</span>
-<span class="sd">            Occupied_Timeline[&#39;Mode5&#39;] = dates</span>
-<span class="sd">            </span>
-<span class="sd">        elif( ephem.Date(settings[&#39;start_date&#39;]).tuple()[1] in [11,12,1,2,5,6,7,8] or </span>
-<span class="sd">             ( ephem.Date(settings[&#39;start_date&#39;]).tuple()[1] in [3,9] and ephem.Date(settings[&#39;start_date&#39;]).tuple()[2] in range(11) )):</span>
-<span class="sd">            </span>
-<span class="sd">            Occupied_Timeline[&#39;Mode1&#39;] = dates</span>
-<span class="sd">            </span>
-<span class="sd">        else:</span>
-<span class="sd">            Occupied_Timeline[&#39;Mode2&#39;] = dates</span>
-<span class="sd">            </span>
-<span class="sd">    elif( settings[&#39;Choose_Operational_Science_Mode&#39;] == 1 ):</span>
-<span class="sd">        Occupied_Timeline[&#39;Mode1&#39;] = dates</span>
-<span class="sd">    elif( settings[&#39;Choose_Operational_Science_Mode&#39;] == 2 ):</span>
-<span class="sd">        Occupied_Timeline[&#39;Mode2&#39;] = dates</span>
-<span class="sd">    elif( settings[&#39;Choose_Operational_Science_Mode&#39;] == 5 ):</span>
-<span class="sd">        Occupied_Timeline[&#39;Mode5&#39;] = dates</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Scheduled Operational Science Mode (date, endDate): &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">dates</span><span class="p">))</span>
     <span class="n">comment</span> <span class="o">=</span> <span class="s1">&#39;Number of Modes inserted: &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">iterations</span><span class="p">)</span>
     
     

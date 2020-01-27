@@ -69,7 +69,7 @@ def Mode120_date_calculator():
     Arguments:
         
     Returns:
-        SpottedStarList ((:obj:`list` of :obj:`dict`)) or (str): A list containing dictionaries containing parameters for each time a star is spotted. Or just a date depending on 'automatic' in *Mode124_settings*.
+        SpottedStarList ((:obj:`list` of :obj:`dict`)) or (str): A list containing dictionaries containing parameters for each time a star is spotted.
     
     """
     
@@ -77,11 +77,12 @@ def Mode120_date_calculator():
     Mode120_settings = OPT_Config_File.Mode120_settings()
     
     ######################################################
-    "Constants"
+    "Check how many times Mode120 have been scheduled"
     Mode120Iteration = _Globals.Mode120Iteration
-    "Make the V_offset_Index go from 0 to len(Mode120_settings['V_offset']"
+    "Make the V_offset_Index go from 0 to len(Mode120_settings['V_offset'] for each time Mode120 is scheduled"
     V_offset_Index = (Mode120Iteration-1) % (len(Mode120_settings['V_offset']))
     
+    "Constants"
     V_offset = Mode120_settings['V_offset'][V_offset_Index]
     H_offset = Mode120_settings['H_offset']
     
@@ -107,12 +108,14 @@ def Mode120_date_calculator():
     timestep = Mode120_settings['timestep'] #In seconds
     Logger.info('timestep set to: '+str(timestep)+' s')
     
-    duration = Mode120_settings['TimeToConsider']
-    duration = Timeline_settings['duration']
+    if( Mode120_settings['TimeToConsider'] <= Timeline_settings['duration']):
+        duration = Mode120_settings['TimeToConsider']
+    else:
+        duration = Timeline_settings['duration']
     Logger.info('Duration set to: '+str(duration)+' s')
     
     timesteps = int(ceil(duration / timestep)) + 2
-    Logger.info('Total number of timesteps set to: '+str(timesteps)+' s')
+    Logger.info('Maximum number of timesteps set to: '+str(timesteps))
     
     timeline_start = ephem.Date(Timeline_settings['start_date'])
     initial_time = ephem.Date( timeline_start + ephem.second*Mode120_settings['freeze_start'] )
@@ -148,7 +151,7 @@ def Mode120_date_calculator():
     stars_r = array([stars_x,stars_y,stars_z])
     stars_r = stars_r.transpose()
     
-    "Prepare the excel file output"
+    "Prepare the .csv file output"
     star_list_excel = []
     star_list_excel.append(['Name'])
     star_list_excel.append(['t1'])
@@ -202,7 +205,6 @@ def Mode120_date_calculator():
     Logger.info('Start of simulation of MATS for Mode120')
     ################## Start of Simulation ########################################
     "Loop and calculate the relevant angle of each star to each direction of MATS's FOV"
-    #for t in range(timesteps):
     while( current_time-initial_time < ephem.second*duration):
         
         
@@ -225,6 +227,8 @@ def Mode120_date_calculator():
         r_H_offset_normal[t] = Satellite_dict['Normal2H_offset']
         r_V_offset_normal[t] = Satellite_dict['Normal2V_offset']
         
+        OrbitalAngularVelocity = 360 / MATS_P[t]
+        AngularChangePerTimestep = OrbitalAngularVelocity * timestep
         
         ###################### Star-mapper ####################################
         
@@ -283,8 +287,8 @@ def Mode120_date_calculator():
                         continue
                 
                 
-                "Check that the star is entering at V-offset degrees and within the H-offset angle"
-                if( stars_vert_offset[t][x] <= V_offset and stars_vert_offset[t-1][x] > V_offset and abs(stars_hori_offset[t][x]) < H_offset):
+                "Check that the star is entering at V-offset degrees with a standard timestep and within the H-offset angle"
+                if( V_offset - AngularChangePerTimestep  <= stars_vert_offset[t][x] <= V_offset and stars_vert_offset[t-1][x] > V_offset and abs(stars_hori_offset[t][x]) < H_offset):
                     
                     if( t % log_timestep == 0):
                         Logger.debug('Star: '+stars[x].name+', with H-offset: '+str(stars_hori_offset[t][x])+' V-offset: '+str(stars_vert_offset[t][x])+' in degrees is available')
@@ -295,7 +299,7 @@ def Mode120_date_calculator():
                     spotted_star_timecounter.append(t) 
                     
                     
-                    "Log all relevent data for the star"
+                    "Append all relevent data for the star"
                     star_list_excel[0].append(stars[x].name)
                     star_list_excel[1].append(str(current_time))
                     star_list_excel[2].append(str(float(long_MATS[t])))
@@ -324,7 +328,7 @@ def Mode120_date_calculator():
         
         "Increase Simulation Time with a timestep, or skip ahead if 1 orbit is completed"
         t += 1
-        if( t*timestep >= MATS_P[t-1]*(TimeSkips+1) ):
+        if( t*timestep > MATS_P[t-1]*(TimeSkips+1) ):
             current_time = ephem.Date(current_time+ephem.second*Timeskip)
             TimeSkips += 1
         else:
@@ -333,9 +337,9 @@ def Mode120_date_calculator():
         
     ########################## END OF SIMULATION ############################
     
-    
+    Logger.info('')
     Logger.info('End of simulation for Mode120')
-    
+    Logger.info('')
     
     "Write spotted stars to file"
     try:
@@ -345,7 +349,7 @@ def Mode120_date_calculator():
     
     while(True):
         try:
-            file_directory = os.path.join('Output',sys._getframe(1).f_code.co_name+'_Visible_Stars_'+_Globals.Config_File+'.csv')
+            file_directory = os.path.join('Output',sys._getframe(1).f_code.co_name+'_Visible_Stars__'+_Globals.Config_File+'__V_offset'+str(V_offset)+'.csv')
             with open(file_directory, 'w', newline='') as write_file:
                 writer = csv.writer(write_file, dialect='excel-tab')
                 writer.writerows(star_list_excel)
@@ -412,8 +416,7 @@ def Mode120_date_select(Occupied_Timeline, SpottedStarList):
     star_min_mag_H_offset = []
     
     star_H_offset = [SpottedStarList[x]['H-offset'] for x in range(len(SpottedStarList))]
-    #print('star_H_offset')
-    #print(star_H_offset)
+    
     star_V_offset = [SpottedStarList[x]['V-offset'] for x in range(len(SpottedStarList))]
     star_date = [SpottedStarList[x]['Date'] for x in range(len(SpottedStarList))]
     star_mag = [SpottedStarList[x]['Vmag'] for x in range(len(SpottedStarList))]
@@ -434,7 +437,7 @@ def Mode120_date_select(Occupied_Timeline, SpottedStarList):
         if( min(star_mag) == star_mag[x]):
             star_min_mag_H_offset.append( star_H_offset[x])
             
-        #Just add an arbitrary large H-offset value for stars other than the brightest to keep the list the same length.
+        #Just adds an arbitrary large H-offset value for stars other than the brightest to keep the list the same length.
         #This will also allow all instances with the brightest star to be scheduled first. Then later in random magnitude order.
         else:
             star_min_mag_H_offset.append(arbitraryLargeNumber)
@@ -454,10 +457,10 @@ def Mode120_date_select(Occupied_Timeline, SpottedStarList):
     
     restart = True
     iterations = 0
-    ## Selects date based on min H-offset, if occupied, select date for next min H-offset
+    "Selects date based on min H-offset, if occupied, select date for next min H-offset"
     while( restart == True):
         
-        ## If all available dates for the brightest star is occupied, no Mode120 will be schedueled
+        "If all available dates for the brightest star is occupied, no Mode120 will be schedueled"
         if( len(star_min_mag_H_offset) == iterations):
             Mode120_comment = 'No available time for Mode120 using the brightest available star'
             Logger.warning(Mode120_comment)
@@ -466,8 +469,8 @@ def Mode120_date_select(Occupied_Timeline, SpottedStarList):
         
         restart = False
         
-        #Extract index of  minimum H-offset for first iteration, 
-        #then next smallest if 2nd iterations needed and so on. If all 
+        """Extract index of minimum H-offset for first iteration, 
+        #then next smallest if 2nd iterations needed and so on. """
         x = star_H_offset_abs.index(star_H_offset_sorted[iterations])
         
         StartDate = star_date[x]
@@ -482,7 +485,7 @@ def Mode120_date_select(Occupied_Timeline, SpottedStarList):
             restart = True
             continue
         
-        ## Extract Occupied dates and if they clash, restart loop and select new date
+        "Extract Occupied dates and if they clash, restart loop and select new date"
         for busy_dates in Occupied_Timeline.values():
             if( busy_dates == []):
                 continue

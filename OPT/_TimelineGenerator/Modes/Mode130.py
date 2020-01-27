@@ -38,7 +38,8 @@ def Mode130(Occupied_Timeline):
         initialDate = ephem.Date(Timeline_settings['start_date'])
     
     
-    endDate = ephem.Date(initialDate + ephem.second* (Settings['SnapshotSpacing'] * 7 + 
+    NumberOfCCDs = 7
+    endDate = ephem.Date(initialDate + ephem.second* (Settings['SnapshotSpacing'] * NumberOfCCDs + 
                          Timeline_settings['pointing_stabilization'] + Timeline_settings['mode_separation'] ) )
     
     

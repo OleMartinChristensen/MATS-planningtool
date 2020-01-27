@@ -57,7 +57,7 @@
 <span class="sd">        </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
-    <span class="c1">######## Try to Create a directory for storage of output files #######</span>
+    <span class="s2">&quot;######## Try to Create a directory for storage of output files #######&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="s1">&#39;Output&#39;</span><span class="p">)</span>
     <span class="k">except</span><span class="p">:</span>
@@ -65,10 +65,10 @@
     
     
     
-    <span class="c1">############# Set up Logger #################################</span>
+    <span class="s2">&quot;############# Set up Logger #################################&quot;</span>
     <span class="n">_Library</span><span class="o">.</span><span class="n">SetupLogger</span><span class="p">(</span><span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Logger_name</span><span class="p">())</span>
+    <span class="s2">&quot;#############################################################&quot;</span>
     
-    <span class="c1">#############################################################</span>
     <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Start of program&#39;</span><span class="p">)</span>
     
     <span class="n">Version</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Version</span><span class="p">()</span>
@@ -113,8 +113,8 @@
     <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
     <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Start looping through modes priority list&#39;</span><span class="p">)</span>
     
-    <span class="c1">################################################################################################################</span>
-    <span class="c1">################################################################################################################</span>
+    <span class="s2">&quot;################################################################################################################&quot;</span>
+    <span class="s2">&quot;################################################################################################################&quot;</span>
     
     <span class="s2">&quot;Loop through the Modes to be ran and schedule each one in the priority order of which they appear in the list&quot;</span>
     <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Scheduling_priority</span><span class="p">)):</span>
@@ -171,8 +171,8 @@
             <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Entry number &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">SCIMOD_Timeline_unchronological</span><span class="p">))</span><span class="o">+</span><span class="s1">&#39; in unchronological Science Mode list: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">SCIMOD_Timeline_unchronological</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
             <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
         
-    <span class="c1">################################################################################################################</span>
-    <span class="c1">#############################################################################################################</span>
+    <span class="s2">&quot;###########################################################################################################&quot;</span>
+    <span class="s2">&quot;###########################################################################################################&quot;</span>
     
     
     <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Looping sequence of modes priority list complete&#39;</span><span class="p">)</span>
@@ -180,8 +180,8 @@
     
     
     
-    <span class="c1">##########################################################################################</span>
-    <span class="c1">########## Scheduling of operational science mode (Mode1,2 and possibly 5) ###################################</span>
+    <span class="s2">&quot;############################################################################################################&quot;</span>
+    <span class="s2">&quot;########## Scheduling of operational science mode (Either Mode1, 2 or 5) ###################################&quot;</span>
     
     
     <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Operational Science Mode scheduling&#39;</span><span class="p">)</span>
@@ -192,50 +192,48 @@
     <span class="k">if</span><span class="p">(</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;Choose_Operational_Science_Mode&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">5</span> <span class="p">):</span>
         <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Schedule Mode5 as an operational science mode&#39;</span><span class="p">)</span>
         
-        <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;Mode5&#39;</span>
+        <span class="n">OpSciMode</span> <span class="o">=</span> <span class="s1">&#39;Mode5&#39;</span>
     <span class="k">elif</span><span class="p">(</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;Choose_Operational_Science_Mode&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span> <span class="p">):</span>
         <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Schedule Mode1 as an operational science mode&#39;</span><span class="p">)</span>
-        <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;Mode1&#39;</span>
+        <span class="n">OpSciMode</span> <span class="o">=</span> <span class="s1">&#39;Mode1&#39;</span>
     <span class="k">elif</span><span class="p">(</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;Choose_Operational_Science_Mode&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span> <span class="p">):</span>
         <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Schedule Mode2 as an operational science mode&#39;</span><span class="p">)</span>
-        <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;Mode2&#39;</span>
+        <span class="n">OpSciMode</span> <span class="o">=</span> <span class="s1">&#39;Mode2&#39;</span>
     <span class="k">elif</span><span class="p">(</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;Choose_Operational_Science_Mode&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">):</span>
         <span class="c1">### Check if it is NLC season ###</span>
         <span class="k">if</span><span class="p">(</span> <span class="n">Timeline_start_date</span><span class="o">.</span><span class="n">tuple</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">11</span><span class="p">,</span><span class="mi">12</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">]</span> <span class="ow">or</span> 
                 <span class="p">(</span> <span class="n">Timeline_start_date</span><span class="o">.</span><span class="n">tuple</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">in</span> <span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">9</span><span class="p">]</span> <span class="ow">and</span> <span class="n">Timeline_start_date</span><span class="o">.</span><span class="n">tuple</span><span class="p">()[</span><span class="mi">2</span><span class="p">]</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">11</span><span class="p">)</span> <span class="p">)):</span>
             
             <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;NLC season (Mode1)&#39;</span><span class="p">)</span>
-            <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;Mode1&#39;</span> 
+            <span class="n">OpSciMode</span> <span class="o">=</span> <span class="s1">&#39;Mode1&#39;</span> 
         <span class="k">else</span><span class="p">:</span>
             <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Not NLC season (Mode2)&#39;</span><span class="p">)</span>
-            <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;Mode2&#39;</span>
+            <span class="n">OpSciMode</span> <span class="o">=</span> <span class="s1">&#39;Mode2&#39;</span>
             
         
-    <span class="n">Occupied_Timeline</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">mode</span><span class="p">:</span> <span class="p">[]})</span>
+    <span class="n">Occupied_Timeline</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">OpSciMode</span><span class="p">:</span> <span class="p">[]})</span>
     
     <span class="n">Occupied_Timeline</span><span class="p">,</span> <span class="n">Mode_comment</span> <span class="o">=</span> <span class="n">Mode1_2_5</span><span class="p">(</span><span class="n">Occupied_Timeline</span><span class="p">)</span>
     <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
-    <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Post-&#39;</span><span class="o">+</span><span class="n">mode</span><span class="o">+</span><span class="s1">&#39; Occupied_Timeline: </span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">+</span><span class="s2">&quot;{&quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;        </span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">Occupied_Timeline</span><span class="o">.</span><span class="n">items</span><span class="p">())</span> <span class="o">+</span> <span class="s2">&quot;}&quot;</span><span class="p">)</span>
+    <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Post-&#39;</span><span class="o">+</span><span class="n">OpSciMode</span><span class="o">+</span><span class="s1">&#39; Occupied_Timeline: </span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">+</span><span class="s2">&quot;{&quot;</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">&quot;        </span><span class="si">{}</span><span class="s2">: </span><span class="si">{}</span><span class="s2">&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">Occupied_Timeline</span><span class="o">.</span><span class="n">items</span><span class="p">())</span> <span class="o">+</span> <span class="s2">&quot;}&quot;</span><span class="p">)</span>
     <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
     
-    <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">mode</span><span class="o">+</span><span class="s1">&#39; getting added to unchronological timeline&#39;</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Occupied_Timeline</span><span class="p">[</span><span class="n">mode</span><span class="p">])):</span>
-        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Appended to timeline: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">((</span><span class="n">Occupied_Timeline</span><span class="p">[</span><span class="n">mode</span><span class="p">][</span><span class="n">x</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">Occupied_Timeline</span><span class="p">[</span><span class="n">mode</span><span class="p">][</span><span class="n">x</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="n">mode</span><span class="p">,</span> <span class="n">Mode_comment</span><span class="p">)))</span>
-        <span class="n">SCIMOD_Timeline_unchronological</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">Occupied_Timeline</span><span class="p">[</span><span class="n">mode</span><span class="p">][</span><span class="n">x</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">Occupied_Timeline</span><span class="p">[</span><span class="n">mode</span><span class="p">][</span><span class="n">x</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="n">mode</span><span class="p">,</span> <span class="n">Mode_comment</span><span class="p">))</span>
+    <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">OpSciMode</span><span class="o">+</span><span class="s1">&#39; getting added to unchronological timeline&#39;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Occupied_Timeline</span><span class="p">[</span><span class="n">OpSciMode</span><span class="p">])):</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Appended to timeline: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">((</span><span class="n">Occupied_Timeline</span><span class="p">[</span><span class="n">OpSciMode</span><span class="p">][</span><span class="n">x</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">Occupied_Timeline</span><span class="p">[</span><span class="n">OpSciMode</span><span class="p">][</span><span class="n">x</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="n">OpSciMode</span><span class="p">,</span> <span class="n">Mode_comment</span><span class="p">)))</span>
+        <span class="n">SCIMOD_Timeline_unchronological</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">Occupied_Timeline</span><span class="p">[</span><span class="n">OpSciMode</span><span class="p">][</span><span class="n">x</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">Occupied_Timeline</span><span class="p">[</span><span class="n">OpSciMode</span><span class="p">][</span><span class="n">x</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span><span class="n">OpSciMode</span><span class="p">,</span> <span class="n">Mode_comment</span><span class="p">))</span>
         
     
-    <span class="c1">###########################################################################################</span>
-    <span class="c1">###########################################################################################</span>
+    <span class="s2">&quot;###########################################################################################&quot;</span>
+    <span class="s2">&quot;###########################################################################################&quot;</span>
     
     
-    <span class="c1">#############################################################################################</span>
-    <span class="c1">################# Sort Planned Modes and create a Science Mode Timeline List ################</span>
+    <span class="s2">&quot;#############################################################################################&quot;</span>
+    <span class="s2">&quot;################# Sort Planned Modes and create a Science Mode Timeline List ################&quot;</span>
+    
     
     
     <span class="n">SCIMOD_Timeline_unchronological</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
-    <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
-    <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;Unchronological timeline sorted&#39;</span><span class="p">)</span>
-    <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
     
     <span class="s2">&quot;Create a Science Mode Timeline list with the first entry being Timeline_settings&quot;</span>
     <span class="n">SCIMOD_Timeline</span> <span class="o">=</span> <span class="p">[]</span>
@@ -243,9 +241,10 @@
                             <span class="s1">&#39;Note: These Timeline_settings and TLE will be used when converting into a XML&#39;</span><span class="p">,</span> 
                             <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">getTLE</span><span class="p">()])</span>
     
+    <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;1 entry in Science Mode list: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">SCIMOD_Timeline</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
     
     <span class="n">t</span><span class="o">=</span><span class="mi">0</span>
-    <span class="s2">&quot;Add entries to the Science Mode Timeline list in chronological order. The list contains Mode name, start date, enddate, params for XML-gen and comment&quot;</span>
+    <span class="s2">&quot;Add entries to the Science Mode Timeline list in chronological order. The entries in the list contains Mode name, start date, endDate, settings and comment&quot;</span>
     <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">SCIMOD_Timeline_unchronological</span><span class="p">:</span>
         
         <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; Timeline entry: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
@@ -278,15 +277,15 @@
         <span class="c1">#SCIMOD_Timeline.append([ x[2],str(x[0]), str(x[1]),{},x[3] ])</span>
         
         <span class="n">SCIMOD_Timeline</span><span class="o">.</span><span class="n">append</span><span class="p">([</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">1</span><span class="p">]),</span><span class="n">Config_File</span><span class="p">,</span><span class="n">x</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="p">])</span>
-        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; entry in Science Mode list: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">SCIMOD_Timeline</span><span class="p">[</span><span class="n">t</span><span class="p">]))</span>
+        <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">t</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span><span class="o">+</span><span class="s1">&#39; entry in Science Mode list: &#39;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">SCIMOD_Timeline</span><span class="p">[</span><span class="n">t</span><span class="o">+</span><span class="mi">1</span><span class="p">]))</span>
         <span class="n">Logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;&#39;</span><span class="p">)</span>
         <span class="n">t</span><span class="o">=</span> <span class="n">t</span><span class="o">+</span><span class="mi">1</span>
     
-    <span class="c1">###########################################################################################</span>
+    <span class="s2">&quot;###########################################################################################&quot;</span>
     
     
     
-    
+    <span class="s2">&quot;Write the Science Mode Timeline list to a .json file&quot;</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="s1">&#39;Output&#39;</span><span class="p">)</span>
     <span class="k">except</span><span class="p">:</span>

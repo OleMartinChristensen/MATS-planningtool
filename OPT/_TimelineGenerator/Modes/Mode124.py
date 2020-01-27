@@ -64,8 +64,7 @@ def date_calculator():
     
     (# as defined in the *Configuration File*). \n
     
-    Saves the date and parameters regarding the spotting of the Moon
-    Also saves relevant data to an .csv file located in Output/.
+    Saves the date and parameters regarding the spotting of the Moon to the variable SpottedMoonList.
     
     Arguments:
         
@@ -81,12 +80,13 @@ def date_calculator():
     Logger.debug('log_timestep: '+str(log_timestep))
     
     ##################################################
-    "Constants"
     
+    "Check how many times Mode124 have been scheduled"
     Mode124Iteration = _Globals.Mode124Iteration
-    "Make the V_offset_Index go from 0 to len(Mode120_settings['V_offset']"
+    "Make the V_offset_Index go from 0 to len(Mode124_settings['V_offset']"
     V_offset_Index = (Mode124Iteration-1) % (len(Mode124_settings['V_offset']))
     
+    "Constants"
     V_offset = Mode124_settings['V_offset'][V_offset_Index]
     H_offset = Mode124_settings['H_offset']  
     pointing_altitude = Mode124_settings['pointing_altitude']/1000 
@@ -109,7 +109,10 @@ def date_calculator():
     timestep = Mode124_settings['timestep'] #In seconds
     Logger.info('Timestep set to [s]: '+str(timestep))
     
-    duration = Mode124_settings['TimeToConsider']
+    if( Mode124_settings['TimeToConsider'] <= Timeline_settings['duration']):
+        duration = Mode124_settings['TimeToConsider']
+    else:
+        duration = Timeline_settings['duration']
     Logger.info('Duration set to [s]: '+str(duration))
     
     timesteps = int(ceil(duration / timestep)) + 2
@@ -253,7 +256,7 @@ def date_calculator():
         #print('angle_between_orbital_plane_and_moon = ' + str(angle_between_orbital_plane_and_moon[t]))
         
         if(t != 0):
-            "Check that the Moon is entering V-offset degrees and within the H-offset angle"
+            "Check that the Moon is entering at V-offset degrees and within the H-offset angle"
             if( Moon_vert_offset[t] <= V_offset and Moon_vert_offset[t-1] > V_offset and abs(Moon_hori_offset[t]) < H_offset):
                 
                 Logger.debug('')
@@ -368,7 +371,7 @@ def date_select(Occupied_Timeline, SpottedMoonList):
     
     restart = True
     iterations = 0
-    ## Selects date based on min H-offset, if occupied, select date for next min H-offset
+    "Selects date based on min H-offset, if occupied, select date for next min H-offset"
     while( restart == True):
         
         if( len(Moon_H_offset) == iterations):
@@ -381,8 +384,8 @@ def date_select(Occupied_Timeline, SpottedMoonList):
         restart = False
         
         
-        #Extract index of  minimum H-offset for first iteration, 
-        #then next smallest if 2nd iterations needed and so on
+        """Extract index of  minimum H-offset for first iteration, 
+        then next smallest if 2nd iterations needed and so on"""
         x = Moon_H_offset_abs.index(Moon_H_offset_sorted[iterations])
         
         date = Moon_date[x]
@@ -391,13 +394,13 @@ def date_select(Occupied_Timeline, SpottedMoonList):
         
         endDate = ephem.Date(date+ephem.second*(Mode124_settings['freeze_start'] + Mode124_settings['freeze_duration'] + OPT_Config_File.Timeline_settings()['mode_separation']) )
         
-        #Check that the scheduled date is not before the start of the timeline
+        "Check that the scheduled date is not before the start of the timeline"
         if( date < ephem.Date(OPT_Config_File.Timeline_settings()['start_date']) ):
             iterations = iterations + 1
             restart = True
             continue
         
-        ## Extract Occupied dates and if they clash, restart loop and select new date
+        "Extract Occupied dates and if they clash, restart loop and select new date"
         for busy_dates in Occupied_Timeline.values():
             if( busy_dates == []):
                 continue

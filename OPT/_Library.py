@@ -2,7 +2,7 @@
 """Functions that are commonly used by the Operational Planning Tool.
 """
 
-import ephem, importlib, time, logging, os, sys, astropy
+import ephem, importlib, time, logging, os, sys, astropy.time
 from pylab import cos, sin, cross, dot, arctan, sqrt, array, arccos, pi, floor, around, norm
 from skyfield import api
 
@@ -13,8 +13,6 @@ timescale_skyfield = api.load.timescale(builtin=True)
 database_skyfield = api.load('de421.bsp')
 
 
-#OPT_Config_File = importlib.import_module(_Globals.Config_File)
-#Logger = logging.getLogger(OPT_Config_File.Logger_name())
 
 def rot_arbit(angle, u_v):
     """Takes an angle in radians and a unit vector and outputs a rotation matrix around that vector
@@ -114,7 +112,7 @@ def lat_2_R( lat ):
 def lat_calculator( Satellite_skyfield, date ):
     ''' Function that calculates the latitude of a skyfield.sgp4lib.EarthSatellite object at a certain date
     
-    Mainly used to approximate the latitude of the LP as the LP is close to being in the same orbital plane.
+    Mainly used to approximate the latitude of the LP as the LP is close to being in the same plane as the orbital plane.
     
     Arguments:
         Satellite_skyfield (:obj:`skyfield.sgp4lib.EarthSatellite`): A Skyfield object representing an EarthSatellite defined by a TLE.
@@ -139,6 +137,7 @@ def lat_calculator( Satellite_skyfield, date ):
     
     
     return latitude
+
 
 def scheduler(Occupied_Timeline, date, endDate):
     ''' Function that checks if the scheduled time is available.
@@ -202,6 +201,8 @@ def dict_comparator(dict1, dict2, Logger = None):
     A dict_new will be created containing all the keys and values of dict2. Then for any keys that 
     exist in both dict1 and dict_new, dict_new's keys will have their values replaced by the ones in dict1.
     
+    Used to compare settings given in a Science Mode Timeline to settings given in the Configuration File.
+    
     WARNING! All keys in dict1 must also exist in dict2.
     
     Arguments:
@@ -213,8 +214,6 @@ def dict_comparator(dict1, dict2, Logger = None):
         (dict): dict_new
         
     """
-    
-    
     
     
     "Check if optional params were given"
@@ -235,7 +234,7 @@ def dict_comparator(dict1, dict2, Logger = None):
 
 
 def utc_to_onboardTime(utc_date):
-    """Function which converts a date in utc into onboard time in seconds and rounds to nearest 10th of a second.
+    """Function which converts a date in utc into onboard time (GPS) in seconds and rounds to nearest 10th of a second.
     
     Arguments:
         utc_date (:obj:`ephem.Date`): The date as a ephem.Date object.
@@ -245,7 +244,7 @@ def utc_to_onboardTime(utc_date):
         
     """
     
-    utc_TimeObject = astropy.time.Time(utc_date.datetime())
+    utc_TimeObject = astropy.time.Time(utc_date.datetime(), scale='utc')
     onboardGPSTime = around(utc_TimeObject.gps,1)
     
     return onboardGPSTime
@@ -300,7 +299,9 @@ def calculate_time_per_row(NCOL, NCBIN, NCBINFPGA, NRSKIP, NROW, NRBIN, NFLUSH):
     ccd_r_timing <= x"A4030206141D"&x"010303090313"
     
     All pixel timing setting is the final count of a counter that starts at 0,
-    so the number of clock cycles exceeds the setting by 1
+    so the number of clock cycles exceeds the setting by 1.
+    
+    Created by Georgi Olentsenko at KTH.
     
     Arguments:
         NCOL (int): Number of columns
@@ -394,12 +395,12 @@ def calculate_time_per_row(NCOL, NCBIN, NCBINFPGA, NRSKIP, NROW, NRBIN, NFLUSH):
 def SyncArgCalculator(CCD_settings, ExtraOffset, ExtraIntervalTime):
     """Calculates appropriate arguments for the CCD Synchonize CMD.
     
-    The CCDs are offset in order of ExposureTime with the CCD with the shortest ExposureTime being the leading CCD. \n
+    The CCDs are offset in order of ExposureTime (TEXPMS) with the CCD with the shortest ExposureTime being the leading CCD. \n
     CCDs with ExposureTime equal to zero are skipped. \n
     The offset calculations depend on the Readout Time, which depends on the binning settings of the CCDs. \n
-    The ExposureInterval Time depends on the longest combined Readout Time and ExposureTime for a CCD aswell as the 
+    The ExposureInterval Time (TEXPIMS) depends on the longest combined Readout Time and ExposureTime for a CCD aswell as the 
     leading CCD's Exposure Time to prevent collision between
-    Readout of the leading CCD and the final CCD. If the combined TransferTime is estimated to be longer than TEXPIMS; TEXPIMS is set to the estimated combined TransferTime to prevent CRB crash. 
+    readout of the leading CCD and the final CCD. If the combined TransferTime is estimated to be longer than TEXPIMS; TEXPIMS is set to the estimated combined TransferTime to prevent CRB crash. 
     
     Arguments:
         CCD_settings (dict of dict of int): Dictionary containing settings for the CCDs.
@@ -645,7 +646,8 @@ def SyncArgCalculator(CCD_settings, ExtraOffset, ExtraIntervalTime):
 def OrderingOfCCDSnapshots(CCD_settings):
     """Calculates a list of CCDSEL (1,2,4,8,16,32) arguments corresponding to their TEXPMS in increasing order.
     
-    Used to take snapshots in increasing order of TEXPMS, which will prevent streak from simultaneous readouts to occur when snapshots are staggered.
+    Used to take snapshots in increasing order of TEXPMS, which will prevent streaks from simultaneous readouts to occur when snapshots are staggered.
+    Any CCDs with TEXPMS equal to 0 will be ignored and not added to the list.
     
     Arguments:
         CCD_settings (dict of dict of int): Dictionary containing settings for the CCDs.
@@ -668,6 +670,7 @@ def OrderingOfCCDSnapshots(CCD_settings):
     
     CCDSEL = []
     
+    "Make a list with CCDSEL arguments in increasing order of TEXPMS, CCDs with TEXPMS equal to 0 are ignored"
     for ExpTime in ExpTimes:
         if( CCDSEL_16['TEXPMS'] == ExpTime and 16 not in CCDSEL and ExpTime != 0):
             CCDSEL.append(16)
@@ -724,7 +727,9 @@ def CCDSELExtracter(CCDSEL):
 def Satellite_Simulator( Satellite_skyfield, SimulationTime, Timeline_settings, pointing_altitude, LogFlag = False, Logger = None ):
     """Simulates a single point in time for a Satellite using Skyfield and also the pointing of the satellite.
     
-    Only estimates the actual pointing definition used by OHB.
+    Only estimates the actual pointing definition used by OHB. The LP is calculated with an algorithm derived by Nick Lloyd at University of Saskatchewan, 
+    Canada (nick.lloyd@usask.ca), and is part of
+    the operational code for both OSIRIS and SMR on-board- the Odin satellite. An offset is added to the pointing altitude to better mimic OHBs actual LP.
     
     Arguments:
         Satellite_skyfield (:obj:`skyfield.sgp4lib.EarthSatellite`): A Skyfield object representing an EarthSatellite defined by a TLE.
@@ -739,19 +744,7 @@ def Satellite_Simulator( Satellite_skyfield, SimulationTime, Timeline_settings, 
         
     """
     
-    """
-    (lat_Satellite,long_Satellite,altitude_Satellite,a_ra_Satellite,a_dec_Satellite)= (
-    Satellite.sublat,Satellite.sublong,Satellite.elevation/1000,Satellite.a_ra,Satellite.a_dec)
     
-    R = lat_2_R(lat_Satellite) #WGS84 radius from latitude of Satellite
-    Satellite_distance = R + altitude_Satellite
-    
-    z_Satellite = sin(a_dec_Satellite)*(Satellite_distance)
-    x_Satellite = cos(a_dec_Satellite)*(Satellite_distance)* cos(a_ra_Satellite)
-    y_Satellite = cos(a_dec_Satellite)*(Satellite_distance)* sin(a_ra_Satellite)
-       
-    r_Satellite = [x_Satellite, y_Satellite, z_Satellite]
-    """
     
     U = 398600.441800000 #Earth gravitational parameter
     R_mean = 6371.000
@@ -822,6 +815,7 @@ def Satellite_Simulator( Satellite_skyfield, SimulationTime, Timeline_settings, 
     #ascending_node = cross(normal_orbit, celestial_eq)
     ascending_node = cross(celestial_eq, normal_orbit)
     
+    "Argument of latitude"
     arg_of_lat = arccos( dot(ascending_node, r_Satellite) / norm(r_Satellite) / norm(ascending_node) ) /pi*180
     
     "To determine if Satellite is moving towards the ascending node"

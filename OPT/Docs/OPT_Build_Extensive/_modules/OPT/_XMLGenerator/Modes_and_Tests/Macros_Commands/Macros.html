@@ -200,7 +200,7 @@
 
 <div class="viewcode-block" id="Snapshot_Inertial_macro"><a class="viewcode-back" href="../../../../../OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.html#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.Snapshot_Inertial_macro">[docs]</a><span class="k">def</span> <span class="nf">Snapshot_Inertial_macro</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">CCD_settings</span><span class="p">,</span> <span class="n">FreezeTime</span><span class="p">,</span> <span class="n">FreezeDuration</span><span class="p">,</span> <span class="n">pointing_altitude</span><span class="p">,</span> 
                   <span class="n">StandardPointingAltitude</span><span class="p">,</span> <span class="n">SnapshotSpacing</span><span class="p">,</span> <span class="n">Snapshot_relativeTime</span><span class="p">,</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">comment</span><span class="p">):</span>
-    <span class="sd">&#39;&#39;&#39; Macro that corresponds to pointing towards an Inertial direction and take a Snapshot with all the CCDs (except Nadir).</span>
+    <span class="sd">&#39;&#39;&#39; Macro that corresponds to pointing towards an Inertial direction and take a Snapshot with all the CCDs (except Nadir) which do not have TEXPMS set to 0.</span>
 <span class="sd">    </span>
 <span class="sd">    The order of the snapshots taken is determined by the CCDs TEXPMS in increasing order. This to prevent simultaneous readout.</span>
 <span class="sd">    </span>
@@ -219,7 +219,7 @@
 <span class="sd">        FreezeTime (float): Start time of attitude freeze command in on-board time [s].</span>
 <span class="sd">        FreezeDuration (int): Duration of freeze [s].</span>
 <span class="sd">        pointing_altitude (int): The altitude of the tangential point [m].</span>
-<span class="sd">        StandardPointingAltitude (int): The altitude of the LP [m].</span>
+<span class="sd">        StandardPointingAltitude (int): The standard altitude of the LP  [m].</span>
 <span class="sd">        SnapshotSpacing (int): The time in seconds inbetween snapshots of individual CCDs.</span>
 <span class="sd">        Snapshot_relativeTime (float): The relativeTime (time from start of timeline) at which the first Snapshot is taken.</span>
 <span class="sd">        Timeline_settings (dict): Dictionary containing the settings of the Timeline given in either the *Science_Mode_Timeline* or the *Configuration File*.</span>
@@ -231,7 +231,10 @@
     
     <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span> <span class="o">+</span> <span class="s1">&#39;, Snapshot_Inertial_macro&#39;</span>
     
+    <span class="s2">&quot;TEXPIMS is unused but still need to be set to a plausible value to not get errors&quot;</span>
     <span class="n">Disregarded</span><span class="p">,</span> <span class="n">Disregarded</span><span class="p">,</span> <span class="n">Disregarded</span><span class="p">,</span> <span class="n">TEXPIMS</span> <span class="o">=</span> <span class="n">_Library</span><span class="o">.</span><span class="n">SyncArgCalculator</span><span class="p">(</span><span class="n">CCD_settings</span><span class="p">,</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;CCDSYNC_ExtraOffset&#39;</span><span class="p">],</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;CCDSYNC_ExtraIntervalTime&#39;</span><span class="p">])</span>
+    
+    <span class="s2">&quot;CCDSEL arguments in order of increasing TEXPMS&quot;</span>
     <span class="n">CCDSELs</span> <span class="o">=</span> <span class="n">_Library</span><span class="o">.</span><span class="n">OrderingOfCCDSnapshots</span><span class="p">(</span><span class="n">CCD_settings</span><span class="p">)</span>
     
     <span class="n">relativeTime</span> <span class="o">=</span> <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafMode</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> <span class="n">MODE</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">comment</span><span class="p">)</span>

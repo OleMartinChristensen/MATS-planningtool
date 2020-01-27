@@ -148,7 +148,7 @@ Also saves relevant data to an .csv file located in Output/.</p>
 <p>Arguments:</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>A list containing dictionaries containing parameters for each time a star is spotted. Or just a date depending on 'automatic' in <em>Mode124_settings</em>.</p>
+<dd class="field-odd"><p>A list containing dictionaries containing parameters for each time a star is spotted.</p>
 </dd>
 <dt class="field-even">Return type</dt>
 <dd class="field-even"><p>SpottedStarList ((<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a>)) or (str)</p>
@@ -306,8 +306,7 @@ located at a horizontal off-set angle equal to less than <em>#H-offset</em> when
 <p>A timeskip equal to the time it takes for the Moon orbital position to change by <em>#H-offset</em>/4 degrees are also applied if the Moon is
 determined to be at an horizontal off-set angle larger then the horizontal FOV of the instrument, equal to <em>#HFOV</em>.</p>
 <p>(# as defined in the <em>Configuration File</em>).</p>
-<p>Saves the date and parameters regarding the spotting of the Moon
-Also saves relevant data to an .csv file located in Output/.</p>
+<p>Saves the date and parameters regarding the spotting of the Moon to the variable SpottedMoonList.</p>
 <p>Arguments:</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -629,10 +628,10 @@ These Modes, called <em>Operational Science Modes</em>, are always scheduled las
 <div class="section" id="module-OPT._TimelineGenerator.Modes.ModeTemplate">
 <span id="opt-timelinegenerator-modes-modetemplate-module"></span><h2>OPT._TimelineGenerator.Modes.ModeTemplate module<a class="headerlink" href="#module-OPT._TimelineGenerator.Modes.ModeTemplate" title="Permalink to this headline">¶</a></h2>
 <p>Created on Thu Mar 14 10:35:32 2019</p>
-<p>Template for a new Mode where 'X' is exchanged for the number or name of the mode.
+<p>Template for a new Science Mode where 'X' is exchanged for the number or name of the science mode.
 The Mode is here scheduled at the start of the timeline.</p>
 <p>For <em>Timeline_gen</em> to be able to find and schedule this mode, this function must be imported in the <em>Modes_Header</em> module.
-Remember to also add the name of this Mode into the <em>Scheduling_priority</em> function, in the <em>Configuration_File</em>.</p>
+Remember to also add the name of this Science Mode into the <em>Scheduling_priority</em> function, in the <em>Configuration_File</em>.</p>
 <p>&#64;author: David Skånberg</p>
 <dl class="function">
 <dt id="OPT._TimelineGenerator.Modes.ModeTemplate.ModeX">
@@ -644,7 +643,7 @@ Remember to also add the name of this Mode into the <em>Scheduling_priority</em>
 <div class="section" id="module-OPT._TimelineGenerator.Modes.Modes_Header">
 <span id="opt-timelinegenerator-modes-modes-header-module"></span><h2>OPT._TimelineGenerator.Modes.Modes_Header module<a class="headerlink" href="#module-OPT._TimelineGenerator.Modes.Modes_Header" title="Permalink to this headline">¶</a></h2>
 <p>Created on Wed Mar 13 12:23:04 2019</p>
-<p>Header containing the functions which schedules each mode and CMD.</p>
+<p>Header importing the functions which schedules each mode and CMD.</p>
 <p>&#64;author: David</p>
 </div>
 <div class="section" id="module-OPT._TimelineGenerator.Modes.StartUpCmdsAndProcedures">

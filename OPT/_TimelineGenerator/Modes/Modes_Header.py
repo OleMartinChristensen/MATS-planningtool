@@ -2,7 +2,7 @@
 """
 Created on Wed Mar 13 12:23:04 2019
 
-Header containing the functions which schedules each mode and CMD. 
+Header importing the functions which schedules each mode and CMD. 
 
 @author: David
 """

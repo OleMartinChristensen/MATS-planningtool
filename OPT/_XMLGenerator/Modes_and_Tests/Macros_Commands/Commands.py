@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Contain Command functions. Each Command function represent a CMD/Procedure listed in the "InnoSat Payload Timeline XML Definition" document.
+"""Contain command functions. Each command function represent a CMD/Procedure listed in the "InnoSat Payload Timeline XML Definition" document.
 
 Add commands to the XML-tree as specified in "InnoSat Payload Timeline XML Definition" document.
 Also checks if parameters given are valid for the CMDs.
@@ -65,7 +65,8 @@ def TC_acfLimbPointingAltitudeOffset(root, relativeTime, Initial, Final, Rate, T
     """Schedules Pointing Command
     
     If the desired pointing altitude is already set, the maximum TEXPMS last set with a CCD_macro is added to *relativeTime*.
-    Otherwise if Rate == 0 a delay equal to *Timeline_settings['pointing_stabilization']* is added to *relativeTime*.
+    Otherwise if Rate == 0, a delay equal to *Timeline_settings['pointing_stabilization']* is added to *relativeTime*.
+    If Rate != 0, only *Timeline_settings['CMD_separation']* is added to *relativeTime* to allow the payload to enter operation mode during the sweep.
     
     """
     
@@ -169,7 +170,7 @@ def TC_affArgFreezeDuration(root, relativeTime, FreezeDuration, Timeline_setting
         Logger.error('Invalid argument: negative relativeTime, decreasing relativeTime, exceeding timeline duration')
         raise ValueError
     if not( 0 < FreezeDuration <= 3600 ):
-        Logger.error('Invalid argument: negative FreezeDuration or exceeding timeline duration')
+        Logger.error('Invalid argument: negative FreezeDuration or too long.')
         raise ValueError
     
     etree.SubElement(root[1], 'command', mnemonic = "TC_affArgFreezeDuration")
@@ -495,6 +496,7 @@ def TC_pafCCDMain(root, relativeTime, CCDSEL, PWR, TEXPMS, TEXPIMS, NRSKIP, NRBI
     
 
 def TC_pafCCDSYNCHRONIZE( root, relativeTime, CCDSEL, NCCD, TEXPIOFS, Timeline_settings, comment = '' ):
+    "Note: CCDSYNCHRONIZE takes one TEXPIMS cycle to execute."
     
     if not( _Globals.latestRelativeTime <= relativeTime <= Timeline_settings['duration']):
         Logger.error('Invalid argument: negative relativeTime, decreasing relativeTime, exceeding timeline duration')
@@ -793,12 +795,13 @@ def TC_pafPM(root, relativeTime, TEXPMS, TEXPIMS, Timeline_settings, comment = '
     return incremented_time
 
 
-#################### PROCEDURES ###############################
+"#################### PROCEDURES ###############################"
+"###############################################################"
 
 def Payload_Power_Toggle(root, relativeTime, Timeline_settings, comment = ''):
     
     if not( _Globals.latestRelativeTime <= relativeTime <= Timeline_settings['duration']):
-        Logger.error('Invalid argument: negative relativeTime, decreasing relativeTime, exceeding timeline duration')
+        Logger.error('Invalid argument: negative relativeTime, decreasing relativeTime, or exceeding timeline duration')
         raise ValueError
         
     etree.SubElement(root[1], 'procedure', mnemonic = "FCP-MTS-0035_Payload_Power_Toggle")

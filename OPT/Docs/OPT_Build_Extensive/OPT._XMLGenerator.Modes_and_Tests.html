@@ -115,7 +115,7 @@ Where X, Y, Z is defined in <em>Mode110_settings</em>.</p>
 <code class="sig-prename descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="sig-name descname">Mode120</code><span class="sig-paren">(</span><em class="sig-param">root</em>, <em class="sig-param">date</em>, <em class="sig-param">duration</em>, <em class="sig-param">relativeTime</em>, <em class="sig-param">Timeline_settings</em>, <em class="sig-param">Mode_settings={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode120"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode120" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>Macro</strong>: Snapshot_Inertial_macro.</p>
 <p><strong>CCD_Macro</strong>: FullReadout</p>
-<p>Stare at a point in inertial reference frame and take a Snapshot with each CCD except nadir.
+<p>Stare at a point in inertial reference frame and take one Snapshot with each CCDSEL argument defined by the 'CCDSELs' settings and also do not have TEXPMS set to 0.
 Used for star calibration.</p>
 </dd></dl>
 
@@ -124,7 +124,7 @@ Used for star calibration.</p>
 <code class="sig-prename descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="sig-name descname">Mode121</code><span class="sig-paren">(</span><em class="sig-param">root</em>, <em class="sig-param">date</em>, <em class="sig-param">duration</em>, <em class="sig-param">relativeTime</em>, <em class="sig-param">Timeline_settings</em>, <em class="sig-param">Mode_settings={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode121"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode121" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>Macro</strong>: Snapshot_Inertial_macro.</p>
 <p><strong>CCD_Macro</strong>: FullReadout</p>
-<p>Stare at a point in inertial reference frame and take a Snapshot with each CCD except nadir.</p>
+<p>Stare at a point in inertial reference frame and take one Snapshot with each CCDSEL argument defined by the 'CCDSELs' settings and also do not have TEXPMS set to 0.</p>
 </dd></dl>
 
 <dl class="function">
@@ -132,7 +132,7 @@ Used for star calibration.</p>
 <code class="sig-prename descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="sig-name descname">Mode122</code><span class="sig-paren">(</span><em class="sig-param">root</em>, <em class="sig-param">date</em>, <em class="sig-param">duration</em>, <em class="sig-param">relativeTime</em>, <em class="sig-param">Timeline_settings</em>, <em class="sig-param">Mode_settings={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode122"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode122" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>Macro</strong>: Snapshot_Inertial_macro.</p>
 <p><strong>CCD_Macro</strong>: BinnedCalibration with configurable exposure time of UV and IR CCDs.</p>
-<p>Stare at a point in inertial reference frame and take a Snapshot with each CCD except nadir.</p>
+<p>Stare at a point in inertial reference frame and take a Snapshot with each CCD except nadir and also do not have TEXPMS set to 0.</p>
 </dd></dl>
 
 <dl class="function">
@@ -140,7 +140,7 @@ Used for star calibration.</p>
 <code class="sig-prename descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="sig-name descname">Mode123</code><span class="sig-paren">(</span><em class="sig-param">root</em>, <em class="sig-param">date</em>, <em class="sig-param">duration</em>, <em class="sig-param">relativeTime</em>, <em class="sig-param">Timeline_settings</em>, <em class="sig-param">Mode_settings={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode123"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode123" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>Macro</strong>: Snapshot_Inertial_macro.</p>
 <p><strong>CCD_Macro</strong>: LowPixel with configurable exposure time of UV and IR CCDs.</p>
-<p>Stare at a point in inertial reference frame and take a Snapshot with each CCD except nadir.</p>
+<p>Stare at a point in inertial reference frame and take a Snapshot with each CCD except nadir and also do not have TEXPMS set to 0.</p>
 </dd></dl>
 
 <dl class="function">
@@ -148,21 +148,21 @@ Used for star calibration.</p>
 <code class="sig-prename descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="sig-name descname">Mode124</code><span class="sig-paren">(</span><em class="sig-param">root</em>, <em class="sig-param">date</em>, <em class="sig-param">duration</em>, <em class="sig-param">relativeTime</em>, <em class="sig-param">Timeline_settings</em>, <em class="sig-param">Mode_settings={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode124"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode124" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>Macro</strong>: Snapshot_Inertial_macro.</p>
 <p><strong>CCD_Macro</strong>: FullReadout.</p>
-<p>Stare at a point in inertial reference frame and take one Snapshot with each CCD except Nadir.
+<p>Stare at a point in inertial reference frame and take one Snapshot with each CCDSEL argument defined by the 'CCDSELs' settings and also do not have TEXPMS set to 0.
 Used for moon calibration.</p>
 </dd></dl>
 
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.MODES.Mode12X">
 <code class="sig-prename descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="sig-name descname">Mode12X</code><span class="sig-paren">(</span><em class="sig-param">root</em>, <em class="sig-param">date</em>, <em class="sig-param">duration</em>, <em class="sig-param">relativeTime</em>, <em class="sig-param">Timeline_settings</em>, <em class="sig-param">Mode_settings</em>, <em class="sig-param">CCD_settings</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode12X"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode12X" title="Permalink to this definition">¶</a></dt>
-<dd><p>Subfunction of Mode12X, where X is 1,2,3....</p>
+<dd><p>Subfunction of Mode12X, where X is 0,1,2,3....</p>
 <p><strong>Macro</strong>: Snapshot_Inertial_macro.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>CCD_settings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of int) -- Settings for the CCDs. Defined in the <em>Configuration File</em>.</p>
 </dd>
 </dl>
-<p>Stare at a point in inertial reference frame and take a Snapshot with each CCD except nadir.</p>
+<p>Stare at a point in inertial reference frame and take a Snapshot with each CCD except nadir and also do not have TEXPMS set to 0.</p>
 </dd></dl>
 
 <dl class="function">
@@ -170,7 +170,7 @@ Used for moon calibration.</p>
 <code class="sig-prename descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="sig-name descname">Mode130</code><span class="sig-paren">(</span><em class="sig-param">root</em>, <em class="sig-param">date</em>, <em class="sig-param">duration</em>, <em class="sig-param">relativeTime</em>, <em class="sig-param">Timeline_settings</em>, <em class="sig-param">Mode_settings={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/MODES.html#Mode130"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Mode130" title="Permalink to this definition">¶</a></dt>
 <dd><p><strong>Macro</strong>: Snapshot_Limb_Pointing_macro.</p>
 <p><strong>CCD_Macro</strong>: FullReadout.</p>
-<p>Look at fixed limb altitude and take Snapshots with all CCD except nadir.</p>
+<p>Look at fixed limb altitude and take Snapshots with all CCD except nadir  and also do not have TEXPMS set to 0.</p>
 </dd></dl>
 
 <dl class="function">

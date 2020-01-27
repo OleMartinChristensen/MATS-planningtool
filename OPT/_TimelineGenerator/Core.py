@@ -24,7 +24,7 @@ def Timeline_generator():
         
     """
     
-    ######## Try to Create a directory for storage of output files #######
+    "######## Try to Create a directory for storage of output files #######"
     try:
         os.mkdir('Output')
     except:
@@ -32,10 +32,10 @@ def Timeline_generator():
     
     
     
-    ############# Set up Logger #################################
+    "############# Set up Logger #################################"
     _Library.SetupLogger(OPT_Config_File.Logger_name())
+    "#############################################################"
     
-    #############################################################
     Logger.info('Start of program')
     
     Version = OPT_Config_File.Version()
@@ -80,8 +80,8 @@ def Timeline_generator():
     Logger.info('')
     Logger.info('Start looping through modes priority list')
     
-    ################################################################################################################
-    ################################################################################################################
+    "################################################################################################################"
+    "################################################################################################################"
     
     "Loop through the Modes to be ran and schedule each one in the priority order of which they appear in the list"
     for x in range(len(Scheduling_priority)):
@@ -138,8 +138,8 @@ def Timeline_generator():
             Logger.debug('Entry number '+str(len(SCIMOD_Timeline_unchronological))+' in unchronological Science Mode list: '+str(SCIMOD_Timeline_unchronological[-1]))
             Logger.debug('')
         
-    ################################################################################################################
-    #############################################################################################################
+    "###########################################################################################################"
+    "###########################################################################################################"
     
     
     Logger.info('Looping sequence of modes priority list complete')
@@ -147,8 +147,8 @@ def Timeline_generator():
     
     
     
-    ##########################################################################################
-    ########## Scheduling of operational science mode (Mode1,2 and possibly 5) ###################################
+    "############################################################################################################"
+    "########## Scheduling of operational science mode (Either Mode1, 2 or 5) ###################################"
     
     
     Logger.info('Operational Science Mode scheduling')
@@ -159,50 +159,48 @@ def Timeline_generator():
     if( Timeline_settings['Choose_Operational_Science_Mode'] == 5 ):
         Logger.info('Schedule Mode5 as an operational science mode')
         
-        mode = 'Mode5'
+        OpSciMode = 'Mode5'
     elif( Timeline_settings['Choose_Operational_Science_Mode'] == 1 ):
         Logger.info('Schedule Mode1 as an operational science mode')
-        mode = 'Mode1'
+        OpSciMode = 'Mode1'
     elif( Timeline_settings['Choose_Operational_Science_Mode'] == 2 ):
         Logger.info('Schedule Mode2 as an operational science mode')
-        mode = 'Mode2'
+        OpSciMode = 'Mode2'
     elif( Timeline_settings['Choose_Operational_Science_Mode'] == 0 ):
         ### Check if it is NLC season ###
         if( Timeline_start_date.tuple()[1] in [11,12,1,2,5,6,7,8] or 
                 ( Timeline_start_date.tuple()[1] in [3,9] and Timeline_start_date.tuple()[2] in range(11) )):
             
             Logger.info('NLC season (Mode1)')
-            mode = 'Mode1' 
+            OpSciMode = 'Mode1' 
         else:
             Logger.info('Not NLC season (Mode2)')
-            mode = 'Mode2'
+            OpSciMode = 'Mode2'
             
         
-    Occupied_Timeline.update({mode: []})
+    Occupied_Timeline.update({OpSciMode: []})
     
     Occupied_Timeline, Mode_comment = Mode1_2_5(Occupied_Timeline)
     Logger.debug('')
-    Logger.debug('Post-'+mode+' Occupied_Timeline: \n'+"{" + "\n".join("        {}: {}".format(k, v) for k, v in Occupied_Timeline.items()) + "}")
+    Logger.debug('Post-'+OpSciMode+' Occupied_Timeline: \n'+"{" + "\n".join("        {}: {}".format(k, v) for k, v in Occupied_Timeline.items()) + "}")
     Logger.debug('')
     
-    Logger.debug(mode+' getting added to unchronological timeline')
-    for x in range(len(Occupied_Timeline[mode])):
-        Logger.debug('Appended to timeline: '+str((Occupied_Timeline[mode][x][0], Occupied_Timeline[mode][x][1],mode, Mode_comment)))
-        SCIMOD_Timeline_unchronological.append((Occupied_Timeline[mode][x][0], Occupied_Timeline[mode][x][1],mode, Mode_comment))
+    Logger.debug(OpSciMode+' getting added to unchronological timeline')
+    for x in range(len(Occupied_Timeline[OpSciMode])):
+        Logger.debug('Appended to timeline: '+str((Occupied_Timeline[OpSciMode][x][0], Occupied_Timeline[OpSciMode][x][1],OpSciMode, Mode_comment)))
+        SCIMOD_Timeline_unchronological.append((Occupied_Timeline[OpSciMode][x][0], Occupied_Timeline[OpSciMode][x][1],OpSciMode, Mode_comment))
         
     
-    ###########################################################################################
-    ###########################################################################################
+    "###########################################################################################"
+    "###########################################################################################"
     
     
-    #############################################################################################
-    ################# Sort Planned Modes and create a Science Mode Timeline List ################
+    "#############################################################################################"
+    "################# Sort Planned Modes and create a Science Mode Timeline List ################"
+    
     
     
     SCIMOD_Timeline_unchronological.sort()
-    Logger.debug('')
-    Logger.debug('Unchronological timeline sorted')
-    Logger.debug('')
     
     "Create a Science Mode Timeline list with the first entry being Timeline_settings"
     SCIMOD_Timeline = []
@@ -210,9 +208,10 @@ def Timeline_generator():
                             'Note: These Timeline_settings and TLE will be used when converting into a XML', 
                             Timeline_settings, OPT_Config_File.getTLE()])
     
+    Logger.debug('1 entry in Science Mode list: '+str(SCIMOD_Timeline[0]))
     
     t=0
-    "Add entries to the Science Mode Timeline list in chronological order. The list contains Mode name, start date, enddate, params for XML-gen and comment"
+    "Add entries to the Science Mode Timeline list in chronological order. The entries in the list contains Mode name, start date, endDate, settings and comment"
     for x in SCIMOD_Timeline_unchronological:
         
         Logger.debug(str(t+1)+' Timeline entry: '+str(x))
@@ -245,15 +244,15 @@ def Timeline_generator():
         #SCIMOD_Timeline.append([ x[2],str(x[0]), str(x[1]),{},x[3] ])
         
         SCIMOD_Timeline.append([ x[2],str(x[0]), str(x[1]),Config_File,x[3] ])
-        Logger.debug(str(t+1)+' entry in Science Mode list: '+str(SCIMOD_Timeline[t]))
+        Logger.debug(str(t+2)+' entry in Science Mode list: '+str(SCIMOD_Timeline[t+1]))
         Logger.debug('')
         t= t+1
     
-    ###########################################################################################
+    "###########################################################################################"
     
     
     
-    
+    "Write the Science Mode Timeline list to a .json file"
     try:
         os.mkdir('Output')
     except:

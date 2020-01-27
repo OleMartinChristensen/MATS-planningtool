@@ -42,6 +42,7 @@ def Mode100(Occupied_Timeline):
     #number_of_CMDs = 6
     number_of_altitudes = int( (Settings['pointing_altitude_to'] - Settings['pointing_altitude_from']) / Settings['pointing_altitude_interval'] + 1 )
     
+    "Set higher than in reality to make sure there is enough time"
     NumberOfCMDsPerAltitude = 12
     duration = (Settings['pointing_duration'] + Timeline_settings['pointing_stabilization'] + Timeline_settings['CMD_separation'] * NumberOfCMDsPerAltitude) * number_of_altitudes
     

@@ -26,22 +26,6 @@ def CheckConfigFile():
     
     _Library.SetupLogger(OPT_Config_File.Logger_name())
     
-    try:
-        Logger.info('Currently used Configuration File: '+_Globals.Config_File)
-    except:
-        Logger.error('Currently stated Configuration File is invalid. Try running Set_ConfigFile.')
-        raise ValueError
-    try:
-        Logger.info('Currently used starting date: '+_Globals.StartTime)
-    except:
-        Logger.error('Currently stated starting date is invalid. Try running Set_ConfigFile.')
-        raise ValueError
-    try:
-        Logger.info('Currently used TLE: '+str(OPT_Config_File.getTLE()))
-    except:
-        Logger.error('Currently stated TLE is invalid. Try running Set_ConfigFile.')
-        raise ValueError
-        
     Timeline_settings = OPT_Config_File.Timeline_settings()
     Operational_Science_Mode_settings = OPT_Config_File.Operational_Science_Mode_settings()
     #Mode5_settings = OPT_Config_File.Mode5_settings()
@@ -58,6 +42,24 @@ def CheckConfigFile():
     Mode132_settings = OPT_Config_File.Mode132_settings()
     Mode133_settings = OPT_Config_File.Mode133_settings()
     Mode134_settings = OPT_Config_File.Mode134_settings()
+    
+    try:
+        Logger.info('Currently used Configuration File: '+_Globals.Config_File)
+    except:
+        Logger.error('Currently stated Configuration File is invalid. Try running Set_ConfigFile.')
+        raise ValueError
+    try:
+        Logger.info('Currently used starting date: '+Timeline_settings['start_date'])
+    except:
+        Logger.error('Currently stated starting date is invalid. Try running Set_ConfigFile.')
+        raise ValueError
+    try:
+        Logger.info('Currently used TLE: '+str(OPT_Config_File.getTLE()))
+    except:
+        Logger.error('Currently stated TLE is invalid. Try running Set_ConfigFile.')
+        raise ValueError
+        
+    
     
     
     
@@ -222,7 +224,7 @@ def CheckConfigFile():
         Logger.error("Mode120_settings['pointing_altitude']")
         raise ValueError
     if not( Mode120_settings['TimeToConsider'] <= Timeline_settings['duration'] ):
-        Logger.error("Mode120_settings['TimeToConsider'] <= Timeline_settings['duration']")
+        Logger.error("Mode120_settings['TimeToConsider'] > Timeline_settings['duration']")
         raise ValueError
     if not( type(Mode120_settings['CCDSELs']) == list):
         Logger.error("Mode120_settings['CCDSELs'] != list")
@@ -265,14 +267,20 @@ def CheckConfigFile():
     if not( 0 <= Mode121_122_123_settings['SnapshotSpacing'] and type(Mode121_122_123_settings['SnapshotSpacing']) == int):
         Logger.error("Mode121_122_123_settings['SnapshotSpacing']")
         raise ValueError
-    if not( Mode121_122_123_settings['SnapshotSpacing'] * 5 + Mode121_122_123_settings['SnapshotTime'] < Mode121_122_123_settings['freeze_duration'] ):
+    if not( Mode121_122_123_settings['SnapshotSpacing'] * 6 + Mode121_122_123_settings['SnapshotTime'] < Mode121_122_123_settings['freeze_duration'] ):
         Logger.error("Mode121_122_123_settings['SnapshotSpacing'] * 5 + Mode121_122_123_settings['SnapshotTime'] > Mode121_122_123_settings['freeze_duration']")
         raise ValueError
     if not( Mode121_122_123_settings['TimeToConsider'] <= Timeline_settings['duration'] ):
-        Logger.error("Mode121_122_123_settings['TimeToConsider'] <= Timeline_settings['duration']")
+        Logger.error("Mode121_122_123_settings['TimeToConsider'] > Timeline_settings['duration']")
         raise ValueError
         
-    
+    if not( type(Mode121_settings['CCDSELs']) == list):
+        Logger.error("Mode121_settings['CCDSELs'] != list")
+        raise TypeError
+    for CCDSEL in Mode121_settings['CCDSELs']:
+        if not( CCDSEL in [1,2,4,8,16,32] ):
+            Logger.error( "Mode121_settings['CCDSELs'] element != [1,2,4,8,16,32]" )
+            raise ValueError
     
     if not( type(Mode121_settings['start_date']) == str):
         Logger.error("Mode121_settings['start_date']")
@@ -348,6 +356,9 @@ def CheckConfigFile():
         if not( CCDSEL in [1,2,4,8,16,32] ):
             Logger.error( "Mode124_settings['CCDSELs'] element != [1,2,4,8,16,32]" )
             raise ValueError
+    if not( Mode124_settings['TimeToConsider'] <= Timeline_settings['duration'] ):
+        Logger.error("Mode124_settings['TimeToConsider'] > Timeline_settings['duration']")
+        raise ValueError
     
     
     MaximumNumberOfCMDsInMacro = 12
