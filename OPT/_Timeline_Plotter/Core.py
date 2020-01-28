@@ -7,7 +7,7 @@ from scipy.spatial.transform import Rotation as R
 from pylab import rcParams, savefig, scatter, pi, cross, array, arccos, arctan, dot, norm, transpose, zeros, sqrt, floor, figure, plot_date, datestr2num, xlabel, ylabel, title, legend, date2num
 from skyfield.api import load, EarthSatellite
 import ephem, logging, importlib, h5py, json, csv
-import datetime, os, pickle, astropy.time, sys
+import datetime, os, pickle, astropy.time, sys, ntpath
 
 from OPT import _Library, _MATS_coordinates, _Globals
 
@@ -641,7 +641,8 @@ def Plotter(Data_MATS, Data_LP, Time, DataIndexStepState, StartIndexState, DataI
     Time_MPL = date2num(Time[:])
     
     "######## Try to Create a directory for storage of Timeline_Plotter plots and data files #######"
-    figureDirectory = os.path.join(Science_Mode_Path.strip('.json'), 'Timeline_Plotter_PlotsAndData')
+    figureDirectory = ntpath.basename(Science_Mode_Path)
+    figureDirectory = os.path.join('Output',figureDirectory.strip('.json'), 'Timeline_Plotter_PlotsAndData')
     try:
         os.makedirs(figureDirectory)
     except:

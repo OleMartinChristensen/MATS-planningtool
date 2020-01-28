@@ -68,7 +68,7 @@ of the Spyder project, as that directory is automatically part of the PYTHONPATH
     
     OPT.Copy_ConfigFile('OPT_Config_File')
     
-    OPT.Set_ConfigFile('OPT_Config_File', '2020/09/05 08:00:00')
+    OPT.Set_ConfigFile('OPT_Config_File')
     
     OPT.CheckConfigFile()
     

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Contains functions that return settings for the Operational Planning Tool. A ConfigFile must be chosen
-by calling *OPT.Set_ConfigFile()* and ir must be visible in *sys.path*.
+by calling *OPT.Set_ConfigFile()* and it must be visible in *sys.path*.
     
 """
 
@@ -163,7 +163,7 @@ def Timeline_settings():
                          'Mode1_2_5_minDuration': 300, 'mode_separation': 15,
                          'CMD_duration': 30, 'yaw_correction': True, 'yaw_amplitude': -3.8, 'yaw_phase': -20, 
                          'Choose_Operational_Science_Mode': 0, 'StandardPointingAltitude': 92500, 
-                         'CMD_separation': 1, 'pointing_stabilization': 110, 'CCDSYNC_ExtraOffset': 50, 'CCDSYNC_ExtraIntervalTime': 200}
+                         'CMD_separation': 1, 'pointing_stabilization': 100, 'CCDSYNC_ExtraOffset': 50, 'CCDSYNC_ExtraIntervalTime': 200}
     
     
     return Timeline_settings

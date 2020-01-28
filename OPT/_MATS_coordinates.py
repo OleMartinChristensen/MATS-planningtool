@@ -1,14 +1,11 @@
 # -*- coding: utf-8 -*-
 ##########################################
 
-#Library for handling coordinate system tranforms for the MATS mission
+"""Library for handling coordinate system tranforms for the MATS mission
 
-##########################################
-
-
-
-#Created 17.07.27 Ole Martin Christensen
-
+Created 17.07.27 Ole Martin Christensen.
+Slightly edited by David Skånberg during 2019.
+"""
 
 
 
@@ -261,10 +258,8 @@ def ECEF2lla(x,y,z):
     
 
 def lla2ECEF(lat,lon,alt):
-
-#This function takes a position geodetic position (lon,lat,alt above ellipsiod)
-
-#and converts into ECEF coodinates
+    """This function takes a position geodetic position (lon,lat,alt above ellipsiod)
+    and converts into ECEF coodinates [m]."""
 
 #
 
@@ -313,12 +308,8 @@ def lla2ECEF(lat,lon,alt):
 
 
 def ecef2eci(x,y,z,dt):
-
-    
-
-#This function takes a position in the ECEF corrdinate system and returns it 
-
-#in ECI-J2000.
+    """This function takes a position in the ECEF coordinate system [m] and datetime.object [utc] and returns it 
+    in ECI-J2000 [m]."""
 
 #
 
@@ -376,12 +367,8 @@ def ecef2eci(x,y,z,dt):
 
 
 def eci2ecef(x,y,z,dt):
-
-    
-
-#This function takes a position in the ECI-J2000 corrdinate system and returns it 
-
-#in ECEF.
+    """This function takes a position in the ECI-J2000 coordinate system [m] and datetime.object [utc] and returns it 
+    in ECEF."""
 
 #
 

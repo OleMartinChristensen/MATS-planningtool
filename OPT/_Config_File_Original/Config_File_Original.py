@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """Contains functions that return settings for the Operational Planning Tool. A ConfigFile must be chosen
-by calling *OPT.Set_ConfigFile()* and ir must be visible in *sys.path*.
+by calling *OPT.Set_ConfigFile()* and it must be visible in *sys.path*.
     
 """
 

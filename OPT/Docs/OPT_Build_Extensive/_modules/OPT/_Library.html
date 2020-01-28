@@ -35,7 +35,7 @@
 <span class="sd">&quot;&quot;&quot;Functions that are commonly used by the Operational Planning Tool.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">ephem</span><span class="o">,</span> <span class="nn">importlib</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">astropy</span>
+<span class="kn">import</span> <span class="nn">ephem</span><span class="o">,</span> <span class="nn">importlib</span><span class="o">,</span> <span class="nn">time</span><span class="o">,</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">astropy.time</span>
 <span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="n">cos</span><span class="p">,</span> <span class="n">sin</span><span class="p">,</span> <span class="n">cross</span><span class="p">,</span> <span class="n">dot</span><span class="p">,</span> <span class="n">arctan</span><span class="p">,</span> <span class="n">sqrt</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">arccos</span><span class="p">,</span> <span class="n">pi</span><span class="p">,</span> <span class="n">floor</span><span class="p">,</span> <span class="n">around</span><span class="p">,</span> <span class="n">norm</span>
 <span class="kn">from</span> <span class="nn">skyfield</span> <span class="kn">import</span> <span class="n">api</span>
 
@@ -46,8 +46,6 @@
 <span class="n">database_skyfield</span> <span class="o">=</span> <span class="n">api</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">&#39;de421.bsp&#39;</span><span class="p">)</span>
 
 
-<span class="c1">#OPT_Config_File = importlib.import_module(_Globals.Config_File)</span>
-<span class="c1">#Logger = logging.getLogger(OPT_Config_File.Logger_name())</span>
 
 <div class="viewcode-block" id="rot_arbit"><a class="viewcode-back" href="../../OPT.html#OPT._Library.rot_arbit">[docs]</a><span class="k">def</span> <span class="nf">rot_arbit</span><span class="p">(</span><span class="n">angle</span><span class="p">,</span> <span class="n">u_v</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Takes an angle in radians and a unit vector and outputs a rotation matrix around that vector</span>
@@ -236,6 +234,8 @@
 <span class="sd">    A dict_new will be created containing all the keys and values of dict2. Then for any keys that </span>
 <span class="sd">    exist in both dict1 and dict_new, dict_new&#39;s keys will have their values replaced by the ones in dict1.</span>
 <span class="sd">    </span>
+<span class="sd">    Used to compare settings given in a Science Mode Timeline to settings given in the Configuration File.</span>
+<span class="sd">    </span>
 <span class="sd">    WARNING! All keys in dict1 must also exist in dict2.</span>
 <span class="sd">    </span>
 <span class="sd">    Arguments:</span>
@@ -247,8 +247,6 @@
 <span class="sd">        (dict): dict_new</span>
 <span class="sd">        </span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    
-    
     
     
     <span class="s2">&quot;Check if optional params were given&quot;</span>
@@ -269,7 +267,7 @@
 
 
 <div class="viewcode-block" id="utc_to_onboardTime"><a class="viewcode-back" href="../../OPT.html#OPT._Library.utc_to_onboardTime">[docs]</a><span class="k">def</span> <span class="nf">utc_to_onboardTime</span><span class="p">(</span><span class="n">utc_date</span><span class="p">):</span>
-    <span class="sd">&quot;&quot;&quot;Function which converts a date in utc into onboard time in seconds and rounds to nearest 10th of a second.</span>
+    <span class="sd">&quot;&quot;&quot;Function which converts a date in utc into onboard time (GPS) in seconds and rounds to nearest 10th of a second.</span>
 <span class="sd">    </span>
 <span class="sd">    Arguments:</span>
 <span class="sd">        utc_date (:obj:`ephem.Date`): The date as a ephem.Date object.</span>
@@ -279,7 +277,7 @@
 <span class="sd">        </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
-    <span class="n">utc_TimeObject</span> <span class="o">=</span> <span class="n">astropy</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">Time</span><span class="p">(</span><span class="n">utc_date</span><span class="o">.</span><span class="n">datetime</span><span class="p">())</span>
+    <span class="n">utc_TimeObject</span> <span class="o">=</span> <span class="n">astropy</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">Time</span><span class="p">(</span><span class="n">utc_date</span><span class="o">.</span><span class="n">datetime</span><span class="p">(),</span> <span class="n">scale</span><span class="o">=</span><span class="s1">&#39;utc&#39;</span><span class="p">)</span>
     <span class="n">onboardGPSTime</span> <span class="o">=</span> <span class="n">around</span><span class="p">(</span><span class="n">utc_TimeObject</span><span class="o">.</span><span class="n">gps</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span>
     
     <span class="k">return</span> <span class="n">onboardGPSTime</span></div>
@@ -334,7 +332,9 @@
 <span class="sd">    ccd_r_timing &lt;= x&quot;A4030206141D&quot;&amp;x&quot;010303090313&quot;</span>
 <span class="sd">    </span>
 <span class="sd">    All pixel timing setting is the final count of a counter that starts at 0,</span>
-<span class="sd">    so the number of clock cycles exceeds the setting by 1</span>
+<span class="sd">    so the number of clock cycles exceeds the setting by 1.</span>
+<span class="sd">    </span>
+<span class="sd">    Created by Georgi Olentsenko at KTH.</span>
 <span class="sd">    </span>
 <span class="sd">    Arguments:</span>
 <span class="sd">        NCOL (int): Number of columns</span>
@@ -428,12 +428,12 @@
 <div class="viewcode-block" id="SyncArgCalculator"><a class="viewcode-back" href="../../OPT.html#OPT._Library.SyncArgCalculator">[docs]</a><span class="k">def</span> <span class="nf">SyncArgCalculator</span><span class="p">(</span><span class="n">CCD_settings</span><span class="p">,</span> <span class="n">ExtraOffset</span><span class="p">,</span> <span class="n">ExtraIntervalTime</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Calculates appropriate arguments for the CCD Synchonize CMD.</span>
 <span class="sd">    </span>
-<span class="sd">    The CCDs are offset in order of ExposureTime with the CCD with the shortest ExposureTime being the leading CCD. \n</span>
+<span class="sd">    The CCDs are offset in order of ExposureTime (TEXPMS) with the CCD with the shortest ExposureTime being the leading CCD. \n</span>
 <span class="sd">    CCDs with ExposureTime equal to zero are skipped. \n</span>
 <span class="sd">    The offset calculations depend on the Readout Time, which depends on the binning settings of the CCDs. \n</span>
-<span class="sd">    The ExposureInterval Time depends on the longest combined Readout Time and ExposureTime for a CCD aswell as the </span>
+<span class="sd">    The ExposureInterval Time (TEXPIMS) depends on the longest combined Readout Time and ExposureTime for a CCD aswell as the </span>
 <span class="sd">    leading CCD&#39;s Exposure Time to prevent collision between</span>
-<span class="sd">    Readout of the leading CCD and the final CCD. If the combined TransferTime is estimated to be longer than TEXPIMS; TEXPIMS is set to the estimated combined TransferTime to prevent CRB crash. </span>
+<span class="sd">    readout of the leading CCD and the final CCD. If the combined TransferTime is estimated to be longer than TEXPIMS; TEXPIMS is set to the estimated combined TransferTime to prevent CRB crash. </span>
 <span class="sd">    </span>
 <span class="sd">    Arguments:</span>
 <span class="sd">        CCD_settings (dict of dict of int): Dictionary containing settings for the CCDs.</span>
@@ -679,7 +679,7 @@
 <div class="viewcode-block" id="OrderingOfCCDSnapshots"><a class="viewcode-back" href="../../OPT.html#OPT._Library.OrderingOfCCDSnapshots">[docs]</a><span class="k">def</span> <span class="nf">OrderingOfCCDSnapshots</span><span class="p">(</span><span class="n">CCD_settings</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Calculates a list of CCDSEL (1,2,4,8,16,32) arguments corresponding to their TEXPMS in increasing order.</span>
 <span class="sd">    </span>
-<span class="sd">    Used to take snapshots in increasing order of TEXPMS, which will prevent streak from simultaneous readouts to occur when snapshots are staggered.</span>
+<span class="sd">    Used to take snapshots in increasing order of TEXPMS, which will prevent streaks from simultaneous readouts to occur when snapshots are staggered.</span>
 <span class="sd">    Any CCDs with TEXPMS equal to 0 will be ignored and not added to the list.</span>
 <span class="sd">    </span>
 <span class="sd">    Arguments:</span>
@@ -760,7 +760,9 @@
 <div class="viewcode-block" id="Satellite_Simulator"><a class="viewcode-back" href="../../OPT.html#OPT._Library.Satellite_Simulator">[docs]</a><span class="k">def</span> <span class="nf">Satellite_Simulator</span><span class="p">(</span> <span class="n">Satellite_skyfield</span><span class="p">,</span> <span class="n">SimulationTime</span><span class="p">,</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">pointing_altitude</span><span class="p">,</span> <span class="n">LogFlag</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">Logger</span> <span class="o">=</span> <span class="kc">None</span> <span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Simulates a single point in time for a Satellite using Skyfield and also the pointing of the satellite.</span>
 <span class="sd">    </span>
-<span class="sd">    Only estimates the actual pointing definition used by OHB.</span>
+<span class="sd">    Only estimates the actual pointing definition used by OHB. The LP is calculated with an algorithm derived by Nick Lloyd at University of Saskatchewan, </span>
+<span class="sd">    Canada (nick.lloyd@usask.ca), and is part of</span>
+<span class="sd">    the operational code for both OSIRIS and SMR on-board- the Odin satellite. An offset is added to the pointing altitude to better mimic OHBs actual LP.</span>
 <span class="sd">    </span>
 <span class="sd">    Arguments:</span>
 <span class="sd">        Satellite_skyfield (:obj:`skyfield.sgp4lib.EarthSatellite`): A Skyfield object representing an EarthSatellite defined by a TLE.</span>
@@ -775,19 +777,7 @@
 <span class="sd">        </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     
-    <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    (lat_Satellite,long_Satellite,altitude_Satellite,a_ra_Satellite,a_dec_Satellite)= (</span>
-<span class="sd">    Satellite.sublat,Satellite.sublong,Satellite.elevation/1000,Satellite.a_ra,Satellite.a_dec)</span>
-<span class="sd">    </span>
-<span class="sd">    R = lat_2_R(lat_Satellite) #WGS84 radius from latitude of Satellite</span>
-<span class="sd">    Satellite_distance = R + altitude_Satellite</span>
-<span class="sd">    </span>
-<span class="sd">    z_Satellite = sin(a_dec_Satellite)*(Satellite_distance)</span>
-<span class="sd">    x_Satellite = cos(a_dec_Satellite)*(Satellite_distance)* cos(a_ra_Satellite)</span>
-<span class="sd">    y_Satellite = cos(a_dec_Satellite)*(Satellite_distance)* sin(a_ra_Satellite)</span>
-<span class="sd">       </span>
-<span class="sd">    r_Satellite = [x_Satellite, y_Satellite, z_Satellite]</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+    
     
     <span class="n">U</span> <span class="o">=</span> <span class="mf">398600.441800000</span> <span class="c1">#Earth gravitational parameter</span>
     <span class="n">R_mean</span> <span class="o">=</span> <span class="mf">6371.000</span>
@@ -858,6 +848,7 @@
     <span class="c1">#ascending_node = cross(normal_orbit, celestial_eq)</span>
     <span class="n">ascending_node</span> <span class="o">=</span> <span class="n">cross</span><span class="p">(</span><span class="n">celestial_eq</span><span class="p">,</span> <span class="n">normal_orbit</span><span class="p">)</span>
     
+    <span class="s2">&quot;Argument of latitude&quot;</span>
     <span class="n">arg_of_lat</span> <span class="o">=</span> <span class="n">arccos</span><span class="p">(</span> <span class="n">dot</span><span class="p">(</span><span class="n">ascending_node</span><span class="p">,</span> <span class="n">r_Satellite</span><span class="p">)</span> <span class="o">/</span> <span class="n">norm</span><span class="p">(</span><span class="n">r_Satellite</span><span class="p">)</span> <span class="o">/</span> <span class="n">norm</span><span class="p">(</span><span class="n">ascending_node</span><span class="p">)</span> <span class="p">)</span> <span class="o">/</span><span class="n">pi</span><span class="o">*</span><span class="mi">180</span>
     
     <span class="s2">&quot;To determine if Satellite is moving towards the ascending node&quot;</span>

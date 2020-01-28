@@ -74,7 +74,10 @@ Example:
 Science Modes are separated into 2 different areas, *Operational Science Modes* (Mode 1,2,5) and *Calibration Modes*. \n
 *Calibration Modes* are scheduled at specific points of time and are mostly only scheduled once per *Science Mode Timeline*. 
 *Operational Science Modes* (Mode 1,2,5) are scheduled whenever time is available (after the scheduling of *Calibration Modes*) and only one *Operational Science Mode* is scheduled per timeline.
-The scheduling of certain *Calibration Modes* (science mode 120-124) depend on celestial object such as stars and the Moon. Therefore are the position of MATS and the pointing of the limb imager usually simulated to allow celestial object to be located in the FOV.
+The scheduling of certain *Calibration Modes* (science mode 120-124) depend on celestial object such as stars and the Moon. Therefore are the position of MATS and the pointing of the limb imager usually simulated to allow celestial object to be located in the FOV. \n
+
+Ignore any message during import of OPT such as the one given here as the parts utilizing gzip/7zip are not used in OPT: "gzip was not found on your system! You should solve this issue for astroquery.eso to be at its best!
+On POSIX system: make sure gzip is installed and in your path!On Windows: same for 7-zip (http://www.7-zip.org)!"
 
 """
 

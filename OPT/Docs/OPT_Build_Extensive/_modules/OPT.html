@@ -107,7 +107,10 @@
 <span class="sd">Science Modes are separated into 2 different areas, *Operational Science Modes* (Mode 1,2,5) and *Calibration Modes*. \n</span>
 <span class="sd">*Calibration Modes* are scheduled at specific points of time and are mostly only scheduled once per *Science Mode Timeline*. </span>
 <span class="sd">*Operational Science Modes* (Mode 1,2,5) are scheduled whenever time is available (after the scheduling of *Calibration Modes*) and only one *Operational Science Mode* is scheduled per timeline.</span>
-<span class="sd">The scheduling of certain *Calibration Modes* (science mode 120-124) depend on celestial object such as stars and the Moon. Therefore are the position of MATS and the pointing of the limb imager usually simulated to allow celestial object to be located in the FOV.</span>
+<span class="sd">The scheduling of certain *Calibration Modes* (science mode 120-124) depend on celestial object such as stars and the Moon. Therefore are the position of MATS and the pointing of the limb imager usually simulated to allow celestial object to be located in the FOV. \n</span>
+
+<span class="sd">Ignore any message during import of OPT such as the one given here as the parts utilizing gzip/7zip are not used in OPT: &quot;gzip was not found on your system! You should solve this issue for astroquery.eso to be at its best!</span>
+<span class="sd">On POSIX system: make sure gzip is installed and in your path!On Windows: same for 7-zip (http://www.7-zip.org)!&quot;</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 
@@ -173,9 +176,9 @@
 <span class="sd">    </span>
 <span class="sd">    Arguments:</span>
 <span class="sd">        Config_File_Name (str): The name of the Config File to be used (excluding .py).</span>
-<span class="sd">        Date (str): Optional. The start time and date for the Operational Planning Tool (yyyy/mm/dd hh:mm:ss).</span>
-<span class="sd">        TLE1 (str): Optional. The first row of the TLE.</span>
-<span class="sd">        TLE2 (str): Optional. The second row of the TLE.</span>
+<span class="sd">        Date (str): *Optional.* The start time and date for the Operational Planning Tool (yyyy/mm/dd hh:mm:ss). Will override any Timeline_settings[&#39;start_date&#39;] value stated in the *Configuration File*.</span>
+<span class="sd">        TLE1 (str): *Optional.* The first row of the TLE. Will override any TLE value stated in the *Configuration File*.</span>
+<span class="sd">        TLE2 (str): *Optional.* The second row of the TLE. Will override any TLE value stated in the *Configuration File*.</span>
 <span class="sd">        </span>
 <span class="sd">    Returns:</span>
 <span class="sd">        None</span>
@@ -277,7 +280,7 @@
 <span class="sd">    Simulates the position and attitude of MATS from a given Science Mode Timeline and also optionally compares it to</span>
 <span class="sd">    positional and attitude data given in a .h5 data set, located at *OHB_H5_Path*. Plots both the simulated data and given data. </span>
 <span class="sd">    The attitude data shows only the target pointing orientation and does not mimic MATS&#39;s actual attitude control system. The timesteps of both the .h5 data and the Science Mode is synchronized to allow direct comparison if possible. \n</span>
-<span class="sd">    A .csv file, generated in STK, may also be included to plot the predicted positional error of the satellite compared to STK data.</span>
+<span class="sd">    A .csv file, generated in STK, may also be included to plot the predicted positional error of the satellite compared to STK data. Only data points with equal timestamps to the simulated Science Mode Timeline data will be plotted.</span>
 <span class="sd">    Saves generated plots as binary files. \n</span>
 <span class="sd">    Settings for the operation of the program are stated in the chosen *Configuration File*. </span>
 <span class="sd">    Settings stated in the *Science Mode Timeline* override settings given in the chosen *Configuration file*.</span>
@@ -286,7 +289,7 @@
 <span class="sd">        Science_Mode_Path (str): Path to the Science Mode Timeline to be plotted.</span>
 <span class="sd">        OHB_H5_Path (str): *Optional*. Path to the .h5 file containing position, time, and attitude data. The .h5 file is defined in the &quot;Ground Segment ICD&quot; document. The timestamps for the attitude and state data is assumed to be synchronized.</span>
 <span class="sd">        STK_CSV_PATH (str): *Optional*. Path to the .csv file containing position (column 1-3), velocity (column 4-6), and time (column 7), generated in STK. Position and velocity data is assumed to be in km and in ICRF. </span>
-<span class="sd">        Timestep (int): *Optional*. The chosen timestep of the simulation [s].</span>
+<span class="sd">        Timestep (int): *Optional*. The chosen timestep of the Science Mode Timeline simulation [s]. Drastically changes runtime of the program </span>
 <span class="sd">        </span>
 <span class="sd">    Returns:</span>
 <span class="sd">        (tuple): tuple containing:</span>
@@ -307,7 +310,7 @@
     
 
 <div class="viewcode-block" id="Plot_Timeline_Plotter_Plots"><a class="viewcode-back" href="../OPT.html#OPT.Plot_Timeline_Plotter_Plots">[docs]</a><span class="k">def</span> <span class="nf">Plot_Timeline_Plotter_Plots</span><span class="p">(</span><span class="n">FigureDirectory</span><span class="p">,</span> <span class="n">FilesToPlot</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;ActiveScienceMode&#39;</span><span class="p">,</span> <span class="s1">&#39;Yaw&#39;</span><span class="p">,</span> 
-                                               <span class="s1">&#39;Pitch&#39;</span><span class="p">,</span> <span class="s1">&#39;Roll&#39;</span><span class="p">,</span><span class="s1">&#39;Lat&#39;</span><span class="p">,</span> <span class="s1">&#39;Long&#39;</span><span class="p">,</span> <span class="s1">&#39;Alt&#39;</span><span class="p">,</span> <span class="s1">&#39;PosError&#39;</span><span class="p">,</span> 
+                                               <span class="s1">&#39;Pitch&#39;</span><span class="p">,</span> <span class="s1">&#39;Roll&#39;</span><span class="p">,</span><span class="s1">&#39;Lat&#39;</span><span class="p">,</span> <span class="s1">&#39;Long&#39;</span><span class="p">,</span> <span class="s1">&#39;Alt&#39;</span><span class="p">,</span> <span class="s1">&#39;ECEFerror&#39;</span><span class="p">,</span> <span class="s1">&#39;PosError&#39;</span><span class="p">,</span> 
                                                <span class="s1">&#39;PosErrorRCI&#39;</span><span class="p">,</span> <span class="s1">&#39;MagPosError&#39;</span><span class="p">,</span> <span class="s1">&#39;Lat_LP&#39;</span><span class="p">,</span> <span class="s1">&#39;Long_LP&#39;</span><span class="p">,</span> 
                                                <span class="s1">&#39;Alt_LP&#39;</span><span class="p">,</span> <span class="s1">&#39;AltError_LP&#39;</span><span class="p">,</span> <span class="s1">&#39;PosError_LP&#39;</span><span class="p">,</span> <span class="s1">&#39;PosErrorRCI_LP&#39;</span><span class="p">,</span>
                                                <span class="s1">&#39;MagPosError_LP&#39;</span><span class="p">,</span> <span class="s1">&#39;RA_OpticalAxis&#39;</span><span class="p">,</span> <span class="s1">&#39;RA_OpticalAxisError&#39;</span><span class="p">,</span> 

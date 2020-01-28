@@ -40,7 +40,7 @@
 <span class="kn">from</span> <span class="nn">pylab</span> <span class="kn">import</span> <span class="n">rcParams</span><span class="p">,</span> <span class="n">savefig</span><span class="p">,</span> <span class="n">scatter</span><span class="p">,</span> <span class="n">pi</span><span class="p">,</span> <span class="n">cross</span><span class="p">,</span> <span class="n">array</span><span class="p">,</span> <span class="n">arccos</span><span class="p">,</span> <span class="n">arctan</span><span class="p">,</span> <span class="n">dot</span><span class="p">,</span> <span class="n">norm</span><span class="p">,</span> <span class="n">transpose</span><span class="p">,</span> <span class="n">zeros</span><span class="p">,</span> <span class="n">sqrt</span><span class="p">,</span> <span class="n">floor</span><span class="p">,</span> <span class="n">figure</span><span class="p">,</span> <span class="n">plot_date</span><span class="p">,</span> <span class="n">datestr2num</span><span class="p">,</span> <span class="n">xlabel</span><span class="p">,</span> <span class="n">ylabel</span><span class="p">,</span> <span class="n">title</span><span class="p">,</span> <span class="n">legend</span><span class="p">,</span> <span class="n">date2num</span>
 <span class="kn">from</span> <span class="nn">skyfield.api</span> <span class="kn">import</span> <span class="n">load</span><span class="p">,</span> <span class="n">EarthSatellite</span>
 <span class="kn">import</span> <span class="nn">ephem</span><span class="o">,</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">importlib</span><span class="o">,</span> <span class="nn">h5py</span><span class="o">,</span> <span class="nn">json</span><span class="o">,</span> <span class="nn">csv</span>
-<span class="kn">import</span> <span class="nn">datetime</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">pickle</span>
+<span class="kn">import</span> <span class="nn">datetime</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">pickle</span><span class="o">,</span> <span class="nn">astropy.time</span><span class="o">,</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">ntpath</span>
 
 <span class="kn">from</span> <span class="nn">OPT</span> <span class="kn">import</span> <span class="n">_Library</span><span class="p">,</span> <span class="n">_MATS_coordinates</span><span class="p">,</span> <span class="n">_Globals</span>
 
@@ -51,7 +51,7 @@
 <span class="n">rcParams</span><span class="p">[</span><span class="s1">&#39;figure.max_open_warning&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">30</span>
 
 
-<div class="viewcode-block" id="Timeline_Plotter"><a class="viewcode-back" href="../../../OPT._Timeline_Plotter.html#OPT._Timeline_Plotter.Core.Timeline_Plotter">[docs]</a><span class="k">def</span> <span class="nf">Timeline_Plotter</span><span class="p">(</span><span class="n">Science_Mode_Path</span><span class="p">,</span> <span class="n">OHB_H5_Path</span><span class="p">,</span> <span class="n">STK_CSV_FILE</span><span class="p">,</span> <span class="n">Timestep</span><span class="p">):</span>
+<div class="viewcode-block" id="Timeline_Plotter"><a class="viewcode-back" href="../../../OPT._Timeline_Plotter.html#OPT._Timeline_Plotter.Core.Timeline_Plotter">[docs]</a><span class="k">def</span> <span class="nf">Timeline_Plotter</span><span class="p">(</span><span class="n">Science_Mode_Path</span><span class="p">,</span> <span class="n">OHB_H5_Path</span><span class="p">,</span> <span class="n">STK_CSV_FILE</span><span class="p">,</span> <span class="n">Timestep</span> <span class="o">=</span> <span class="mi">10</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Core function of the Timeline_Plotter.</span>
 <span class="sd">    </span>
 <span class="sd">    Goes through the *Science Mode Timeline*, one mode at a time.</span>
@@ -60,7 +60,7 @@
 <span class="sd">        Science_Mode_Path (str): Path to the Science Mode Timeline to be plotted.</span>
 <span class="sd">        OHB_H5_Path (str): Path to the .h5 file containing position, time, and attitude data.</span>
 <span class="sd">        STK_CSV_PATH (str): Path to the .csv file containing position (column 1-3), velocity (column 4-6), and time (column 7), generated in STK. Position and velocity data is assumed to be in km and in ICRF.</span>
-<span class="sd">        Timestep (int): The timestep used for the simulation and when accessing OHB data.</span>
+<span class="sd">        Timestep (int): The timestep used for the Science Mode Timeline simulation and if possible when accessing OHB data. Needs to be evenly dividable with the h5-data timestep (or the h5-data timestep needs to be a even multiple of Timestep) to allow synchronized direct comparison. The h5 state data should have a timestep of 10s according to Ground Segment ICD document.</span>
 <span class="sd">        </span>
 <span class="sd">    Returns:</span>
 <span class="sd">        (tuple): Tuple containing:</span>
@@ -77,6 +77,7 @@
     <span class="n">Logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Logger_name</span><span class="p">())</span>
     
     
+    
     <span class="n">Version</span> <span class="o">=</span> <span class="n">OPT_Config_File</span><span class="o">.</span><span class="n">Version</span><span class="p">()</span>
     <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Configuration File used: &#39;</span><span class="o">+</span><span class="n">_Globals</span><span class="o">.</span><span class="n">Config_File</span><span class="o">+</span><span class="s1">&#39;, Version: &#39;</span><span class="o">+</span><span class="n">Version</span><span class="p">)</span>
     
@@ -87,57 +88,82 @@
     <span class="s2">&quot;Checks whether data from OHB as a .h5 file was given&quot;</span>
     <span class="k">if</span> <span class="p">(</span> <span class="n">OHB_H5_Path</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
         <span class="n">Timestamp_fraction_of_second</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">timestep_OHB_data</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="n">timestep_OHB_StateData</span> <span class="o">=</span> <span class="mi">1</span>
         <span class="n">OHB_StartTime</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">OHB_StartIndex</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">StartIndexState</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">StartIndexAttitude</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">DataIndexStepState</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">DataIndexStepAttitude</span> <span class="o">=</span> <span class="mi">0</span>
         
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        #State_OHB = h5py.File(&#39;TM_acOnGnss_sep4.h5&#39;,&#39;r&#39;)[&#39;root&#39;][&#39;TM_acOnGnss&#39;]</span>
-<span class="sd">        #Time_State_OHB = State_OHB[&#39;acoOnGnssStateTime&#39;][&#39;raw&#39;]</span>
-<span class="sd">        #</span>
-<span class="sd">        #OHB_StartIndex = 0</span>
-<span class="sd">        #while( Time_State_OHB[OHB_StartIndex] == 0):</span>
-<span class="sd">        #    OHB_StartIndex += 1</span>
-<span class="sd">        #    </span>
-<span class="sd">        #OHB_StartTime = ephem.Date(datetime.datetime(1980,1,6)+datetime.timedelta(seconds = float(Time_State_OHB[OHB_StartIndex])-18))</span>
-<span class="sd">        &quot;&quot;&quot;</span>
+        
         
     <span class="k">else</span><span class="p">:</span>
         <span class="s2">&quot;Read data and check the timestamps&quot;</span>
         <span class="n">OHB_data</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">OHB_H5_Path</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
-        <span class="n">root</span> <span class="o">=</span> <span class="n">OHB_data</span><span class="p">[</span><span class="s1">&#39;root&#39;</span><span class="p">]</span>
-        <span class="n">Time_State_OHB</span> <span class="o">=</span> <span class="n">root</span><span class="p">[</span><span class="s1">&#39;TM_acOnGnss&#39;</span><span class="p">][</span><span class="s1">&#39;acoOnGnssStateTime&#39;</span><span class="p">][</span><span class="s1">&#39;raw&#39;</span><span class="p">]</span>
-        <span class="n">Time_Attitude_OHB</span> <span class="o">=</span> <span class="n">root</span><span class="p">[</span><span class="s1">&#39;afoTmMhObt&#39;</span><span class="p">][</span><span class="s1">&#39;raw&#39;</span><span class="p">]</span>
+        <span class="n">Level1A_data</span> <span class="o">=</span> <span class="n">OHB_data</span><span class="p">[</span><span class="s1">&#39;root&#39;</span><span class="p">][</span><span class="s1">&#39;Level1A&#39;</span><span class="p">]</span>
+        
+        
+        <span class="n">Time_State_OHB</span> <span class="o">=</span> <span class="n">Level1A_data</span><span class="p">[</span><span class="s1">&#39;ReconstructedData&#39;</span><span class="p">][</span><span class="s1">&#39;PreciseOrbitEstimation&#39;</span><span class="p">][</span><span class="s1">&#39;Time&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">,:]</span>
+        <span class="n">Time_Attitude_OHB</span> <span class="o">=</span> <span class="n">Level1A_data</span><span class="p">[</span><span class="s1">&#39;ReconstructedData&#39;</span><span class="p">][</span><span class="s1">&#39;PreciseAttitudeEstimation&#39;</span><span class="p">][</span><span class="s1">&#39;Time&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">,:]</span>
         
         <span class="s2">&quot;Go through the data until the time is nonzero. That is where the data begins&quot;</span>
-        <span class="n">OHB_StartIndex</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">while</span><span class="p">(</span> <span class="n">Time_State_OHB</span><span class="p">[</span><span class="n">OHB_StartIndex</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
-            <span class="n">OHB_StartIndex</span> <span class="o">+=</span> <span class="mi">1</span>
-            
-        <span class="c1">#OHB_StartIndex += 5000 </span>
-        
-        <span class="k">if</span><span class="p">(</span> <span class="nb">abs</span><span class="p">(</span><span class="n">Time_Attitude_OHB</span><span class="p">[</span><span class="n">OHB_StartIndex</span><span class="p">]</span> <span class="o">-</span> <span class="n">Time_State_OHB</span><span class="p">[</span><span class="n">OHB_StartIndex</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mf">1.1</span><span class="p">):</span>
-            <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span> <span class="s1">&#39;Mismatch between timestamps of attitude and state&#39;</span><span class="p">)</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span> 
-        
+        <span class="n">StartIndexState</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span><span class="p">(</span> <span class="n">Time_State_OHB</span><span class="p">[</span><span class="n">StartIndexState</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">):</span>
+            <span class="n">StartIndexState</span> <span class="o">+=</span> <span class="mi">1</span>
         
         
         <span class="s2">&quot;Parameters needed to allow synchronization of the science mode timeine simulation to the timestamps of the OHB data&quot;</span>
         <span class="n">Timestamp_fraction_of_second</span> <span class="o">=</span> <span class="n">Time_State_OHB</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span> <span class="nb">int</span><span class="p">(</span><span class="n">Time_State_OHB</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
-        <span class="n">timestep_OHB_data</span> <span class="o">=</span> <span class="n">Time_State_OHB</span><span class="p">[</span><span class="mi">1</span><span class="o">+</span><span class="n">OHB_StartIndex</span><span class="p">]</span> <span class="o">-</span> <span class="n">Time_State_OHB</span><span class="p">[</span><span class="n">OHB_StartIndex</span><span class="p">]</span>
-        <span class="s2">&quot;Synchronization will allow error values between the simulation and the OHB data to be calculated&quot;</span>
-        <span class="n">Time_State_OHB_float</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">Time_State_OHB</span><span class="p">[</span><span class="n">OHB_StartIndex</span><span class="p">])</span>
-        <span class="n">OHB_StartTime</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">1980</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">)</span><span class="o">+</span><span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span> <span class="o">=</span> <span class="n">Time_State_OHB_float</span><span class="o">-</span><span class="mi">18</span><span class="p">))</span>
-    
-    
-    <span class="s2">&quot;The index stepsize when going through the h5 data&quot;</span>
-    <span class="n">DataIndexStep_H5Data</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">Timestep</span><span class="o">/</span><span class="n">timestep_OHB_data</span><span class="p">)</span>
+        <span class="n">timestep_OHB_StateData</span> <span class="o">=</span> <span class="n">Time_State_OHB</span><span class="p">[</span><span class="mi">1</span><span class="o">+</span><span class="n">StartIndexState</span><span class="p">]</span> <span class="o">-</span> <span class="n">Time_State_OHB</span><span class="p">[</span><span class="n">StartIndexState</span><span class="p">]</span>
+        
+        
+        <span class="k">if</span> <span class="ow">not</span><span class="p">(</span> <span class="n">timestep_OHB_StateData</span> <span class="o">==</span> <span class="mi">10</span> <span class="p">):</span>
+            <span class="n">Logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;The frequency of the State data in the h5 file is not 0.1 Hz for some reason.&#39;</span><span class="p">)</span>
+            
+        
+        <span class="s2">&quot;Time Synchronization will allow the maximum amount of error values between the simulation and the OHB data to be calculated&quot;</span>
+        <span class="n">Time_State_OHB_float</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">Time_State_OHB</span><span class="p">[</span><span class="n">StartIndexState</span><span class="p">])</span>
+        <span class="n">OHB_StartTime</span> <span class="o">=</span> <span class="n">astropy</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">Time</span><span class="p">(</span><span class="n">Time_State_OHB_float</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;gps&#39;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="s1">&#39;utc&#39;</span><span class="p">)</span>
+        <span class="n">OHB_StartTime</span> <span class="o">=</span> <span class="n">ephem</span><span class="o">.</span><span class="n">Date</span><span class="p">(</span><span class="n">OHB_StartTime</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">())</span>
+        <span class="c1">#OHB_StartTime = ephem.Date(datetime.datetime(1980,1,6)+datetime.timedelta(seconds = Time_State_OHB_float-18))</span>
+        
+        
+        <span class="s2">&quot;The index stepsize when going through the h5 data&quot;</span>
+        <span class="k">if</span><span class="p">(</span> <span class="n">Timestep</span> <span class="o">%</span> <span class="n">timestep_OHB_StateData</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">):</span>
+            <span class="n">DataIndexStepState</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">Timestep</span><span class="o">/</span><span class="n">timestep_OHB_StateData</span><span class="p">)</span>
+        <span class="k">elif</span><span class="p">(</span> <span class="n">timestep_OHB_StateData</span> <span class="o">%</span> <span class="n">Timestep</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">):</span>
+            <span class="n">DataIndexStepState</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">Logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;Timestep of Science Mode Timeline simulation is neither equal to timestep_OHB_StateData*n or timestep_OHB_StateData/n, where n=1,2,3... Synchronized data comparison will not be possible... Setting the h5 DataIndexStepState = 1.&#39;</span><span class="p">)</span>
+            <span class="n">DataIndexStepState</span> <span class="o">=</span> <span class="mi">1</span>
+            
+        <span class="s2">&quot;Find out where the attitude data time is equal to the state data time.&quot;</span>
+        <span class="n">StartIndexAttitude</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">while</span><span class="p">(</span> <span class="nb">int</span><span class="p">(</span><span class="n">Time_Attitude_OHB</span><span class="p">[</span><span class="n">StartIndexAttitude</span><span class="p">])</span> <span class="o">!=</span> <span class="nb">int</span><span class="p">(</span><span class="n">Time_State_OHB</span><span class="p">[</span><span class="n">StartIndexState</span><span class="p">])):</span>
+            <span class="n">StartIndexAttitude</span> <span class="o">+=</span> <span class="mi">1</span>
+            
+        <span class="n">timestep_OHB_AttitudeData</span> <span class="o">=</span> <span class="n">Time_Attitude_OHB</span><span class="p">[</span><span class="n">StartIndexAttitude</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">Time_Attitude_OHB</span><span class="p">[</span><span class="n">StartIndexAttitude</span><span class="p">]</span>
+        
+        <span class="s2">&quot;Calculate the index step size of attitude date which will allow time synchronization between attitude and state data&quot;</span>
+        <span class="n">DataIndexStepAttitude</span> <span class="o">=</span> <span class="n">DataIndexStepState</span> <span class="o">*</span> <span class="p">(</span> <span class="p">(</span><span class="n">timestep_OHB_StateData</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">timestep_OHB_AttitudeData</span><span class="p">)</span> <span class="p">)</span>
+        <span class="k">if</span><span class="p">(</span> <span class="n">DataIndexStepAttitude</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="p">):</span>
+            <span class="n">DataIndexStepAttitude</span> <span class="o">=</span> <span class="n">DataIndexStepAttitude</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">DataIndexStepAttitude</span><span class="p">)</span>
+            <span class="n">DataIndexStepState</span> <span class="o">=</span> <span class="n">DataIndexStepState</span> <span class="o">*</span> <span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">DataIndexStepAttitude</span><span class="p">)</span>
+        
+        <span class="s2">&quot;Abort operation if attitude and state data is not possible to synchronize&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span><span class="p">(</span> <span class="n">DataIndexStepAttitude</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">DataIndexStepAttitude</span><span class="p">)</span> <span class="ow">and</span> <span class="n">DataIndexStepState</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">DataIndexStepState</span><span class="p">)</span> <span class="p">):</span>
+            <span class="n">Logger</span><span class="o">.</span><span class="n">error</span><span class="p">(</span><span class="s1">&#39;The timestep of the State is not an even multiple of the time step of the attitude or the other way around.&#39;</span><span class="p">)</span>
+            <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+        
+        <span class="s2">&quot;Convert a float with no decimals (such as 10.0) to an int. Will cause errors otherwise when indexing&quot;</span>
+        <span class="n">DataIndexStepAttitude</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">DataIndexStepAttitude</span><span class="p">)</span>
+        <span class="n">DataIndexStepState</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">DataIndexStepState</span><span class="p">)</span>
     
     <span class="s2">&quot;Create dictionaries to contain simulated data&quot;</span>
     <span class="n">Data_MATS</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;ScienceMode&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;ColorRGB&#39;</span><span class="p">:</span> <span class="p">[],</span> 
                  <span class="s1">&#39;r_MATS [m]&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;r_MATS_ECEF [m]&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;v_MATS [km/s]&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;v_MATS_ECEF [km/s]&#39;</span><span class="p">:</span> <span class="p">[],</span> 
                  <span class="s1">&#39;r_normal_orbit&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;r_normal_orbit_ECEF&#39;</span><span class="p">:</span> <span class="p">[],</span> 
-                 <span class="s1">&#39;lat_MATS [degrees]&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;long_MATS [degrees]&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;alt_MATS [m]&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;yaw_MATS [degrees]&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;pitch_MATS [degrees]&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;roll_MATS [degrees]&#39;</span><span class="p">:</span> <span class="p">[],</span> 
+                 <span class="s1">&#39;lat_MATS [degrees]&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;long_MATS [degrees]&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;alt_MATS [m]&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;Yaw_function [degrees]&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;yaw_MATS [degrees]&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;pitch_MATS [degrees]&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;roll_MATS [degrees]&#39;</span><span class="p">:</span> <span class="p">[],</span> 
                  <span class="s1">&#39;r_optical_axis&#39;</span><span class="p">:[],</span> <span class="s1">&#39;r_optical_axis_ECEF&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;optical_axis_RA [degrees]&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;optical_axis_Dec [degrees]&#39;</span><span class="p">:</span> <span class="p">[]}</span>
 
     <span class="n">Data_LP</span> <span class="o">=</span> <span class="p">{</span> <span class="s1">&#39;r_LP [m]&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;r_LP_ECEF [m]&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;lat_LP [degrees]&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;long_LP [degrees]&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;alt_LP [m]&#39;</span><span class="p">:</span> <span class="p">[]</span> <span class="p">}</span> 
@@ -177,6 +203,7 @@
     <span class="n">Data_MATS</span><span class="p">[</span><span class="s1">&#39;lat_MATS [degrees]&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span> <span class="n">Data_MATS</span><span class="p">[</span><span class="s1">&#39;lat_MATS [degrees]&#39;</span><span class="p">]</span> <span class="p">)</span>
     <span class="n">Data_MATS</span><span class="p">[</span><span class="s1">&#39;long_MATS [degrees]&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span> <span class="n">Data_MATS</span><span class="p">[</span><span class="s1">&#39;long_MATS [degrees]&#39;</span><span class="p">]</span> <span class="p">)</span>
     <span class="n">Data_MATS</span><span class="p">[</span><span class="s1">&#39;alt_MATS [m]&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span> <span class="n">Data_MATS</span><span class="p">[</span><span class="s1">&#39;alt_MATS [m]&#39;</span><span class="p">]</span> <span class="p">)</span>
+    <span class="n">Data_MATS</span><span class="p">[</span><span class="s1">&#39;Yaw_function [degrees]&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span> <span class="n">Data_MATS</span><span class="p">[</span><span class="s1">&#39;Yaw_function [degrees]&#39;</span><span class="p">])</span>
     
     <span class="n">Data_MATS</span><span class="p">[</span><span class="s1">&#39;r_MATS [m]&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span> <span class="n">Data_MATS</span><span class="p">[</span><span class="s1">&#39;r_MATS [m]&#39;</span><span class="p">]</span> <span class="p">)</span>
     <span class="n">Data_MATS</span><span class="p">[</span><span class="s1">&#39;r_MATS_ECEF [m]&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span> <span class="n">Data_MATS</span><span class="p">[</span><span class="s1">&#39;r_MATS_ECEF [m]&#39;</span><span class="p">]</span> <span class="p">)</span>
@@ -205,7 +232,7 @@
     <span class="n">Data_LP</span><span class="p">[</span><span class="s1">&#39;r_LP_ECEF [m]&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span> <span class="n">Data_LP</span><span class="p">[</span><span class="s1">&#39;r_LP_ECEF [m]&#39;</span><span class="p">]</span> <span class="p">)</span>
     
     
-    <span class="n">Time_OHB</span> <span class="o">=</span> <span class="n">Plotter</span><span class="p">(</span> <span class="n">Data_MATS</span><span class="p">,</span> <span class="n">Data_LP</span><span class="p">,</span> <span class="n">Time</span><span class="p">,</span> <span class="n">DataIndexStep_H5Data</span><span class="p">,</span> <span class="n">OHB_StartIndex</span><span class="p">,</span> <span class="n">OHB_H5_Path</span><span class="p">,</span> <span class="n">STK_CSV_FILE</span><span class="p">,</span> <span class="n">Science_Mode_Path</span><span class="p">)</span>
+    <span class="n">Time_OHB</span> <span class="o">=</span> <span class="n">Plotter</span><span class="p">(</span> <span class="n">Data_MATS</span><span class="p">,</span> <span class="n">Data_LP</span><span class="p">,</span> <span class="n">Time</span><span class="p">,</span> <span class="n">DataIndexStepState</span><span class="p">,</span> <span class="n">StartIndexState</span><span class="p">,</span> <span class="n">DataIndexStepAttitude</span><span class="p">,</span> <span class="n">StartIndexAttitude</span><span class="p">,</span>  <span class="n">OHB_H5_Path</span><span class="p">,</span> <span class="n">STK_CSV_FILE</span><span class="p">,</span> <span class="n">Science_Mode_Path</span><span class="p">)</span>
     
     <span class="k">return</span> <span class="n">Data_MATS</span><span class="p">,</span> <span class="n">Data_LP</span><span class="p">,</span> <span class="n">Time</span><span class="p">,</span> <span class="n">Time_OHB</span></div>
 
@@ -337,7 +364,7 @@
         <span class="n">pointing_altitude</span> <span class="o">=</span> <span class="n">Settings</span><span class="p">[</span><span class="s1">&#39;pointing_altitude_from&#39;</span><span class="p">]</span>
         <span class="n">pointing_altitude_to</span> <span class="o">=</span> <span class="n">Settings</span><span class="p">[</span><span class="s2">&quot;pointing_altitude_to&quot;</span><span class="p">]</span>
         <span class="n">pointing_altitude_interval</span> <span class="o">=</span> <span class="n">Settings</span><span class="p">[</span><span class="s2">&quot;pointing_altitude_interval&quot;</span><span class="p">]</span>
-        <span class="n">NumberOfCMDStepsForEachAltitude</span> <span class="o">=</span> <span class="mi">9</span>
+        <span class="n">NumberOfCMDStepsForEachAltitude</span> <span class="o">=</span> <span class="mi">11</span>
         <span class="n">pointing_duration</span> <span class="o">=</span> <span class="n">Settings</span><span class="p">[</span><span class="s2">&quot;pointing_duration&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;pointing_stabilization&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">NumberOfCMDStepsForEachAltitude</span> <span class="o">*</span> <span class="n">Timeline_settings</span><span class="p">[</span><span class="s1">&#39;CMD_separation&#39;</span><span class="p">]</span>
         <span class="n">timestamp_change_of_pointing_altitude</span> <span class="o">=</span> <span class="n">pointing_duration</span>
         <span class="n">Color</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.5</span><span class="p">,</span><span class="mf">0.5</span><span class="p">)</span>
@@ -371,6 +398,7 @@
     <span class="n">v_MATS_unit_vector</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">timesteps</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
     <span class="n">normal_orbit</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">timesteps</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
     <span class="n">lat_LP_estimated</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">timesteps</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">Yaw_function</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">timesteps</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
     
     <span class="n">optical_axis</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">timesteps</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
     <span class="n">optical_axis_ECEF</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">timesteps</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
@@ -464,6 +492,7 @@
         <span class="n">RA_optical_axis</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">Satellite_dict</span><span class="p">[</span><span class="s1">&#39;RA_OpticalAxis [degrees]&#39;</span><span class="p">]</span>
         <span class="n">pitch_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">Satellite_dict</span><span class="p">[</span><span class="s1">&#39;Pitch [degrees]&#39;</span><span class="p">]</span>
         <span class="n">lat_LP_estimated</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">Satellite_dict</span><span class="p">[</span><span class="s1">&#39;EstimatedLatitude_LP [degrees]&#39;</span><span class="p">]</span>
+        <span class="n">Yaw_function</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">Satellite_dict</span><span class="p">[</span><span class="s1">&#39;Yaw [degrees]&#39;</span><span class="p">]</span>
         
         <span class="n">v_MATS_unit_vector</span><span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">v_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">/</span> <span class="n">norm</span><span class="p">(</span><span class="n">v_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span>
         <span class="n">r_MATS_unit_vector</span><span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">r_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span> <span class="o">/</span> <span class="n">norm</span><span class="p">(</span><span class="n">r_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span>
@@ -576,6 +605,7 @@
         <span class="n">Data_MATS</span><span class="p">[</span><span class="s1">&#39;lat_MATS [degrees]&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">lat_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">])</span>
         <span class="n">Data_MATS</span><span class="p">[</span><span class="s1">&#39;long_MATS [degrees]&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">long_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">])</span>
         <span class="n">Data_MATS</span><span class="p">[</span><span class="s1">&#39;alt_MATS [m]&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">alt_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">*</span><span class="mi">1000</span><span class="p">)</span>
+        <span class="n">Data_MATS</span><span class="p">[</span><span class="s1">&#39;Yaw_function [degrees]&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">Yaw_function</span><span class="p">[</span><span class="n">t</span><span class="p">])</span>
         
         <span class="n">Data_MATS</span><span class="p">[</span><span class="s1">&#39;r_MATS [m]&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r_MATS</span><span class="p">[</span><span class="n">t</span><span class="p">]</span><span class="o">*</span><span class="mi">1000</span><span class="p">)</span>
         <span class="n">Data_MATS</span><span class="p">[</span><span class="s1">&#39;r_MATS_ECEF [m]&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">r_MATS_ECEF</span><span class="p">[</span><span class="n">t</span><span class="p">])</span>
@@ -614,7 +644,8 @@
     
 
     
-<div class="viewcode-block" id="Plotter"><a class="viewcode-back" href="../../../OPT._Timeline_Plotter.html#OPT._Timeline_Plotter.Core.Plotter">[docs]</a><span class="k">def</span> <span class="nf">Plotter</span><span class="p">(</span><span class="n">Data_MATS</span><span class="p">,</span> <span class="n">Data_LP</span><span class="p">,</span> <span class="n">Time</span><span class="p">,</span> <span class="n">DataIndexStep</span><span class="p">,</span> <span class="n">OHB_StartIndex</span><span class="p">,</span> <span class="n">OHB_H5_Path</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">STK_CSV_FILE</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">Science_Mode_Path</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="Plotter"><a class="viewcode-back" href="../../../OPT._Timeline_Plotter.html#OPT._Timeline_Plotter.Core.Plotter">[docs]</a><span class="k">def</span> <span class="nf">Plotter</span><span class="p">(</span><span class="n">Data_MATS</span><span class="p">,</span> <span class="n">Data_LP</span><span class="p">,</span> <span class="n">Time</span><span class="p">,</span> <span class="n">DataIndexStepState</span><span class="p">,</span> <span class="n">StartIndexState</span><span class="p">,</span> <span class="n">DataIndexStepAttitude</span><span class="p">,</span> <span class="n">StartIndexAttitude</span><span class="p">,</span> 
+            <span class="n">OHB_H5_Path</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">STK_CSV_FILE</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">Science_Mode_Path</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Subfunction, Performs calculations and plots the position and attitude data of MATS and LP.</span>
 <span class="sd">    </span>
 <span class="sd">    Performs calculations on the data given in the file located at *OHB_H5_Path* and plots the results. </span>
@@ -625,8 +656,10 @@
 <span class="sd">        Data_MATS (dict of lists): Dictionary containing lists of simulated data of MATS.</span>
 <span class="sd">        Data_LP (dict of lists): Dictionary containing lists of simulated data of LP.</span>
 <span class="sd">        Time (list): List containing timestamps (utc) of the simulated data in Data_MATS and Data_LP.</span>
-<span class="sd">        DataIndexStep (int): The data index step size when going through the data given in *OHB_H5_Path*.</span>
-<span class="sd">        OHB_StartIndex (int): The starting data index when going through the data given in *OHB_H5_Path*.</span>
+<span class="sd">        DataIndexStepState (int): The data index step size when going through the state data given in *OHB_H5_Path*.</span>
+<span class="sd">        StartIndexState (int): The starting data index when going through the state data given in *OHB_H5_Path*.</span>
+<span class="sd">        DataIndexStepAttitude (int):  The data index step size when going through the attitude data given in *OHB_H5_Path*.</span>
+<span class="sd">        StartIndexAttitude (int): The starting data index when going through the attitude data given in *OHB_H5_Path*.</span>
 <span class="sd">        OHB_H5_Path (str): Path to the .h5 file containing position, time, and attitude data. If the string is empty, only Science Mode Timeline data will be plotted.</span>
 <span class="sd">        STK_CSV_PATH (str): Path to the .csv file containing position (column 1-3), velocity (column 4-6), and time (column 7), generated in STK. Position and velocity data is assumed to be in km and in ICRF.</span>
 <span class="sd">        </span>
@@ -641,7 +674,8 @@
     <span class="n">Time_MPL</span> <span class="o">=</span> <span class="n">date2num</span><span class="p">(</span><span class="n">Time</span><span class="p">[:])</span>
     
     <span class="s2">&quot;######## Try to Create a directory for storage of Timeline_Plotter plots and data files #######&quot;</span>
-    <span class="n">figureDirectory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Science_Mode_Path</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;.json&#39;</span><span class="p">),</span> <span class="s1">&#39;Timeline_Plotter_PlotsAndData&#39;</span><span class="p">)</span>
+    <span class="n">figureDirectory</span> <span class="o">=</span> <span class="n">ntpath</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">Science_Mode_Path</span><span class="p">)</span>
+    <span class="n">figureDirectory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;Output&#39;</span><span class="p">,</span><span class="n">figureDirectory</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;.json&#39;</span><span class="p">),</span> <span class="s1">&#39;Timeline_Plotter_PlotsAndData&#39;</span><span class="p">)</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">figureDirectory</span><span class="p">)</span>
     <span class="k">except</span><span class="p">:</span>
@@ -651,47 +685,74 @@
     <span class="s2">&quot;##############################################################################&quot;</span>
     <span class="k">if</span><span class="p">(</span> <span class="n">OHB_H5_Path</span> <span class="o">==</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
         <span class="n">timesteps</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="n">OHB_StartIndex</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">StartIndexState</span> <span class="o">=</span> <span class="mi">0</span>
         
     <span class="k">elif</span><span class="p">(</span> <span class="n">OHB_H5_Path</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">):</span>
         <span class="n">OHB_data</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">OHB_H5_Path</span><span class="p">,</span><span class="s1">&#39;r&#39;</span><span class="p">)</span>
         
-        <span class="n">root</span> <span class="o">=</span> <span class="n">OHB_data</span><span class="p">[</span><span class="s1">&#39;root&#39;</span><span class="p">]</span>
+        <span class="n">Level1A_data</span> <span class="o">=</span> <span class="n">OHB_data</span><span class="p">[</span><span class="s1">&#39;root&#39;</span><span class="p">][</span><span class="s1">&#39;Level1A&#39;</span><span class="p">]</span>
         
-        <span class="n">x_MATS_OHB</span> <span class="o">=</span> <span class="n">root</span><span class="p">[</span><span class="s1">&#39;TM_acOnGnss&#39;</span><span class="p">][</span><span class="s1">&#39;acoOnGnssStateJ2000_x&#39;</span><span class="p">][</span><span class="s1">&#39;raw&#39;</span><span class="p">]</span>
-        <span class="n">y_MATS_OHB</span> <span class="o">=</span> <span class="n">root</span><span class="p">[</span><span class="s1">&#39;TM_acOnGnss&#39;</span><span class="p">][</span><span class="s1">&#39;acoOnGnssStateJ2000_y&#39;</span><span class="p">][</span><span class="s1">&#39;raw&#39;</span><span class="p">]</span>
-        <span class="n">z_MATS_OHB</span> <span class="o">=</span> <span class="n">root</span><span class="p">[</span><span class="s1">&#39;TM_acOnGnss&#39;</span><span class="p">][</span><span class="s1">&#39;acoOnGnssStateJ2000_z&#39;</span><span class="p">][</span><span class="s1">&#39;raw&#39;</span><span class="p">]</span>
+        <span class="c1">#root = OHB_data[&#39;root&#39;]</span>
         
-        <span class="n">vel_x_MATS_OHB</span> <span class="o">=</span> <span class="n">root</span><span class="p">[</span><span class="s1">&#39;TM_acOnGnss&#39;</span><span class="p">][</span><span class="s1">&#39;acoOnGnssStateJ2000_vx&#39;</span><span class="p">][</span><span class="s1">&#39;raw&#39;</span><span class="p">]</span>
-        <span class="n">vel_y_MATS_OHB</span> <span class="o">=</span> <span class="n">root</span><span class="p">[</span><span class="s1">&#39;TM_acOnGnss&#39;</span><span class="p">][</span><span class="s1">&#39;acoOnGnssStateJ2000_vy&#39;</span><span class="p">][</span><span class="s1">&#39;raw&#39;</span><span class="p">]</span>
-        <span class="n">vel_z_MATS_OHB</span> <span class="o">=</span> <span class="n">root</span><span class="p">[</span><span class="s1">&#39;TM_acOnGnss&#39;</span><span class="p">][</span><span class="s1">&#39;acoOnGnssStateJ2000_vz&#39;</span><span class="p">][</span><span class="s1">&#39;raw&#39;</span><span class="p">]</span>
+        <span class="n">x_MATS_OHB</span> <span class="o">=</span> <span class="n">Level1A_data</span><span class="p">[</span><span class="s1">&#39;ReconstructedData&#39;</span><span class="p">][</span><span class="s1">&#39;PreciseOrbitEstimation&#39;</span><span class="p">][</span><span class="s1">&#39;acsGnssStateJ2000&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">,:]</span>
+        <span class="n">y_MATS_OHB</span> <span class="o">=</span> <span class="n">Level1A_data</span><span class="p">[</span><span class="s1">&#39;ReconstructedData&#39;</span><span class="p">][</span><span class="s1">&#39;PreciseOrbitEstimation&#39;</span><span class="p">][</span><span class="s1">&#39;acsGnssStateJ2000&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">,:]</span>
+        <span class="n">z_MATS_OHB</span> <span class="o">=</span> <span class="n">Level1A_data</span><span class="p">[</span><span class="s1">&#39;ReconstructedData&#39;</span><span class="p">][</span><span class="s1">&#39;PreciseOrbitEstimation&#39;</span><span class="p">][</span><span class="s1">&#39;acsGnssStateJ2000&#39;</span><span class="p">][</span><span class="mi">2</span><span class="p">,:]</span>
         
-        <span class="n">quat1_MATS_OHB</span> <span class="o">=</span> <span class="n">root</span><span class="p">[</span><span class="s1">&#39;TM_afAre&#39;</span><span class="p">][</span><span class="s1">&#39;afoTmAreAttitudeState_0&#39;</span><span class="p">][</span><span class="s1">&#39;raw&#39;</span><span class="p">]</span>
-        <span class="n">quat2_MATS_OHB</span> <span class="o">=</span> <span class="n">root</span><span class="p">[</span><span class="s1">&#39;TM_afAre&#39;</span><span class="p">][</span><span class="s1">&#39;afoTmAreAttitudeState_1&#39;</span><span class="p">][</span><span class="s1">&#39;raw&#39;</span><span class="p">]</span>
-        <span class="n">quat3_MATS_OHB</span> <span class="o">=</span> <span class="n">root</span><span class="p">[</span><span class="s1">&#39;TM_afAre&#39;</span><span class="p">][</span><span class="s1">&#39;afoTmAreAttitudeState_2&#39;</span><span class="p">][</span><span class="s1">&#39;raw&#39;</span><span class="p">]</span>
-        <span class="n">quat4_MATS_OHB</span> <span class="o">=</span> <span class="n">root</span><span class="p">[</span><span class="s1">&#39;TM_afAre&#39;</span><span class="p">][</span><span class="s1">&#39;afoTmAreAttitudeState_3&#39;</span><span class="p">][</span><span class="s1">&#39;raw&#39;</span><span class="p">]</span>
+        <span class="n">vel_x_MATS_OHB</span> <span class="o">=</span> <span class="n">Level1A_data</span><span class="p">[</span><span class="s1">&#39;ReconstructedData&#39;</span><span class="p">][</span><span class="s1">&#39;PreciseOrbitEstimation&#39;</span><span class="p">][</span><span class="s1">&#39;acsGnssStateJ2000&#39;</span><span class="p">][</span><span class="mi">3</span><span class="p">,:]</span>
+        <span class="n">vel_y_MATS_OHB</span> <span class="o">=</span> <span class="n">Level1A_data</span><span class="p">[</span><span class="s1">&#39;ReconstructedData&#39;</span><span class="p">][</span><span class="s1">&#39;PreciseOrbitEstimation&#39;</span><span class="p">][</span><span class="s1">&#39;acsGnssStateJ2000&#39;</span><span class="p">][</span><span class="mi">4</span><span class="p">,:]</span>
+        <span class="n">vel_z_MATS_OHB</span> <span class="o">=</span> <span class="n">Level1A_data</span><span class="p">[</span><span class="s1">&#39;ReconstructedData&#39;</span><span class="p">][</span><span class="s1">&#39;PreciseOrbitEstimation&#39;</span><span class="p">][</span><span class="s1">&#39;acsGnssStateJ2000&#39;</span><span class="p">][</span><span class="mi">5</span><span class="p">,:]</span>
         
-        <span class="n">Time_State_OHB</span> <span class="o">=</span> <span class="n">root</span><span class="p">[</span><span class="s1">&#39;TM_acOnGnss&#39;</span><span class="p">][</span><span class="s1">&#39;acoOnGnssStateTime&#39;</span><span class="p">][</span><span class="s1">&#39;raw&#39;</span><span class="p">]</span>
-        <span class="n">Time_Attitude_OHB</span> <span class="o">=</span> <span class="n">root</span><span class="p">[</span><span class="s1">&#39;afoTmMhObt&#39;</span><span class="p">][</span><span class="s1">&#39;raw&#39;</span><span class="p">]</span>
+        <span class="n">quat1_MATS_OHB</span> <span class="o">=</span> <span class="n">Level1A_data</span><span class="p">[</span><span class="s1">&#39;ReconstructedData&#39;</span><span class="p">][</span><span class="s1">&#39;PreciseAttitudeEstimation&#39;</span><span class="p">][</span><span class="s1">&#39;afsAttitudeState&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">,:]</span>
+        <span class="n">quat2_MATS_OHB</span> <span class="o">=</span> <span class="n">Level1A_data</span><span class="p">[</span><span class="s1">&#39;ReconstructedData&#39;</span><span class="p">][</span><span class="s1">&#39;PreciseAttitudeEstimation&#39;</span><span class="p">][</span><span class="s1">&#39;afsAttitudeState&#39;</span><span class="p">][</span><span class="mi">1</span><span class="p">,:]</span>
+        <span class="n">quat3_MATS_OHB</span> <span class="o">=</span> <span class="n">Level1A_data</span><span class="p">[</span><span class="s1">&#39;ReconstructedData&#39;</span><span class="p">][</span><span class="s1">&#39;PreciseAttitudeEstimation&#39;</span><span class="p">][</span><span class="s1">&#39;afsAttitudeState&#39;</span><span class="p">][</span><span class="mi">2</span><span class="p">,:]</span>
+        <span class="n">quat4_MATS_OHB</span> <span class="o">=</span> <span class="n">Level1A_data</span><span class="p">[</span><span class="s1">&#39;ReconstructedData&#39;</span><span class="p">][</span><span class="s1">&#39;PreciseAttitudeEstimation&#39;</span><span class="p">][</span><span class="s1">&#39;afsAttitudeState&#39;</span><span class="p">][</span><span class="mi">3</span><span class="p">,:]</span>
+        
+        <span class="n">x_MATS_OHB_ECEFdata</span> <span class="o">=</span> <span class="n">Level1A_data</span><span class="p">[</span><span class="s1">&#39;TM_acGnssOps&#39;</span><span class="p">][</span><span class="s1">&#39;acoOnGnssStateEcef_x&#39;</span><span class="p">][:]</span>
+        <span class="n">y_MATS_OHB_ECEFdata</span> <span class="o">=</span> <span class="n">Level1A_data</span><span class="p">[</span><span class="s1">&#39;TM_acGnssOps&#39;</span><span class="p">][</span><span class="s1">&#39;acoOnGnssStateEcef_y&#39;</span><span class="p">][:]</span>
+        <span class="n">z_MATS_OHB_ECEFdata</span> <span class="o">=</span> <span class="n">Level1A_data</span><span class="p">[</span><span class="s1">&#39;TM_acGnssOps&#39;</span><span class="p">][</span><span class="s1">&#39;acoOnGnssStateEcef_z&#39;</span><span class="p">][:]</span>
+        
+        
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        x_MATS_OHB = root[&#39;TM_acOnGnss&#39;][&#39;acoOnGnssStateJ2000_x&#39;][&#39;raw&#39;]</span>
+<span class="sd">        y_MATS_OHB = root[&#39;TM_acOnGnss&#39;][&#39;acoOnGnssStateJ2000_y&#39;][&#39;raw&#39;]</span>
+<span class="sd">        z_MATS_OHB = root[&#39;TM_acOnGnss&#39;][&#39;acoOnGnssStateJ2000_z&#39;][&#39;raw&#39;]</span>
+<span class="sd">        </span>
+<span class="sd">        vel_x_MATS_OHB = root[&#39;TM_acOnGnss&#39;][&#39;acoOnGnssStateJ2000_vx&#39;][&#39;raw&#39;]</span>
+<span class="sd">        vel_y_MATS_OHB = root[&#39;TM_acOnGnss&#39;][&#39;acoOnGnssStateJ2000_vy&#39;][&#39;raw&#39;]</span>
+<span class="sd">        vel_z_MATS_OHB = root[&#39;TM_acOnGnss&#39;][&#39;acoOnGnssStateJ2000_vz&#39;][&#39;raw&#39;]</span>
+<span class="sd">        </span>
+<span class="sd">        quat1_MATS_OHB = root[&#39;TM_afAre&#39;][&#39;afoTmAreAttitudeState_0&#39;][&#39;raw&#39;]</span>
+<span class="sd">        quat2_MATS_OHB = root[&#39;TM_afAre&#39;][&#39;afoTmAreAttitudeState_1&#39;][&#39;raw&#39;]</span>
+<span class="sd">        quat3_MATS_OHB = root[&#39;TM_afAre&#39;][&#39;afoTmAreAttitudeState_2&#39;][&#39;raw&#39;]</span>
+<span class="sd">        quat4_MATS_OHB = root[&#39;TM_afAre&#39;][&#39;afoTmAreAttitudeState_3&#39;][&#39;raw&#39;]</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        
+        <span class="c1">#Time_State_OHB = root[&#39;TM_acOnGnss&#39;][&#39;acoOnGnssStateTime&#39;][&#39;raw&#39;]</span>
+        <span class="n">Time_State_OHB</span> <span class="o">=</span> <span class="n">Level1A_data</span><span class="p">[</span><span class="s1">&#39;ReconstructedData&#39;</span><span class="p">][</span><span class="s1">&#39;PreciseOrbitEstimation&#39;</span><span class="p">][</span><span class="s1">&#39;Time&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">,:]</span>
+        <span class="c1">#Time_Attitude_OHB = root[&#39;afoTmMhObt&#39;][&#39;raw&#39;]</span>
+        <span class="n">Time_Attitude_OHB</span> <span class="o">=</span> <span class="n">Level1A_data</span><span class="p">[</span><span class="s1">&#39;ReconstructedData&#39;</span><span class="p">][</span><span class="s1">&#39;PreciseAttitudeEstimation&#39;</span><span class="p">][</span><span class="s1">&#39;Time&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">,:]</span>
         
         
         
-        
+        <span class="s2">&quot;#########################################################################&quot;</span>
         <span class="s2">&quot;Make sure that the amount of timesteps is less than the available data&quot;</span>
         <span class="n">PossibleTimesteps</span> <span class="o">=</span> <span class="p">[]</span>
         
-        <span class="n">timesteps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span> <span class="n">x_MATS_OHB</span> <span class="p">)</span> <span class="o">-</span> <span class="n">OHB_StartIndex</span><span class="p">)</span> <span class="o">/</span> <span class="n">DataIndexStep</span> <span class="p">)</span>
+        <span class="n">timesteps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span> <span class="n">x_MATS_OHB</span> <span class="p">)</span> <span class="o">-</span> <span class="n">StartIndexState</span><span class="p">)</span> <span class="o">/</span> <span class="n">DataIndexStepState</span> <span class="p">)</span>
         <span class="n">PossibleTimesteps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">timesteps</span><span class="p">)</span>
         
-        <span class="n">timesteps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span> <span class="n">quat1_MATS_OHB</span> <span class="p">)</span> <span class="o">-</span> <span class="n">OHB_StartIndex</span><span class="p">)</span> <span class="o">/</span> <span class="n">DataIndexStep</span> <span class="p">)</span>
+        <span class="n">timesteps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span> <span class="n">quat1_MATS_OHB</span> <span class="p">)</span> <span class="o">-</span> <span class="n">StartIndexState</span><span class="p">)</span> <span class="o">/</span> <span class="n">DataIndexStepState</span> <span class="p">)</span>
         <span class="n">PossibleTimesteps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">timesteps</span><span class="p">)</span>
         
-        <span class="n">timesteps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span> <span class="n">Time_State_OHB</span> <span class="p">)</span> <span class="o">-</span> <span class="n">OHB_StartIndex</span><span class="p">)</span> <span class="o">/</span> <span class="n">DataIndexStep</span> <span class="p">)</span>
+        <span class="n">timesteps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span> <span class="n">Time_State_OHB</span> <span class="p">)</span> <span class="o">-</span> <span class="n">StartIndexState</span><span class="p">)</span> <span class="o">/</span> <span class="n">DataIndexStepState</span> <span class="p">)</span>
         <span class="n">PossibleTimesteps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">timesteps</span><span class="p">)</span>
         
         <span class="s2">&quot;The shortest data series determines the amount of timesteps&quot;</span>
         <span class="n">PossibleTimesteps</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
         <span class="n">timesteps</span> <span class="o">=</span> <span class="n">PossibleTimesteps</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="s2">&quot;##########################################################################&quot;</span>
+        
+        
         
         
         <span class="c1">###### !!!!!!!!!!!!!!!! ############</span>
@@ -700,15 +761,16 @@
         <span class="nb">input</span><span class="p">(</span><span class="s2">&quot;Warning! Fraction of OHB data used (&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">FractionOfDataUsed</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span><span class="o">+</span><span class="s2">&quot;)! Press enter to acknowledge.&quot;</span><span class="p">)</span>
         <span class="c1">###### !!!!!!!!!!!!!!!! ############</span>
         
-        <span class="s2">&quot;To make sure there is enough data to support the amount of timesteps together with the DataIndexStep&quot;</span>
-        <span class="k">if</span><span class="p">(</span> <span class="nb">len</span><span class="p">(</span><span class="n">Time_State_OHB</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">DataIndexStep</span><span class="o">*</span><span class="n">timesteps</span><span class="p">):</span>
-            <span class="n">timesteps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Time_State_OHB</span><span class="p">)</span> <span class="o">/</span> <span class="n">DataIndexStep</span><span class="p">)</span>
+        <span class="s2">&quot;To make sure there is enough data to support the amount of timesteps together with the DataIndexStepState&quot;</span>
+        <span class="k">if</span><span class="p">(</span> <span class="nb">len</span><span class="p">(</span><span class="n">Time_State_OHB</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">DataIndexStepState</span><span class="o">*</span><span class="n">timesteps</span> <span class="o">+</span> <span class="n">StartIndexState</span><span class="p">):</span>
+            <span class="n">timesteps</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">Time_State_OHB</span><span class="p">)</span> <span class="o">/</span> <span class="n">DataIndexStepState</span><span class="p">)</span>
         
     <span class="s2">&quot;#########################################################################&quot;</span>
     
     <span class="s2">&quot;Allocate Space&quot;</span>
     <span class="n">Time_MPL_OHB</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">timesteps</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
     <span class="n">Time_OHB</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">Time_OHB_attitude</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="n">current_time_attitude</span> <span class="o">=</span> <span class="p">[]</span>
     
     <span class="n">lat_MATS_OHB</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">timesteps</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
@@ -723,6 +785,7 @@
     <span class="n">Vel_MATS_OHB</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">timesteps</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
     <span class="n">r_MATS_OHB</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">timesteps</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
     <span class="n">r_MATS_OHB_ECEF</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">timesteps</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
+    <span class="n">r_MATS_OHB_ECEFdata</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">timesteps</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
     <span class="n">r_MATS_OHB_ECEF2</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">timesteps</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
     <span class="n">optical_axis_OHB</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">timesteps</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
     <span class="n">r_LP_OHB_ECEF</span> <span class="o">=</span> <span class="n">zeros</span><span class="p">((</span><span class="n">timesteps</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
@@ -751,17 +814,22 @@
         <span class="n">Logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Calculations of OHB Data&#39;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">timesteps</span><span class="p">):</span>
             
-            <span class="c1">#t_OHB = round(t* DataIndexStep + OHB_StartIndex)</span>
-            <span class="n">t_OHB_state</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">t</span><span class="o">*</span> <span class="n">DataIndexStep</span> <span class="o">+</span> <span class="n">OHB_StartIndex</span><span class="p">)</span>
-            
-            <span class="s2">&quot;Timestamps of the attitude is assumed to be synchronized to the state&quot;</span>
-            <span class="n">t_OHB_attitude</span> <span class="o">=</span> <span class="n">t_OHB_state</span>
-            
+            <span class="c1">#t_OHB = round(t* DataIndexStepState + StartIndexState)</span>
+            <span class="n">t_OHB_state</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">t</span><span class="o">*</span> <span class="n">DataIndexStepState</span> <span class="o">+</span> <span class="n">StartIndexState</span><span class="p">)</span>
             <span class="n">Time_State_OHB_float</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">Time_State_OHB</span><span class="p">[</span><span class="n">t_OHB_state</span><span class="p">])</span>
-            <span class="c1">#Time_State_OHB_float[t] = float(Time_State_OHB[t_OHB])</span>
-            <span class="c1">#Time_Attitude_OHB_float[t] = float(Time_Attitude_OHB[t_OHB])</span>
             
-            <span class="n">Time_OHB</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">datetime</span><span class="p">(</span><span class="mi">1980</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">6</span><span class="p">)</span><span class="o">+</span><span class="n">datetime</span><span class="o">.</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span> <span class="o">=</span> <span class="n">Time_State_OHB_float</span><span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">18</span><span class="p">)</span> <span class="p">)</span>
+            
+            <span class="n">t_OHB_attitude</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">t</span><span class="o">*</span> <span class="n">DataIndexStepAttitude</span> <span class="o">+</span> <span class="n">StartIndexAttitude</span><span class="p">)</span>
+            <span class="n">Time_Attitude_OHB_float</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">Time_Attitude_OHB</span><span class="p">[</span><span class="n">t_OHB_attitude</span><span class="p">])</span>
+            
+            
+            <span class="n">Time_OHB</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">astropy</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">Time</span><span class="p">(</span><span class="n">Time_State_OHB_float</span><span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;gps&#39;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="s1">&#39;utc&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">()</span> <span class="p">)</span>
+            <span class="n">Time_OHB_attitude</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">astropy</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">Time</span><span class="p">(</span><span class="n">Time_Attitude_OHB_float</span><span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;gps&#39;</span><span class="p">,</span> <span class="n">scale</span><span class="o">=</span><span class="s1">&#39;utc&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">()</span> <span class="p">)</span>
+            
+            <span class="k">if</span> <span class="ow">not</span><span class="p">(</span> <span class="nb">int</span><span class="p">(</span><span class="n">Time_State_OHB_float</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="n">Time_Attitude_OHB_float</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="ow">and</span> <span class="nb">abs</span><span class="p">(</span><span class="n">Time_Attitude_OHB_float</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">-</span> <span class="n">Time_State_OHB_float</span><span class="p">[</span><span class="n">t</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">1</span> <span class="p">):</span>
+                <span class="n">Logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s1">&#39;State time not synchronized to attitude time!!&#39;</span><span class="p">)</span>
+            
+            <span class="c1">#Time_OHB.append(datetime.datetime(1980,1,6)+datetime.timedelta(seconds = Time_State_OHB_float[t,0]-18) )</span>
             
             <span class="c1">#current_time_attitude.append(datetime.datetime(1980,1,6)+datetime.timedelta(seconds = Time_Attitude_OHB_float[t,0]-18) )</span>
             
@@ -779,6 +847,11 @@
             <span class="n">q2_MATS_OHB</span><span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">quat2_MATS_OHB</span><span class="p">[</span><span class="n">t_OHB_attitude</span><span class="p">]</span>
             <span class="n">q3_MATS_OHB</span><span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">quat3_MATS_OHB</span><span class="p">[</span><span class="n">t_OHB_attitude</span><span class="p">]</span>
             <span class="n">q4_MATS_OHB</span><span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">quat4_MATS_OHB</span><span class="p">[</span><span class="n">t_OHB_attitude</span><span class="p">]</span>
+            
+            
+            <span class="n">r_MATS_OHB_ECEFdata</span><span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">x_MATS_OHB_ECEFdata</span><span class="p">[</span><span class="n">t_OHB_state</span><span class="p">]</span> 
+            <span class="n">r_MATS_OHB_ECEFdata</span><span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">y_MATS_OHB_ECEFdata</span><span class="p">[</span><span class="n">t_OHB_state</span><span class="p">]</span> 
+            <span class="n">r_MATS_OHB_ECEFdata</span><span class="p">[</span><span class="n">t</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">z_MATS_OHB_ECEFdata</span><span class="p">[</span><span class="n">t_OHB_state</span><span class="p">]</span> 
             
             
             <span class="s2">&quot;SLOF = Spacecraft Local Orbit Frame&quot;</span>
@@ -842,7 +915,7 @@
             
             <span class="c1">#R_earth_MATS[t][t] = norm(r_MATS_OHB[t,:]*1000)-alt_MATS_OHB[t]</span>
             
-            <span class="n">Time_MPL_OHB</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">date2num</span><span class="p">(</span><span class="n">Time_OHB</span><span class="p">[</span><span class="n">t</span><span class="p">])</span>
+            <span class="n">Time_MPL_OHB</span><span class="p">[</span><span class="n">t</span><span class="p">]</span> <span class="o">=</span> <span class="n">date2num</span><span class="p">(</span><span class="n">Time_OHB</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
         
     <span class="s2">&quot;######### END OF OHB DATA CALCULATIONS #########################&quot;</span>
     <span class="s2">&quot;#####################################################################################&quot;</span>
@@ -991,6 +1064,7 @@
     <span class="n">fig</span> <span class="o">=</span> <span class="n">figure</span><span class="p">()</span>
     <span class="n">plot_date</span><span class="p">(</span><span class="n">Time_MPL</span><span class="p">[:],</span> <span class="n">Data_MATS</span><span class="p">[</span><span class="s1">&#39;yaw_MATS [degrees]&#39;</span><span class="p">][:],</span> <span class="n">markersize</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;Predicted from Science Mode Timeline&#39;</span><span class="p">)</span>
     <span class="n">plot_date</span><span class="p">(</span><span class="n">Time_MPL_OHB</span><span class="p">[:],</span><span class="n">Euler_angles_SLOF_OHB</span><span class="p">[:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">markersize</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;OHB-H5-Data&#39;</span><span class="p">)</span>
+    <span class="n">plot_date</span><span class="p">(</span><span class="n">Time_MPL</span><span class="p">[:],</span> <span class="n">Data_MATS</span><span class="p">[</span><span class="s1">&#39;Yaw_function [degrees]&#39;</span><span class="p">][:],</span> <span class="n">markersize</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;Yaw-function (without attitude freezes)&#39;</span><span class="p">)</span>
     <span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Date&#39;</span><span class="p">)</span>
     <span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Degrees&#39;</span><span class="p">)</span>
     <span class="n">title</span><span class="p">(</span><span class="s1">&#39;Yaw of optical-axis [z-axis SLOF (towards earth)]&#39;</span><span class="p">)</span>
@@ -1083,6 +1157,17 @@
     <span class="n">figurePath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">figureDirectory</span><span class="p">,</span> <span class="s1">&#39;Alt&#39;</span><span class="p">)</span>
     <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span><span class="nb">open</span><span class="p">(</span><span class="n">figurePath</span><span class="o">+</span><span class="s1">&#39;.fig.pickle&#39;</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">))</span>
     
+    
+    <span class="n">fig</span> <span class="o">=</span> <span class="n">figure</span><span class="p">()</span>
+    <span class="n">plot_date</span><span class="p">(</span><span class="n">Time_MPL_OHB</span><span class="p">[:],</span><span class="nb">abs</span><span class="p">(</span><span class="n">r_MATS_OHB_ECEF</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="n">r_MATS_OHB_ECEFdata</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]),</span> <span class="n">markersize</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;X&#39;</span><span class="p">)</span>
+    <span class="n">plot_date</span><span class="p">(</span><span class="n">Time_MPL_OHB</span><span class="p">[:],</span><span class="nb">abs</span><span class="p">(</span><span class="n">r_MATS_OHB_ECEF</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="n">r_MATS_OHB_ECEFdata</span><span class="p">[:,</span><span class="mi">1</span><span class="p">]),</span> <span class="n">markersize</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;Y&#39;</span><span class="p">)</span>
+    <span class="n">plot_date</span><span class="p">(</span><span class="n">Time_MPL_OHB</span><span class="p">[:],</span><span class="nb">abs</span><span class="p">(</span><span class="n">r_MATS_OHB_ECEF</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="n">r_MATS_OHB_ECEFdata</span><span class="p">[:,</span><span class="mi">2</span><span class="p">]),</span> <span class="n">markersize</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s1">&#39;Z&#39;</span><span class="p">)</span>
+    <span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;Date&#39;</span><span class="p">)</span>
+    <span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;Meters&#39;</span><span class="p">)</span>
+    <span class="n">title</span><span class="p">(</span><span class="s1">&#39;Absolute error in ECEF positional data from h5 and converted J2000 data from h5 into ECEF&#39;</span><span class="p">)</span>
+    <span class="n">legend</span><span class="p">()</span>
+    <span class="n">figurePath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">figureDirectory</span><span class="p">,</span> <span class="s1">&#39;ECEFerror&#39;</span><span class="p">)</span>
+    <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">fig</span><span class="p">,</span><span class="nb">open</span><span class="p">(</span><span class="n">figurePath</span><span class="o">+</span><span class="s1">&#39;.fig.pickle&#39;</span><span class="p">,</span> <span class="s1">&#39;wb&#39;</span><span class="p">))</span>
     
     <span class="c1">####################################</span>
     
