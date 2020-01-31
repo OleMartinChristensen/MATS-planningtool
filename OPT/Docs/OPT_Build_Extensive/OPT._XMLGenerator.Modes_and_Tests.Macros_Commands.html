@@ -156,36 +156,10 @@ If Rate != 0, only <em>Timeline_settings['CMD_separation']</em> is added to <em>
 <div class="section" id="module-OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros">
 <span id="opt-xmlgenerator-modes-and-tests-macros-commands-macros-module"></span><h2>OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros module<a class="headerlink" href="#module-OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros" title="Permalink to this headline">¶</a></h2>
 <p>Contain Macro functions, that calls for Command functions located in the <em>Commands</em> module.</p>
-<p>Macros consists of frequently used combinations of Commands. Each macro (except the CCD_macro) contain a
+<p>Macros consists of frequently used combinations of Commands. Each macro (except the SetCCDs_macro) contain a
 <em>TC_acfLimbPointingAltitudeOffset</em> CMD, which will stagger the next CMD by a number of seconds equal to
 <em>Timeline_settings['pointing_stabilization']</em> when a new pointing altitude is set, or the previously set maximum TEXPMS when the pointing altitude is unchanged.
 This is important as the images need time to finish their current exposure before changing the CCD settings.</p>
-<dl class="function">
-<dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.CCD_macro">
-<code class="sig-prename descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.</code><code class="sig-name descname">CCD_macro</code><span class="sig-paren">(</span><em class="sig-param">root</em>, <em class="sig-param">relativeTime</em>, <em class="sig-param">CCD_settings</em>, <em class="sig-param">TEXPIMS</em>, <em class="sig-param">Timeline_settings</em>, <em class="sig-param">comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Macros.html#CCD_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.CCD_macro" title="Permalink to this definition">¶</a></dt>
-<dd><p>Macro that corresponds to configurating the settings of the CCDs</p>
-<p>Used when the Synchronization CMD is used to synchronize all the CCDs (except nadir), and when Snapshots are utilized where TEXPIMS is irrelevant.
-TEXPIMS for all the CCDs except nadir is set to the same value to allow Synchronization.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>root</strong> (<em>lxml.etree._Element</em>) -- XML tree structure. Main container object for the ElementTree API.</p></li>
-<li><p><strong>relativeTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) -- The relative starting time of the macro with regard to the start of the timeline [s]</p></li>
-<li><p><strong>CCD_settings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of int) -- A dict containing Settings for the CCDs. Defined in the <em>Configuration File</em>.</p></li>
-<li><p><strong>TEXPIMS</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- ExposureIntervalTime for the CCDs (except nadir) in ms.</p></li>
-<li><p><strong>Timeline_settings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) -- Dictionary containing the settings of the Timeline given in either the <em>Science_Mode_Timeline</em> or the <em>Configuration File</em>.</p></li>
-<li><p><strong>comment</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- A comment for the macro. Will be printed in the genereated XML-file.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Time in seconds equal to the input &quot;relativeTime&quot; with added delay from the scheduling of commands.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>relativeTime (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a>)</p>
-</dd>
-</dl>
-</dd></dl>
-
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.NadirSnapshot_Limb_Pointing_macro">
 <code class="sig-prename descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.</code><code class="sig-name descname">NadirSnapshot_Limb_Pointing_macro</code><span class="sig-paren">(</span><em class="sig-param">root</em>, <em class="sig-param">relativeTime</em>, <em class="sig-param">CCD_settings</em>, <em class="sig-param">pointing_altitude</em>, <em class="sig-param">Timeline_settings</em>, <em class="sig-param">comment</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Macros.html#NadirSnapshot_Limb_Pointing_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.NadirSnapshot_Limb_Pointing_macro" title="Permalink to this definition">¶</a></dt>
@@ -271,6 +245,32 @@ TEXPIMS for all the CCDs except nadir is set to the same value to allow Synchron
 <li><p><strong>pointing_altitude_from</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- The altitude in meters from which to start the sweep</p></li>
 <li><p><strong>pointing_altitude_from</strong> -- The altitude in meters where the sweep will end</p></li>
 <li><p><strong>sweep_rate</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- The rate of the sweep in m/s.</p></li>
+<li><p><strong>Timeline_settings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) -- Dictionary containing the settings of the Timeline given in either the <em>Science_Mode_Timeline</em> or the <em>Configuration File</em>.</p></li>
+<li><p><strong>comment</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- A comment for the macro. Will be printed in the genereated XML-file.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Time in seconds equal to the input &quot;relativeTime&quot; with added delay from the scheduling of commands.</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>relativeTime (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a>)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.SetCCDs_macro">
+<code class="sig-prename descclassname">OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.</code><code class="sig-name descname">SetCCDs_macro</code><span class="sig-paren">(</span><em class="sig-param">root</em>, <em class="sig-param">relativeTime</em>, <em class="sig-param">CCD_settings</em>, <em class="sig-param">TEXPIMS</em>, <em class="sig-param">Timeline_settings</em>, <em class="sig-param">comment=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Macros_Commands/Macros.html#SetCCDs_macro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Macros_Commands.Macros.SetCCDs_macro" title="Permalink to this definition">¶</a></dt>
+<dd><p>Macro that corresponds to configurating the settings of the CCDs</p>
+<p>Used when the Synchronization CMD is used to synchronize all the CCDs (except nadir), and when Snapshots are utilized where TEXPIMS is irrelevant.
+TEXPIMS for all the CCDs except nadir is set to the same value to allow Synchronization.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>root</strong> (<em>lxml.etree._Element</em>) -- XML tree structure. Main container object for the ElementTree API.</p></li>
+<li><p><strong>relativeTime</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) -- The relative starting time of the macro with regard to the start of the timeline [s]</p></li>
+<li><p><strong>CCD_settings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dict</span></code></a> of int) -- A dict containing Settings for the CCDs. Defined in the <em>Configuration File</em>.</p></li>
+<li><p><strong>TEXPIMS</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- ExposureIntervalTime for the CCDs (except nadir) in ms.</p></li>
 <li><p><strong>Timeline_settings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) -- Dictionary containing the settings of the Timeline given in either the <em>Science_Mode_Timeline</em> or the <em>Configuration File</em>.</p></li>
 <li><p><strong>comment</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- A comment for the macro. Will be printed in the genereated XML-file.</p></li>
 </ul>

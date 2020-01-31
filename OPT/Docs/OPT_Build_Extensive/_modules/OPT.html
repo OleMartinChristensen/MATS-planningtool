@@ -48,7 +48,9 @@
 <span class="sd">    CMD = Command \n</span>
 <span class="sd">    FOV = Field of View \n</span>
 <span class="sd">    LP = Look point of the instrument. \n</span>
-<span class="sd">    OPT = Operational Planning Tool</span>
+<span class="sd">    OPT = Operational Planning Tool \n</span>
+<span class="sd">    SLOF = Spacecraft Local Orbit Frame, defined in &quot;IS-OSE-IRD-0001_2B MATS Platform-Payload IRD&quot;. Yaw, pitch, and roll is defined as intrinsic Euler angles rotation (ZYZ) from Z-axis in SLOF to -Z axis in SBF. \n</span>
+<span class="sd">    SBF = Spacecraft Body Frame, defined in &quot;IS-OSE-IRD-0001_2B MATS Platform-Payload IRD&quot;. Optical axis is equal to -Z axis. \n</span>
 <span class="sd">    </span>
 <span class="sd">**Description:**</span>
 <span class="sd">*Operational_Planning_Tool* uses a hiearchy structure with a procedural programming paradigm. Meaning that only the top level functions (the ones mentioned above) are supposed to be called by a user. \n</span>
@@ -99,7 +101,7 @@
 <span class="sd">    *#Converts the created Science Mode Timeline into an XML-file. Settings stated in the Science Mode Timeline overrides settings in the Configuration File#* \n</span>
 <span class="sd">    OPT.XML_gen(&#39;Output/Science_Mode_Timeline__OPT_Config_File.json&#39;)</span>
 <span class="sd">    </span>
-<span class="sd">    *#Plots the Science Mode Timeline.#* \n</span>
+<span class="sd">    *#Plots the Science Mode Timeline, such as latitude, longitude, yaw, pitch, roll, RA and Dec of optical axis, altitude, altitude of LP and so on. Some plots generated are empty (reserved for optional inputs). #* \n</span>
 <span class="sd">    Data_MATS, Data_LP, Time, Time_OHB  = OPT.Timeline_Plotter(&#39;Output/Science_Mode_Timeline__OPT_Config_File.json&#39;)</span>
 <span class="sd"> </span>
 <span class="sd">**Note:** \n</span>
@@ -109,8 +111,8 @@
 <span class="sd">*Operational Science Modes* (Mode 1,2,5) are scheduled whenever time is available (after the scheduling of *Calibration Modes*) and only one *Operational Science Mode* is scheduled per timeline.</span>
 <span class="sd">The scheduling of certain *Calibration Modes* (science mode 120-124) depend on celestial object such as stars and the Moon. Therefore are the position of MATS and the pointing of the limb imager usually simulated to allow celestial object to be located in the FOV. \n</span>
 
-<span class="sd">Ignore any message during import of OPT such as the one given here as the parts utilizing gzip/7zip are not used in OPT: &quot;gzip was not found on your system! You should solve this issue for astroquery.eso to be at its best!</span>
-<span class="sd">On POSIX system: make sure gzip is installed and in your path!On Windows: same for 7-zip (http://www.7-zip.org)!&quot;</span>
+<span class="sd">Ignore any message during import of OPT such as the one given here: &quot;gzip was not found on your system! You should solve this issue for astroquery.eso to be at its best!</span>
+<span class="sd">On POSIX system: make sure gzip is installed and in your path!On Windows: same for 7-zip (http://www.7-zip.org)!&quot;. This can be ignored as the parts utilizing gzip/7zip are not used in OPT.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 
@@ -246,7 +248,6 @@
     
     <span class="s2">&quot;Initialize current_pointing to None&quot;</span>
     <span class="n">Globals</span><span class="o">.</span><span class="n">current_pointing</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="c1">#Globals.science_mode_timeline_path = science_mode_timeline_path</span>
     
     <span class="n">XML_generator</span><span class="p">(</span><span class="n">science_mode_timeline_path</span><span class="p">)</span></div>
 
@@ -279,9 +280,12 @@
 <span class="sd">    </span>
 <span class="sd">    Simulates the position and attitude of MATS from a given Science Mode Timeline and also optionally compares it to</span>
 <span class="sd">    positional and attitude data given in a .h5 data set, located at *OHB_H5_Path*. Plots both the simulated data and given data. </span>
-<span class="sd">    The attitude data shows only the target pointing orientation and does not mimic MATS&#39;s actual attitude control system. The timesteps of both the .h5 data and the Science Mode is synchronized to allow direct comparison if possible. \n</span>
+<span class="sd">    The attitude data shows only the target pointing orientation and does not mimic MATS&#39;s actual attitude control system. This leads to large pointing differences whenever the pointing altitude is changed. \n</span>
+<span class="sd">    The timesteps of both the .h5 data and the Science Mode is synchronized to allow direct comparison if possible. \n</span>
+<span class="sd">    </span>
 <span class="sd">    A .csv file, generated in STK, may also be included to plot the predicted positional error of the satellite compared to STK data. Only data points with equal timestamps to the simulated Science Mode Timeline data will be plotted.</span>
 <span class="sd">    Saves generated plots as binary files. \n</span>
+<span class="sd">    </span>
 <span class="sd">    Settings for the operation of the program are stated in the chosen *Configuration File*. </span>
 <span class="sd">    Settings stated in the *Science Mode Timeline* override settings given in the chosen *Configuration file*.</span>
 <span class="sd">    </span>
@@ -289,7 +293,7 @@
 <span class="sd">        Science_Mode_Path (str): Path to the Science Mode Timeline to be plotted.</span>
 <span class="sd">        OHB_H5_Path (str): *Optional*. Path to the .h5 file containing position, time, and attitude data. The .h5 file is defined in the &quot;Ground Segment ICD&quot; document. The timestamps for the attitude and state data is assumed to be synchronized.</span>
 <span class="sd">        STK_CSV_PATH (str): *Optional*. Path to the .csv file containing position (column 1-3), velocity (column 4-6), and time (column 7), generated in STK. Position and velocity data is assumed to be in km and in ICRF. </span>
-<span class="sd">        Timestep (int): *Optional*. The chosen timestep of the Science Mode Timeline simulation [s]. Drastically changes runtime of the program </span>
+<span class="sd">        Timestep (int): *Optional*. The chosen timestep of the Science Mode Timeline simulation [s]. Drastically changes runtime of the program. </span>
 <span class="sd">        </span>
 <span class="sd">    Returns:</span>
 <span class="sd">        (tuple): tuple containing:</span>

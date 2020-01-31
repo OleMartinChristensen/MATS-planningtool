@@ -112,7 +112,10 @@ def lat_2_R( lat ):
 def lat_calculator( Satellite_skyfield, date ):
     ''' Function that calculates the latitude of a skyfield.sgp4lib.EarthSatellite object at a certain date
     
-    Mainly used to approximate the latitude of the LP as the LP is close to being in the same plane as the orbital plane.
+    Mainly used to approximate the latitude of the LP as the LP is close to being in the same plane as the orbital plane. 
+    So if the orbital position angle between LP and MATS is known (and MATS orbit is circular), then the time difference is known, then this function can be used to calculate the lat of MATS at a previous location to estimate the LPs current latitude.
+    
+    Used only in Timeline_gen and XML_gen to estimate LPs latitude without using computational difficult methods to save run time.  
     
     Arguments:
         Satellite_skyfield (:obj:`skyfield.sgp4lib.EarthSatellite`): A Skyfield object representing an EarthSatellite defined by a TLE.
@@ -162,7 +165,7 @@ def scheduler(Occupied_Timeline, date, endDate):
     
     iterations = 0
     restart = True
-    ## Checks if date is available and postpones starting date of mode until available
+    "## Checks if date is available and postpones starting date of mode until available"
     while( restart == True):
         restart = False
         
@@ -180,13 +183,8 @@ def scheduler(Occupied_Timeline, date, endDate):
                            busy_date[0] < endDate <= busy_date[1] or
                            (date < busy_date[0] and endDate > busy_date[1])):
                         
-                        
                         endDate = ephem.Date( endDate + abs(date - busy_date[1]))
                         date = ephem.Date(busy_date[1])
-                        
-                        
-                        #date = ephem.Date(date + ephem.second*Timeline_settings['mode_separation'])
-                        #endDate = ephem.Date(endDate + ephem.second*Timeline_settings['mode_separation'])
                         
                         iterations = iterations + 1
                         restart = True
@@ -201,7 +199,7 @@ def dict_comparator(dict1, dict2, Logger = None):
     A dict_new will be created containing all the keys and values of dict2. Then for any keys that 
     exist in both dict1 and dict_new, dict_new's keys will have their values replaced by the ones in dict1.
     
-    Used to compare settings given in a Science Mode Timeline to settings given in the Configuration File.
+    Used to compare settings given in a Science Mode Timeline to the same kind of settings given in the Configuration File.
     
     WARNING! All keys in dict1 must also exist in dict2.
     
@@ -215,11 +213,10 @@ def dict_comparator(dict1, dict2, Logger = None):
         
     """
     
-    
-    "Check if optional params were given"
+    "Check if the dictionaries are different"
     if( dict1 != dict2):
         dict_new = dict2
-        "Loop through parameters given and exchange the settings ones"
+        "Loop through keys and exchange values"
         for key in dict1.keys():
             dict_new[key] = dict1[key]
     else:
@@ -261,7 +258,7 @@ def SetupLogger(LoggerName):
     
     Logger = logging.getLogger(LoggerName)
     name = sys._getframe(1).f_code.co_name
-    ######## Try to Create a directory for storage of Logs #######
+    "######## Try to Create a directory for storage of Logs #######"
     try:
         os.mkdir('Logs_'+name)
     except:
@@ -271,9 +268,6 @@ def SetupLogger(LoggerName):
     for handler in Logger.handlers[:]:
         Logger.removeHandler(handler)
     
-    
-    
-    #logging.basicConfig(stream=sys.stdout, level=logging.INFO)
     timestr = time.strftime("%Y%m%d-%H%M%S")
     logstring = os.path.join('Logs_'+name, name+'__'+timestr+'.log')
     Handler = logging.FileHandler(logstring, mode='a')
@@ -290,7 +284,7 @@ def SetupLogger(LoggerName):
 
 
 def calculate_time_per_row(NCOL, NCBIN, NCBINFPGA, NRSKIP, NROW, NRBIN, NFLUSH):
-    """This function provides an estimated amount of time for a CCD readout
+    """This function provides an estimated amount of time for a CCD readout.
     
     Note that minor "transition" states may have been omitted resulting in 
     somewhat shorter readout times (<0.1%).
@@ -314,6 +308,7 @@ def calculate_time_per_row(NCOL, NCBIN, NCBINFPGA, NRSKIP, NROW, NRBIN, NFLUSH):
     
     Returns:
         (float): Readout time in ms. 
+        
     """
     
     #image parameters
@@ -395,6 +390,7 @@ def calculate_time_per_row(NCOL, NCBIN, NCBINFPGA, NRSKIP, NROW, NRBIN, NFLUSH):
 def SyncArgCalculator(CCD_settings, ExtraOffset, ExtraIntervalTime):
     """Calculates appropriate arguments for the CCD Synchonize CMD.
     
+    Does not take into account the nadir CCD as it is not required to synchronize, because interference caused by the nadir CCD is low.
     The CCDs are offset in order of ExposureTime (TEXPMS) with the CCD with the shortest ExposureTime being the leading CCD. \n
     CCDs with ExposureTime equal to zero are skipped. \n
     The offset calculations depend on the Readout Time, which depends on the binning settings of the CCDs. \n
@@ -727,7 +723,8 @@ def CCDSELExtracter(CCDSEL):
 def Satellite_Simulator( Satellite_skyfield, SimulationTime, Timeline_settings, pointing_altitude, LogFlag = False, Logger = None ):
     """Simulates a single point in time for a Satellite using Skyfield and also the pointing of the satellite.
     
-    Only estimates the actual pointing definition used by OHB. The LP is calculated with an algorithm derived by Nick Lloyd at University of Saskatchewan, 
+    Only estimates the actual pointing definition used by OHB as it is uncertain if the algorithm to calculate the LP here is the same as the one OHB uses. 
+    The LP is calculated with an algorithm derived by Nick Lloyd at University of Saskatchewan, 
     Canada (nick.lloyd@usask.ca), and is part of
     the operational code for both OSIRIS and SMR on-board- the Odin satellite. An offset is added to the pointing altitude to better mimic OHBs actual LP.
     
@@ -754,7 +751,6 @@ def Satellite_Simulator( Satellite_skyfield, SimulationTime, Timeline_settings, 
     pointing_altitude = pointing_altitude + 0.3
     
     yaw_correction = Timeline_settings['yaw_correction']
-    #LP_altitude = Timeline_settings['LP_pointing_altitude']
     
     current_time_datetime = ephem.Date(SimulationTime).datetime()
     year = current_time_datetime.year
@@ -774,9 +770,6 @@ def Satellite_Simulator( Satellite_skyfield, SimulationTime, Timeline_settings, 
     lat_Satellite = Satellite_subpoint.latitude.degrees
     long_Satellite = Satellite_subpoint.longitude.degrees
     alt_Satellite = Satellite_subpoint.elevation.km
-    #lat_Satellite  = Satellite_geo.subpoint().latitude.degrees
-    #long_Satellite = Satellite_geo.subpoint().longitude.degrees
-    #alt_Satellite = Satellite_geo.subpoint().elevation.km
     
     
     r_Satellite_unit_vector = r_Satellite / norm(r_Satellite)
@@ -788,7 +781,7 @@ def Satellite_Simulator( Satellite_skyfield, SimulationTime, Timeline_settings, 
     orbital_period = 2*pi*sqrt(Satellite_p**3/U)
     
     
-    "Initial Estimated pitch or elevation angle for Satellite pointing"
+    "Initial Estimated pitch or elevation angle for Satellite pointing (angle between negativ velocity vector and optical axis in the orbital plane)"
     OrbAngleBetweenSatelliteAndLP= arccos((R_mean+pointing_altitude)/(Satellite_distance))/pi*180
     
     time_between_LP_and_Satellite = orbital_period*OrbAngleBetweenSatelliteAndLP/360
@@ -804,7 +797,7 @@ def Satellite_Simulator( Satellite_skyfield, SimulationTime, Timeline_settings, 
     
     Pitch = 90 + OrbAngleBetweenSatelliteAndLP
     
-    ############# Calculations of orbital and pointing vectors ############
+    "############# Calculations of orbital and pointing vectors ############"
     "Vector normal to the orbital plane of Satellite"
     normal_orbit = cross(r_Satellite,v_Satellite)
     normal_orbit = normal_orbit / norm(normal_orbit)
@@ -812,7 +805,6 @@ def Satellite_Simulator( Satellite_skyfield, SimulationTime, Timeline_settings, 
     
     
     "Calculate intersection between the orbital plane and the equator"
-    #ascending_node = cross(normal_orbit, celestial_eq)
     ascending_node = cross(celestial_eq, normal_orbit)
     
     "Argument of latitude"
@@ -823,7 +815,7 @@ def Satellite_Simulator( Satellite_skyfield, SimulationTime, Timeline_settings, 
         arg_of_lat = 360 - arg_of_lat
         
     if( yaw_correction == True):
-        yaw_offset_angle = Timeline_settings['yaw_amplitude'] * cos( arg_of_lat/180*pi - (Pitch-90)/180*pi + Timeline_settings['yaw_phase']/180*pi )
+        yaw_offset_angle = Timeline_settings['yaw_amplitude'] * cos( arg_of_lat/180*pi - (Pitch-90)/180*pi - Timeline_settings['yaw_phase']/180*pi )
     elif( yaw_correction == False):
         yaw_offset_angle = 0
     
@@ -987,6 +979,8 @@ def FreezeDuration_calculator(pointing_altitude1, pointing_altitude2, TLE2):
     '''Function that calculates the angle between two tangential altitudes and then calculates
     the time it takes for orbital position angle of a satellite in a circular orbit to change by the same amount.
     
+    Used to estimate the duration of an attitude freeze for which the pointing altitude reorients itself to the standard pointing altitude.
+    
     Arguments:
         pointing_altitude1 (int): First tangential pointing altitude in m
         pointing_altitude2 (int): Second tangential pointing altitude in m
@@ -1005,8 +999,8 @@ def FreezeDuration_calculator(pointing_altitude1, pointing_altitude2, TLE2):
     pitch2 = arccos((R_mean+pointing_altitude2/1000 )/(MATS_p))/pi*180
     pitch_angle_difference = abs(pitch1 - pitch2)
     
-    #The time it takes for the orbital position angle to change by the same amount as
-    #the angle between the pointing axes
+    "#The time it takes for the orbital position angle to change by the same amount as"
+    "#the angle between the pointing axes"
     FreezeDuration = int(round(MATS_P*(pitch_angle_difference)/360,0))
     
     return FreezeDuration

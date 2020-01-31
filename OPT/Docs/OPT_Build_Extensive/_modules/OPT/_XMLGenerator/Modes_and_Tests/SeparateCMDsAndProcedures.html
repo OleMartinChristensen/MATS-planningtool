@@ -32,12 +32,14 @@
             
   <h1>Source code for OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures</h1><div class="highlight"><pre>
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
-<span class="sd">&quot;&quot;&quot;Calls CMDs/Procedures, which will generate commands in the XML-file. These functions are used when CMDs/Procedures are scheduled separately in a Science Mode Timeline. \n</span>
+<span class="sd">&quot;&quot;&quot;Calls CMDs/Procedures, which will generate commands in the XML-file. These functions are used when CMDs/Procedures are scheduled separately in a Science Mode Timeline.  \n</span>
 
-<span class="sd">For PM, CCDBadColumn, CCDFlushBadColumns: Compares parameters given in the Science Mode Timeline to default parameters </span>
-<span class="sd">given in the set *Configuration File* and fills in any parameters missing in the Science Mode Timeline. \n</span>
+<span class="sd">For the definition of CMDs/Procedures see the &quot;InnoSat Payload Timeline XML Definition&quot; document. \n</span>
 
-<span class="sd">For the rest CMDS, each parameter must be given in the *Science Mode Timeline* as a dictionary with each key representing a parameter. \n</span>
+<span class="sd">For PM, CCDBadColumn, CCDFlushBadColumns: Compares settings given in the Science Mode Timeline to the same </span>
+<span class="sd">given in the set *Configuration File* and fills in any values missing in the Science Mode Timeline. \n</span>
+
+<span class="sd">For the rest of the CMDS, each setting must be given in the *Science Mode Timeline* as a dictionary with each key representing an argument of the CMD. \n</span>
 
 <span class="sd">TurnONCCDs will always call TC_pafCCDMain with fixed arguments to turn ON all CCDs. \n</span>
 
@@ -49,15 +51,15 @@
 <span class="sd">        **duration** (*int*): The duration of the CMD [s] as an integer class. \n</span>
 <span class="sd">        **relativeTime** (*int*): The starting time [s] of the CMD with regard to the start of the timeline as an integer class \n</span>
 <span class="sd">        **Timeline_settings** (*dict*): Dictionary containing the settings of the Timeline given in either the *Science Mode Timeline* or the *Configuration File*. \n </span>
-<span class="sd">        **CMD_settings** (*dict*): Dictionary containing the parameters of the CMD given in the Science Mode Timeline.</span>
+<span class="sd">        **CMD_settings** (*dict*): Dictionary containing the settings/arguments of the CMD given in the Science Mode Timeline.</span>
 <span class="sd">    </span>
 <span class="sd">    Returns:</span>
 <span class="sd">        None</span>
 
-<span class="sd">@author: David</span>
+<span class="sd">@author: David Skånberg</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
-<span class="kn">import</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">importlib</span>
+<span class="kn">import</span> <span class="nn">logging</span><span class="o">,</span> <span class="nn">importlib</span><span class="o">,</span> <span class="nn">sys</span>
 
 <span class="kn">from</span> <span class="nn">.Macros_Commands</span> <span class="kn">import</span> <span class="n">Commands</span><span class="p">,</span> <span class="n">Macros</span>
 <span class="kn">from</span> <span class="nn">OPT._Library</span> <span class="kn">import</span> <span class="n">dict_comparator</span>
@@ -69,7 +71,7 @@
 
 
 
-<span class="c1">################# Procedures ############################</span>
+<span class="s2">&quot;################# Procedures ############################&quot;</span>
 
 <div class="viewcode-block" id="Payload_Power_Toggle"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.Payload_Power_Toggle">[docs]</a><span class="k">def</span> <span class="nf">Payload_Power_Toggle</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
                        <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">CMD_settings</span> <span class="o">=</span> <span class="p">{}):</span>
@@ -79,8 +81,9 @@
     
     
 
-<span class="c1">################# PAYLOAD COMMANDS ############################</span>
+<span class="s2">&quot;################# PAYLOAD COMMANDS ############################&quot;</span>
 
+<span class="s2">&quot;A CMD with fixed arguments used to just turn on the CCDs&quot;</span>
 <div class="viewcode-block" id="TurnONCCDs"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.TurnONCCDs">[docs]</a><span class="k">def</span> <span class="nf">TurnONCCDs</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 
                        <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">CMD_settings</span> <span class="o">=</span> <span class="p">{}):</span>
     
@@ -95,7 +98,8 @@
     <span class="c1">#CMD_settings_ConfigFile = {&#39;MODE&#39;: 0}</span>
     <span class="c1">#CMD_settings = dict_comparator(CMD_settings, CMD_settings_ConfigFile)</span>
     
-    <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafMode</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">relativeTime</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">mode</span> <span class="o">=</span> <span class="n">CMD_settings</span><span class="p">[</span><span class="s1">&#39;MODE&#39;</span><span class="p">],</span> <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">))</span></div>
+    <span class="n">CMD_name</span> <span class="o">=</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span>
+    <span class="n">Commands</span><span class="o">.</span><span class="n">TC_pafMode</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">relativeTime</span><span class="p">,</span><span class="mi">2</span><span class="p">),</span> <span class="n">mode</span> <span class="o">=</span> <span class="n">CMD_settings</span><span class="p">[</span><span class="s1">&#39;MODE&#39;</span><span class="p">],</span> <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="n">Timeline_settings</span><span class="p">,</span> <span class="n">comment</span> <span class="o">=</span> <span class="n">CMD_name</span> <span class="o">+</span> <span class="s1">&#39;, &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">date</span><span class="p">))</span></div>
  
 
 <div class="viewcode-block" id="PWRTOGGLE"><a class="viewcode-back" href="../../../../OPT._XMLGenerator.Modes_and_Tests.html#OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.PWRTOGGLE">[docs]</a><span class="k">def</span> <span class="nf">PWRTOGGLE</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">date</span><span class="p">,</span> <span class="n">duration</span><span class="p">,</span> <span class="n">relativeTime</span><span class="p">,</span> 

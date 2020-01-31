@@ -1,13 +1,11 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Mar 22 12:34:33 2019
-
-Tests are used during the commisioning phase of the satellite.
+Tests are used during the commisioning phase of the satellite. The Tests are defined by Ole Martin Christensen. \n
 
 Generates and calculates parameters for each Test used during the commisioning phase, and converts them to strings,
-then calls for macros, which will generate commands in the XML-file.
+then calls for macros, which will generate commands in the XML-file. \n
 
-Functions on the form "X", where the last X is any Test:
+Functions on the form "X", where the X is any Test, except for 'All_Tests' which schedules every Test.
     
     **Arguments:**
         **root** (*lxml.etree.Element*):  XML tree structure. Main container object for the ElementTree API. \n
@@ -23,7 +21,7 @@ Functions on the form "X", where the last X is any Test:
 When creating new Test functions it is crucial that the function name is
 *Test_name*, where *Test_name* is the same as the string used in the Science Mode Timeline.
 
-@author: David
+@author: David Skånberg
 """
 
 import ephem, logging, sys, importlib, skyfield.api
@@ -42,7 +40,8 @@ Logger = logging.getLogger(OPT_Config_File.Logger_name())
 def All_Tests(root, date, duration, relativeTime, Timeline_settings, Test_settings = ['Limb_functional_test', 'Photometer_test_1', 'CCD_stability_test', 'Nadir_functional_test']):
     """ Runs all the Test functions which have their function name as a string in the input *Test_settings*.
     
-    Allows the tests to be dynamically scheduled.
+    Allows the tests to be dynamically scheduled. Meaning that when the previous test is done another done starts immediately after. 
+    This eliminates the need to give an approximated duration of any specfic Test as their exact duration is unknown beforehand.
     
     """
     

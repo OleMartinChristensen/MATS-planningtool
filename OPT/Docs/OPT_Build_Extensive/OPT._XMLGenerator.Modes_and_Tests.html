@@ -74,7 +74,7 @@ then calls for Macros/Commands functions located in the <em>Macros_Commands</em>
 </div></blockquote>
 <p>When creating new Mode functions it is crucial that the function name is
 <em>X</em>, where <em>X</em> is the same as the string used in the <em>Science Mode Timeline</em>. Because OPT will automatically look for any function with the same name as the string in the <em>Science Mode Timeline</em></p>
-<p>&#64;author: David</p>
+<p>&#64;author: David Skånberg</p>
 <dl class="data">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.MODES.Logger">
 <code class="sig-prename descclassname">OPT._XMLGenerator.Modes_and_Tests.MODES.</code><code class="sig-name descname">Logger</code><em class="property"> = &lt;Logger OPT_logger (WARNING)&gt;</em><a class="reference internal" href="_modules/logging.html#Logger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.MODES.Logger" title="Permalink to this definition">¶</a></dt>
@@ -247,9 +247,10 @@ Simulates MATS to determine when a point below MATS is at night or daytime.</p>
 <div class="section" id="module-OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures">
 <span id="opt-xmlgenerator-modes-and-tests-separatecmdsandprocedures-module"></span><h2>OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures module<a class="headerlink" href="#module-OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures" title="Permalink to this headline">¶</a></h2>
 <p>Calls CMDs/Procedures, which will generate commands in the XML-file. These functions are used when CMDs/Procedures are scheduled separately in a Science Mode Timeline.</p>
-<p>For PM, CCDBadColumn, CCDFlushBadColumns: Compares parameters given in the Science Mode Timeline to default parameters
-given in the set <em>Configuration File</em> and fills in any parameters missing in the Science Mode Timeline.</p>
-<p>For the rest CMDS, each parameter must be given in the <em>Science Mode Timeline</em> as a dictionary with each key representing a parameter.</p>
+<p>For the definition of CMDs/Procedures see the &quot;InnoSat Payload Timeline XML Definition&quot; document.</p>
+<p>For PM, CCDBadColumn, CCDFlushBadColumns: Compares settings given in the Science Mode Timeline to the same
+given in the set <em>Configuration File</em> and fills in any values missing in the Science Mode Timeline.</p>
+<p>For the rest of the CMDS, each setting must be given in the <em>Science Mode Timeline</em> as a dictionary with each key representing an argument of the CMD.</p>
 <p>TurnONCCDs will always call TC_pafCCDMain with fixed arguments to turn ON all CCDs.</p>
 <p>Functions on the form &quot;X&quot;, where X is any CMD:</p>
 <blockquote>
@@ -259,13 +260,13 @@ given in the set <em>Configuration File</em> and fills in any parameters missing
 <p><strong>duration</strong> (<em>int</em>): The duration of the CMD [s] as an integer class.</p>
 <p><strong>relativeTime</strong> (<em>int</em>): The starting time [s] of the CMD with regard to the start of the timeline as an integer class</p>
 <p><strong>Timeline_settings</strong> (<em>dict</em>): Dictionary containing the settings of the Timeline given in either the <em>Science Mode Timeline</em> or the <em>Configuration File</em>.</p>
-<p><strong>CMD_settings</strong> (<em>dict</em>): Dictionary containing the parameters of the CMD given in the Science Mode Timeline.</p>
+<p><strong>CMD_settings</strong> (<em>dict</em>): Dictionary containing the settings/arguments of the CMD given in the Science Mode Timeline.</p>
 </dd>
 <dt>Returns:</dt><dd><p>None</p>
 </dd>
 </dl>
 </div></blockquote>
-<p>&#64;author: David</p>
+<p>&#64;author: David Skånberg</p>
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.ArgEnableYawComp">
 <code class="sig-prename descclassname">OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.</code><code class="sig-name descname">ArgEnableYawComp</code><span class="sig-paren">(</span><em class="sig-param">root</em>, <em class="sig-param">date</em>, <em class="sig-param">duration</em>, <em class="sig-param">relativeTime</em>, <em class="sig-param">Timeline_settings</em>, <em class="sig-param">CMD_settings={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/SeparateCMDsAndProcedures.html#ArgEnableYawComp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.ArgEnableYawComp" title="Permalink to this definition">¶</a></dt>
@@ -331,6 +332,12 @@ given in the set <em>Configuration File</em> and fills in any parameters missing
 <code class="sig-prename descclassname">OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.</code><code class="sig-name descname">LimbPointingAltitudeOffset</code><span class="sig-paren">(</span><em class="sig-param">root</em>, <em class="sig-param">date</em>, <em class="sig-param">duration</em>, <em class="sig-param">relativeTime</em>, <em class="sig-param">Timeline_settings</em>, <em class="sig-param">CMD_settings={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/SeparateCMDsAndProcedures.html#LimbPointingAltitudeOffset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.LimbPointingAltitudeOffset" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="data">
+<dt id="OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.Logger">
+<code class="sig-prename descclassname">OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.</code><code class="sig-name descname">Logger</code><em class="property"> = &lt;Logger OPT_logger (WARNING)&gt;</em><a class="reference internal" href="_modules/logging.html#Logger"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.Logger" title="Permalink to this definition">¶</a></dt>
+<dd><p>################# Procedures ############################</p>
+</dd></dl>
+
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.MODE">
 <code class="sig-prename descclassname">OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.</code><code class="sig-name descname">MODE</code><span class="sig-paren">(</span><em class="sig-param">root</em>, <em class="sig-param">date</em>, <em class="sig-param">duration</em>, <em class="sig-param">relativeTime</em>, <em class="sig-param">Timeline_settings</em>, <em class="sig-param">CMD_settings={}</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/SeparateCMDsAndProcedures.html#MODE"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.SeparateCMDsAndProcedures.MODE" title="Permalink to this definition">¶</a></dt>
@@ -364,11 +371,10 @@ given in the set <em>Configuration File</em> and fills in any parameters missing
 </div>
 <div class="section" id="module-OPT._XMLGenerator.Modes_and_Tests.Tests">
 <span id="opt-xmlgenerator-modes-and-tests-tests-module"></span><h2>OPT._XMLGenerator.Modes_and_Tests.Tests module<a class="headerlink" href="#module-OPT._XMLGenerator.Modes_and_Tests.Tests" title="Permalink to this headline">¶</a></h2>
-<p>Created on Fri Mar 22 12:34:33 2019</p>
-<p>Tests are used during the commisioning phase of the satellite.</p>
+<p>Tests are used during the commisioning phase of the satellite. The Tests are defined by Ole Martin Christensen.</p>
 <p>Generates and calculates parameters for each Test used during the commisioning phase, and converts them to strings,
 then calls for macros, which will generate commands in the XML-file.</p>
-<p>Functions on the form &quot;X&quot;, where the last X is any Test:</p>
+<p>Functions on the form &quot;X&quot;, where the X is any Test, except for 'All_Tests' which schedules every Test.</p>
 <blockquote>
 <div><dl>
 <dt><strong>Arguments:</strong></dt><dd><p><strong>root</strong> (<em>lxml.etree.Element</em>):  XML tree structure. Main container object for the ElementTree API.</p>
@@ -384,12 +390,13 @@ then calls for macros, which will generate commands in the XML-file.</p>
 </div></blockquote>
 <p>When creating new Test functions it is crucial that the function name is
 <em>Test_name</em>, where <em>Test_name</em> is the same as the string used in the Science Mode Timeline.</p>
-<p>&#64;author: David</p>
+<p>&#64;author: David Skånberg</p>
 <dl class="function">
 <dt id="OPT._XMLGenerator.Modes_and_Tests.Tests.All_Tests">
 <code class="sig-prename descclassname">OPT._XMLGenerator.Modes_and_Tests.Tests.</code><code class="sig-name descname">All_Tests</code><span class="sig-paren">(</span><em class="sig-param">root, date, duration, relativeTime, Timeline_settings, Test_settings=['Limb_functional_test', 'Photometer_test_1', 'CCD_stability_test', 'Nadir_functional_test']</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_XMLGenerator/Modes_and_Tests/Tests.html#All_Tests"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._XMLGenerator.Modes_and_Tests.Tests.All_Tests" title="Permalink to this definition">¶</a></dt>
 <dd><p>Runs all the Test functions which have their function name as a string in the input <em>Test_settings</em>.</p>
-<p>Allows the tests to be dynamically scheduled.</p>
+<p>Allows the tests to be dynamically scheduled. Meaning that when the previous test is done another done starts immediately after.
+This eliminates the need to give an approximated duration of any specfic Test as their exact duration is unknown beforehand.</p>
 </dd></dl>
 
 <dl class="function">

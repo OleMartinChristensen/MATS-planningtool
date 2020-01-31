@@ -36,7 +36,7 @@
 
 <span class="sd">&quot;&quot;&quot;Library for handling coordinate system tranforms for the MATS mission</span>
 
-<span class="sd">Created 17.07.27 Ole Martin Christensen</span>
+<span class="sd">Created 17.07.27 Ole Martin Christensen.</span>
 <span class="sd">Slightly edited by David Skånberg during 2019.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
@@ -291,10 +291,8 @@
     
 
 <div class="viewcode-block" id="lla2ECEF"><a class="viewcode-back" href="../../OPT.html#OPT._MATS_coordinates.lla2ECEF">[docs]</a><span class="k">def</span> <span class="nf">lla2ECEF</span><span class="p">(</span><span class="n">lat</span><span class="p">,</span><span class="n">lon</span><span class="p">,</span><span class="n">alt</span><span class="p">):</span>
-
-<span class="c1">#This function takes a position geodetic position (lon,lat,alt above ellipsiod)</span>
-
-<span class="c1">#and converts into ECEF coodinates</span>
+    <span class="sd">&quot;&quot;&quot;This function takes a position geodetic position (lon,lat,alt above ellipsiod)</span>
+<span class="sd">    and converts into ECEF coodinates [m].&quot;&quot;&quot;</span>
 
 <span class="c1">#</span>
 
@@ -343,12 +341,8 @@
 
 
 <div class="viewcode-block" id="ecef2eci"><a class="viewcode-back" href="../../OPT.html#OPT._MATS_coordinates.ecef2eci">[docs]</a><span class="k">def</span> <span class="nf">ecef2eci</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="n">dt</span><span class="p">):</span>
-
-    
-
-<span class="c1">#This function takes a position in the ECEF corrdinate system and returns it </span>
-
-<span class="c1">#in ECI-J2000.</span>
+    <span class="sd">&quot;&quot;&quot;This function takes a position in the ECEF coordinate system [m] and datetime.object [utc] and returns it </span>
+<span class="sd">    in ECI-J2000 [m].&quot;&quot;&quot;</span>
 
 <span class="c1">#</span>
 
@@ -406,12 +400,8 @@
 
 
 <div class="viewcode-block" id="eci2ecef"><a class="viewcode-back" href="../../OPT.html#OPT._MATS_coordinates.eci2ecef">[docs]</a><span class="k">def</span> <span class="nf">eci2ecef</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="n">y</span><span class="p">,</span><span class="n">z</span><span class="p">,</span><span class="n">dt</span><span class="p">):</span>
-
-    
-
-<span class="c1">#This function takes a position in the ECI-J2000 corrdinate system and returns it </span>
-
-<span class="c1">#in ECEF.</span>
+    <span class="sd">&quot;&quot;&quot;This function takes a position in the ECI-J2000 coordinate system [m] and datetime.object [utc] and returns it </span>
+<span class="sd">    in ECEF.&quot;&quot;&quot;</span>
 
 <span class="c1">#</span>
 

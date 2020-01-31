@@ -26,7 +26,7 @@ Tool may already be installed (scipy for example). Miniconda comes with no prein
 
 2. After installation open the program "Anaconda Prompt".
 
-3. Run these commands in the "Anaconda Prompt" to install the desired packages. Alternatively run the Install_dependencies.bat in the "Anaconda Prompt".
+3. Run these commands in the "Anaconda Prompt" to install the desired packages. Alternatively run the Install_dependencies.bat file in the "Anaconda Prompt" program.
 
 $ conda install -c anaconda ephem=3.7.6.0
 

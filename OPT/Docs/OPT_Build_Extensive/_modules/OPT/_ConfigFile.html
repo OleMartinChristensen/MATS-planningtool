@@ -98,8 +98,8 @@
 <span class="sd">    to be scheduled with different settings. Some settings that does not affect the duration of the Mode can still be changed manually afterwards in the generated Science Mode Timeline.</span>
 <span class="sd">    Each string must be equal to the name of a function imported in the *_Timeline_generator.Modes.Modes_Header* module. \n</span>
 <span class="sd">    </span>
-<span class="sd">    &#39;Payload_Power_Toggle&#39;, &#39;TurnONCCDs&#39;, &#39;ArgEnableYawComp&#39;, &#39;CCDFlushBadColumns&#39;, &#39;CCDBadColumn&#39;, &#39;PM&#39;, &#39;CCDBIAS&#39; are recommended to run at the start of each </span>
-<span class="sd">    timeline, as they together reset and initialize the intrument. If &quot;HTR&quot; is scheduled, arguments is needed to be entered manually into the created *Science Mode Timeline* because of safety reasons.</span>
+<span class="sd">    &#39;Payload_Power_Toggle&#39;, &#39;TurnONCCDs&#39;, &#39;ArgEnableYawComp&#39;, &#39;CCDFlushBadColumns&#39;, &#39;CCDBadColumn&#39;, &#39;PM&#39;, &#39;CCDBIAS&#39; are called StartUpCMDs and are recommended to run at the start of each </span>
+<span class="sd">    timeline, as they together reset and initialize the intrument. If &quot;HTR&quot; is scheduled, arguments is needed to be entered manually into the created *Science Mode Timeline* because of safety reasons. \n</span>
 <span class="sd">    </span>
 <span class="sd">    &#39;Payload_Power_Toggle&#39; is a OHB procedure that safely power toggles the instrument. \n</span>
 <span class="sd">    </span>
@@ -172,8 +172,8 @@
 <span class="sd">        &#39;CMD_duration&#39;: Sets the amount of time scheduled for separate PayloadCMDs when using *Timeline_gen*. Should be large enough to allow any separate CMD to finish processing.  (int) \n</span>
 <span class="sd">        </span>
 <span class="sd">        &#39;yaw_correction&#39;: Determines if yaw correction shall be used for the duration of the timeline. Mainly impacts simulations of MATS&#39;s pointing. But also determines the argument of the ArgEnableYawComp CMD. (bool) \n</span>
-<span class="sd">        &#39;yaw_amplitude&#39;: Amplitude of the yaw function (float). \n</span>
-<span class="sd">        &#39;yaw_phase&#39;: Phase of the yaw function (float). \n</span>
+<span class="sd">        &#39;yaw_amplitude&#39;: Amplitude of the yaw function, A*cos(argument_of_latitude - B - phase), where B is angle between optical axis and negative velocity vector in the orbital plane. (float) \n</span>
+<span class="sd">        &#39;yaw_phase&#39;: Phase of the yaw function, A*cos(argument_of_latitude - B - phase), where B is angle between optical axis and negative velocity vector in the orbital plane. (float) \n</span>
 <span class="sd">        &#39;Choose_Operational_Science_Mode&#39;: Set to 1, 2, or 5 to choose either Mode1, Mode2, or Mode5 as the *Operational Science Mode*. Set to 0 to schedule either Mode1 or Mode2 depending of the time of the year.</span>
 <span class="sd">        &#39;StandardPointingAltitude&#39;: Sets pointing altitude in meters for the timeline. Used to set the pointing altitude of *Operational Science Modes* and to calculate the duration of attitude freezes (because attitude freezes last until the pointing altitude is reorientated to this value).  (int) \n</span>
 <span class="sd">        </span>
@@ -194,7 +194,7 @@
     
     <span class="n">Timeline_settings</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;start_date&#39;</span><span class="p">:</span> <span class="n">StartTime</span><span class="p">,</span> <span class="s1">&#39;duration&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="o">*</span><span class="mi">8</span><span class="o">*</span><span class="mi">3600</span><span class="p">,</span> 
                          <span class="s1">&#39;Mode1_2_5_minDuration&#39;</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span> <span class="s1">&#39;mode_separation&#39;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span>
-                         <span class="s1">&#39;CMD_duration&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span> <span class="s1">&#39;yaw_correction&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;yaw_amplitude&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">3.8</span><span class="p">,</span> <span class="s1">&#39;yaw_phase&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mi">20</span><span class="p">,</span> 
+                         <span class="s1">&#39;CMD_duration&#39;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span> <span class="s1">&#39;yaw_correction&#39;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s1">&#39;yaw_amplitude&#39;</span><span class="p">:</span> <span class="o">-</span><span class="mf">3.8</span><span class="p">,</span> <span class="s1">&#39;yaw_phase&#39;</span><span class="p">:</span> <span class="mi">20</span><span class="p">,</span> 
                          <span class="s1">&#39;Choose_Operational_Science_Mode&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;StandardPointingAltitude&#39;</span><span class="p">:</span> <span class="mi">92500</span><span class="p">,</span> 
                          <span class="s1">&#39;CMD_separation&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;pointing_stabilization&#39;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span> <span class="s1">&#39;CCDSYNC_ExtraOffset&#39;</span><span class="p">:</span> <span class="mi">50</span><span class="p">,</span> <span class="s1">&#39;CCDSYNC_ExtraIntervalTime&#39;</span><span class="p">:</span> <span class="mi">200</span><span class="p">}</span>
     

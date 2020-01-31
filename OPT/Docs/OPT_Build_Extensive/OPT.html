@@ -53,6 +53,8 @@
 <p>FOV = Field of View</p>
 <p>LP = Look point of the instrument.</p>
 <p>OPT = Operational Planning Tool</p>
+<p>SLOF = Spacecraft Local Orbit Frame, defined in &quot;IS-OSE-IRD-0001_2B MATS Platform-Payload IRD&quot;. Yaw, pitch, and roll is defined as intrinsic Euler angles rotation (ZYZ) from Z-axis in SLOF to -Z axis in SBF.</p>
+<p>SBF = Spacecraft Body Frame, defined in &quot;IS-OSE-IRD-0001_2B MATS Platform-Payload IRD&quot;. Optical axis is equal to -Z axis.</p>
 </dd>
 </dl>
 <p><strong>Description:</strong>
@@ -86,15 +88,15 @@ Generated logs are saved in folders created in the working directory.</p>
 <p>OPT.Timeline_gen()</p>
 <p><em>#Converts the created Science Mode Timeline into an XML-file. Settings stated in the Science Mode Timeline overrides settings in the Configuration File#</em></p>
 <p>OPT.XML_gen('Output/Science_Mode_Timeline__OPT_Config_File.json')</p>
-<p><em>#Plots the Science Mode Timeline.#</em></p>
+<p><em>#Plots the Science Mode Timeline, such as latitude, longitude, yaw, pitch, roll, RA and Dec of optical axis, altitude, altitude of LP and so on. Some plots generated are empty (reserved for optional inputs). #</em></p>
 <p>Data_MATS, Data_LP, Time, Time_OHB  = OPT.Timeline_Plotter('Output/Science_Mode_Timeline__OPT_Config_File.json')</p>
 <p><strong>Note:</strong></p>
 <p>Science Modes are separated into 2 different areas, <em>Operational Science Modes</em> (Mode 1,2,5) and <em>Calibration Modes</em>.</p>
 <p><em>Calibration Modes</em> are scheduled at specific points of time and are mostly only scheduled once per <em>Science Mode Timeline</em>.
 <em>Operational Science Modes</em> (Mode 1,2,5) are scheduled whenever time is available (after the scheduling of <em>Calibration Modes</em>) and only one <em>Operational Science Mode</em> is scheduled per timeline.
 The scheduling of certain <em>Calibration Modes</em> (science mode 120-124) depend on celestial object such as stars and the Moon. Therefore are the position of MATS and the pointing of the limb imager usually simulated to allow celestial object to be located in the FOV.</p>
-<p>Ignore any message during import of OPT such as the one given here as the parts utilizing gzip/7zip are not used in OPT: &quot;gzip was not found on your system! You should solve this issue for astroquery.eso to be at its best!
-On POSIX system: make sure gzip is installed and in your path!On Windows: same for 7-zip (<a class="reference external" href="http://www.7-zip.org">http://www.7-zip.org</a>)!&quot;</p>
+<p>Ignore any message during import of OPT such as the one given here: &quot;gzip was not found on your system! You should solve this issue for astroquery.eso to be at its best!
+On POSIX system: make sure gzip is installed and in your path!On Windows: same for 7-zip (<a class="reference external" href="http://www.7-zip.org">http://www.7-zip.org</a>)!&quot;. This can be ignored as the parts utilizing gzip/7zip are not used in OPT.</p>
 <dl class="function">
 <dt id="OPT.CheckConfigFile">
 <code class="sig-prename descclassname">OPT.</code><code class="sig-name descname">CheckConfigFile</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT.html#CheckConfigFile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT.CheckConfigFile" title="Permalink to this definition">¶</a></dt>
@@ -173,7 +175,8 @@ Uses settings for the CMDs from the currently set <em>Configuration File</em>.</
 <dd><p>Invokes the <em>Timeline_Plotter</em> program part of <em>Operational_Planning_Tool</em>.</p>
 <p>Simulates the position and attitude of MATS from a given Science Mode Timeline and also optionally compares it to
 positional and attitude data given in a .h5 data set, located at <em>OHB_H5_Path</em>. Plots both the simulated data and given data.
-The attitude data shows only the target pointing orientation and does not mimic MATS's actual attitude control system. The timesteps of both the .h5 data and the Science Mode is synchronized to allow direct comparison if possible.</p>
+The attitude data shows only the target pointing orientation and does not mimic MATS's actual attitude control system. This leads to large pointing differences whenever the pointing altitude is changed.</p>
+<p>The timesteps of both the .h5 data and the Science Mode is synchronized to allow direct comparison if possible.</p>
 <p>A .csv file, generated in STK, may also be included to plot the predicted positional error of the satellite compared to STK data. Only data points with equal timestamps to the simulated Science Mode Timeline data will be plotted.
 Saves generated plots as binary files.</p>
 <p>Settings for the operation of the program are stated in the chosen <em>Configuration File</em>.
@@ -184,7 +187,7 @@ Settings stated in the <em>Science Mode Timeline</em> override settings given in
 <li><p><strong>Science_Mode_Path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- Path to the Science Mode Timeline to be plotted.</p></li>
 <li><p><strong>OHB_H5_Path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- <em>Optional</em>. Path to the .h5 file containing position, time, and attitude data. The .h5 file is defined in the &quot;Ground Segment ICD&quot; document. The timestamps for the attitude and state data is assumed to be synchronized.</p></li>
 <li><p><strong>STK_CSV_PATH</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) -- <em>Optional</em>. Path to the .csv file containing position (column 1-3), velocity (column 4-6), and time (column 7), generated in STK. Position and velocity data is assumed to be in km and in ICRF.</p></li>
-<li><p><strong>Timestep</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- <em>Optional</em>. The chosen timestep of the Science Mode Timeline simulation [s]. Drastically changes runtime of the program</p></li>
+<li><p><strong>Timestep</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- <em>Optional</em>. The chosen timestep of the Science Mode Timeline simulation [s]. Drastically changes runtime of the program.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -859,7 +862,7 @@ value corresponding to the attitude being frozen until realigned with <em>Timeli
 <p>Repeat Modes/CMDs to schedule them several times, though there is currently not feature that allows multiple Modes/CMDs
 to be scheduled with different settings. Some settings that does not affect the duration of the Mode can still be changed manually afterwards in the generated Science Mode Timeline.
 Each string must be equal to the name of a function imported in the <em>_Timeline_generator.Modes.Modes_Header</em> module.</p>
-<p>'Payload_Power_Toggle', 'TurnONCCDs', 'ArgEnableYawComp', 'CCDFlushBadColumns', 'CCDBadColumn', 'PM', 'CCDBIAS' are recommended to run at the start of each
+<p>'Payload_Power_Toggle', 'TurnONCCDs', 'ArgEnableYawComp', 'CCDFlushBadColumns', 'CCDBadColumn', 'PM', 'CCDBIAS' are called StartUpCMDs and are recommended to run at the start of each
 timeline, as they together reset and initialize the intrument. If &quot;HTR&quot; is scheduled, arguments is needed to be entered manually into the created <em>Science Mode Timeline</em> because of safety reasons.</p>
 <p>'Payload_Power_Toggle' is a OHB procedure that safely power toggles the instrument.</p>
 <p>'TurnONCCDs' is a special CCD macro that turns on the CCDs.</p>
@@ -884,8 +887,8 @@ timeline, as they together reset and initialize the intrument. If &quot;HTR&quot
 <p>'mode_separation': Time in seconds for an added buffer when determining the duration of a Mode/CMD. (int)</p>
 <p>'CMD_duration': Sets the amount of time scheduled for separate PayloadCMDs when using <em>Timeline_gen</em>. Should be large enough to allow any separate CMD to finish processing.  (int)</p>
 <p>'yaw_correction': Determines if yaw correction shall be used for the duration of the timeline. Mainly impacts simulations of MATS's pointing. But also determines the argument of the ArgEnableYawComp CMD. (bool)</p>
-<p>'yaw_amplitude': Amplitude of the yaw function (float).</p>
-<p>'yaw_phase': Phase of the yaw function (float).</p>
+<p>'yaw_amplitude': Amplitude of the yaw function, A*cos(argument_of_latitude - B - phase), where B is angle between optical axis and negative velocity vector in the orbital plane. (float)</p>
+<p>'yaw_phase': Phase of the yaw function, A*cos(argument_of_latitude - B - phase), where B is angle between optical axis and negative velocity vector in the orbital plane. (float)</p>
 <p>'Choose_Operational_Science_Mode': Set to 1, 2, or 5 to choose either Mode1, Mode2, or Mode5 as the <em>Operational Science Mode</em>. Set to 0 to schedule either Mode1 or Mode2 depending of the time of the year.
 'StandardPointingAltitude': Sets pointing altitude in meters for the timeline. Used to set the pointing altitude of <em>Operational Science Modes</em> and to calculate the duration of attitude freezes (because attitude freezes last until the pointing altitude is reorientated to this value).  (int)</p>
 <p>'CMD_separation': Changes the separation in time [s] between commands that are scheduled in <em>XML_gen</em>. If set too large, it is possible that not enough time is scheduled for the duration of Modes, causing Modes to overlap in time. Impacts the estimated duration of certain Science Modes in <em>Timeline_gen</em>. (float)</p>
@@ -975,6 +978,7 @@ Otherwise returns any TLE values stated here.</p>
 <code class="sig-prename descclassname">OPT._Library.</code><code class="sig-name descname">FreezeDuration_calculator</code><span class="sig-paren">(</span><em class="sig-param">pointing_altitude1</em>, <em class="sig-param">pointing_altitude2</em>, <em class="sig-param">TLE2</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Library.html#FreezeDuration_calculator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Library.FreezeDuration_calculator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function that calculates the angle between two tangential altitudes and then calculates
 the time it takes for orbital position angle of a satellite in a circular orbit to change by the same amount.</p>
+<p>Used to estimate the duration of an attitude freeze for which the pointing altitude reorients itself to the standard pointing altitude.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -1016,7 +1020,8 @@ Any CCDs with TEXPMS equal to 0 will be ignored and not added to the list.</p>
 <dt id="OPT._Library.Satellite_Simulator">
 <code class="sig-prename descclassname">OPT._Library.</code><code class="sig-name descname">Satellite_Simulator</code><span class="sig-paren">(</span><em class="sig-param">Satellite_skyfield</em>, <em class="sig-param">SimulationTime</em>, <em class="sig-param">Timeline_settings</em>, <em class="sig-param">pointing_altitude</em>, <em class="sig-param">LogFlag=False</em>, <em class="sig-param">Logger=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Library.html#Satellite_Simulator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Library.Satellite_Simulator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Simulates a single point in time for a Satellite using Skyfield and also the pointing of the satellite.</p>
-<p>Only estimates the actual pointing definition used by OHB. The LP is calculated with an algorithm derived by Nick Lloyd at University of Saskatchewan,
+<p>Only estimates the actual pointing definition used by OHB as it is uncertain if the algorithm to calculate the LP here is the same as the one OHB uses.
+The LP is calculated with an algorithm derived by Nick Lloyd at University of Saskatchewan,
 Canada (<a class="reference external" href="mailto:nick&#46;lloyd&#37;&#52;&#48;usask&#46;ca">nick<span>&#46;</span>lloyd<span>&#64;</span>usask<span>&#46;</span>ca</a>), and is part of
 the operational code for both OSIRIS and SMR on-board- the Odin satellite. An offset is added to the pointing altitude to better mimic OHBs actual LP.</p>
 <dl class="field-list simple">
@@ -1079,7 +1084,8 @@ Used to determine the eclipse angle of the Sun angle of the position.</p>
 <dt id="OPT._Library.SyncArgCalculator">
 <code class="sig-prename descclassname">OPT._Library.</code><code class="sig-name descname">SyncArgCalculator</code><span class="sig-paren">(</span><em class="sig-param">CCD_settings</em>, <em class="sig-param">ExtraOffset</em>, <em class="sig-param">ExtraIntervalTime</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Library.html#SyncArgCalculator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Library.SyncArgCalculator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates appropriate arguments for the CCD Synchonize CMD.</p>
-<p>The CCDs are offset in order of ExposureTime (TEXPMS) with the CCD with the shortest ExposureTime being the leading CCD.</p>
+<p>Does not take into account the nadir CCD as it is not required to synchronize, because interference caused by the nadir CCD is low.
+The CCDs are offset in order of ExposureTime (TEXPMS) with the CCD with the shortest ExposureTime being the leading CCD.</p>
 <p>CCDs with ExposureTime equal to zero are skipped.</p>
 <p>The offset calculations depend on the Readout Time, which depends on the binning settings of the CCDs.</p>
 <p>The ExposureInterval Time (TEXPIMS) depends on the longest combined Readout Time and ExposureTime for a CCD aswell as the
@@ -1114,7 +1120,7 @@ readout of the leading CCD and the final CCD. If the combined TransferTime is es
 <dl class="function">
 <dt id="OPT._Library.calculate_time_per_row">
 <code class="sig-prename descclassname">OPT._Library.</code><code class="sig-name descname">calculate_time_per_row</code><span class="sig-paren">(</span><em class="sig-param">NCOL</em>, <em class="sig-param">NCBIN</em>, <em class="sig-param">NCBINFPGA</em>, <em class="sig-param">NRSKIP</em>, <em class="sig-param">NROW</em>, <em class="sig-param">NRBIN</em>, <em class="sig-param">NFLUSH</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Library.html#calculate_time_per_row"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Library.calculate_time_per_row" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function provides an estimated amount of time for a CCD readout</p>
+<dd><p>This function provides an estimated amount of time for a CCD readout.</p>
 <p>Note that minor &quot;transition&quot; states may have been omitted resulting in
 somewhat shorter readout times (&lt;0.1%).</p>
 <p>Default timing setting is:</p>
@@ -1171,7 +1177,7 @@ so the number of clock cycles exceeds the setting by 1.</p>
 <dd><p>Function which compares the keys of two dictionaries and outputs a new dictionary.</p>
 <p>A dict_new will be created containing all the keys and values of dict2. Then for any keys that
 exist in both dict1 and dict_new, dict_new's keys will have their values replaced by the ones in dict1.</p>
-<p>Used to compare settings given in a Science Mode Timeline to settings given in the Configuration File.</p>
+<p>Used to compare settings given in a Science Mode Timeline to the same kind of settings given in the Configuration File.</p>
 <p>WARNING! All keys in dict1 must also exist in dict2.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1211,7 +1217,9 @@ exist in both dict1 and dict_new, dict_new's keys will have their values replace
 <dt id="OPT._Library.lat_calculator">
 <code class="sig-prename descclassname">OPT._Library.</code><code class="sig-name descname">lat_calculator</code><span class="sig-paren">(</span><em class="sig-param">Satellite_skyfield</em>, <em class="sig-param">date</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Library.html#lat_calculator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Library.lat_calculator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function that calculates the latitude of a skyfield.sgp4lib.EarthSatellite object at a certain date</p>
-<p>Mainly used to approximate the latitude of the LP as the LP is close to being in the same plane as the orbital plane.</p>
+<p>Mainly used to approximate the latitude of the LP as the LP is close to being in the same plane as the orbital plane.
+So if the orbital position angle between LP and MATS is known (and MATS orbit is circular), then the time difference is known, then this function can be used to calculate the lat of MATS at a previous location to estimate the LPs current latitude.</p>
+<p>Used only in Timeline_gen and XML_gen to estimate LPs latitude without using computational difficult methods to save run time.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -1299,7 +1307,7 @@ exist in both dict1 and dict_new, dict_new's keys will have their values replace
 <div class="section" id="module-OPT._MATS_coordinates">
 <span id="opt-mats-coordinates-module"></span><h2>OPT._MATS_coordinates module<a class="headerlink" href="#module-OPT._MATS_coordinates" title="Permalink to this headline">¶</a></h2>
 <p>Library for handling coordinate system tranforms for the MATS mission</p>
-<p>Created 17.07.27 Ole Martin Christensen
+<p>Created 17.07.27 Ole Martin Christensen.
 Slightly edited by David Skånberg during 2019.</p>
 <dl class="function">
 <dt id="OPT._MATS_coordinates.ECEF2lla">
@@ -1314,7 +1322,9 @@ Slightly edited by David Skånberg during 2019.</p>
 <dl class="function">
 <dt id="OPT._MATS_coordinates.ecef2eci">
 <code class="sig-prename descclassname">OPT._MATS_coordinates.</code><code class="sig-name descname">ecef2eci</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">y</em>, <em class="sig-param">z</em>, <em class="sig-param">dt</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_MATS_coordinates.html#ecef2eci"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._MATS_coordinates.ecef2eci" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>This function takes a position in the ECEF coordinate system [m] and datetime.object [utc] and returns it
+in ECI-J2000 [m].</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="OPT._MATS_coordinates.ecef2tanpoint">
@@ -1345,7 +1355,9 @@ the operational code for both OSIRIS and SMR on-board- the Odin satellite.</p>
 <dl class="function">
 <dt id="OPT._MATS_coordinates.eci2ecef">
 <code class="sig-prename descclassname">OPT._MATS_coordinates.</code><code class="sig-name descname">eci2ecef</code><span class="sig-paren">(</span><em class="sig-param">x</em>, <em class="sig-param">y</em>, <em class="sig-param">z</em>, <em class="sig-param">dt</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_MATS_coordinates.html#eci2ecef"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._MATS_coordinates.eci2ecef" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>This function takes a position in the ECI-J2000 coordinate system [m] and datetime.object [utc] and returns it
+in ECEF.</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="OPT._MATS_coordinates.find_orbit_plane">
@@ -1355,7 +1367,9 @@ the operational code for both OSIRIS and SMR on-board- the Odin satellite.</p>
 <dl class="function">
 <dt id="OPT._MATS_coordinates.lla2ECEF">
 <code class="sig-prename descclassname">OPT._MATS_coordinates.</code><code class="sig-name descname">lla2ECEF</code><span class="sig-paren">(</span><em class="sig-param">lat</em>, <em class="sig-param">lon</em>, <em class="sig-param">alt</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_MATS_coordinates.html#lla2ECEF"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._MATS_coordinates.lla2ECEF" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>This function takes a position geodetic position (lon,lat,alt above ellipsiod)
+and converts into ECEF coodinates [m].</p>
+</dd></dl>
 
 <dl class="function">
 <dt id="OPT._MATS_coordinates.los_from_tanpoint_spherical">

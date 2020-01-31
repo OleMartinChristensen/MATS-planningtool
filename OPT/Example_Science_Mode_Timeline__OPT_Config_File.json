@@ -11,7 +11,7 @@
       "CMD_duration": 30,
       "yaw_correction": true,
       "yaw_amplitude": -3.8,
-      "yaw_phase": -20,
+      "yaw_phase": 20,
       "Choose_Operational_Science_Mode": 0,
       "StandardPointingAltitude": 92500,
       "CMD_separation": 1,
@@ -297,7 +297,7 @@
   [
     "Mode1",
     "2020/6/20 20:05:09",
-    "2020/6/20 20:12:23",
+    "2020/6/20 21:12:23",
     {
       "lat": 45,
       "log_timestep": 800,

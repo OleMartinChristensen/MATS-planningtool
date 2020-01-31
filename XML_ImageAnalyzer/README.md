@@ -1,8 +1,10 @@
 # XMLImageAnalyzer
-Program which roughly estimates the number of images taken and their combined size from an XML timeline. Useful in approxmating the date useage.
+MATLAB program which roughly estimates the number of images taken and their combined size from an XML timeline. Useful in approxmating the date useage. MATLAB is used because could not find Python packages that handles 12 bit jpeg images.
 
 XMLImageAnalyzer goes through an XML, line by line, and estimates the amount of Images
 taken and their combined size.
+
+Run Main_XML_ImageAnalyzer in MATLAB. If problems occur try using at least MATLAB 2018.
 
 An atmospheric and gravitation wave model creates a single limb radiance matrix which is used 
 to estimate the values of the CCDs whenever JPEG compression is applied.

@@ -65,8 +65,8 @@ def Scheduling_priority():
     to be scheduled with different settings. Some settings that does not affect the duration of the Mode can still be changed manually afterwards in the generated Science Mode Timeline.
     Each string must be equal to the name of a function imported in the *_Timeline_generator.Modes.Modes_Header* module. \n
     
-    'Payload_Power_Toggle', 'TurnONCCDs', 'ArgEnableYawComp', 'CCDFlushBadColumns', 'CCDBadColumn', 'PM', 'CCDBIAS' are recommended to run at the start of each 
-    timeline, as they together reset and initialize the intrument. If "HTR" is scheduled, arguments is needed to be entered manually into the created *Science Mode Timeline* because of safety reasons.
+    'Payload_Power_Toggle', 'TurnONCCDs', 'ArgEnableYawComp', 'CCDFlushBadColumns', 'CCDBadColumn', 'PM', 'CCDBIAS' are called StartUpCMDs and are recommended to run at the start of each 
+    timeline, as they together reset and initialize the intrument. If "HTR" is scheduled, arguments is needed to be entered manually into the created *Science Mode Timeline* because of safety reasons. \n
     
     'Payload_Power_Toggle' is a OHB procedure that safely power toggles the instrument. \n
     
@@ -139,8 +139,8 @@ def Timeline_settings():
         'CMD_duration': Sets the amount of time scheduled for separate PayloadCMDs when using *Timeline_gen*. Should be large enough to allow any separate CMD to finish processing.  (int) \n
         
         'yaw_correction': Determines if yaw correction shall be used for the duration of the timeline. Mainly impacts simulations of MATS's pointing. But also determines the argument of the ArgEnableYawComp CMD. (bool) \n
-        'yaw_amplitude': Amplitude of the yaw function (float). \n
-        'yaw_phase': Phase of the yaw function (float). \n
+        'yaw_amplitude': Amplitude of the yaw function, A*cos(argument_of_latitude - B - phase), where B is angle between optical axis and negative velocity vector in the orbital plane. (float) \n
+        'yaw_phase': Phase of the yaw function, A*cos(argument_of_latitude - B - phase), where B is angle between optical axis and negative velocity vector in the orbital plane. (float) \n
         'Choose_Operational_Science_Mode': Set to 1, 2, or 5 to choose either Mode1, Mode2, or Mode5 as the *Operational Science Mode*. Set to 0 to schedule either Mode1 or Mode2 depending of the time of the year.
         'StandardPointingAltitude': Sets pointing altitude in meters for the timeline. Used to set the pointing altitude of *Operational Science Modes* and to calculate the duration of attitude freezes (because attitude freezes last until the pointing altitude is reorientated to this value).  (int) \n
         
@@ -161,7 +161,7 @@ def Timeline_settings():
     
     Timeline_settings = {'start_date': StartTime, 'duration': 1*8*3600, 
                          'Mode1_2_5_minDuration': 300, 'mode_separation': 15,
-                         'CMD_duration': 30, 'yaw_correction': True, 'yaw_amplitude': -3.8, 'yaw_phase': -20, 
+                         'CMD_duration': 30, 'yaw_correction': True, 'yaw_amplitude': -3.8, 'yaw_phase': 20, 
                          'Choose_Operational_Science_Mode': 0, 'StandardPointingAltitude': 92500, 
                          'CMD_separation': 1, 'pointing_stabilization': 100, 'CCDSYNC_ExtraOffset': 50, 'CCDSYNC_ExtraIntervalTime': 200}
     

@@ -1,0 +1,102 @@
+[
+  [
+    "Timeline_settings",
+    "This Timeline is an example of how all the defined commisioning phase Tests can be scheduled",
+    "Note: These Timeline_settings and TLE will be used when converting into a XML",
+    {
+      "start_date": "2020/6/20 18:32:42",
+      "duration": 172800,
+      "Mode1_2_5_minDuration": 300,
+      "mode_separation": 15,
+      "CMD_duration": 30,
+      "yaw_correction": true,
+      "yaw_amplitude": -3.8,
+      "yaw_phase": 20,
+      "Choose_Operational_Science_Mode": 0,
+      "StandardPointingAltitude": 92500,
+      "CMD_separation": 1,
+      "pointing_stabilization": 110,
+      "CCDSYNC_ExtraOffset": 50,
+      "CCDSYNC_ExtraIntervalTime": 200
+    },
+    [
+      "1 54321U 19100G   20172.75043981 0.00000000  00000-0  75180-4 0  0014",
+      "2 54321  97.7044   6.9210 0014595 313.2372  91.8750 14.93194142000010"
+    ]
+  ],
+  [
+    "Payload_Power_Toggle",
+    "2020/6/20 18:32:42",
+    "2020/6/20 18:33:27",
+    {},
+    "Number of times date postponed: 0"
+  ],
+  [
+    "ArgEnableYawComp",
+    "2020/6/20 18:33:27",
+    "2020/6/20 18:34:12",
+    {
+      "EnableYawComp": 1
+    },
+    "Number of times date postponed: 1"
+  ],
+  [
+    "CCDFlushBadColumns",
+    "2020/6/20 18:34:12",
+    "2020/6/20 18:34:57",
+    {
+      "CCDSEL": 127
+    },
+    "Number of times date postponed: 2"
+  ],
+  [
+    "CCDBadColumn",
+    "2020/6/20 18:34:57",
+    "2020/6/20 18:35:42",
+    {
+      "CCDSEL": 1,
+      "NBC": 0,
+      "BC": []
+    },
+    "Number of times date postponed: 3"
+  ],
+  [
+    "CCDBIAS",
+    "2020/6/20 18:35:42",
+    "2020/6/20 18:36:27",
+    {
+      "CCDSEL": 127,
+      "VGATE": 0,
+      "VSUBST": 128,
+      "VRD": 126,
+      "VOD": 100
+    },
+    "Number of times date postponed: 4"
+  ],
+  [
+    "PM",
+    "2020/6/20 18:36:27",
+    "2020/6/20 18:37:12",
+    {
+      "TEXPMS": 1500,
+      "TEXPIMS": 2000
+    },
+    "Number of times date postponed: 5"
+  ],
+  [
+    "TurnONCCDs",
+    "2020/6/20 18:37:12",
+    "2020/6/20 18:37:57",
+    {},
+    "Number of times date postponed: 6"
+  ],
+  [
+    "All_Tests",
+    "2020/6/20 18:38:00",
+    "2020/6/22 18:32:42",
+    {
+      
+    },
+    ""
+  ]
+]

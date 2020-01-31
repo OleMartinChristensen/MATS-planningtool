@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
-"""Calls CMDs/Procedures, which will generate commands in the XML-file. These functions are used when CMDs/Procedures are scheduled separately in a Science Mode Timeline. \n
+"""Calls CMDs/Procedures, which will generate commands in the XML-file. These functions are used when CMDs/Procedures are scheduled separately in a Science Mode Timeline.  \n
 
-For PM, CCDBadColumn, CCDFlushBadColumns: Compares parameters given in the Science Mode Timeline to default parameters 
-given in the set *Configuration File* and fills in any parameters missing in the Science Mode Timeline. \n
+For the definition of CMDs/Procedures see the "InnoSat Payload Timeline XML Definition" document. \n
 
-For the rest CMDS, each parameter must be given in the *Science Mode Timeline* as a dictionary with each key representing a parameter. \n
+For PM, CCDBadColumn, CCDFlushBadColumns: Compares settings given in the Science Mode Timeline to the same 
+given in the set *Configuration File* and fills in any values missing in the Science Mode Timeline. \n
+
+For the rest of the CMDS, each setting must be given in the *Science Mode Timeline* as a dictionary with each key representing an argument of the CMD. \n
 
 TurnONCCDs will always call TC_pafCCDMain with fixed arguments to turn ON all CCDs. \n
 
@@ -16,15 +18,15 @@ Functions on the form "X", where X is any CMD:
         **duration** (*int*): The duration of the CMD [s] as an integer class. \n
         **relativeTime** (*int*): The starting time [s] of the CMD with regard to the start of the timeline as an integer class \n
         **Timeline_settings** (*dict*): Dictionary containing the settings of the Timeline given in either the *Science Mode Timeline* or the *Configuration File*. \n 
-        **CMD_settings** (*dict*): Dictionary containing the parameters of the CMD given in the Science Mode Timeline.
+        **CMD_settings** (*dict*): Dictionary containing the settings/arguments of the CMD given in the Science Mode Timeline.
     
     Returns:
         None
 
-@author: David
+@author: David Skånberg
 """
 
-import logging, importlib
+import logging, importlib, sys
 
 from .Macros_Commands import Commands, Macros
 from OPT._Library import dict_comparator
@@ -36,7 +38,7 @@ Logger = logging.getLogger(OPT_Config_File.Logger_name())
 
 
 
-################# Procedures ############################
+"################# Procedures ############################"
 
 def Payload_Power_Toggle(root, date, duration, relativeTime, 
                        Timeline_settings, CMD_settings = {}):
@@ -46,8 +48,9 @@ def Payload_Power_Toggle(root, date, duration, relativeTime,
     
     
 
-################# PAYLOAD COMMANDS ############################
+"################# PAYLOAD COMMANDS ############################"
 
+"A CMD with fixed arguments used to just turn on the CCDs"
 def TurnONCCDs(root, date, duration, relativeTime, 
                        Timeline_settings, CMD_settings = {}):
     
@@ -62,7 +65,8 @@ def MODE(root, date, duration, relativeTime,
     #CMD_settings_ConfigFile = {'MODE': 0}
     #CMD_settings = dict_comparator(CMD_settings, CMD_settings_ConfigFile)
     
-    Commands.TC_pafMode(root, round(relativeTime,2), mode = CMD_settings['MODE'], Timeline_settings = Timeline_settings, comment = str(date))
+    CMD_name = sys._getframe(0).f_code.co_name
+    Commands.TC_pafMode(root, round(relativeTime,2), mode = CMD_settings['MODE'], Timeline_settings = Timeline_settings, comment = CMD_name + ', ' + str(date))
  
 
 def PWRTOGGLE(root, date, duration, relativeTime, 

@@ -125,19 +125,25 @@ def XML_generator(SCIMOD_Path):
     Logger.info('Loop through Science Mode Timeline List')
     
     for x in range(len(SCIMOD)):
+        
+        Entry_Name = str(SCIMOD[x][0])
+        StartDate = str(SCIMOD[x][1])
+        EndDate = str(SCIMOD[x][2])
+        Settings=SCIMOD[x][3]
+        
         Logger.info('')
         Logger.info('Iteration number: '+str(x+1))
-        Logger.info(str(SCIMOD[x][0]))
+        Logger.info(Entry_Name)
         
         "Skip the first entry if it only contains Timeline_settings"
         if( str(SCIMOD[x][0]) == 'Timeline_settings' ):
             continue
         
-        Logger.debug('Start Date: '+str(SCIMOD[x][1]))
-        Logger.debug('End Date: '+str(SCIMOD[x][2]))
+        Logger.debug('Start Date: '+StartDate)
+        Logger.debug('End Date: '+EndDate)
         
-        mode_duration = round((ephem.Date(SCIMOD[x][2]) - ephem.Date(SCIMOD[x][1]) ) *24*3600)
-        relativeTime = round((ephem.Date(SCIMOD[x][1])-ephem.Date(timeline_start))*24*3600)
+        mode_duration = round((ephem.Date(EndDate) - ephem.Date(StartDate) ) *24*3600)
+        relativeTime = round((ephem.Date(StartDate)-ephem.Date(timeline_start))*24*3600)
         Logger.debug('mode_duration: '+str(mode_duration))
         Logger.debug('relativeTime: '+str(relativeTime))
         
@@ -146,14 +152,14 @@ def XML_generator(SCIMOD_Path):
             raise ValueError
             
                 
-        if( ephem.Date(SCIMOD[x][1]) < timeline_start or mode_duration+relativeTime > timeline_duration):
-            Logger.warning(str(SCIMOD[x][0])+', is not scheduled within the boundaries of the timeline!!!')
+        if( ephem.Date(StartDate) < timeline_start or mode_duration+relativeTime > timeline_duration):
+            Logger.warning(Entry_Name+', is not scheduled within the boundaries of the timeline!!!')
             raise ValueError
             
         
         Logger.debug('Call XML_generator_select')
         XML_generator_select(root=root, duration=mode_duration, relativeTime=relativeTime, 
-                             name=SCIMOD[x][0], date=ephem.Date(SCIMOD[x][1]), Settings=SCIMOD[x][3], 
+                             name=Entry_Name, date=ephem.Date(StartDate), Settings=Settings, 
                              Timeline_settings = Timeline_settings)
         
     

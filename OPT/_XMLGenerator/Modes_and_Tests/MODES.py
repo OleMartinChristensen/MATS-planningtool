@@ -18,7 +18,7 @@ Functions on the form "X", where X is any Mode:
 When creating new Mode functions it is crucial that the function name is
 *X*, where *X* is the same as the string used in the *Science Mode Timeline*. Because OPT will automatically look for any function with the same name as the string in the *Science Mode Timeline*
         
-@author: David
+@author: David Skånberg
 """
 
 

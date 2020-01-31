@@ -141,7 +141,6 @@ def Timeline_Plotter(Science_Mode_Path, OHB_H5_Path, STK_CSV_FILE, Timestep = 10
     "################# Read Science Mode Timeline json file ############"
     with open(Science_Mode_Path, "r") as read_file:
         ScienceMode= json.load(read_file)
-    "################# End of Read Science Mode Timeline json file ############"
     
     
     "######## START GOING THROUGH THE SCIENCE MODE TIMELINE #############"
@@ -214,7 +213,7 @@ def Simulator( ScienceMode, Timestamp_fraction_of_second, Timestep, Timeline_set
     
     Arguments:
         ScienceMode (list): List containing the name of the Science Mode, the start_date, the end_date, and settings related to the Science Mode. 
-        Timestamp_fraction_of_second (float): The fraction of a second timestamp for the data. Used here to synchronize timestamps between Timeline Simulation datapoints and OHB h5 file datapoints.
+        Timestamp_fraction_of_second (float): The fraction of a second timestamp for the h5 data. Used here to synchronize timestamps between Timeline Simulation datapoints and OHB h5 file datapoints.
         Timestep (int): The Timestep [s] for the simulation.
         Timeline_settings (dict): A dictionary containing settings for the Timeline given in the *Science Mode Timeline* or in the *Configuration File*.
         TLE (list): A list containing the TLE given in the Science Mode Timeline or in the *Configuration File*.
@@ -230,7 +229,6 @@ def Simulator( ScienceMode, Timestamp_fraction_of_second, Timestep, Timeline_set
             (list): **Time**, updated with new simulated timestamps (utc) from the current Science Mode.
         
     """
-    
     
     
     ModeName = ScienceMode[0]
@@ -265,7 +263,6 @@ def Simulator( ScienceMode, Timestamp_fraction_of_second, Timestep, Timeline_set
     
     "Timestep of logging"
     log_timestep = 1800
-    #timesteps = 10000
     #######################################################
     
     #############################################################
@@ -514,7 +511,7 @@ def Simulator( ScienceMode, Timestamp_fraction_of_second, Timestep, Timeline_set
             
            
             
-            "Maintain the same optical axis as the simulation progresses"
+            "Maintain the same optical axis as the simulation progresses during the freeze"
             optical_axis[t,:] = optical_axis_Freeze
             optical_axis_ECEF[t,0], optical_axis_ECEF[t,1], optical_axis_ECEF[t,2] = _MATS_coordinates.eci2ecef(
                     optical_axis[t,0], optical_axis[t,1], optical_axis[t,2], current_time_datetime)
@@ -555,11 +552,12 @@ def Simulator( ScienceMode, Timestamp_fraction_of_second, Timestep, Timeline_set
         r_H_offset_normal_SLOF = r_change_of_basis_ECI_to_SLOF.apply( r_H_offset_normal[t,:] )
         
         
-        "Find rotation and Euler angles from definition of optical axis in SLOF"
+        "Find rotation and Euler angles by matching basis vectors of optical axis in SLOF (Spacecraft Local orbit Frame) to basis vectors of SBF (Spacecraft Body Frame) in SLOF"
         basis_SBF = array( ( (optical_axis_SLOF), (r_V_offset_normal_SLOF), (r_H_offset_normal_SLOF) ) )
         basis_SLOF = array( ( (0,0,-1), (0,1,0), (1,0,0) ) )
         rotation, sensitivity_matrix = R.match_vectors(basis_SBF, basis_SLOF)
         
+        "The intrinsic (ZYZ) Euler angles which corresponds to rotating the Z-axis of the SLOF basis to the Spacecraft body frame -Z-axis (which correspond to the optical axis)"
         Euler_angles[t,:] = rotation.as_euler('ZYZ', degrees=True)
         yaw_offset_angle[t] = Euler_angles[t,0]
         pitch_MATS[t] = Euler_angles[t,1]
@@ -613,16 +611,16 @@ def Simulator( ScienceMode, Timestamp_fraction_of_second, Timestep, Timeline_set
     
 def Plotter(Data_MATS, Data_LP, Time, DataIndexStepState, StartIndexState, DataIndexStepAttitude, StartIndexAttitude, 
             OHB_H5_Path = '', STK_CSV_FILE = '', Science_Mode_Path = ''):
-    """Subfunction, Performs calculations and plots the position and attitude data of MATS and LP.
+    """Subfunction, Extracts data and performs calculations and plots the position and attitude data of MATS and LP.
     
     Performs calculations on the data given in the file located at *OHB_H5_Path* and plots the results. 
     Also plots the simulated data given in *Data_MATS* and *Data_LP* as a function of the 
-    timestamps in *Time*. May also plot positional error compared to STK data, if *STK_CSV_FILE* is given.
+    timestamps in *Time*. May also plot positional error compared to STK data at any point where the timestamp matches, if *STK_CSV_FILE* is given.
     
     Arguments:
         Data_MATS (dict of lists): Dictionary containing lists of simulated data of MATS.
         Data_LP (dict of lists): Dictionary containing lists of simulated data of LP.
-        Time (list): List containing timestamps (utc) of the simulated data in Data_MATS and Data_LP.
+        Time (list): List containing timestamps (datetime utc) of the simulated data in Data_MATS and Data_LP.
         DataIndexStepState (int): The data index step size when going through the state data given in *OHB_H5_Path*.
         StartIndexState (int): The starting data index when going through the state data given in *OHB_H5_Path*.
         DataIndexStepAttitude (int):  The data index step size when going through the attitude data given in *OHB_H5_Path*.
@@ -631,7 +629,7 @@ def Plotter(Data_MATS, Data_LP, Time, DataIndexStepState, StartIndexState, DataI
         STK_CSV_PATH (str): Path to the .csv file containing position (column 1-3), velocity (column 4-6), and time (column 7), generated in STK. Position and velocity data is assumed to be in km and in ICRF.
         
     Returns:
-        (list): **Time_OHB**, Timestamps (utc) of the OHB data.
+        (list): **Time_OHB**, Timestamps (datetime utc) of the OHB data.
         
     """
     
@@ -696,7 +694,7 @@ def Plotter(Data_MATS, Data_LP, Time, DataIndexStepState, StartIndexState, DataI
         
         #Time_State_OHB = root['TM_acOnGnss']['acoOnGnssStateTime']['raw']
         Time_State_OHB = Level1A_data['ReconstructedData']['PreciseOrbitEstimation']['Time'][0,:]
-        #Time_Attitude_OHB = root['afoTmMhObt']['raw']
+        
         Time_Attitude_OHB = Level1A_data['ReconstructedData']['PreciseAttitudeEstimation']['Time'][0,:]
         
         
@@ -723,9 +721,24 @@ def Plotter(Data_MATS, Data_LP, Time, DataIndexStepState, StartIndexState, DataI
         
         
         ###### !!!!!!!!!!!!!!!! ############
-        FractionOfDataUsed = 1/3
-        timesteps = int(timesteps*FractionOfDataUsed -1)
-        input("Warning! Fraction of OHB data used ("+str(round(FractionOfDataUsed,2))+")! Press enter to acknowledge.")
+        #FractionOfDataUsed = 1/3
+        
+        Continue = True
+        while( Continue ):
+            Input = input("Input the fractional amount of the available OHB h5-data to use (0<=X<=1).\n")
+            try:
+                Input = float(Input)
+                if( 0 <= Input <= 1):
+                    FractionOfDataUsed = Input
+                    timesteps = int(timesteps*FractionOfDataUsed -1)
+                    Logger.info('Fractional amount of h5-data used: '+str(FractionOfDataUsed))
+                    if( timesteps < 1 ):
+                        timesteps = 1
+                    Continue = False
+                else:
+                    print('Try again!')
+            except:
+                print('Try again!')
         ###### !!!!!!!!!!!!!!!! ############
         
         "To make sure there is enough data to support the amount of timesteps together with the DataIndexStepState"
@@ -772,7 +785,6 @@ def Plotter(Data_MATS, Data_LP, Time, DataIndexStepState, StartIndexState, DataI
     optical_axis_OHB = zeros((timesteps,3))
     optical_axis_OHB_ECEF = zeros((timesteps,3))
     
-    #ephemDate2MatplotDate = datestr2num('1899/12/31 12:00:00')
     
     "############################################################"
     "############## OHB Data Calculations #######################"
@@ -995,9 +1007,13 @@ def Plotter(Data_MATS, Data_LP, Time, DataIndexStepState, StartIndexState, DataI
     ax.set_xlim3d(-7000000, 7000000)
     ax.set_ylim3d(-7000000, 7000000)
     ax.set_zlim3d(-7000000, 7000000)
-    ax.scatter(Data_MATS['r_MATS_ECEF [m]'][1:100,0], Data_MATS['r_MATS_ECEF [m]'][1:100,1], Data_MATS['r_MATS_ECEF [m]'][1:100,2])
-    ax.scatter(Data_LP['r_LP_ECEF [m]'][1:100,0], Data_LP['r_LP_ECEF [m]'][1:100,1], Data_LP['r_LP_ECEF [m]'][1:100,2])
-    
+    GravParameter = 3.986*10**14
+    OrbitalPeriod = 2*pi*sqrt((Data_MATS['alt_MATS [m]'][0]+6371000)**3/GravParameter)
+    DataTo = int(OrbitalPeriod * (3/4) / (Time[1]-Time[0]).total_seconds())
+    ax.scatter(Data_MATS['r_MATS_ECEF [m]'][1:DataTo,0], Data_MATS['r_MATS_ECEF [m]'][1:DataTo,1], Data_MATS['r_MATS_ECEF [m]'][1:DataTo,2], label = 'MATS')
+    ax.scatter(Data_LP['r_LP_ECEF [m]'][1:DataTo,0], Data_LP['r_LP_ECEF [m]'][1:DataTo,1], Data_LP['r_LP_ECEF [m]'][1:DataTo,2], label = 'LP')
+    title('Positional data in m (ECEF) from Science Mode Timeline of LP and MATS for 3/4 of an orbit')
+    legend()
     
     fig = figure()
     plot_date(Time_MPL[:], Data_MATS['ScienceMode'][:], markersize = 1, label = 'Predicted from Science Mode Timeline')

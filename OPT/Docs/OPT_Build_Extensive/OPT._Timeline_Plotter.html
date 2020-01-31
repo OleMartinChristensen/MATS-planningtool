@@ -47,16 +47,16 @@ purpose is to simulate a <em>Science Mode Timeline</em>, and also save and plot 
 <dl class="function">
 <dt id="OPT._Timeline_Plotter.Core.Plotter">
 <code class="sig-prename descclassname">OPT._Timeline_Plotter.Core.</code><code class="sig-name descname">Plotter</code><span class="sig-paren">(</span><em class="sig-param">Data_MATS</em>, <em class="sig-param">Data_LP</em>, <em class="sig-param">Time</em>, <em class="sig-param">DataIndexStepState</em>, <em class="sig-param">StartIndexState</em>, <em class="sig-param">DataIndexStepAttitude</em>, <em class="sig-param">StartIndexAttitude</em>, <em class="sig-param">OHB_H5_Path=''</em>, <em class="sig-param">STK_CSV_FILE=''</em>, <em class="sig-param">Science_Mode_Path=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/OPT/_Timeline_Plotter/Core.html#Plotter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#OPT._Timeline_Plotter.Core.Plotter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Subfunction, Performs calculations and plots the position and attitude data of MATS and LP.</p>
+<dd><p>Subfunction, Extracts data and performs calculations and plots the position and attitude data of MATS and LP.</p>
 <p>Performs calculations on the data given in the file located at <em>OHB_H5_Path</em> and plots the results.
 Also plots the simulated data given in <em>Data_MATS</em> and <em>Data_LP</em> as a function of the
-timestamps in <em>Time</em>. May also plot positional error compared to STK data, if <em>STK_CSV_FILE</em> is given.</p>
+timestamps in <em>Time</em>. May also plot positional error compared to STK data at any point where the timestamp matches, if <em>STK_CSV_FILE</em> is given.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>Data_MATS</strong> (<em>dict of lists</em>) -- Dictionary containing lists of simulated data of MATS.</p></li>
 <li><p><strong>Data_LP</strong> (<em>dict of lists</em>) -- Dictionary containing lists of simulated data of LP.</p></li>
-<li><p><strong>Time</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a>) -- List containing timestamps (utc) of the simulated data in Data_MATS and Data_LP.</p></li>
+<li><p><strong>Time</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a>) -- List containing timestamps (datetime utc) of the simulated data in Data_MATS and Data_LP.</p></li>
 <li><p><strong>DataIndexStepState</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- The data index step size when going through the state data given in <em>OHB_H5_Path</em>.</p></li>
 <li><p><strong>StartIndexState</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- The starting data index when going through the state data given in <em>OHB_H5_Path</em>.</p></li>
 <li><p><strong>DataIndexStepAttitude</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- The data index step size when going through the attitude data given in <em>OHB_H5_Path</em>.</p></li>
@@ -66,7 +66,7 @@ timestamps in <em>Time</em>. May also plot positional error compared to STK data
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p><strong>Time_OHB</strong>, Timestamps (utc) of the OHB data.</p>
+<dd class="field-even"><p><strong>Time_OHB</strong>, Timestamps (datetime utc) of the OHB data.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>(<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)">list</a>)</p>
@@ -83,7 +83,7 @@ timestamps in <em>Time</em>. May also plot positional error compared to STK data
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ScienceMode</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a>) -- List containing the name of the Science Mode, the start_date, the end_date, and settings related to the Science Mode.</p></li>
-<li><p><strong>Timestamp_fraction_of_second</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) -- The fraction of a second timestamp for the data. Used here to synchronize timestamps between Timeline Simulation datapoints and OHB h5 file datapoints.</p></li>
+<li><p><strong>Timestamp_fraction_of_second</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a>) -- The fraction of a second timestamp for the h5 data. Used here to synchronize timestamps between Timeline Simulation datapoints and OHB h5 file datapoints.</p></li>
 <li><p><strong>Timestep</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) -- The Timestep [s] for the simulation.</p></li>
 <li><p><strong>Timeline_settings</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.8)"><em>dict</em></a>) -- A dictionary containing settings for the Timeline given in the <em>Science Mode Timeline</em> or in the <em>Configuration File</em>.</p></li>
 <li><p><strong>TLE</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)"><em>list</em></a>) -- A list containing the TLE given in the Science Mode Timeline or in the <em>Configuration File</em>.</p></li>

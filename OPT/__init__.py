@@ -15,7 +15,9 @@
     CMD = Command \n
     FOV = Field of View \n
     LP = Look point of the instrument. \n
-    OPT = Operational Planning Tool
+    OPT = Operational Planning Tool \n
+    SLOF = Spacecraft Local Orbit Frame, defined in "IS-OSE-IRD-0001_2B MATS Platform-Payload IRD". Yaw, pitch, and roll is defined as intrinsic Euler angles rotation (ZYZ) from Z-axis in SLOF to -Z axis in SBF. \n
+    SBF = Spacecraft Body Frame, defined in "IS-OSE-IRD-0001_2B MATS Platform-Payload IRD". Optical axis is equal to -Z axis. \n
     
 **Description:**
 *Operational_Planning_Tool* uses a hiearchy structure with a procedural programming paradigm. Meaning that only the top level functions (the ones mentioned above) are supposed to be called by a user. \n
@@ -66,7 +68,7 @@ Example:
     *#Converts the created Science Mode Timeline into an XML-file. Settings stated in the Science Mode Timeline overrides settings in the Configuration File#* \n
     OPT.XML_gen('Output/Science_Mode_Timeline__OPT_Config_File.json')
     
-    *#Plots the Science Mode Timeline.#* \n
+    *#Plots the Science Mode Timeline, such as latitude, longitude, yaw, pitch, roll, RA and Dec of optical axis, altitude, altitude of LP and so on. Some plots generated are empty (reserved for optional inputs). #* \n
     Data_MATS, Data_LP, Time, Time_OHB  = OPT.Timeline_Plotter('Output/Science_Mode_Timeline__OPT_Config_File.json')
  
 **Note:** \n
@@ -76,8 +78,8 @@ Science Modes are separated into 2 different areas, *Operational Science Modes* 
 *Operational Science Modes* (Mode 1,2,5) are scheduled whenever time is available (after the scheduling of *Calibration Modes*) and only one *Operational Science Mode* is scheduled per timeline.
 The scheduling of certain *Calibration Modes* (science mode 120-124) depend on celestial object such as stars and the Moon. Therefore are the position of MATS and the pointing of the limb imager usually simulated to allow celestial object to be located in the FOV. \n
 
-Ignore any message during import of OPT such as the one given here as the parts utilizing gzip/7zip are not used in OPT: "gzip was not found on your system! You should solve this issue for astroquery.eso to be at its best!
-On POSIX system: make sure gzip is installed and in your path!On Windows: same for 7-zip (http://www.7-zip.org)!"
+Ignore any message during import of OPT such as the one given here: "gzip was not found on your system! You should solve this issue for astroquery.eso to be at its best!
+On POSIX system: make sure gzip is installed and in your path!On Windows: same for 7-zip (http://www.7-zip.org)!". This can be ignored as the parts utilizing gzip/7zip are not used in OPT.
 
 """
 
@@ -213,7 +215,6 @@ def XML_gen(science_mode_timeline_path):
     
     "Initialize current_pointing to None"
     Globals.current_pointing = None
-    #Globals.science_mode_timeline_path = science_mode_timeline_path
     
     XML_generator(science_mode_timeline_path)
 
@@ -246,9 +247,12 @@ def Timeline_Plotter(Science_Mode_Path, OHB_H5_Path = '', STK_CSV_PATH = '', Tim
     
     Simulates the position and attitude of MATS from a given Science Mode Timeline and also optionally compares it to
     positional and attitude data given in a .h5 data set, located at *OHB_H5_Path*. Plots both the simulated data and given data. 
-    The attitude data shows only the target pointing orientation and does not mimic MATS's actual attitude control system. The timesteps of both the .h5 data and the Science Mode is synchronized to allow direct comparison if possible. \n
+    The attitude data shows only the target pointing orientation and does not mimic MATS's actual attitude control system. This leads to large pointing differences whenever the pointing altitude is changed. \n
+    The timesteps of both the .h5 data and the Science Mode is synchronized to allow direct comparison if possible. \n
+    
     A .csv file, generated in STK, may also be included to plot the predicted positional error of the satellite compared to STK data. Only data points with equal timestamps to the simulated Science Mode Timeline data will be plotted.
     Saves generated plots as binary files. \n
+    
     Settings for the operation of the program are stated in the chosen *Configuration File*. 
     Settings stated in the *Science Mode Timeline* override settings given in the chosen *Configuration file*.
     
@@ -256,7 +260,7 @@ def Timeline_Plotter(Science_Mode_Path, OHB_H5_Path = '', STK_CSV_PATH = '', Tim
         Science_Mode_Path (str): Path to the Science Mode Timeline to be plotted.
         OHB_H5_Path (str): *Optional*. Path to the .h5 file containing position, time, and attitude data. The .h5 file is defined in the "Ground Segment ICD" document. The timestamps for the attitude and state data is assumed to be synchronized.
         STK_CSV_PATH (str): *Optional*. Path to the .csv file containing position (column 1-3), velocity (column 4-6), and time (column 7), generated in STK. Position and velocity data is assumed to be in km and in ICRF. 
-        Timestep (int): *Optional*. The chosen timestep of the Science Mode Timeline simulation [s]. Drastically changes runtime of the program 
+        Timestep (int): *Optional*. The chosen timestep of the Science Mode Timeline simulation [s]. Drastically changes runtime of the program. 
         
     Returns:
         (tuple): tuple containing:
