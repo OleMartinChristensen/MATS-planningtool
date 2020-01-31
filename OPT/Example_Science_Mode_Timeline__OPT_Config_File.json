@@ -25,12 +25,10 @@
     ]
   ],
   [
-    "PWRTOGGLE",
+    "Payload_Power_Toggle",
     "2020/6/20 18:12:38",
     "2020/6/20 18:13:23",
-    {
-      "CONST": 165
-    },
+    {},
     "Number of times date postponed: 0"
   ],
   [
