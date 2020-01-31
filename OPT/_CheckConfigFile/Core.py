@@ -214,9 +214,6 @@ def CheckConfigFile():
     if not( 2 <= Mode120_settings['SnapshotSpacing'] and type(Mode120_settings['SnapshotSpacing']) == int):
         Logger.error("Mode120_settings['SnapshotSpacing']")
         raise ValueError
-    if not( Mode120_settings['SnapshotSpacing'] * 5 + Mode120_settings['SnapshotTime'] < Mode120_settings['freeze_duration'] ):
-        Logger.error("Mode120_settings['SnapshotSpacing'] * 5 + Mode120_settings['SnapshotTime'] > Mode120_settings['freeze_duration']")
-        raise ValueError
     if not( 0 < Mode120_settings['TimeSkip'] <= 2*3600*24 and (type(Mode120_settings['TimeSkip']) == int or type(Mode120_settings['TimeSkip']) == float) ):
         Logger.error("Mode120_settings['TimeSkip']")
         raise ValueError
@@ -229,8 +226,8 @@ def CheckConfigFile():
     if not( type(Mode120_settings['CCDSELs']) == list):
         Logger.error("Mode120_settings['CCDSELs'] != list")
         raise TypeError
-    if not( Mode120_settings['SnapshotSpacing'] * (len(Mode120_settings['CCDSELs'])-1) + Mode120_settings['SnapshotTime'] < Mode120_settings['freeze_duration'] ):
-        Logger.error("Mode120_settings['SnapshotSpacing'] * (len(Mode120_settings['CCDSELs'])-1) + Mode120_settings['SnapshotTime'] > Mode120_settings['freeze_duration']")
+    if not( Mode120_settings['SnapshotSpacing'] * (len(Mode120_settings['CCDSELs'])-1) + Mode120_settings['SnapshotTime'] < Mode120_settings['freeze_duration'] <= 3600 ):
+        Logger.error("Mode120_settings['SnapshotSpacing'] * (len(Mode120_settings['CCDSELs'])-1) + Mode120_settings['SnapshotTime'] > Mode120_settings['freeze_duration'] or Mode120_settings['freeze_duration'] > 3600")
         raise ValueError
     for CCDSEL in Mode120_settings['CCDSELs']:
         if not( CCDSEL in [1,2,4,8,16,32] ):
@@ -267,13 +264,17 @@ def CheckConfigFile():
     if not( 0 <= Mode121_122_123_settings['SnapshotSpacing'] and type(Mode121_122_123_settings['SnapshotSpacing']) == int):
         Logger.error("Mode121_122_123_settings['SnapshotSpacing']")
         raise ValueError
-    if not( Mode121_122_123_settings['SnapshotSpacing'] * 6 + Mode121_122_123_settings['SnapshotTime'] < Mode121_122_123_settings['freeze_duration'] ):
-        Logger.error("Mode121_122_123_settings['SnapshotSpacing'] * 5 + Mode121_122_123_settings['SnapshotTime'] > Mode121_122_123_settings['freeze_duration']")
+    if not( Mode121_122_123_settings['SnapshotSpacing'] * 6 + Mode121_122_123_settings['SnapshotTime'] < Mode121_122_123_settings['freeze_duration'] <= 3600 ):
+        Logger.error("Mode121_122_123_settings['SnapshotSpacing'] * 5 + Mode121_122_123_settings['SnapshotTime'] > Mode121_122_123_settings['freeze_duration'] or Mode121_122_123_settings['freeze_duration'] > 3600")
         raise ValueError
     if not( Mode121_122_123_settings['TimeToConsider'] <= Timeline_settings['duration'] ):
         Logger.error("Mode121_122_123_settings['TimeToConsider'] > Timeline_settings['duration']")
         raise ValueError
         
+    if not( Mode121_122_123_settings['SnapshotSpacing'] * (len(Mode121_settings['CCDSELs'])-1) + Mode121_122_123_settings['SnapshotTime'] < Mode121_122_123_settings['freeze_duration'] <= 3600):
+        Logger.error("Mode121_122_123_settings['SnapshotSpacing'] * (len(Mode121_settings['CCDSELs'])-1) + Mode124_settings['SnapshotTime'] > Mode121_122_123_settings['freeze_duration'] or Mode121_122_123_settings['freeze_duration'] > 3600")
+        raise ValueError
+    
     if not( type(Mode121_settings['CCDSELs']) == list):
         Logger.error("Mode121_settings['CCDSELs'] != list")
         raise TypeError
@@ -349,8 +350,8 @@ def CheckConfigFile():
     if not( type(Mode124_settings['CCDSELs']) == list):
         Logger.error("Mode124_settings['CCDSELs'] != list")
         raise TypeError
-    if not( Mode124_settings['SnapshotSpacing'] * (len(Mode124_settings['CCDSELs'])-1) + Mode124_settings['SnapshotTime'] < Mode124_settings['freeze_duration'] ):
-        Logger.error("Mode124_settings['SnapshotSpacing'] * (len(Mode124_settings['CCDSELs'])-1) + Mode124_settings['SnapshotTime'] > Mode124_settings['freeze_duration']")
+    if not( Mode124_settings['SnapshotSpacing'] * (len(Mode124_settings['CCDSELs'])-1) + Mode124_settings['SnapshotTime'] < Mode124_settings['freeze_duration'] <= 3600):
+        Logger.error("Mode124_settings['SnapshotSpacing'] * (len(Mode124_settings['CCDSELs'])-1) + Mode124_settings['SnapshotTime'] > Mode124_settings['freeze_duration'] or Mode124_settings['freeze_duration'] > 3600")
         raise ValueError
     for CCDSEL in Mode124_settings['CCDSELs']:
         if not( CCDSEL in [1,2,4,8,16,32] ):
