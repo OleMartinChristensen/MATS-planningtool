@@ -19,6 +19,7 @@ setup(
         "h5py>=2.9.0",
         "skyfield>=1.13",
         "Sphinx>=2.3.1",
+        "astroquery",
     ],
 )
 
