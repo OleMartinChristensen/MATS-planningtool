@@ -1,0 +1,40 @@
+<InnoSatTimeline originator="OHB" sdbVersion="9.5.99.2">
+  <description>
+    <timelineID procedureIdentifier="" descriptiveName="MinimalPluto" version="1.0"/>
+    <changeLog>
+      <changeLogItem version="1.0" date="2020-09-10" author="Ole Martin Christensen">The file was created manually</changeLogItem>
+    </changeLog>
+    <comment>This command sequence is a 'Minimum Script' Innosat timeline for testing the Pluto Script generator. Configuration File used: OPT_Config_File</comment>
+  </description>
+  <listOfCommands>
+    <command mnemonic="TC_pafCCD">
+      <relativeTime>1</relativeTime>
+      <comment>, Operational_Limb_Pointing_macro</comment>
+      <tcArguments>
+        <tcArgument mnemonic="CCDSEL">8</tcArgument>
+        <tcArgument mnemonic="PWR">1</tcArgument>
+        <tcArgument mnemonic="WDW">4</tcArgument>
+        <tcArgument mnemonic="JPEGQ">85</tcArgument>
+        <tcArgument mnemonic="SYNC">0</tcArgument>
+        <tcArgument mnemonic="TEXPIMS">5700</tcArgument>
+        <tcArgument mnemonic="TEXPMS">1000</tcArgument>
+        <tcArgument mnemonic="GAIN">0</tcArgument>
+        <tcArgument mnemonic="NFLUSH">1023</tcArgument>
+        <tcArgument mnemonic="NRSKIP">95</tcArgument>
+        <tcArgument mnemonic="NRBIN">3</tcArgument>
+        <tcArgument mnemonic="NROW">107</tcArgument>
+        <tcArgument mnemonic="NCSKIP">23</tcArgument>
+        <tcArgument mnemonic="NCBIN">40</tcArgument>
+        <tcArgument mnemonic="NCOL">49</tcArgument>
+        <tcArgument mnemonic="NCBINFPGA">0</tcArgument>
+        <tcArgument mnemonic="SIGMODE">1</tcArgument>
+      </tcArguments>
+    </command>
+    <command mnemonic="TC_pafCCDSNAPSHOT">
+      <relativeTime>5</relativeTime>
+      <tcArguments>
+        <tcArgument mnemonic="CCDSEL">8</tcArgument>
+      </tcArguments>
+    </command>
+  </listOfCommands>
+</InnoSatTimeline>

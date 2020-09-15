@@ -1,0 +1,250 @@
+// PROCEDURE FOR ALL BINNING TESTS
+
+/*	
+        Script name  : Binning tests $
+        
+        Description  : This script test non limnearity for binning
+
+        Version      : $Rev: 3 $
+        Last Edit    : $Date: 2020-08-10 $
+        Last Edit by : $Author: Ole Martin Christensen $
+*/
+
+procedure
+	initiate and confirm step myStep
+		declare
+			variable ref_time_factor of type unsigned integer,
+			variable testnumber of type unsigned integer,
+			variable ccd_counter of type unsigned integer,
+			variable ccd of type unsigned integer,
+			variable int_time of type unsigned integer,
+			variable int_time_dark of type unsigned integer,
+			variable ref_int_time of type unsigned integer,
+			variable col_bin of type unsigned integer,
+			variable ncol of type unsigned integer,
+			variable ref_col of type unsigned integer,
+			variable row_bin of type unsigned integer,
+			variable nrow of type unsigned integer,
+			variable ref_row of type unsigned integer,
+			variable divisor of type unsigned integer,
+			variable divisor_max of type unsigned integer,
+			variable factor of type unsigned integer,
+			variable wait_time of type relative time,
+			variable ref_wait_time of type relative time
+		end declare
+		
+		main
+		
+			for ref_time_factor := 1 to 10 do
+				
+            log "------------------------------------------------------------------------------------------------------------------";
+            log "Starting binning tests";
+			log to string (current time());
+			
+			//ref values should have some margins, not tested for whole CCD (OMC 2020.07.08)
+			int_time_dark := 2000; //to correct for smearing
+			log "int_time_dark: " + to string(int_time_dark);
+			ref_int_time := 5000*ref_time_factor;
+			log "ref_int_time: " + to string(ref_int_time);
+			ref_col := 1280;
+			log "ref_col: " + to string(ref_col);
+			ref_row := 320;
+			log "ref_row: " + to string(ref_row);
+			ref_wait_time := (ref_int_time/1000 + ref_col*ref_row/1000/20) * 2 s + 15 s;
+			
+	
+		
+			for ccd_counter := 1 to 7 do
+			
+			//ccd_counter := 2;
+			ccd:=(2**(ccd_counter-1));	
+									
+			initiate TC_pafMODE with arguments
+		    	  MODE := 2
+		  	 end with;
+			 
+			wait for 10s;
+			
+			for testnumber := 1 to 3 do
+			
+			if  testnumber = 1 then
+				divisor_max := 8;
+			end if;
+						
+			if  testnumber = 2 then
+				divisor_max := 6;
+			end if;
+					
+			if  testnumber = 3 then
+				divisor_max := 6;
+			end if;
+			 	
+			for divisor := 1 to divisor_max do
+
+				factor :=2**(divisor-1);
+				row_bin := 1;
+				nrow := ref_row;
+				int_time := ref_int_time;							
+				col_bin := 1;
+				ncol := ref_col/col_bin;	
+				wait_time := (int_time/1000 + nrow*ncol/1000/20) * 2 s + 15 s;						
+
+					if  testnumber = 1 then
+						col_bin := factor;
+						ncol := ref_col/col_bin;
+					end if;
+						
+					if  testnumber = 2 then
+						row_bin := factor;
+						nrow := ref_row/row_bin;
+					end if;
+					
+					if  testnumber = 3 then
+						int_time := ref_int_time*factor;
+						wait_time := (int_time/1000 + nrow*ncol/1000/20) * 2 s + 15 s;	
+					end if;
+				
+				log to string (current time());					
+				log "testnumber: " + to string(testnumber);
+				log "ccd number: " + to string(ccd_counter);
+				
+				log "ncol: " + to string(ncol);
+				log "nrow: " + to string(nrow);
+				log "int_time: " + to string(int_time);
+				log "factor: " + to string(factor);			
+
+	
+		   
+		   ///// BINNING COMBO
+		   // Take binning picture
+		   
+			initiate TC_pafCCD with arguments
+		      CCDSEL := ccd,
+		      PWR := 1,
+		      WDW := 7,
+		      JPEGQ := 100,
+		      SYNC := 0,
+		      TEXPIMS := 1000000,
+		      TEXPMS := int_time+int_time_dark,
+		      GAIN := 0,
+		      NFLUSH := 1023,
+		      NRSKIP := (511-ref_row)/2+1,
+		      NRBIN := row_bin,
+		      NROW := nrow,
+		      NCSKIP := (2048-ref_col)/2,
+		      NCBIN := col_bin,
+		      NCOL := ncol-1,
+		      NCBINFPGA := 0,
+		      SIGMODE := 1
+		   end with;
+
+		   wait for 10s;
+
+			initiate TC_pafCCDSNAPSHOT with arguments
+				CCDSEL := ccd	
+		   	end with;
+			log "BINNED IMAGE";
+		
+			wait for wait_time;
+
+			// Take "dark" image
+			
+			initiate TC_pafCCD with arguments
+		      CCDSEL := ccd,
+		      PWR := 1,
+		      WDW := 7,
+		      JPEGQ := 100,
+		      SYNC := 0,
+		      TEXPIMS := 1000000,
+		      TEXPMS := int_time_dark,
+		      GAIN := 0,
+		      NFLUSH := 1023,
+		      NRSKIP := (511-ref_row)/2+1,
+		      NRBIN := row_bin,
+		      NROW := nrow,
+		      NCSKIP := (2048-ref_col)/2,
+		      NCBIN := col_bin,
+		      NCOL := ncol-1,
+		      NCBINFPGA := 0,
+		      SIGMODE := 1
+		   end with;
+
+		   	wait for 10s;
+
+			initiate TC_pafCCDSNAPSHOT with arguments
+				CCDSEL := ccd
+		   	end with;
+			log "DARK IMAGE";
+		
+			wait for wait_time;
+			
+			//Take refererence image
+			
+			initiate TC_pafCCD with arguments
+		      CCDSEL := ccd,
+		      PWR := 1,
+		      WDW := 7,
+		      JPEGQ := 100,
+		      SYNC := 0,
+		      TEXPIMS := 1000000,
+		      TEXPMS := ref_int_time+int_time_dark,
+		      GAIN := 0,
+		      NFLUSH := 1023,
+		      NRSKIP := (511-ref_row)/2+1,
+		      NRBIN := 1,
+		      NROW := ref_row,
+		      NCSKIP := (2048-ref_col)/2,
+		      NCBIN := 1,
+		      NCOL := ref_col-1,
+		      NCBINFPGA := 0,
+		      SIGMODE := 1
+		   end with;
+
+		   	wait for 10s;
+
+			initiate TC_pafCCDSNAPSHOT with arguments
+				CCDSEL := ccd	
+		   	end with;
+			log "REF IMAGE";
+			
+			wait for ref_wait_time;
+			
+			//take ref short image
+			
+			initiate TC_pafCCD with arguments
+		      CCDSEL := ccd,
+		      PWR := 1,
+		      WDW := 7,
+		      JPEGQ := 100,
+		      SYNC := 0,
+		      TEXPIMS := 1000000,
+		      TEXPMS := int_time_dark,
+		      GAIN := 0,
+		      NFLUSH := 1023,
+		      NRSKIP := (511-ref_row)/2+1,
+		      NRBIN := 1,
+		      NROW := ref_row,
+		      NCSKIP := (2048-ref_col)/2,
+		      NCBIN := 1,
+		      NCOL := ref_col-1,
+		      NCBINFPGA := 0,
+		      SIGMODE := 1
+		   end with;
+
+		   	wait for 10s;
+
+			initiate TC_pafCCDSNAPSHOT with arguments
+				CCDSEL := ccd	
+		   	end with;
+			log "REF DARK IMAGE";		
+	
+			wait for ref_wait_time;
+			
+		   end for;
+		   end for;
+		   end for;
+		   end for;
+		   
+		end main
+	end step;
+end procedure
