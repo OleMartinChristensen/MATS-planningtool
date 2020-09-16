@@ -21,6 +21,10 @@ def read_xml(filename):
     return doc
 
 
+def check_payload_command(pafCommand):
+    return pafCommand["@mnemonic"][0:6] == "TC_paf"
+
+
 def write_header(plutopath="tmp.plp"):
     f = open(plutopath, "w")
     f.write("procedure\n")
@@ -29,8 +33,18 @@ def write_header(plutopath="tmp.plp"):
     f.write(
         '\t\t\tlog "------------------------------------------------------------------------------------------------------------------";\n'
     )
-    f.write('\t\t\tlog "Starting binning tests";\n')
+    f.write('\t\t\tlog "Starting tests";\n')
     f.write("\t\t\tlog to string (current time());\n")
+    f.write("\n")
+    f.write("\t\t\tinitiate TC_pafPWRTOGGLE with arguments\n")
+    f.write("\t\t\t\tCONST:=165\n")
+    f.write("\t\t\tend with;\n")
+    f.write("\n")
+    f.write("\t\t\twait for 10s;\n")
+    f.write("\n")
+    f.write("\t\t\tinitiate TC_pafPLTMCONTROL with arguments\n")
+    f.write("\t\t\t\tTMMODE:=1\n")
+    f.write("\t\t\tend with;\n")
     f.write("\n")
     f.close()
 
@@ -44,39 +58,53 @@ def write_footer(plutopath="tmp.plp"):
 
 
 def write_tcArgument(pafCommand, plutopath="tmp.plp"):
-    f = open(plutopath, "a+")
-    f.write("\t\t\tinitiate " + str(pafCommand["@mnemonic"]) + " with arguments\n")
-    if isinstance(pafCommand["tcArguments"]["tcArgument"], list):
-        for i in range(len(pafCommand["tcArguments"]["tcArgument"])):
-            print(str(pafCommand["tcArguments"]["tcArgument"][i]))
+    if not check_payload_command(pafCommand):
+        raise ValueError(
+            "Command "
+            + pafCommand["@mnemonic"]
+            + " PLUTO generator only supports Platform commands"
+        )
+    elif pafCommand["@mnemonic"] == "TC_pafPWRTOGGLE":
+        raise ValueError(
+            "Command "
+            + pafCommand["@mnemonic"]
+            + " PLUTO generator will remove powertoggles"
+        )
+    else:
+        f = open(plutopath, "a+")
+        f.write("\t\t\tinitiate " + str(pafCommand["@mnemonic"]) + " with arguments\n")
+        if isinstance(pafCommand["tcArguments"]["tcArgument"], list):
+            for i in range(len(pafCommand["tcArguments"]["tcArgument"])):
+                # print(str(pafCommand["tcArguments"]["tcArgument"][i]))
+                f.write(
+                    "\t\t\t\t"
+                    + str(pafCommand["tcArguments"]["tcArgument"][i]["@mnemonic"])
+                    + ":="
+                    + str(pafCommand["tcArguments"]["tcArgument"][i]["#text"])
+                )
+                if i < len(pafCommand["tcArguments"]["tcArgument"]) - 1:
+                    f.write(",\n")
+                else:
+                    f.write("\n")
+        else:
+            # print(str(pafCommand["tcArguments"]["tcArgument"]))
             f.write(
                 "\t\t\t\t"
-                + str(pafCommand["tcArguments"]["tcArgument"][i]["@mnemonic"])
+                + str(pafCommand["tcArguments"]["tcArgument"]["@mnemonic"])
                 + ":="
-                + str(pafCommand["tcArguments"]["tcArgument"][i]["#text"])
+                + str(pafCommand["tcArguments"]["tcArgument"]["#text"])
             )
-            if i < len(pafCommand["tcArguments"]["tcArgument"]) - 1:
-                f.write(",\n")
-            else:
-                f.write("\n")
-    else:
-        print(str(pafCommand["tcArguments"]["tcArgument"]))
-        f.write(
-            "\t\t\t\t"
-            + str(pafCommand["tcArguments"]["tcArgument"]["@mnemonic"])
-            + ":="
-            + str(pafCommand["tcArguments"]["tcArgument"]["#text"])
-        )
-        f.write("\n")
+            f.write("\n")
 
-    f.write("\t\t\tend with;\n\n")
+        f.write("\t\t\tend with;\n\n")
     f.close()
 
 
 def write_wait(wait_time, plutopath="tmp.plp"):
-    f = open(plutopath, "a+")
-    f.write("\t\t\twait for " + wait_time + "s;\n\n")
-    f.close()
+    if wait_time > 0:
+        f = open(plutopath, "a+")
+        f.write("\t\t\twait for " + str(wait_time) + "s;\n\n")
+        f.close()
 
 
 def PLUTO_generator(XML_Path, PLUTO_Path="pluto_script.plp"):
@@ -92,25 +120,31 @@ def PLUTO_generator(XML_Path, PLUTO_Path="pluto_script.plp"):
     """
     timeline_xml = read_xml(XML_Path)
     write_header(PLUTO_Path)
+    command_ignored_flag = 0
     for i in range(len(timeline_xml["InnoSatTimeline"]["listOfCommands"]["command"])):
-        if i > 0:
-            wait_time = str(
-                int(
+        if command_ignored_flag == 0:
+            if i > 0:
+                wait_time = int(
                     timeline_xml["InnoSatTimeline"]["listOfCommands"]["command"][i][
                         "relativeTime"
                     ]
-                )
-                - int(
+                ) - int(
                     timeline_xml["InnoSatTimeline"]["listOfCommands"]["command"][i - 1][
                         "relativeTime"
                     ]
                 )
+            else:
+                wait_time = 0
+        try:
+            write_tcArgument(
+                timeline_xml["InnoSatTimeline"]["listOfCommands"]["command"][i],
+                PLUTO_Path,
             )
             write_wait(wait_time, PLUTO_Path)
 
-        write_tcArgument(
-            timeline_xml["InnoSatTimeline"]["listOfCommands"]["command"][i], PLUTO_Path
-        )
+        except ValueError:
+            print("WARNING: XML contains a ivalid command, the command will be ignored")
+            command_ignored_flag += 1
 
     write_footer(PLUTO_Path)
 

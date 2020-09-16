@@ -34,3 +34,23 @@ def test_write_mimnimal_script():
         "test_data/XML_TIMELINE__MinimalPluto_.xml", "Output/minimal_pluto.plp"
     )
     return
+
+
+def test_remove_platform_commands():
+    XML_Path = "test_data/XML_TIMELINE__Platform_command_.xml"
+    PLUTO_Path = "Output/platform_command.plp"
+    timeline_xml = pluto.PLUTOGenerator.read_xml(XML_Path)
+    with pytest.raises(ValueError):
+        pluto.PLUTOGenerator.write_tcArgument(
+            timeline_xml["InnoSatTimeline"]["listOfCommands"]["command"], PLUTO_Path
+        )
+
+
+def test_remove_powertoggle_commands():
+    XML_Path = "test_data/XML_TIMELINE__Powertoggle_command_.xml"
+    PLUTO_Path = "Output/powertoggle_command.plp"
+    timeline_xml = pluto.PLUTOGenerator.read_xml(XML_Path)
+    with pytest.raises(ValueError):
+        pluto.PLUTOGenerator.write_tcArgument(
+            timeline_xml["InnoSatTimeline"]["listOfCommands"]["command"], PLUTO_Path
+        )
