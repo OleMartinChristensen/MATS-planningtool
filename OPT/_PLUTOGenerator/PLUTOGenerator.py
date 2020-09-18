@@ -40,11 +40,14 @@ def write_header(plutopath="tmp.plp"):
     f.write("\t\t\t\tCONST:=165\n")
     f.write("\t\t\tend with;\n")
     f.write("\n")
-    f.write("\t\t\twait for 10s;\n")
+    f.write("\t\t\twait for 30s;\n")
     f.write("\n")
-    f.write("\t\t\tinitiate TC_pafPLTMCONTROL with arguments\n")
-    f.write("\t\t\t\tTMMODE:=1\n")
+    f.write("\t\t\tinitiate TC_pcfPLTMControl with arguments\n")
+    f.write("\t\t\t\tEnable:=1,\n")
+    f.write("\t\t\t\tPartition:=0\n")
     f.write("\t\t\tend with;\n")
+    f.write("\n")
+    f.write("\t\t\twait for 5s;\n")
     f.write("\n")
     f.close()
 
@@ -141,6 +144,7 @@ def PLUTO_generator(XML_Path, PLUTO_Path="pluto_script.plp"):
                 PLUTO_Path,
             )
             write_wait(wait_time, PLUTO_Path)
+            command_ignored_flag = 0
 
         except ValueError:
             print("WARNING: XML contains a ivalid command, the command will be ignored")
