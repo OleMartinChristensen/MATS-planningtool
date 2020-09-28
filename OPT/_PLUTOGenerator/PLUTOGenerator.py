@@ -36,6 +36,19 @@ def write_header(plutopath="tmp.plp"):
     f.write('\t\t\tlog "Starting tests";\n')
     f.write("\t\t\tlog to string (current time());\n")
     f.write("\n")
+    f.write("\t\t\tinitiate TC_pafMODE with arguments\n")
+    f.write("\t\t\t\tMODE:=2\n")
+    f.write("\t\t\tend with;\n")
+    f.write("\n")
+    f.write("\t\t\twait for 5s;\n")
+    f.write("\n")
+    f.write("\t\t\tinitiate TC_pcfPLTMControl with arguments\n")
+    f.write("\t\t\t\tEnable:=1,\n")
+    f.write("\t\t\t\tPartition:=0\n")
+    f.write("\t\t\tend with;\n")
+    f.write("\n")
+    f.write("\t\t\twait for 5s;\n")
+    f.write("\n")
     f.write("\t\t\tinitiate TC_pafPWRTOGGLE with arguments\n")
     f.write("\t\t\t\tCONST:=165\n")
     f.write("\t\t\tend with;\n")
@@ -123,32 +136,28 @@ def PLUTO_generator(XML_Path, PLUTO_Path="pluto_script.plp"):
     """
     timeline_xml = read_xml(XML_Path)
     write_header(PLUTO_Path)
-    command_ignored_flag = 0
     for i in range(len(timeline_xml["InnoSatTimeline"]["listOfCommands"]["command"])):
-        if command_ignored_flag == 0:
-            if i > 0:
-                wait_time = int(
-                    timeline_xml["InnoSatTimeline"]["listOfCommands"]["command"][i][
-                        "relativeTime"
-                    ]
-                ) - int(
-                    timeline_xml["InnoSatTimeline"]["listOfCommands"]["command"][i - 1][
-                        "relativeTime"
-                    ]
-                )
-            else:
-                wait_time = 0
+        if i < len(timeline_xml["InnoSatTimeline"]["listOfCommands"]["command"]) - 1:
+            wait_time = int(
+                timeline_xml["InnoSatTimeline"]["listOfCommands"]["command"][i + 1][
+                    "relativeTime"
+                ]
+            ) - int(
+                timeline_xml["InnoSatTimeline"]["listOfCommands"]["command"][i][
+                    "relativeTime"
+                ]
+            )
+        else:
+            wait_time = 0
         try:
             write_tcArgument(
                 timeline_xml["InnoSatTimeline"]["listOfCommands"]["command"][i],
                 PLUTO_Path,
             )
             write_wait(wait_time, PLUTO_Path)
-            command_ignored_flag = 0
 
         except ValueError:
             print("WARNING: XML contains a ivalid command, the command will be ignored")
-            command_ignored_flag += 1
 
     write_footer(PLUTO_Path)
 

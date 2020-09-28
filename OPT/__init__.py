@@ -84,7 +84,6 @@ On POSIX system: make sure gzip is installed and in your path!On Windows: same f
 """
 
 
-
 def Copy_ConfigFile(Config_File_Name):
     """Makes a copy of the *_ConfigFile* located in *Operational_Planning_Tool*.
     
@@ -99,15 +98,16 @@ def Copy_ConfigFile(Config_File_Name):
         None
     """
     import shutil, os
-    
-    Original_ConfigFile = os.path.join('OPT', '_Config_File_Original', 'Config_File_Original.py')
-    ConfigFile = os.path.join('OPT', '_ConfigFile.py')
-    
-    Config_File_Name = Config_File_Name+'.py'
-    
-    
-    #Make copy of the original Config File if no Config File is present.
-    if(os.path.isfile(ConfigFile) == False):
+
+    Original_ConfigFile = os.path.join(
+        "OPT", "_Config_File_Original", "Config_File_Original.py"
+    )
+    ConfigFile = os.path.join("OPT", "_ConfigFile.py")
+
+    Config_File_Name = Config_File_Name + ".py"
+
+    # Make copy of the original Config File if no Config File is present.
+    if os.path.isfile(ConfigFile) == False:
         shutil.copyfile(Original_ConfigFile, ConfigFile)
     """
     elif( os.path.isfile(ConfigFile) == True):
@@ -119,26 +119,20 @@ def Copy_ConfigFile(Config_File_Name):
         elif( answer == 'n'):
             pass
     """
-    
-    
-    if(os.path.isfile(Config_File_Name) == False):
+
+    if os.path.isfile(Config_File_Name) == False:
         shutil.copyfile(ConfigFile, Config_File_Name)
-    elif( os.path.isfile(Config_File_Name) == True):
+    elif os.path.isfile(Config_File_Name) == True:
         answer = None
-        while( answer != 'y' and answer != 'n'):
-            answer = input('Overwrite '+Config_File_Name+' ? (y/n)\n')
-        if(answer == 'y'):
+        while answer != "y" and answer != "n":
+            answer = input("Overwrite " + Config_File_Name + " ? (y/n)\n")
+        if answer == "y":
             shutil.copyfile(ConfigFile, Config_File_Name)
-        elif( answer == 'n'):
+        elif answer == "n":
             pass
-        
-    
-        
-    
 
 
-def Set_ConfigFile(Config_File_Name, Date=None, TLE1='', 
-                   TLE2=''):
+def Set_ConfigFile(Config_File_Name, Date=None, TLE1="", TLE2=""):
     """ Sets the name of the *.py* file that shall be used as a *Configuration file* for OPT. 
     
     Can also be used to set the start date and TLE for OPT which then will be used instead of the values stated in the *Configuration File*. 
@@ -154,15 +148,14 @@ def Set_ConfigFile(Config_File_Name, Date=None, TLE1='',
     Returns:
         None
     """
-    
+
     from . import _Globals as Globals
-    
+
     Globals.Config_File = Config_File_Name
     "Will be used if not set to None"
     Globals.StartTime = Date
     "Will be used if not set to ('','')"
-    Globals.TLE = (TLE1,TLE2)
-    
+    Globals.TLE = (TLE1, TLE2)
 
 
 def CheckConfigFile():
@@ -172,7 +165,7 @@ def CheckConfigFile():
     
     """
     from ._CheckConfigFile.Core import CheckConfigFile
-    
+
     CheckConfigFile()
 
 
@@ -192,11 +185,10 @@ def Timeline_gen():
         None
     """
     from ._TimelineGenerator.Core import Timeline_generator
-    
-    
+
     Timeline_generator()
-    
-    
+
+
 def XML_gen(science_mode_timeline_path):
     """Invokes the XML generator program part of Operational Planning Tool for MATS.
     
@@ -210,19 +202,18 @@ def XML_gen(science_mode_timeline_path):
     Returns: 
         None
     """
-    
+
     from ._XMLGenerator.XML_gen import XML_generator
     from . import _Globals as Globals
-    
-    
+
     "Initialize current_pointing to None"
     Globals.current_pointing = None
-    
+
     XML_generator(science_mode_timeline_path)
 
 
 def Timeline_analyzer(science_mode_timeline_path, date):
-    '''Invokes the Timeline_analyser program part of Operational Planning Tool.
+    """Invokes the Timeline_analyser program part of Operational Planning Tool.
     
     Searches a Science Mode Timeline json file for a given date and returns the scheduled mode and its parameters.
     
@@ -235,17 +226,16 @@ def Timeline_analyzer(science_mode_timeline_path, date):
             
             **Mode** (*str*): The currently scheduled Mode ath the given date. \n
             **Parameters** (*dict*): The parameters of the Mode. \n
-    '''
+    """
     from ._TimelineAnalyzer.Core import Timeline_analyzer
-    
-    
+
     Mode, Parameters = Timeline_analyzer(science_mode_timeline_path, date)
-    
+
     return Mode, Parameters
 
-    
-def Timeline_Plotter(Science_Mode_Path, OHB_H5_Path = '', STK_CSV_PATH = '', Timestep = 16 ):
-    '''Invokes the *Timeline_Plotter* program part of *Operational_Planning_Tool*.
+
+def Timeline_Plotter(Science_Mode_Path, OHB_H5_Path="", STK_CSV_PATH="", Timestep=16):
+    """Invokes the *Timeline_Plotter* program part of *Operational_Planning_Tool*.
     
     Simulates the position and attitude of MATS from a given Science Mode Timeline and also optionally compares it to
     positional and attitude data given in a .h5 data set, located at *OHB_H5_Path*. Plots both the simulated data and given data. 
@@ -273,22 +263,47 @@ def Timeline_Plotter(Science_Mode_Path, OHB_H5_Path = '', STK_CSV_PATH = '', Tim
             - **Time_OHB** (*list*): List containing timestamps (utc) of the plotted data in the .h5 file. \n
         
         
-    '''
+    """
     from ._Timeline_Plotter.Core import Timeline_Plotter
-    
-    
-    Data_MATS, Data_LP, Time, Time_OHB  = Timeline_Plotter(Science_Mode_Path = Science_Mode_Path, OHB_H5_Path = OHB_H5_Path, STK_CSV_FILE = STK_CSV_PATH, Timestep = Timestep)
-    
-    return Data_MATS, Data_LP, Time, Time_OHB
-    
 
-def Plot_Timeline_Plotter_Plots(FigureDirectory, FilesToPlot = ['ActiveScienceMode', 'Yaw', 
-                                               'Pitch', 'Roll','Lat', 'Long', 'Alt', 'ECEFerror', 'PosError', 
-                                               'PosErrorRCI', 'MagPosError', 'Lat_LP', 'Long_LP', 
-                                               'Alt_LP', 'AltError_LP', 'PosError_LP', 'PosErrorRCI_LP',
-                                               'MagPosError_LP', 'RA_OpticalAxis', 'RA_OpticalAxisError', 
-                                               'Dec_OpticalAxis', 'Dec_OpticalAxisError', 
-                                               'PosErrorMATS_STK']):
+    Data_MATS, Data_LP, Time, Time_OHB = Timeline_Plotter(
+        Science_Mode_Path=Science_Mode_Path,
+        OHB_H5_Path=OHB_H5_Path,
+        STK_CSV_FILE=STK_CSV_PATH,
+        Timestep=Timestep,
+    )
+
+    return Data_MATS, Data_LP, Time, Time_OHB
+
+
+def Plot_Timeline_Plotter_Plots(
+    FigureDirectory,
+    FilesToPlot=[
+        "ActiveScienceMode",
+        "Yaw",
+        "Pitch",
+        "Roll",
+        "Lat",
+        "Long",
+        "Alt",
+        "ECEFerror",
+        "PosError",
+        "PosErrorRCI",
+        "MagPosError",
+        "Lat_LP",
+        "Long_LP",
+        "Alt_LP",
+        "AltError_LP",
+        "PosError_LP",
+        "PosErrorRCI_LP",
+        "MagPosError_LP",
+        "RA_OpticalAxis",
+        "RA_OpticalAxisError",
+        "Dec_OpticalAxis",
+        "Dec_OpticalAxisError",
+        "PosErrorMATS_STK",
+    ],
+):
     """Plots binary files created with *Timeline_Plotter*.
     
     Tries to plot all files which are generated by default by *Timeline_Plotter* unless a second input is given.
@@ -298,12 +313,11 @@ def Plot_Timeline_Plotter_Plots(FigureDirectory, FilesToPlot = ['ActiveScienceMo
         FilesToPlot (list of str): Optional. List of strings containing the names of the binary files (excluding "fig.pickle") to be plotted.
     
     """
-    
+
     from ._Plot_Timeline_Plotter_Plots.Core import Plot_Timeline_Plotter_Plots
-    
+
     Plot_Timeline_Plotter_Plots(FigureDirectory, FilesToPlot)
-    
-    
+
 
 def MinimalScienceXML_gen():
     """Invokes the *MinimalScienceXML_gen* part of the *OPT*.
@@ -315,7 +329,17 @@ def MinimalScienceXML_gen():
     Uses settings for the CMDs from the currently set *Configuration File*.
     
     """
-    
+
     from ._XMLGenerator.MinimalScienceXML_gen import MinimalScienceXMLGenerator
-    
+
     MinimalScienceXMLGenerator()
+
+
+def PLUTOGenerator(XML_Path, PLUTO_Path="pluto_script.plp"):
+    """Invokes PLUTO generator
+    
+    """
+
+    from ._PLUTOGenerator.PLUTOGenerator import PLUTO_generator
+
+    PLUTO_generator(XML_Path, PLUTO_Path)

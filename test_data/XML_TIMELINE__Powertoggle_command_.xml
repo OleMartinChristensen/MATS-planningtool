@@ -1,0 +1,22 @@
+<InnoSatTimeline originator="OHB" sdbVersion="9.5.99.2">
+  <description>
+    <timelineID procedureIdentifier="" descriptiveName="MinimalScience" version="1.0"/>
+    <changeLog>
+      <changeLogItem version="1.0" date="2020-09-10" author="David Skanberg">The file was created using OPT</changeLogItem>
+    </changeLog>
+    <validity>
+      <startingDate></startingDate>
+      <scenarioDuration>144</scenarioDuration>
+    </validity>
+    <comment>This command sequence is a 'Minimum Science' Innosat timeline for MATS, created with OPT. Configuration File used: OPT_Config_File</comment>
+  </description>
+  <listOfCommands>
+    <command mnemonic="TC_pafPWRTOGGLE">
+      <relativeTime>2</relativeTime>
+      <comment>2020/6/20 18:02:38</comment>
+      <tcArguments>
+        <tcArgument mnemonic="CONST">165</tcArgument>
+      </tcArguments>
+    </command>
+  </listOfCommands>
+</InnoSatTimeline>

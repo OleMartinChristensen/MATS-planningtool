@@ -1,0 +1,24 @@
+<InnoSatTimeline originator="OHB" sdbVersion="9.5.99.2">
+  <description>
+    <timelineID procedureIdentifier="" descriptiveName="MinimalScience" version="1.0"/>
+    <changeLog>
+      <changeLogItem version="1.0" date="2020-09-10" author="David Skanberg">The file was created using OPT</changeLogItem>
+    </changeLog>
+    <validity>
+      <startingDate></startingDate>
+      <scenarioDuration>144</scenarioDuration>
+    </validity>
+    <comment>This command sequence is a 'Minimum Science' Innosat timeline for MATS, created with OPT. Configuration File used: OPT_Config_File</comment>
+  </description>
+  <listOfCommands>
+    <command mnemonic="TC_acfLimbPointingAltitudeOffset">
+      <relativeTime>9</relativeTime>
+      <comment>, Operational_Limb_Pointing_macro</comment>
+      <tcArguments>
+        <tcArgument mnemonic="Initial">92500</tcArgument>
+        <tcArgument mnemonic="Final">92500</tcArgument>
+        <tcArgument mnemonic="Rate">0</tcArgument>
+      </tcArguments>
+    </command>
+  </listOfCommands>
+</InnoSatTimeline>
