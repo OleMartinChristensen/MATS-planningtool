@@ -88,6 +88,7 @@ def write_tcArgument(pafCommand, plutopath="tmp.plp"):
         )
     else:
         f = open(plutopath, "a+")
+        f.write('\t\t\t log "' + pafCommand["comment"] + '"' + ";\n")
         f.write("\t\t\tinitiate " + str(pafCommand["@mnemonic"]) + " with arguments\n")
         if isinstance(pafCommand["tcArguments"]["tcArgument"], list):
             for i in range(len(pafCommand["tcArguments"]["tcArgument"])):

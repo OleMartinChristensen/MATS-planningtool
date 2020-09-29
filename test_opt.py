@@ -67,7 +67,7 @@ OPT.PLUTOGenerator(
     "Output/optest_pluto.plp",
 )
 
-OPT.PLUTOGenerator(
-    "Output/XML_TIMELINE__MinimalScience_.xml", "Output/minimal_science_pluto.plp",
-)
+# OPT.PLUTOGenerator(
+#     "Output/XML_TIMELINE__MinimalScience_.xml", "Output/minimal_science_pluto.plp",
+# )
 

@@ -377,7 +377,9 @@ def calculate_time_per_row(NCOL, NCBIN, NCBINFPGA, NRSKIP, NROW, NRBIN, NFLUSH):
     
     #total time of the readout
     T_readout = T_row_read*(nrow+nrowskip+1) + T_row_shift*(1+nrowbin*nrow)
-    
+
+    #Margin for transfertime
+    T_readout = T_readout + 1e6
     
     #"smearing time"
     #(this is the time that any pixel collects electrons in a wrong row, during the shifting.)
