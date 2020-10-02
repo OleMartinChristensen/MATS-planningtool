@@ -22,7 +22,7 @@ OPT.Set_ConfigFile(
 )
 
 # "Choose your Configuration File ('OPT_Config_File') but optionally use the TLE and start date values given directly in the Configuration File"
-# OPT.Set_ConfigFile("OPT_Config_File")
+OPT.Set_ConfigFile("OPT_Config_File")
 
 # "Check the currently chosen Configuration File and the plausibility of its values. Prints out the currently used start date and TLE"
 OPT.CheckConfigFile()
@@ -51,7 +51,7 @@ OPT.XML_gen("Output/Science_Mode_Timeline__OPT_Config_File.json")
 #     "Output/Science_Mode_Timeline__OPT_Config_File/Timeline_Plotter_PlotsAndData"
 # )
 
-# "Return the active science mode and its settings at a specfic date from a Science Mode Timeline"
+# # "Return the active science mode and its settings at a specfic date from a Science Mode Timeline"
 # Mode, Parameters = OPT.Timeline_analyzer(
 #     "Output/Science_Mode_Timeline__OPT_Config_File.json", "2020-06-20 19:30:00"
 # )
