@@ -89,6 +89,7 @@ def write_tcArgument(pafCommand, plutopath="tmp.plp"):
     else:
         f = open(plutopath, "a+")
         f.write('\t\t\tlog "' + pafCommand["comment"].split(",")[0] + '"' + ";\n")
+        f.write("\t\t\tlog to string (current time());\n")
         f.write("\t\t\tinitiate " + str(pafCommand["@mnemonic"]) + " with arguments\n")
         if isinstance(pafCommand["tcArguments"]["tcArgument"], list):
             for i in range(len(pafCommand["tcArguments"]["tcArgument"])):
@@ -159,6 +160,7 @@ def PLUTO_generator(XML_Path, PLUTO_Path="pluto_script.plp"):
 
         except ValueError:
             print("WARNING: XML contains a ivalid command, the command will be ignored")
+            write_wait(30, PLUTO_Path)
 
     write_footer(PLUTO_Path)
 
