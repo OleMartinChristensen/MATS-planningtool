@@ -168,7 +168,7 @@ def Timeline_settings():
         "yaw_phase": 20,
         "Choose_Operational_Science_Mode": 0,
         "StandardPointingAltitude": 92500,
-        "CMD_separation": 1,
+        "CMD_separation": 2,
         "pointing_stabilization": 100,
         "CCDSYNC_ExtraOffset": 50,
         "CCDSYNC_ExtraIntervalTime": 200,
@@ -391,6 +391,7 @@ def Mode121_settings():
     CommonSettings = Mode121_122_123_settings()
 
     settings = {**CommonSettings, **Settings}
+    settings["SnapshotSpacing"] = 6
 
     return settings
 
@@ -509,7 +510,7 @@ def Mode130_settings():
         (:obj:`dict`): settings
         
     """
-    settings = {"pointing_altitude": 230000, "SnapshotSpacing": 3, "start_date": "0"}
+    settings = {"pointing_altitude": 230000, "SnapshotSpacing": 6, "start_date": "0"}
     return settings
 
 
