@@ -172,6 +172,7 @@ def Timeline_settings():
         "pointing_stabilization": 100,
         "CCDSYNC_ExtraOffset": 50,
         "CCDSYNC_ExtraIntervalTime": 200,
+        "CCDSYNC_Waittime": 20,
     }
 
     return Timeline_settings

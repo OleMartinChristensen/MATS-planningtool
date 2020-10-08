@@ -26,6 +26,7 @@ def check_payload_command(pafCommand):
 
 
 def write_header(plutopath="tmp.plp"):
+    # Writes header with instrument restart. Designed to take 45s to match the procedure that will run on the satellite
     f = open(plutopath, "w")
     f.write("procedure\n")
     f.write("\tinitiate and confirm step myStep\n")
@@ -125,7 +126,7 @@ def write_wait(wait_time, plutopath="tmp.plp"):
         f.close()
 
 
-def PLUTO_generator(XML_Path, PLUTO_Path="pluto_script.plp"):
+def PLUTO_generator(XML_Path, PLUTO_Path="pluto_script.plp", wait_platform=False):
     """The core function of the PLUTO_gen program.
     
     Reads a *XML-Timeline*  file. And output a PLUTO script for running on the MATS standalone instrument.
@@ -133,9 +134,11 @@ def PLUTO_generator(XML_Path, PLUTO_Path="pluto_script.plp"):
     Arguments:
         SCIMXML_Path (str): A string containing the path to the Timeline-XML file.
         PLUTO_Path (str): A string containing the path where outputfile should be written (default "pluto_script.plp")
+        wait_platform (Bool): Whether to wait for payload commands or not (default = False) 
     Returns:
         None     
     """
+
     timeline_xml = read_xml(XML_Path)
     write_header(PLUTO_Path)
     for i in range(len(timeline_xml["InnoSatTimeline"]["listOfCommands"]["command"])):
@@ -160,7 +163,8 @@ def PLUTO_generator(XML_Path, PLUTO_Path="pluto_script.plp"):
 
         except ValueError:
             print("WARNING: XML contains a ivalid command, the command will be ignored")
-            write_wait(30, PLUTO_Path)
+            if wait_platform:
+                write_wait(wait_time, PLUTO_Path)
 
     write_footer(PLUTO_Path)
 

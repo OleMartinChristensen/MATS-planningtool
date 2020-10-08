@@ -335,11 +335,12 @@ def MinimalScienceXML_gen():
     MinimalScienceXMLGenerator()
 
 
-def PLUTOGenerator(XML_Path, PLUTO_Path="pluto_script.plp"):
+def PLUTOGenerator(XML_Path, PLUTO_Path="pluto_script.plp", wait_platform=False):
     """Invokes PLUTO generator
     
     """
 
     from ._PLUTOGenerator.PLUTOGenerator import PLUTO_generator
 
-    PLUTO_generator(XML_Path, PLUTO_Path)
+    PLUTO_generator(XML_Path, PLUTO_Path, wait_platform)
+

@@ -28,35 +28,41 @@ def Mode110(Occupied_Timeline):
             (str): Comment regarding the result of scheduling of the mode.
     
     """
-    
-    
+
     Timeline_settings = OPT_Config_File.Timeline_settings()
     Settings = OPT_Config_File.Mode110_settings()
-    
+
     "Get the initially planned date"
-    if( Settings['start_date'] != '0' ):
-        initialDate = ephem.Date(Settings['start_date'])
-        Logger.info('Mode specific start_date used as initial date')
+    if Settings["start_date"] != "0":
+        initialDate = ephem.Date(Settings["start_date"])
+        Logger.info("Mode specific start_date used as initial date")
     else:
-        Logger.info('Timeline start_date used as initial date')
-        initialDate = ephem.Date(Timeline_settings['start_date'])
-    
-    duration = round(Timeline_settings['pointing_stabilization'] + round((Settings['pointing_altitude_to'] - Settings['pointing_altitude_from']) / Settings['sweep_rate']) )
-    
-    endDate = ephem.Date(initialDate + ephem.second * (duration + Timeline_settings['mode_separation']))
-    
-    
+        Logger.info("Timeline start_date used as initial date")
+        initialDate = ephem.Date(Timeline_settings["start_date"])
+
+    duration = Timeline_settings["CCDSYNC_Waittime"] + round(
+        Timeline_settings["pointing_stabilization"]
+        + round(
+            (Settings["pointing_altitude_to"] - Settings["pointing_altitude_from"])
+            / Settings["sweep_rate"]
+        )
+    )
+
+    endDate = ephem.Date(
+        initialDate + ephem.second * (duration + Timeline_settings["mode_separation"])
+    )
+
     ############### Start of availability schedueler ##########################
-    
+
     startDate, endDate, iterations = scheduler(Occupied_Timeline, initialDate, endDate)
-                
+
     ############### End of availability schedueler ##########################
-    
-    comment = 'Number of times date postponed: ' + str(iterations)
-    
+
+    comment = "Number of times date postponed: " + str(iterations)
+
     "Get the name of the parent function, which is always defined as the name of the mode"
     Mode_name = sys._getframe(0).f_code.co_name
-    
-    Occupied_Timeline[Mode_name].append((startDate,endDate))
-    
+
+    Occupied_Timeline[Mode_name].append((startDate, endDate))
+
     return Occupied_Timeline, comment
