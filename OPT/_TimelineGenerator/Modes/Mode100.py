@@ -54,7 +54,9 @@ def Mode100(Occupied_Timeline):
         + Timeline_settings["CMD_separation"] * NumberOfCMDsPerAltitude
     ) * number_of_altitudes
 
-    endDate = ephem.Date(initialDate + ephem.second * (duration))
+    endDate = ephem.Date(
+        initialDate + ephem.second * (duration + Timeline_settings["mode_separation"])
+    )  # no mode seperation to ensure consistency at each altitude
 
     ############### Start of availability schedueler ##########################
 

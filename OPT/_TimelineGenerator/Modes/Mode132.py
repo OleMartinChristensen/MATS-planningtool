@@ -26,26 +26,33 @@ def Mode132(Occupied_Timeline):
             (str): Comment regarding the result of scheduling of the mode.
     
     """
-    
-    
+
     Timeline_settings = OPT_Config_File.Timeline_settings()
     Settings = OPT_Config_File.Mode132_settings()
-    
+
     "Get the initially planned date"
-    if( Settings['start_date'] != '0' ):
-        initialDate = ephem.Date(Settings['start_date'])
-        Logger.info('Mode specific start_date used as initial date')
+    if Settings["start_date"] != "0":
+        initialDate = ephem.Date(Settings["start_date"])
+        Logger.info("Mode specific start_date used as initial date")
     else:
-        Logger.info('Timeline start_date used as initial date')
-        initialDate = ephem.Date(Timeline_settings['start_date'])
-    
+        Logger.info("Timeline start_date used as initial date")
+        initialDate = ephem.Date(Timeline_settings["start_date"])
+
     NumberOfCMDsPerAltitude = 12
-    
-    if( len(Settings['Exp_Times_UV']) <= len(Settings['Exp_Times_IR'])):
-        duration = ( Settings['session_duration']+ Timeline_settings['CMD_separation'] * NumberOfCMDsPerAltitude + Timeline_settings['pointing_stabilization'] ) * len(Settings['Exp_Times_UV']) + Timeline_settings['mode_separation']
-    elif( len(Settings['Exp_Times_IR']) < len(Settings['Exp_Times_UV']) ):
-        duration = ( Settings['session_duration']+ Timeline_settings['CMD_separation'] * NumberOfCMDsPerAltitude + Timeline_settings['pointing_stabilization'] ) * len(Settings['Exp_Times_IR']) + Timeline_settings['mode_separation']
-    
+
+    if len(Settings["Exp_Times_UV"]) <= len(Settings["Exp_Times_IR"]):
+        duration = (
+            Settings["session_duration"]
+            + Timeline_settings["CMD_separation"] * NumberOfCMDsPerAltitude
+            + Timeline_settings["pointing_stabilization"]
+        ) * len(Settings["Exp_Times_UV"])
+    elif len(Settings["Exp_Times_IR"]) < len(Settings["Exp_Times_UV"]):
+        duration = (
+            Settings["session_duration"]
+            + Timeline_settings["CMD_separation"] * NumberOfCMDsPerAltitude
+            + Timeline_settings["pointing_stabilization"]
+        ) * len(Settings["Exp_Times_IR"])
+
     """
     NumberOfCMDStepsInMacro = 12
     
@@ -54,23 +61,22 @@ def Mode132(Occupied_Timeline):
     elif( len(Settings['Exp_Times_IR']) < len(Settings['Exp_Times_UV']) ):
         duration = ( Settings['session_duration']+ NumberOfCMDStepsInMacro * Timeline_settings['CMD_separation'] ) * len(Settings['Exp_Times_IR'])+Timeline_settings['pointing_stabilization'] + Timeline_settings['mode_separation']
     """
-    endDate = ephem.Date(initialDate + ephem.second*duration)
-    
-    
-    
+    endDate = ephem.Date(
+        initialDate + ephem.second * (duration + Timeline_settings["mode_separation"])
+    )
+
     ############### Start of availability schedueler ##########################
-    
+
     startDate, endDate, iterations = scheduler(Occupied_Timeline, initialDate, endDate)
-                
+
     ############### End of availability schedueler ##########################
-    
-    comment = 'Number of times date postponed: ' + str(iterations)
-    
+
+    comment = "Number of times date postponed: " + str(iterations)
+
     "Get the name of the parent function, which is always defined as the name of the mode"
     Mode_name = sys._getframe(0).f_code.co_name
-    
-    Occupied_Timeline[Mode_name].append((startDate,endDate))
-    
-    return Occupied_Timeline, comment
 
+    Occupied_Timeline[Mode_name].append((startDate, endDate))
+
+    return Occupied_Timeline, comment
 

@@ -27,34 +27,36 @@ def Mode131(Occupied_Timeline):
             (str): Comment regarding the result of scheduling of the mode.
     
     """
-    
+
     Timeline_settings = OPT_Config_File.Timeline_settings()
     Settings = OPT_Config_File.Mode131_settings()
-    
+
     "Get the initially planned date"
-    if( Settings['start_date'] != '0' ):
-        initialDate = ephem.Date(Settings['start_date'])
-        Logger.info('Mode specific start_date used as initial date')
+    if Settings["start_date"] != "0":
+        initialDate = ephem.Date(Settings["start_date"])
+        Logger.info("Mode specific start_date used as initial date")
     else:
-        Logger.info('Timeline start_date used as initial date')
-        initialDate = ephem.Date(Timeline_settings['start_date'])
-    
-    endDate = ephem.Date(initialDate + ephem.second*Settings['mode_duration'] )
-    
-    
+        Logger.info("Timeline start_date used as initial date")
+        initialDate = ephem.Date(Timeline_settings["start_date"])
+
+    endDate = ephem.Date(
+        initialDate
+        + ephem.second
+        * (Settings["mode_duration"] + Timeline_settings["mode_separation"])
+    )
+
     ############### Start of availability schedueler ##########################
-    
+
     startDate, endDate, iterations = scheduler(Occupied_Timeline, initialDate, endDate)
-                
+
     ############### End of availability schedueler ##########################
-    
-    comment = 'Number of times date postponed: ' + str(iterations)
-    
+
+    comment = "Number of times date postponed: " + str(iterations)
+
     "Get the name of the parent function, which is always defined as the name of the mode"
     Mode_name = sys._getframe(0).f_code.co_name
-    
-    Occupied_Timeline[Mode_name].append((startDate,endDate))
-    
-    return Occupied_Timeline, comment
 
+    Occupied_Timeline[Mode_name].append((startDate, endDate))
+
+    return Occupied_Timeline, comment
 
