@@ -9,7 +9,7 @@
   <listOfCommands>
     <command mnemonic="TC_pafCCD">
       <relativeTime>1</relativeTime>
-      <comment>, Operational_Limb_Pointing_macro</comment>
+      <comment>Test time, Operational_Limb_Pointing_macro</comment>
       <tcArguments>
         <tcArgument mnemonic="CCDSEL">8</tcArgument>
         <tcArgument mnemonic="PWR">1</tcArgument>
@@ -32,6 +32,7 @@
     </command>
     <command mnemonic="TC_pafCCDSNAPSHOT">
       <relativeTime>5</relativeTime>
+      <comment>Test time, Operational_Limb_Pointing_macro</comment>
       <tcArguments>
         <tcArgument mnemonic="CCDSEL">8</tcArgument>
       </tcArguments>
