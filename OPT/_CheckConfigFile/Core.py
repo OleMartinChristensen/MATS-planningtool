@@ -8,6 +8,7 @@ Checks the values given in the *Configuration File* set by *Set_ConfigFile*.
 
 import importlib, logging, sys, ephem
 from pylab import sign
+from math import ceil as ceil
 
 from OPT import _Globals, _Library
 
@@ -693,6 +694,52 @@ def CheckConfigFile():
             "len(Mode133_settings['Exp_Times_IR']) != len(Mode133_settings['Exp_Times_UV'])"
         )
         raise TypeError
+
+    # Check that CCDsync waits for long enough time for full CCD readout (standard)
+
+    # Standard CCDsettings
+    _, _, FullReadout_synctime, _ = _Library.SyncArgCalculator(
+        OPT_Config_File.CCD_macro_settings("FullReadout"),
+        Timeline_settings["CCDSYNC_ExtraOffset"],
+        Timeline_settings["CCDSYNC_ExtraIntervalTime"],
+    )
+    _, _, CustomBinning_synctime, _ = _Library.SyncArgCalculator(
+        OPT_Config_File.CCD_macro_settings("CustomBinning"),
+        Timeline_settings["CCDSYNC_ExtraOffset"],
+        Timeline_settings["CCDSYNC_ExtraIntervalTime"],
+    )
+    _, _, HighResUV_synctime, _ = _Library.SyncArgCalculator(
+        OPT_Config_File.CCD_macro_settings("HighResUV"),
+        Timeline_settings["CCDSYNC_ExtraOffset"],
+        Timeline_settings["CCDSYNC_ExtraIntervalTime"],
+    )
+
+    _, _, HighResIR_syctime, _ = _Library.SyncArgCalculator(
+        OPT_Config_File.CCD_macro_settings("HighResIR"),
+        Timeline_settings["CCDSYNC_ExtraOffset"],
+        Timeline_settings["CCDSYNC_ExtraIntervalTime"],
+    )
+
+    _, _, BinnedCalibration, _ = _Library.SyncArgCalculator(
+        OPT_Config_File.CCD_macro_settings("BinnedCalibration"),
+        Timeline_settings["CCDSYNC_ExtraOffset"],
+        Timeline_settings["CCDSYNC_ExtraIntervalTime"],
+    )
+
+    max_normal_synctime = (
+        max(
+            max(FullReadout_synctime),
+            max(CustomBinning_synctime),
+            max(HighResUV_synctime),
+            max(HighResIR_syctime),
+            max(BinnedCalibration),
+        )
+        / 1000
+    )
+
+    if not Timeline_settings["CCDSYNC_Waittime"] > max_normal_synctime:
+        Logger.error("Timeline_settings['CCDSYNC_Waittime']")
+        raise ValueError
 
     Logger.info("CheckConfigFile passed.")
 
