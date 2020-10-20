@@ -17,7 +17,8 @@
       "CMD_separation": 1,
       "pointing_stabilization": 60,
       "CCDSYNC_ExtraOffset": 50,
-      "CCDSYNC_ExtraIntervalTime": 200
+      "CCDSYNC_ExtraIntervalTime": 200,
+      "CCDSYNC_Waittime": 30
     },
     [
       "1 54321U 19100G   20172.75043981 0.00000000  00000-0  75180-4 0  0014",

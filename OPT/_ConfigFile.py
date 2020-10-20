@@ -146,6 +146,7 @@ def Timeline_settings():
         'pointing_stabilization': The maximum time it takes for an attitude change to stabilize [s]. Used before scheduling certain CMDs in *XML_gen* to make sure that the attitude has been stabilized after running *TC_acfLimbPointingAltitudeOffset*. Impacts the estimated duration of Science Modes in *Timeline_gen*. (int) \n
         'CCDSYNC_ExtraOffset': Extra offset time [ms] that is added to an estimated ReadoutTime when calculating TEXPIOFS for the CCD Synchronize CMD. (int) \n
         'CCDSYNC_ExtraIntervalTime': Extra time [ms] that is added to the calculated Exposure Interval Time (for example when calculating arguments for the CCD Synchronize CMD or nadir TEXPIMS). (int) \n
+        'CCDSYNC_Waittime': Time to wait after running CCDSYNC to allow for the synchronization to be set correctly (should be longer than longest TEXPIMS) 
         
     Returns:
         (:obj:`dict`): Timeline_settings
